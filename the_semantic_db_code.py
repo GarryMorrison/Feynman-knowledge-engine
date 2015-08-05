@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2/8/2015
+# Update: 5/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -194,6 +194,9 @@ class ket(object):
   
   def pick_elt(self):
     return ket(self.label,self.value)
+
+  def weighted_pick_elt(self):
+    return ket(self.label,self.value)      
 
   def find_index(self,one):
     label = one.label if type(one) == ket else one
@@ -844,6 +847,17 @@ class superposition(object):
 
 # maybe a version of this that takes into account the coeffs, and makes a weighted random choice.
 # Yeah. For a start, see: http://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice
+# Yup. This looks good: (BTW, what happens if coeffs are < 0?)
+# def weighted_choice(choices):
+#   total = sum(w for c, w in choices)
+#   r = random.uniform(0, total)
+#   upto = 0
+#   for c, w in choices:
+#      if upto + w > r:
+#         return c
+#      upto += w
+#   assert False, "Shouldn't get here"
+#
 #
 # 14/6/2015: broken! If self.data is the empy list it triggers an exception.
 # also, we really don't need to copy the entire superposition, and then return only one of them.
@@ -853,9 +867,22 @@ class superposition(object):
     return random.choice(result.data)
 
   def pick_elt(self):
-    if len(self.data) == 0:
+    if len(self) == 0:
       return ket("",0)
     return copy.deepcopy(random.choice(self.data))    
+
+  def weighted_pick_elt(self):                    # quick test in the console, looks to be roughly right.
+    if len(self) == 0:
+      return ket("",0)
+    total = sum(x.value for x in self)
+    r = random.uniform(0,total)
+    upto = 0
+    for x in self:
+      w = x.value
+      if upto + w > r:
+        return x
+      upto += w
+    assert False, "Shouldn't get here"    
 
 # NB: this is case sensitive, since |x> != |X>
 # NB: in some cases find_index() gives very different answers than set_mbr(), in terms of yes or no of membership.

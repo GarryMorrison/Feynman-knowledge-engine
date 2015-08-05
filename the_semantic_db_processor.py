@@ -29,7 +29,8 @@ built_in_table = {
   "transpose"        : "transpose",
 # "select-elt"       : "select_elt",
   "pick-elt"         : "pick_elt",
-  "pick-an-element-from" : "pick_elt", # added 13/7/2015, to make it closer to natural language 
+  "pick-an-element-from" : "pick_elt", # added 13/7/2015, to make it closer to natural language
+  "weighted-pick-elt" : "weighted_pick_elt", # added 5/8/2015. Been meaning to add this one for a long time! 
 # "find-index"       : "find_index",
 # "find-value"       : "find_value",
   "normalize"        : "normalize",
