@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2/8/2015
+# Update: 5/8/2015
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py 
@@ -18,6 +18,7 @@ import glob
 import os
 import datetime
 import time
+import urllib.request
 
 from the_semantic_db_code import *
 from the_semantic_db_functions import *
@@ -34,28 +35,6 @@ if not os.path.exists(sw_file_dir):
 print("Welcome!")
 
 C = context_list("sw console")
-
-old_help_string = """
-  q, quit, exit        : quit the agent.
-  h, help              : print this message
-  context              : print list of context's
-  context string       : set current context to string
-  dump                 : print current context
-  dump multi           : print context list
-  dump self            : print what we know about the default ket/sp
-  dump ket/sp          : print what we know about the given ket/sp
-  load file.sw         : load file.sw
-  save file.sw         : save current context to file.sw
-  save multi file.sw   : save context list to file.sw
-  files                : show the available .sw files
-  create inverse       : create inverse for current context
-  create multi inverse : create inverse for all context in context list
-  x = foo: bah         : set x (the default ket) to |foo: bah>
-  id                   : display the default ket/superposition
-  s, store             : set x to the result of the last computation
-  .                    : repeat last computation
-  if none of the above : process_input_line(C,line,x)
-"""
 
 help_string = """
   q, quit, exit                quit the agent.
@@ -74,6 +53,7 @@ help_string = """
   display ket/sp               (relatively) readable display about what we know for the ket/sp
   freq                         convert current context to frequency list
   mfreq                        convert context list to frequency list
+  web-load http://file.sw      load a sw file from the web
   load file.sw                 load file.sw
   save file.sw                 save current context to file.sw
   save multi file.sw           save context list to file.sw
@@ -217,6 +197,59 @@ while True:
   elif line == "mfreq":
     print(C.multiverse_to_freq_list())
 
+  elif line.startswith("web-load "):          # where put it? in sw_file_dir? What if file with that name already exists?
+    url = line[9:]                            # how about timing the download and load? Cheat, and merge with "load file.sw"?
+    start_time = time.time()
+    try:
+      # download url
+      print("downloading sw file:",url)       # code to time the download? Probably, eventually.
+      headers = { 'User-Agent' : 'semantic-agent/0.1' }
+      req = urllib.request.Request(url,None,headers)      # does it handle https?
+      f = urllib.request.urlopen(req)
+      html = f.read()
+      f.close()
+    except:
+      print("failed to download:",url)
+      continue
+         
+    # find the sw file name:
+    name = url.split("/")[-1]
+    dest = sw_file_dir + "/" + name
+      
+    # check if it exists:
+    while os.path.exists(dest):
+      dont_save = False
+      # either rename or overwrite
+      check = input("\n  File \"" + name + "\" already exists.\n  [O]verwrite, [R]ename or [D]on't save? (O,R,D): ")
+      if len(check) > 0:
+        if check[0] in ["o","O"]:                  # we are allowed to overwrite it
+          break
+        if check[0] in ["d","D"]:                  # don't save the file we just downloaded (yeah, waste if it was big)
+          dont_save = True
+          break
+        elif check[0] in ["r","R"]:                # we have to choose a new name
+          check = input("\n  New name: ")
+          if len(check) > 0:
+            name = check
+            dest = sw_file_dir + "/" + name
+
+    # check if we don't want to save:
+    if dont_save:
+      continue
+                     
+    # let's save it:
+    print("\nsaving to:",name)                  # do we need a try/except here?
+    f = open(dest,'wb')
+    f.write(html)
+    f.close()
+
+    # now let's load it into memory:
+    print("loading:",dest,"\n")
+    load_sw(C,dest)
+    end_time = time.time()
+    delta_time = end_time - start_time
+    print("\n  Time taken:",display_time(delta_time))
+   
 
   elif line.startswith("load "):
     name = line[5:]
@@ -240,7 +273,7 @@ while True:
     print("saving context list to:",name)
     save_sw_multi(C,name)
 
-  elif line.startswith("save "):
+  elif line.startswith("save "):               # check for file existance first? Or just blow away what is already there?
     name = line[5:]
     name = sw_file_dir + "/" + name            # load and save files to the sw_file_dir.    
     print("saving current context to:",name)

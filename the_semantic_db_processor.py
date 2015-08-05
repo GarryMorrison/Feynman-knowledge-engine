@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2/8/2015
+# Update: 5/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -171,7 +171,9 @@ fn_table = {
 
 # 30/4/2015:
   "plus-or-minus"      : "plus_or_minus",  
-  
+
+# 5/8/2015:
+  "split-chars"        : "split_chars",  
 }
 
 
@@ -365,7 +367,10 @@ compound_table = {
   "image-save"             : ".apply_sp_fn(improved_image_save_show,\"{0}\")",  
 
 # 12/5/2015:
-  "average-categorize"     : ".apply_naked_fn(average_categorize,context,\"{0}\")",  
+  "average-categorize"     : ".apply_naked_fn(average_categorize,context,\"{0}\")",
+  
+# 5/8/2015:
+  "select-chars"           : ".apply_sp_fn(select_chars,\"{0}\")",   
 
 }
 

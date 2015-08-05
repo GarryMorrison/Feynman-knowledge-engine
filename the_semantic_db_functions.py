@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2/8/2015
+# Update: 5/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3618,4 +3618,42 @@ def average_categorize(context,parameters):
     context.learn(ave,phi + ": " + str(k+1),sp)
   return ket("average categorize")
 
+# 5/8/2015:
+# split-chars |abcde> == |a> + |b> + |c> + |d> + |e>
+#
+# one is a ket
+def split_chars(one):
+  try:
+    chars = list(one.label)
+    result = superposition()
+    for c in chars:
+      result += ket(c)
+    return result
+  except:
+    return ket("",0)
+
+# select-chars[a,b] |uvwxyz>
+# eg: select-chars[3,4,7] |abcdefgh> == |cdg>
+# should it be similar to select[1,5]? I think we are breaking that.
+# maybe we need to distinguish between select-range and select-elts
+# or, a better option, allow: select-chars[3,5,7,13-19,23,31-41] |...>
+# and we would have to do the same for superposition select[] too.
+# OK. I like that idea. Not sure if current parser can handle that. I need to check.  
+# 
+# and what about: select-chars[1,3] |abcdef> == |a> + |c> ?? 
+# presumably the just written: split-chars will do that for us.
+#
+# what about indexing from the end of the list?
+# do we have a reverse ket-label function operator?
+# And I'm starting to get annoyed with adding all these little things! I know I promised we could add new ones without bounds, but still, I'm getting sick of this!   
+#
+# one is a ket
+def select_chars(one,positions):
+  try:
+    positions = positions.split(",")
+    chars = list(one.label)
+    text = "".join(chars[int(x)-1] for x in positions if int(x) <= len(chars))
+    return ket(text)
+  except:
+    return ket("",0)   
                                                                                                           
