@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+
+#######################################################################
+# my parsley grammar for the BKO scheme
+#
+# Author: Garry Morrison
+# email: garry -at- semantic-db.org
+# Date: 2015-08-07
+# Update:
+# Copyright: closed for now
+#
+# Usage:
+#
+#######################################################################
+
+import sys
+from parsley import makeGrammar
+
+from the_semantic_db_code import *
+from the_semantic_db_functions import *
+from the_semantic_db_processor import *
+
+
+# tidy literal superposition code:
+tidy_LS_grammar = """
+# number copied from here:
+# http://parsley.readthedocs.org/en/latest/tutorial2.html
+number = ('-' | -> ''):sign (intPart:ds (floatPart(sign ds)
+                                        | -> int(sign + ds)))
+digit = :x ?(x in '0123456789') -> x
+digits = <digit*>
+digit1_9 = :x ?(x in '123456789') -> x
+
+intPart = (digit1_9:first digits:rest -> first + rest) | digit
+floatPart :sign :ds = <('.' digits exponent?) | exponent>:tail
+                     -> float(sign + ds + tail)
+exponent = ('e' | 'E') ('+' | '-')? digits
+
+
+# my parsley code:
+S0 = ' '*
+S1 = ' '+
+valid_chars = anything:x ?(x not in '<|>') -> x
+naked_bra = '<' <valid_chars*>:x '|' -> x
+naked_ket = '|' <valid_chars*>:x '>' -> x
+coeff_ket = (number | -> 1):value S0 naked_ket:label -> ket(label,value)
+
+simple_literal_superposition = S0 coeff_ket:first ( S0 '+' S0 coeff_ket:next -> first + next
+                                           | -> first)
+
+add = S0 '+' S0 coeff_ket:k -> ('+', k)
+sub = S0 '-' S0 coeff_ket:k -> ('-', k)
+merge = S0 '_' S0 coeff_ket:k -> ('_', k)
+sequence = S0 '.' S0 coeff_ket:k -> ('.', k)
+
+ket_ops = (add | sub | merge | sequence)
+
+literal_superposition = S0 coeff_ket:left S0 (ket_ops+:right S0 -> calculate(left,right)
+                                          | -> left)
+
+"""
+
+def calculate(start,pairs,self_ket_label=None):
+  result = start
+  for op, value in pairs:
+    if self_ket_label != None and value.label == "_self":
+      value = ket(self_ket_label)
+    if op == '+':
+      result += value
+    elif op == '-':
+      result += value.multiply(-1)
+    elif op == '_':                                 # maybe handle the merge-labels bit in a cleaner way??
+      head,tail = result.index_split(-1)            # how handle coeffs of merged pieces?
+      result = head + ket(tail.the_label() + value.label)  # currently set to 1
+  return result
+
+
+tidy_test = makeGrammar(tidy_LS_grammar,{"ket" : ket, "bra" : bra, "calculate" : calculate})
+
+

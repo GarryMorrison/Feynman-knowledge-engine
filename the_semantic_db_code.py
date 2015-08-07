@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/8/2015
+# Update: 6/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -190,7 +190,14 @@ class ket(object):
   def select_range(self,a,b):      
     if a <= 1 <= b:
       return ket(self.label,self.value)
-    return ket("",0)  
+    return ket("",0)
+    
+# 6/8/2015:
+  def index_split(self,k):                      # OK. Now need to test it. Maybe improve for k other than {1,-1}.
+    if k == 1:
+      return ket(self.label,self.value), ket("")
+    if k == -1:
+      return ket(""), ket(self.label,self.value) 
   
   def pick_elt(self):
     return ket(self.label,self.value)
@@ -434,11 +441,14 @@ class bra(object):
     else:
       return '<' + self.label + '|' + str(self.value)
 
-  def display(self):                    # do we need an "exact" option here?
-    if self.value == 1:
+  def display(self,exact=False):                    # do we need an "exact" option here? May as well. Not sure where we use it though.
+    if self.value == 1:                             # hrmm... how display bra's: 3<foo| or <foo|3 ??
       return "<{0}|".format(self.label)
+    elif exact:
+      return '<' + self.label + '|' + str(self.value)
     else:
-      return "<{0}|{1:.3f}".format(self.label,self.value)
+#      return "<{0}|{1:.3f}".format(self.label,self.value)
+      return  '<' + self.label + '|' + float_to_int(self.value,3) 
 
   def transpose(self):
     return ket(self.label,self.value)
@@ -845,6 +855,15 @@ class superposition(object):
     result.data = [x for i,x in enumerate(result.data) if i != (k-1) ]
     return result
 
+# 6/8/2015:
+  def index_split(self,k):                      # OK. Now need to test it.
+    result = copy.deepcopy(self)                # Yup. Seems to work.
+    r1 = superposition()                        # Now need a ket version.
+    r1.data = result.data[:k]
+    r2 = superposition()
+    r2.data = result.data[k:]
+    return r1,r2
+
 # maybe a version of this that takes into account the coeffs, and makes a weighted random choice.
 # Yeah. For a start, see: http://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice
 # Yup. This looks good: (BTW, what happens if coeffs are < 0?)
@@ -871,6 +890,7 @@ class superposition(object):
       return ket("",0)
     return copy.deepcopy(random.choice(self.data))    
 
+# 5/8/2015
   def weighted_pick_elt(self):                    # quick test in the console, looks to be roughly right.
     if len(self) == 0:
       return ket("",0)
