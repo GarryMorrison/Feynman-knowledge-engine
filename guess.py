@@ -53,6 +53,10 @@ def string_to_2_array(s):
     result[c] += 1
   return result
 
+# for details on simm, see here:
+# http://write-up.semantic-db.org/70-a-similarity-metric.html
+# http://write-up.semantic-db.org/71-a-list-implementation-of-the-simm.html
+#
 # unscaled simm:
 def list_simm(f,g):
   length = min(len(f),len(g))

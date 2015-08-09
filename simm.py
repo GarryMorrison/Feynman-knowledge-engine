@@ -89,6 +89,10 @@ def list_simm(f,g):
   else:
     return (wf + wg - wfg)/(2*max(wf,wg))
 
+# for details on simm, see here:
+# http://write-up.semantic-db.org/70-a-similarity-metric.html
+# http://write-up.semantic-db.org/71-a-list-implementation-of-the-simm.html
+#
 # scaled simm:
 def rescaled_list_simm(f,g):
   the_len = min(len(f),len(g))

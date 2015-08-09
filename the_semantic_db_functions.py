@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/8/2015
+# Update: 9/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1799,6 +1799,8 @@ def console_active_buffer(one,context,parameters):  # one is the passed in super
 # |Fred, Sam, Harry, Mary and liz>
 #
 # Update: for now I have dropped the "text: " prefix.  
+# 9/8/2015: update: maybe have an: "or" variant. So |x> + |y> + |z> => "x, y or z"
+#
 def sp_to_words(one):
   labels = [x.label for x in one]
   if len(labels) == 0:

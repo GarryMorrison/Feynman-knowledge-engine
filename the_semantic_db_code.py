@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 6/8/2015
+# Update: 9/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1397,10 +1397,36 @@ class fast_superposition(object):
   # given a string label (corresponding to a ket label)
   # return its value, 0 if not in superposition:
   # tempted to put this into the standard superposition class too, but no point, it's going away!
-  def get_value(self,label):
+  def get_value(self,label):               # what about a set_value(self,label,value)?
     if label in self.odict:
       return self.odict[label]
     return 0
+
+  def count(self):
+    return len(self.odict)
+
+  def count_sum(self):
+    r = 0
+    for label in self.odict:
+      r += self.odict[label]
+    return r
+
+  def ket(self):
+    if len(self.odict) == 0:
+      return ket("",0)
+    for label in self.odict:
+      value = self.odict[label]
+      return ket(label,value)
+
+  def normalize(self):
+    sum = 0
+    for label in self.odict:
+      sum += self.odict[label]
+    result = copy.deepcopy(self)
+    if sum > 0:
+      for label in result.odict:
+        result.odict[label] /= sum
+    return result
 
 
 # we need this for stored_rule class.
