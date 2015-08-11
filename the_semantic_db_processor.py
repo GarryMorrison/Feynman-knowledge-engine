@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/8/2015
+# Update: 11/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -995,7 +995,10 @@ whitelist_table_2 = {
   "measure"             : "mbr",
   
 # 9/4/2015:
-  "subset"              : "subset",    
+  "subset"              : "subset",
+  
+# 11/8/2015:
+  "exclude"             : "exclude",      
 }
 
 # whitelisted functions that take 3 parameters:

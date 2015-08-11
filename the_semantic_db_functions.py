@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/8/2015
+# Update: 11/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -452,7 +452,18 @@ def squared_difference(x,y):
 import math
 def Euclidean_distance(one,two):
   return ket("number: " + str(math.sqrt(intersection_fn(squared_difference,one,two).count_sum())))
-   
+
+# 11/8/2015: the exclude function:
+# exclude(|a> + |c>,|a> + |b> + |c> + |d>) == |b> + |d>
+# in quick testing, seems to work.
+#
+def exclude_fn(x,y):
+  if x > 0:
+    return 0
+  return y
+       
+def exclude(one,two):
+  return intersection_fn(exclude_fn,one,two).drop()
 
 # a superposition version of simm.
 # not yet sure how to write the sequence version of simm.
