@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 11/8/2015
+# Update: 17/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -427,37 +427,37 @@ def valid_op(op):
 
 
 def process_single_op(op):
-  print("op:",op)
+  logger.debug("op: " + op)
 
   splitat = "[,]"
   pieces = ''.join(s if s not in splitat else ' ' for s in op).split()
   if len(pieces) > 1:
-    print("compound op found")
+    logger.debug("compound op found")
     op = pieces[0]
     parameters = ",".join(pieces[1:])
     if op not in compound_table:
-      print(op,"not in compound_table")
+      logger.debug(op,"not in compound_table")
       python_code = ""
     else:
       python_code = compound_table[op].format(parameters)   # probably risk of injection attack here
 
   elif op in built_in_table:                # tables don't have injection bugs, since they must be in tables, hence already vetted.
-    print("op in built in table")           # unless I guess a hash-table collision between safe and unsafe?
+    logger.debug("op in built in table")           # unless I guess a hash-table collision between safe and unsafe?
     python_code = ".{0}()".format(built_in_table[op])
   elif op in sigmoid_table:
-    print("op in sigmoid table")
+    logger.debug("op in sigmoid table")
     python_code = ".apply_sigmoid({0})".format(sigmoid_table[op])
   elif op in fn_table:                                    # I'm a little uncertain aboud the distinction between
-    print("op in fn table")                               # fn_table vs fn_table2
+    logger.debug("op in fn table")                               # fn_table vs fn_table2
     python_code = ".apply_fn({0})".format(fn_table[op])
   elif op in fn_table2:
-    print("op in fn table 2")
+    logger.debug("op in fn table 2")
     python_code = ".apply_fn({0})".format(fn_table2[op])
   elif op in sp_fn_table:
-    print("op in sp fn table")
+    logger.debug("op in sp fn table")
     python_code = ".apply_sp_fn({0})".format(sp_fn_table[op])    
   elif op in ket_context_table:
-    print("op in ket context table")
+    logger.debug("op in ket context table")
     python_code = ".apply_fn({0},context)".format(ket_context_table[op])
   else:
     if op == "\"\"":
@@ -476,9 +476,9 @@ def process_single_op(op):
         else:
           return ""
     else:
-      print("op is literal")               # NB: we have to be very careful here, or it will cause SQL-injection type bugs!!
+      logger.debug("op is literal")               # NB: we have to be very careful here, or it will cause SQL-injection type bugs!!
       python_code = ".apply_op(context,\"{0}\")".format(op)  # fix is not hard. Process the passed in op to a valid op form.
-  print("py:",python_code)                                   # lower+upper+dash+number and thats roughly it.
+  logger.debug("py: " + python_code)                                   # lower+upper+dash+number and thats roughly it.
   return python_code
 
 
@@ -493,12 +493,12 @@ def process_single_op(op):
 # x must be a ket or a superposition.
 #def process(context,x,ops):                 # I think the order should be changed to (context,ops,x)
 def process(context,ops,x):
-  line = ops.split()[::-1]                  # put more advanced processing, and splitting a line into ops later.
+  line = ops.split()                         # put more advanced processing, and splitting a line into ops later.
   code = "x"
-  for op in line:
+  for op in reversed(line):
     multi = op.split("^")
     if len(multi) == 2:     
-      print("multi-op",multi[1],"found")
+      logger.debug("multi-op power: " + multi[1])
       tmp = process_single_op(multi[0])
       for k in range(int(multi[1])):
         code += tmp
@@ -506,7 +506,7 @@ def process(context,ops,x):
       code += process_single_op(op)
   if code == "x":
     return None
-  print("python:",code)      
+  logger.debug("python: " + code)      
   return eval(code)
 
 

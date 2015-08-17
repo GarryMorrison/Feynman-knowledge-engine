@@ -1,0 +1,49 @@
+# operator parse:
+operator_grammar = """
+S0 = ' '*
+S1 = ' '+
+
+
+digit = :x ?(x in '0123456789') -> x
+digits = <digit*>
+digit1_9 = :x ?(x in '123456789') -> x
+
+# seems leading 0 is not a problem!
+# so we don't need to fix our code!
+positive_int = <digit+>:n -> int(n)
+
+# what about handle more than one dot char??
+# fix eventually, but not super important for now
+simple_float = <(digit | '.')+>:n -> float_int(n)
+
+op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
+# allow dot as an op char??
+op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.') -> x
+literal_op = op_start_char:first <op_char*>:rest -> first + rest
+
+
+parameters = (simple_float | literal_op | '\"\"')
+compound_op = literal_op:the_op '[' parameters:first (',' parameters)*:rest ']' -> [the_op] + [first] + rest
+
+
+general_op = (compound_op | literal_op | simple_float | '\"\"'):the_op -> the_op
+
+
+powered_op = general_op:the_op '^' positive_int:power -> (the_op,power)
+
+op = (powered_op | general_op):the_op -> the_op
+
+op_sequence = (S0 op:first (S1 op)*:rest S0 -> [first] + rest)
+              | S0 -> []
+
+"""
+
+# what happens if we have eg: "3.73.222751" (ie, more than one dot?)
+def float_int(x):
+  if float(x).is_integer():
+    return str(int(x))
+  return x
+
+
+op_test = makeGrammar(operator_grammar,{"float_int" : float_int})
+

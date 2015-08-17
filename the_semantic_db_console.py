@@ -6,10 +6,10 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/8/2015
+# Update: 17/8/2015
 # Copyright: GPLv3
 #
-# Usage: ./the_semantic_db_console.py 
+# Usage: ./the_semantic_db_console.py [--debug] 
 #
 #######################################################################
 
@@ -19,10 +19,17 @@ import os
 import datetime
 import time
 import urllib.request
+#import logging
 
 from the_semantic_db_code import *
 from the_semantic_db_functions import *
 from the_semantic_db_processor import *
+
+# if --debug, set logging level to DEBUG:
+if len(sys.argv) == 2 and sys.argv[1] == "--debug":
+    logger.setLevel(logging.DEBUG)
+
+logger.debug('debug enabled')   
 
 # starting .sw directory:
 sw_file_dir = "sw-examples"
@@ -70,7 +77,8 @@ help_string = """
   history                      show last 30 commands
   history n                    show last n commands
   save history                 save console history to file
-  running-time line            find running time for a command
+  debug on                     switch verbose debug messages on
+  debug off                    switch debug messages off
   -- comment                   ignore, this is just a comment line.
   if none of the above         process_input_line(C,line,x)
 """
@@ -343,6 +351,11 @@ while True:
       for line in command_history[-count:]:
         print("  " + line)
 
+  elif line == 'debug on':
+    logger.setLevel(logging.DEBUG)
+    
+  elif line == 'debug off':
+    logger.setLevel(logging.INFO)
 
   else:
     if line == ".":

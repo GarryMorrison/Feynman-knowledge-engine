@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 11/8/2015
+# Update: 17/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -76,8 +76,8 @@ def extract_value(a_ket):
 def to_value(one):                          # tested. Seems to work as desired!
   # do we need one = one.ket() here?
   cat, value = extract_category_value(one.label)
-  print("cat: " + cat)
-  print("value: " + value)
+  logger.debug("cat: " + cat)
+  logger.debug("value: " + value)
   
   if len(cat) == 0:
     label = " "

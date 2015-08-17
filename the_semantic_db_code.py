@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/8/2015
+# Update: 17/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -19,6 +19,12 @@ import copy
 import re
 
 from operator import mul
+
+import logging
+#from the_semantic_db_console import logger 
+#logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger()
 
 # put this here for now:
 # http://stackoverflow.com/questions/4836710/does-python-have-a-built-in-function-for-string-natural-sort
@@ -128,7 +134,8 @@ class ket(object):
       return fn(self,t1,t2)
 
   def apply_fn(self,fn,t1=None,t2=None):  # Bug? What happens if the result is |> or contains |>?
-    #print("boop")
+#    logger.debug("boop")
+#    logging.debug("boop")
     result = fast_superposition()
     if t1 == None:                        # Bug? What happens if fn() is a superposition?
       r = fn(self)
