@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/8/2015
+# Update: 18/8/2015
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -26,8 +26,12 @@ from the_semantic_db_functions import *
 from the_semantic_db_processor import *
 
 # if --debug, set logging level to DEBUG:
-if len(sys.argv) == 2 and sys.argv[1] == "--debug":
+if len(sys.argv) == 2:
+  if sys.argv[1] == "--debug":
     logger.setLevel(logging.DEBUG)
+  elif sys.argv[1] == "--info":
+    logger.setLevel(logging.INFO)
+  
 
 logger.debug('debug enabled')   
 
@@ -79,6 +83,8 @@ help_string = """
   save history                 save console history to file
   debug on                     switch verbose debug messages on
   debug off                    switch debug messages off
+  info on                      switch info messages on
+  info off                     switch info messages off
   -- comment                   ignore, this is just a comment line.
   if none of the above         process_input_line(C,line,x)
 """
@@ -356,6 +362,12 @@ while True:
     
   elif line == 'debug off':
     logger.setLevel(logging.INFO)
+
+  elif line == 'info on':
+    logger.setLevel(logging.INFO)
+    
+  elif line == 'info off':
+    logger.setLevel(logging.WARNING)
 
   else:
     if line == ".":

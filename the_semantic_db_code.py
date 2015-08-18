@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/8/2015
+# Update: 18/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -506,7 +506,7 @@ def labels_match(label_1,label_2):
 # 25/3/2014 added label_descent()
 # Pretty sure it is correct.
 def label_descent(x):
-  print("x:",x)
+  logger.info("ket: " + x)
   result = [x]
   if x == "*":
     return result
@@ -1503,7 +1503,8 @@ class new_context(object):
           match = True
           break
     if not match:
-      print("recall not found")
+      #logger.info("recall not found")
+      logger.info(op + " " + str(ket(ket_label)) + " not found")
       rule = ket("",0)
 
     if active:

@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/8/2015
+# Update: 18/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -15,6 +15,7 @@
 from string import ascii_letters
 import copy
 import os
+from parsley import makeGrammar
 
 from the_semantic_db_code import *
 from the_semantic_db_functions import *
@@ -427,19 +428,17 @@ def valid_op(op):
 
 
 def process_single_op(op):
-  logger.debug("op: " + op)
+  logger.debug("op: " + str(op)) 
 
-  splitat = "[,]"
-  pieces = ''.join(s if s not in splitat else ' ' for s in op).split()
-  if len(pieces) > 1:
+  if type(op) is list:                                    # compound op found:
     logger.debug("compound op found")
-    op = pieces[0]
-    parameters = ",".join(pieces[1:])
-    if op not in compound_table:
-      logger.debug(op,"not in compound_table")
+    the_op = op[0]
+    parameters = ",".join(op[1:])                         # not 100% sure this is the best way to handle parameters. eg, maybe we should pass a list? 
+    if the_op not in compound_table:
+      logger.debug(the_op + " not in compound_table")
       python_code = ""
     else:
-      python_code = compound_table[op].format(parameters)   # probably risk of injection attack here
+      python_code = compound_table[the_op].format(parameters)   # probably risk of injection attack here
 
   elif op in built_in_table:                # tables don't have injection bugs, since they must be in tables, hence already vetted.
     logger.debug("op in built in table")           # unless I guess a hash-table collision between safe and unsafe?
@@ -491,8 +490,7 @@ def process_single_op(op):
 
 # Note for the future: is there a cleaner way to do this without the somewhat risky eval?
 # x must be a ket or a superposition.
-#def process(context,x,ops):                 # I think the order should be changed to (context,ops,x)
-def process(context,ops,x):
+def old_process(context,ops,x):
   line = ops.split()                         # put more advanced processing, and splitting a line into ops later.
   code = "x"
   for op in reversed(line):
@@ -509,6 +507,67 @@ def process(context,ops,x):
   logger.debug("python: " + code)      
   return eval(code)
 
+# operator parse:
+our_operator_grammar = """
+S0 = ' '*
+S1 = ' '+
+
+digit = :x ?(x in '0123456789') -> x
+positive_int = <digit+>:n -> int(n)
+
+# what about handle more than one dot char??
+# fix eventually, but not super important for now
+# what about minus sign?
+simple_float = <(digit | '.')+>:n -> float_int(n)
+
+op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
+# allow dot as an op char??
+op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.') -> x
+literal_op = op_start_char:first <op_char*>:rest -> first + rest
+
+parameters = (simple_float | literal_op | '\"\"')
+compound_op = literal_op:the_op '[' parameters:first (',' parameters)*:rest ']' -> [the_op] + [first] + rest
+
+general_op = (compound_op | literal_op | simple_float | '\"\"' | '-'):the_op -> the_op
+
+powered_op = general_op:the_op '^' positive_int:power -> (the_op,power)
+
+op = (powered_op | general_op):the_op -> the_op
+
+op_sequence = (S0 op:first (S1 op)*:rest S0 -> [first] + rest)
+              | S0 -> []
+"""
+
+# what happens if we have eg: "3.73.222751" (ie, more than one dot?)
+def float_int(x):
+  if float(x).is_integer():
+    return str(int(x))
+  return x
+
+op_grammar = makeGrammar(our_operator_grammar,{"float_int" : float_int})
+
+def process(context,ops,x):
+  logger.debug("ops: " + ops)
+  logger.debug("x: " + str(x))
+  try:
+    parsed_operators = op_grammar(ops).op_sequence()
+  except:
+    return None
+  logger.debug("parsed_ops: " + str(parsed_operators))
+  code = "x"
+  for op in reversed(parsed_operators):
+    if type(op) is tuple:                     # powered-op found.
+      the_op,power = op                       # unpack tuple.       
+      logger.debug("powered-op power: " + str(power))
+      tmp = process_single_op(the_op)
+      for k in range(power):
+        code += tmp
+    else:
+      code += process_single_op(op)
+  if code == "x":
+    return None
+  logger.debug("python: " + code)      
+  return eval(code)
 
 
 
