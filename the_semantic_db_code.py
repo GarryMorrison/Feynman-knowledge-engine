@@ -345,16 +345,16 @@ class ket(object):
 #
   def intn_find_topic(self,context,op):
     words = self.label.lower().split()
-    print("words:",words)
+    logger.debug("words: " + words)
     if len(words) == 0:
       return ket("",0)
     results = [context.map_to_topic(ket(x),op) for x in words]
-    print("len results:",len(results))
+    logger.debug("len results: " + str(len(results)))
     if len(results) == 0:                    # this should never be true!
       return ket("",0)
     r = results[0]
     for sp in results:
-      print("sp:",sp)
+      logger.debug("sp: " + str(sp))
       r = intersection(r,sp)
     return r.normalize(100).coeff_sort()
          
@@ -425,7 +425,7 @@ class ket(object):
 
 # 4/1/2015:
   def is_not_empty(self):
-    print("ket is-not-empty:",self)
+    #logger.debug("ket is-not-empty: " + str(self))              # not sure if we need this.
     if self.label == "":
       return ket("no")
     return ket("yes")
@@ -470,8 +470,8 @@ def transpose(x):
 # need to think on how we want |> and <| to behave.
 # eg, currently <*||> returns 1. May want 0.
 def labels_match(label_1,label_2):
-  print("label_1:",label_1)
-  print("label_2:",label_2)
+  logger.debug("label_1: " + label_1)
+  logger.debug("label_2: " + label_2)
 
   truth_var = True
 
@@ -481,8 +481,8 @@ def labels_match(label_1,label_2):
     one = one[1:]     # though it is not much work to extend it.
     truth_var = False
 
-  print("one:",one)
-  print("two:",two)
+  logger.debug("one: " + one)
+  logger.debug("two: " + two)
   if one == two:
     return truth_var
   a_cat = one.split(': ')
@@ -541,7 +541,7 @@ def apply_bra_to_ket(a_bra,a_ket):
   star = "*"
   if a_bra.value == 1 or a_ket.value == 1:
     star = ""
-  print(a_bra.display() + star + a_ket.display())
+  logger.debug(a_bra.display() + star + a_ket.display())
 
   if labels_match(a_bra.label,a_ket.label):
     return a_bra.value * a_ket.value
@@ -1026,7 +1026,7 @@ class superposition(object):
     for x in self.data:
       if x.value == the_max:
         return ket(x.label,x.value)
-    print("I shouldn't be here in find_max_elt.")
+    logger.warning("I shouldn't be here in find_max_elt.")
 
 
   def find_min_elt(self):
@@ -1036,7 +1036,7 @@ class superposition(object):
     for x in self.data:
       if x.value == the_min:
         return ket(x.label,x.value)
-    print("I shouldn't be here in find_min_elt.")
+    logger.warning("I shouldn't be here in find_min_elt.")
 
   def find_max(self):
     if len(self.data) == 0:
@@ -1117,7 +1117,7 @@ class superposition(object):
     for x in self.data:
       result += context.map_to_topic(x,op)         # .drop_below(min) here too?
     r = result.normalize(100).coeff_sort()
-    print(r.long_display())
+    logger.debug(r.long_display())
     return r
     
 
@@ -1159,7 +1159,7 @@ class superposition(object):
 
 # 4/1/2015:
   def is_not_empty(self):
-    print("sp is-not-empty:",self)
+    #logger.debug("sp is-not-empty: " + str(self))
     if len(self.data) == 0:
       return ket("no")
     return self.data[0].is_not_empty()
@@ -1282,7 +1282,7 @@ from the_semantic_db_functions import *
 class stored_rule(object):        
   def __init__(self,rule):           # rule should be a string.
     self.rule = rule
-    print("in stored_rule class: just stored:",rule)
+    logger.debug("in stored_rule class: just stored: "  + rule)
   
   def type(self):                    # not 100% we need this, but no harm in putting it in anyway.
     return "stored rule"
@@ -1305,7 +1305,7 @@ class stored_rule(object):
     try:
       return extract_compound_superposition(context,self.rule,self_label)[0] # how does return work in try/except?
     except:                                                                   # works fine.
-      print("FYI: except in stored_rule")
+      logger.warning("FYI: except in stored_rule")
       return superposition()  
   
   def multiply(self,value):
@@ -1327,7 +1327,7 @@ class stored_rule(object):
 class memoizing_rule(object):        
   def __init__(self,rule):           # rule should be a string.
     self.rule = rule
-    print("in memoizing_rule class: just stored:",rule)
+    logger.debug("in memoizing_rule class: just stored: " + rule)
   
   def type(self):                    # not 100% we need this, but no harm in putting it in anyway.
     return "memoizing stored rule"
@@ -1352,7 +1352,7 @@ class memoizing_rule(object):
       context.learn(op,self_label,resulting_rule)
       return resulting_rule
     except:                                                                   # works fine.
-      print("FYI: except in stored_rule")
+      logger.warning("FYI: except in stored_rule")
       return superposition()  
   
   def multiply(self,value):
@@ -1504,7 +1504,8 @@ class new_context(object):
           break
     if not match:
       #logger.info("recall not found")
-      logger.info(op + " " + str(ket(ket_label)) + " not found")
+      #logger.info(op + " " + str(ket(ket_label)) + " not found")
+      logger.info("%s %s not found" % (op,ket(ket_label)))
       rule = ket("",0)
 
     if active:

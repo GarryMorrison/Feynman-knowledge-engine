@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/8/2015
+# Update: 19/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -481,32 +481,6 @@ def process_single_op(op):
   return python_code
 
 
-# here is an example of an injection bug (with an earlier version of the code):
-# op: era") shoot_me() print("
-# op: era") shoot_me() print("
-# op is literal
-# py: x.apply_op(context,"era") shoot_me() print("")
-
-
-# Note for the future: is there a cleaner way to do this without the somewhat risky eval?
-# x must be a ket or a superposition.
-def old_process(context,ops,x):
-  line = ops.split()                         # put more advanced processing, and splitting a line into ops later.
-  code = "x"
-  for op in reversed(line):
-    multi = op.split("^")
-    if len(multi) == 2:     
-      logger.debug("multi-op power: " + multi[1])
-      tmp = process_single_op(multi[0])
-      for k in range(int(multi[1])):
-        code += tmp
-    else:
-      code += process_single_op(op)
-  if code == "x":
-    return None
-  logger.debug("python: " + code)      
-  return eval(code)
-
 # operator parse:
 our_operator_grammar = """
 S0 = ' '*
@@ -518,7 +492,7 @@ positive_int = <digit+>:n -> int(n)
 # what about handle more than one dot char??
 # fix eventually, but not super important for now
 # what about minus sign?
-simple_float = <(digit | '.')+>:n -> float_int(n)
+simple_float = ('-' | -> ''):sign <(digit | '.')+>:n -> float_int(sign + n)
 
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
 # allow dot as an op char??
