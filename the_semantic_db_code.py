@@ -1632,7 +1632,7 @@ class new_context(object):
 
   # what I'm calling pattern recognition.
   # just simm applied to relevant kets
-  def pattern_recognition(self,pattern,op,t=0):
+  def pattern_recognition(self,pattern,op,t=0):                         # this function should be quite easy to parallelize in the future.
     if type(op) == ket:
       op = op.label[4:]
     result = superposition()                                            # later swap out superposition to fast_superposition

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/8/2015
+# Update: 20/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -2985,13 +2985,13 @@ def float_to_int(x,t=3):
 # also, now with table code, should not be much work to convert sw => csv.
 #
 def pretty_print_table(one,context,params,strict=False,rank=False):
-  print("one:",one)
+  #logger.debug("one: " + str(one))
   ops = params.split(',')         
   if "coeff" in ops:                                  # yup. seems to work.
     coeff_col = [ float_to_int(x.value) for x in one] # see float_to_int() for number of decimal places. Currently 3.
   if len(ops) == 2 and ops[1] == "*":                # display all supported ops, instead of having to specify them manually.
     ops = [ops[0]] + [x.label[4:] for x in one.apply_op(context,"supported-ops")] 
-  print("ops:",ops)
+  #logger.debug("ops: " + str(ops))
 # set all coeffs to 1. A table where the incoming superposition has coeffs is ugly, and I can't think of a use case.
 # easy enough to comment this line out, if we want:    # we need a way to occasionally show the coeffs of the incoming superposition. Don't yet know how!
   one = one.apply_sigmoid(set_to,1)   
@@ -3019,22 +3019,22 @@ def pretty_print_table(one,context,params,strict=False,rank=False):
     max_width = max(max_width,len(op))
     columns.append(col)
     max_col_widths.append(max_width)
-  print("max_col_widths:",max_col_widths)
-  print("columns:",columns)
+  #logger.debug("max_col_widths: " + str(max_col_widths))
+  #logger.debug("columns: " + str(columns))
 #  return ket("bug!")
   hpre = "+-"
   hmid = "-+-"
   hpost = "-+\n"
   hfill = "-"
   header = hpre + hmid.join(hfill*w for w in max_col_widths) + hpost
-#  print("header:",header)        
+# logger.debug("header: " + str(header))        
   pre = "| "
   mid = " | "
   post = " |\n"
   if rank:
     ops = ["rank"] + ops
   label_header = pre + mid.join(op.ljust(max_col_widths[k]) for k,op in enumerate(ops)) + post
-#  print("label_header:",label_header)
+# logger.debug("label_header: " + str(label_header))
   s = header + label_header + header
 #  return ket("bug!")
   for k in range(len(one)):
@@ -3047,7 +3047,7 @@ def pretty_print_table(one,context,params,strict=False,rank=False):
   print(s)
   
 # code to save the table (useful for big ones, too hard to cut and paste from the console)
-  print("saving to: saved-table.txt")
+  logger.info("saving to: saved-table.txt")
   file = open("saved-table.txt",'w')
   file.write("sa: table[" + params + "]\n")
   file.write(s)
