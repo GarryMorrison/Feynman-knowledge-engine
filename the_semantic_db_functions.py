@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 20/8/2015
+# Update: 24/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3670,3 +3670,43 @@ def select_chars(one,positions):
   except:
     return ket("",0)   
                                                                                                           
+
+import hashlib
+# 24/8/2015:
+# ket-hash[size] |some ket>
+#
+# one is a ket
+def ket_hash(one,size):
+  logger.debug("ket-hash one: " + str(one))
+  logger.debug("ket-hash size: " + size)
+  try:
+    size = int(size)
+  except:
+    return ket("",0)
+  our_hash = hashlib.md5(one.label.encode('utf-8')).hexdigest()[-size:]
+  return ket(our_hash,one.value)
+  
+# 24/8/2015:
+# hash-data[size] SP
+#
+# one is a superposition
+def hash_data(one,size):
+  logger.debug("hash-data one: " + str(one))
+  logger.debug("hash-data size: " + size)
+  try:
+    size = int(size)
+  except:
+    return ket("",0)
+  array = [0] * (16**size)
+  for x in one:
+    our_hash = hashlib.md5(x.label.encode('utf-8')).hexdigest()[-size:]
+    k = int(our_hash,16)
+    array[k] += 1 * x.value
+  logger.info("hash-data writing to tmp-sp.dat")
+  f = open('tmp-sp.dat','w')
+  for k in array:
+    f.write(str(k) + '\n')
+  f.close()
+  return ket("hash-data")
+
+      
