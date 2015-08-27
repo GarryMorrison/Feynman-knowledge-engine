@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 24/8/2015
+# Update: 27/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -103,6 +103,11 @@ sigmoid_table = {
 # 4/5/2015:
   "sigmoid-abs"        : "sigmoid_abs",       # maybe just call it "abs"? We only need the "sigmoid_" prefix for python, so not to stomp on abs().
   "abs"                : "sigmoid_abs",
+  
+# 27/8/2015: a couple of sigmoid aliases:
+  "BF"                 : "binary_filter",
+  "XF"                 : "xor_filter",
+  
 }                                   
 
 # some ket -> ket functions:
@@ -377,6 +382,10 @@ compound_table = {
 # 24/8/2015:
   "ket-hash"               : ".apply_fn(ket_hash,\"{0}\")",
   "hash-data"              : ".apply_sp_fn(hash_data,\"{0}\")",     
+
+# 25/8/2015: a couple of aliases
+  "hash"                   : ".apply_fn(ket_hash,\"{0}\")",
+  "sp-to-dat"              : ".apply_sp_fn(hash_data,\"{0}\")",     
 
 }
 
