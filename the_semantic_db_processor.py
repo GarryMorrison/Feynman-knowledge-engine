@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 27/8/2015
+# Update: 28/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -115,6 +115,10 @@ fn_table = {
   "apply-value"      : "apply_value",
   "extract-category" : "extract_category",
   "extract-value"    : "extract_value",
+
+# 28/8/2015:
+  "remove-leading-category" : "remove_leading_category",
+
   "to-number"        : "category_number_to_number",
   "shout"            : "shout",
 #  "discrim"           : "discrimination",  # Broken. discrim (3|a> + 9|b>) returns 12| >. Doh! It should be 9 - 3, not 9 + 3.
@@ -512,7 +516,7 @@ op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
 op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.') -> x
 literal_op = op_start_char:first <op_char*>:rest -> first + rest
 
-parameters = (simple_float | literal_op | '\"\"')
+parameters = (simple_float | literal_op | '\"\"' | '*')
 compound_op = literal_op:the_op '[' parameters:first (',' parameters)*:rest ']' -> [the_op] + [first] + rest
 
 general_op = (compound_op | literal_op | simple_float | '\"\"' | '-'):the_op -> the_op

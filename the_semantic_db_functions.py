@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 24/8/2015
+# Update: 28/8/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -59,6 +59,14 @@ def extract_value(a_ket):
   cat, value = extract_category_value(a_ket.label)
   return ket(value,a_ket.value)
 
+# 28/8/2015:
+# remove-leading-category |a: b: c: d> == |b: c: d>
+# I think this will be useful in the table[] code.
+# one is a ket
+def remove_leading_category(one):
+  text = one.label.split(': ',1)[-1]
+  return ket(text,one.value)
+   
 
 # 1/5/2014:
 # to-value and to-category (maybe come up with better names!)
@@ -3007,12 +3015,14 @@ def pretty_print_table(one,context,params,strict=False,rank=False):
   for k,op in enumerate(ops):
     if k == 0:                                       # don't process the incoming superposition
 #      col = [x.readable_display() for x in one]      # first op is treated as a label
-      col = [x.apply_fn(extract_value).readable_display() for x in one]          # swapped in "extract-value".
+#      col = [x.apply_fn(extract_value).readable_display() for x in one]          # swapped in "extract-value".
+      col = [x.apply_fn(remove_leading_category).readable_display() for x in one]          # swapped in "remove_leading_category".
     elif op == "coeff":
       col = coeff_col
     else:                                                                        # I currenlty think it is the right approach 
 #      col = [x.apply_op(context,op).readable_display() for x in one]            # and don't want yet another table variant (extract-value vs not)
-      col = [x.apply_op(context,op).apply_fn(extract_value).readable_display() for x in one]  # "where-live" in foaf-example-in-sw.sw looks like needs categories!
+#      col = [x.apply_op(context,op).apply_fn(extract_value).readable_display() for x in one]  # "where-live" in foaf-example-in-sw.sw looks like needs categories!
+      col = [x.apply_op(context,op).apply_fn(remove_leading_category).readable_display() for x in one]  # hopefully remove_leading_category will help with the foaf-example-in-sw.sw case.
     max_width = 0
     if len(col) > 0:
       max_width = max(len(y) for y in col)   # max() bugs out if applied to an empty list             
