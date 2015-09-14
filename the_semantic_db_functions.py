@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/8/2015
+# Update: 11/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -22,6 +22,7 @@ import sys
 import random
 import copy
 import string
+import re
 
 from the_semantic_db_code import *
 #from the_semantic_db_processor import *
@@ -65,6 +66,12 @@ def extract_value(a_ket):
 # one is a ket
 def remove_leading_category(one):
   text = one.label.split(': ',1)[-1]
+  return ket(text,one.value)
+
+# find-leading-category |a: b: c: d> == |a>
+# one is a ket
+def find_leading_category(one):
+  text = one.label.split(': ',1)[0]
   return ket(text,one.value)
    
 
@@ -2440,6 +2447,18 @@ def split_ket(one):
   result.data = [ket(w,one.the_value()) for w in one.the_label().split() ]        # Buggy? eg, anything with duplicates. eg: split |a a b a b a a c a>
   return result                                                   # superficially it seems to work, because elsewhere tidies up our mess (probably the extract_compound_superposition code)
 
+# 29/8/2015:
+# clean-split |word1 word2 word3> => |word1> + |word2> + |word3>
+# essentially the same as split_ket, except it sends punctuation to ' '
+#
+# one is a ket
+def clean_split_ket(one):
+  result = superposition()
+  text = re.sub('[.,!?$\"-]',' ',one.label)
+  text = text.replace('\\n',' ').replace('\\r',' ')      # should this line be before the re.sub() line?
+  for word in text.split():
+    result += ket(word,one.value)
+  return result
 
 # quick play here: http://semantic-db.org/the-semantic-agent/play_with_list_to_sp.py
 def list_to_sp(s,list):
@@ -3719,4 +3738,14 @@ def hash_data(one,size):
   f.close()
   return ket("hash-data")
 
-      
+# eg: process-reaction(current-sp,2|H2> + |O2>,2|H2O>) == current-sp - (2|H2> + |O2>) + 2|H2O>
+# Cool. Seems to work.
+#
+# one, two and three are superpositions
+def process_reaction(one,two,three):
+  if intersection(two,one).count_sum() != two.count_sum():
+    return one
+  else:
+    return intersection_fn(del_fn3,one,two).drop() + three              # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
+
+          

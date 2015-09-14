@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/8/2015
+# Update: 11/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -118,6 +118,8 @@ fn_table = {
 
 # 28/8/2015:
   "remove-leading-category" : "remove_leading_category",
+  "find-leading-category"   : "find_leading_category",
+  
 
   "to-number"        : "category_number_to_number",
   "shout"            : "shout",
@@ -140,6 +142,9 @@ fn_table = {
   "long"             : "long_display",            # BUG! I have no idea why this insists on using the "37|ket>"" instead of "37 ket" notation!
   "split"            : "split_ket",               # ahh.... it is running long_display with respect to kets, not superposition as I expected!
                                                   # maybe shift to another table to fix.
+# 29/8/2015:
+  "clean-split"      : "clean_split_ket",                                                  
+                                                  
 # 29/6/2014:
 #  "sp-as-list"       : "sp_as_list",             # Nope! Belongs in the sp_fn_table.
 
@@ -1065,6 +1070,9 @@ whitelist_table_3 = {
   "wsimm"         : "weighted_simm",
   "ket-wsimm"     : "ket_weighted_simm",
   "non-Abelian-algebra" : "non_Abelian_algebra",         # 2/2/2015, finally wire this one in!
+  
+# 11/9/2015:
+  "process-reaction" : "process_reaction",  
 }
 
 # the code needed for this not yet implemented.
