@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 11/9/2015
+# Update: 16/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3748,4 +3748,24 @@ def process_reaction(one,two,three):
   else:
     return intersection_fn(del_fn3,one,two).drop() + three              # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
 
-          
+# x,y are floats
+def filter_fn(x,y):
+  if x == 0:
+    return 0
+  return y
+  
+# filter-down-to(|b> + 3|c>,|a> + 5|b> + 0.7|c> + 9|d> + 3.2|e>) == 5|b> + 0.7|c>
+#
+# one, two are superpositions
+def filter_down_to(one,two):
+  return intersection_fn(filter_fn,one,two).drop()
+
+# respond-to-pattern(current-sp,pattern,consequence)
+#
+# one, two and three are superpositions
+def respond_to_pattern(one,two,three):
+  r = filter_down_to(two,one)
+  similarity = silent_simm(r,two)
+  return one + three.multiply(similarity)
+  
+               

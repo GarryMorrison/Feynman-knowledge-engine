@@ -1053,7 +1053,10 @@ whitelist_table_2 = {
   "subset"              : "subset",
   
 # 11/8/2015:
-  "exclude"             : "exclude",      
+  "exclude"             : "exclude",
+  
+# 16/9/2015:
+  "filter-down-to"      : "filter_down_to",        
 }
 
 # whitelisted functions that take 3 parameters:
@@ -1072,7 +1075,10 @@ whitelist_table_3 = {
   "non-Abelian-algebra" : "non_Abelian_algebra",         # 2/2/2015, finally wire this one in!
   
 # 11/9/2015:
-  "process-reaction" : "process_reaction",  
+  "process-reaction" : "process_reaction",
+  
+# 16/9/2015:
+  "respond-to-pattern" : "respond_to_pattern",    
 }
 
 # the code needed for this not yet implemented.
