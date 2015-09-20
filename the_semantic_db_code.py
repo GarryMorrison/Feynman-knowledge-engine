@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/8/2015
+# Update: 20/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1386,6 +1386,17 @@ class fast_superposition(object):
             result.odict[x.label] = x.value
     return result
 
+  def __sub__(self,one):                   # we need to test this code!
+    result = copy.deepcopy(self)
+    if type(one) in [ket, superposition, fast_superposition]:
+      for x in one:
+        if x.label != "":                  # treat |> as the identity element
+          if x.label in result.odict:
+            result.odict[x.label] -= x.value
+          else:
+            result.odict[x.label] = - x.value
+    return result
+
   # a version of sp add that does not add (ie, ignores) kets already in the superposition.
   def clean_add(self,one):
     if type(one) in [ket, superposition, fast_superposition]:
@@ -1447,6 +1458,10 @@ from collections import OrderedDict
 class new_context(object):
   def __init__(self,name):
     self.name = name
+    self.ket_rules_dict = OrderedDict()
+
+  def set(self,name):                           # not 100% sure this is the best way, or correct.
+    self.name = name                            # BTW, it is intended to erase what is currently defined for the current context.
     self.ket_rules_dict = OrderedDict()
 
 # op is a string
@@ -1545,20 +1560,29 @@ class new_context(object):
     return "\n".join(self.dump_rule(op,label,exact) for op in self.ket_rules_dict[ket_label] if exact or (op != "supported-ops") )
 
 
-  # instead of dumping all the rules for a known ket, dump all the rules for all kets in the superposition:
+  # instead of dumping all the rules for a known ket, dump all the rules for all kets in the given superposition:
   # sp should be a ket, or superposition
   #
-  def dump_sp_rules(self,sp,exact=False):
-    if type(sp) == str:
-      sp = ket(sp)
+  def dump_multiple_ket_rules(self,sp,exact=False):                           # Hrmm... Long since forgotten what this is meant to do! Where is it even used?? Answer: in the console.
+    if type(sp) == str:                                             # and the name conflicts with what I was going to call some-sp-op (*) #=> some-rule |_self> 
+      sp = ket(sp)                                                  # Let's find a better name! Done. dump_sp_rules => dump_multiple_ket_rules
     return "\n\n".join(self.dump_ket_rules(x,exact) for x in sp )
 
   # dump everything we know about the current context:
-  def dump_universe(self,exact=False):
-    context_string = "|context> => |context: " + self.name + ">"
-    sep = "\n----------------------------------------\n"
+  def dump_universe(self,exact=False,show_context_header=True):      # I think this is right, but need to test it. 
+    if show_context_header:
+      context_string = "|context> => |context: " + self.name + ">"
+      sep = "\n----------------------------------------\n"
+    else:
+      context_string = ""
+      sep = ""
     return sep + context_string + "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict ) + sep
 
+# not 100% sure we want this, but I'll add it for now:
+# See, new_context() only has 1 context, so dump_multiverse() doesn't make a whole lot of sense.
+# context.multi_save(filename) is one reason I decided to add it.
+  def dump_multiverse(self,exact=False):
+    return self.dump_universe(exact) 
 
   # create inverse for a single learn rule:
   # not sure we want this factored out. But leave as is for now.
@@ -1750,7 +1774,47 @@ class new_context(object):
       result += ket(label,count_label)
     return result.coeff_sort()
 
-                        
+# 20/9/2015:
+# shift: 
+# load_sw(context,filename)
+# save_sw(context,filename)
+# save_sw_multi(context,filename)
+# from the processor file to the new_context() class. Though they are still there, they are deprecated.
+#
+  def save(self,filename,exact_dump=True):             # we need to test this. Looks right.
+    try:
+      file = open(filename,'w')
+      file.write(self.dump_universe(exact_dump))
+      file.close()
+    except:
+      logger.info("failed to save: " + filename)
+
+  def append_save(self,filename,exact_dump=True):             # we need to test this. Looks right.
+    try:
+      file = open(filename,'a')
+      file.write(self.dump_universe(exact_dump,False))
+      file.close()
+    except:
+      logger.info("failed to append save: " + filename)
+
+  def multi_save(self,filename,exact_dump=True):             # we need to test this. I think it is working.  
+    try:
+      file = open(filename,'w')
+      file.write(self.dump_multiverse(exact_dump))           # though here in new_context() dump_multiverse() is identical to dump_universe().  
+      file.close()                                           # Maybe just set multi_save() as a wrapper around ordinary save, to make it clearer?
+    except:
+      logger.info("failed to multi save: " + filename)
+
+  def load(self,filename):                                    # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context") 
+    try:                                                      # cool! I implemented new_context().set and seems to work now. 
+      with open(filename,'r') as f:
+        for line in f:
+          if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
+            return
+          parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
+    except:
+      logger.info("failed to load: " + filename)
+      
                                                                       
 class context_list(object):
   def __init__(self,name):
@@ -1808,8 +1872,8 @@ class context_list(object):
   def dump_ket_rules(self,label,exact=False):
     return self.data[self.index].dump_ket_rules(label,exact)
 
-  def dump_sp_rules(self,label,exact=False):                  # is this really a label here, or a sp?
-    return self.data[self.index].dump_sp_rules(label,exact)
+  def dump_multiple_ket_rules(self,label,exact=False):                  # is this really a label here, or a sp?
+    return self.data[self.index].dump_multiple_ket_rules(label,exact)
 
   def display_sp(self,sp):
     return self.data[self.index].display_sp(sp)
@@ -1874,6 +1938,26 @@ class context_list(object):
       result += context.dump_universe(exact)
     return result
 
+  def save(self,filename,exact_dump=True):
+    return self.data[self.index].save(filename,exact_dump)
 
+  def append_save(self,filename,exact_dump=True):
+    return self.data[self.index].append_save(filename,exact_dump)
 
-    
+  def multi_save(self,filename,exact_dump=True):             # we need to test this. I think it is working.  
+    try:
+      file = open(filename,'w')
+      file.write(self.dump_multiverse(exact_dump))
+      file.close()
+    except:
+      logger.info("failed to multi save: " + filename)
+
+  def load(self,filename):                                    # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context") 
+    try:                                                      # Well, here in context_list() it works just fine! C.load("sw-examples/fib-play.sw"); print(C.dump_multiverse())
+      with open(filename,'r') as f:
+        for line in f:
+          if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
+            return
+          parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
+    except:
+      logger.info("failed to load: " + filename)

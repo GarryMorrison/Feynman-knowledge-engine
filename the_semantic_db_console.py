@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/8/2015
+# Update: 20/9/2015
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -181,14 +181,14 @@ while True:
     print(C.dump_multiverse())
 
   elif line == "dump self":
-    print(C.dump_sp_rules(x))
+    print(C.dump_multiple_ket_rules(x))
 
   elif line.startswith("dump "):
     var = line[5:]
     print("var:",var,"\n")
     try:
       sp = extract_compound_superposition(C,var)[0]
-      print(C.dump_sp_rules(sp))
+      print(C.dump_multiple_ket_rules(sp))
     except:
       continue
 
