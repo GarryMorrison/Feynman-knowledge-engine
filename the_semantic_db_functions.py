@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/9/2015
+# Update: 24/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1901,7 +1901,8 @@ def weighted_bko_if(condition,one,two):
 # or indirectly
 # |list> => |Fred> + |Sam> + |Charles> 
 # common[friends] "" |list>
-def common(one,context,op):
+def old_common(one,context,op):
+  logger.debug("inside common[op]")
   if one.count() <= 1:                         # this should also neatly filter out kets, I presume.
     return one.apply_op(context,op)
   
@@ -1910,6 +1911,33 @@ def common(one,context,op):
     sp = one.data[k].apply_op(context,op)      # fast_sp_fix. Need to re-write this when swap in fast_superposition class.
     r = intersection(r,sp)
   return r
+
+def common(one,context,op):
+  if len(one) == 0:
+    return ket("",0)
+  for sp in one:
+    r = sp.apply_op(context,op)
+    break
+  for sp in one:
+    tmp = sp.apply_op(context,op)
+    r = intersection(r,tmp)
+  return r                 
+
+
+# 24/9/2015:
+# union[op] (|x> + |y> + |z>)  -- maybe needs a better name. I'm not sure the English counterpart.
+#
+def operator_union(one,context,op):
+  if len(one) == 0:
+    return ket("",0)
+  for sp in one:
+    r = sp.apply_op(context,op)
+    break
+  for sp in one:
+    tmp = sp.apply_op(context,op)
+    r = union(r,tmp)                              # we could probably make this a general function, and then pass in intersection(), union() etc.
+  return r                                        # ie, cast pair-fn(sp1,sp2) into fn(sp1,sp2,...,spn)
+    
 
 
 def absolute_difference_fn(x,y):

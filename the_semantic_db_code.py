@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 20/9/2015
+# Update: 24/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -174,9 +174,16 @@ class ket(object):
     else:
       return fn(t1,t2,t3)
 
+# sp_recall(self,op,sp,active=False)
 
   def apply_op(self,context,op):
-    return context.recall(op,self,True)  # see much later in the code for definition of recall.
+    logger.debug("inside ket apply_op")
+    r = context.sp_recall(op,self,True)       # this is broken! Not sure why, yet.
+    logger.debug("inside ket apply_op, sp: " + str(r))
+    if len(r) == 0:
+      r = context.recall(op,self,True)  # see much later in the code for definition of recall.
+    logger.debug("leaving ket apply_op")
+    return r
 
 # apply the same op more than once.
 # especially useful for networks.
@@ -191,13 +198,23 @@ class ket(object):
       return ket("",0)
     else:
       return ket(self.label,self.value)
-      
+          
 # 5/2/2015: eg: without this: select[1,5] "" |bah> bugs out if "" |bah> is not defined.
 # seems to work!
   def select_range(self,a,b):      
     if a <= 1 <= b:
       return ket(self.label,self.value)
     return ket("",0)
+    
+# 24/9/2015:
+# top[5] SP, should return the top 5 kets in the superposition, without changing the order
+# if more than 5 kets have the same value, return all those that match. If you want exactly k matches, we need to do something a little different.
+  def top(self,k):
+    if k == 0:
+      return ket("",0)
+    value = self.coeff_sort().select_range(k,k).the_value()
+    return self.drop_below(value)      
+    
     
 # 6/8/2015:
   def index_split(self,k):                      # OK. Now need to test it. Maybe improve for k other than {1,-1}.
@@ -772,10 +789,14 @@ class superposition(object):
     return superposition() + self
 
   def apply_op(self,context,op):
-    result = superposition()
-    for x in self.data:
-      result += context.recall(op,x,True) # should this be apply_op() instead?
-    return result
+    logger.debug("inside sp apply_op")
+    r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
+    if len(r) == 0:
+      r = superposition()
+      for x in self:
+        r += context.recall(op,x,True) # should this be apply_op() instead? Nah, don't think so.
+    logger.debug("sp apply_op: " + str(r))
+    return r
 
 # apply the same op more than once.
 # especially useful for networks.
@@ -856,6 +877,16 @@ class superposition(object):
     result = superposition()
     result.data = copy.deepcopy(self.data[a:b])
     return result
+
+# 24/9/2015:
+# top[5] SP, should return the top 5 kets in the superposition, without changing the order
+# if more than 5 kets have the same value, return all those that match. If you want exactly k matches, we need to do something a little different.
+  def top(self,k):
+    if k == 0:
+      return ket("",0)
+    value = self.coeff_sort().select_range(k,k).the_value()        # not 100% sure this is correct
+    return self.drop_below(value)      
+
 
   def delete_elt(self,k):
     result = copy.deepcopy(self)
@@ -1459,10 +1490,12 @@ class new_context(object):
   def __init__(self,name):
     self.name = name
     self.ket_rules_dict = OrderedDict()
+    self.sp_rules_dict = OrderedDict()
 
   def set(self,name):                           # not 100% sure this is the best way, or correct.
     self.name = name                            # BTW, it is intended to erase what is currently defined for the current context.
     self.ket_rules_dict = OrderedDict()
+    self.sp_rules_dict = OrderedDict()
 
 # op is a string
 # label is a string or a ket
@@ -1527,6 +1560,75 @@ class new_context(object):
       rule = rule.activate(self,op,ket_label)
     return rule.multiply(coeff)
 
+# op is a string
+# label is a string or a ket
+# rule can be anything
+# add_learn is either True or False
+#
+  def sp_learn(self,op,label,rule,add_learn=False):     # op (*) => |y>. Note, the plan is for sp rules to have higher precedence than ket rules.
+    # some prelims:                                     # Plan to implement this in apply_op(context,"op")
+    if op == "supported-ops":                    # never learn "supported-ops", it is auto-generated and managed
+      return
+#    if type(label) == ket:                       # label is string. if ket, convert back to string
+#      label = label.label
+    label = "*"                                  # hrmm... for now. Almost certainly tweak later!
+    if type(rule) == str:                        # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
+      rule = ket(rule)                           # if string, cast to ket
+    if len(rule) == 0:                           # do not learn rules that are |>
+      return
+
+    if label not in self.sp_rules_dict: 
+      self.sp_rules_dict[label] = OrderedDict()
+      self.sp_rules_dict[label]["supported-ops"] = superposition()
+    self.sp_rules_dict[label]["supported-ops"].clean_add(ket("op: " + op))  # this is probably a speed bump now.
+                                                                             # but if we merge over to fast_sp, that should fix itself.
+    if not add_learn:
+      self.sp_rules_dict[label][op] = rule
+    else:
+      if op not in self.sp_rules_dict[label]:
+        self.sp_rules_dict[label][op] = superposition()
+      self.sp_rules_dict[label][op].clean_add(rule)
+
+  def sp_add_learn(self,op,label,rule):
+    return self.sp_learn(op,label,rule,True)       # corresponds to "op (*) +=> |y>"
+
+# op is a string, or a ket in form |op: some-operator>
+# label is a string or a ket
+#
+  def sp_recall(self,op,sp,active=False):    # work in progress ...
+    logger.debug("inside sp_recall")
+    #return ket("",0)                         # currently the code that follows this is broken, so this is the temp work-around.
+    # some prelims:
+    if type(op) == ket:
+      op = op.label[4:]                         # map |op: age> to "age"
+    ket_label = "*"                             # probably tweak later. Eg if I decide to implement op(*,*), op(*,*,*) etc. Also, maybe op(fixed-object) #=> ... 
+
+    match = False                               # If/when I implement op(*,*) et al, I need a tidy way to handle stored rules and |_self1> vs |_self2> etc! No idea how to do that currently.  
+    if ket_label in self.sp_rules_dict:
+      if op in self.sp_rules_dict[ket_label]:
+        rule = self.sp_rules_dict[ket_label][op]
+        match = True
+    
+    if not match:
+      logger.debug("%s (*) not found" % (op))   # tweak later! Probably want to switch this off completely once testing is done. 
+      rule = ket("",0)
+
+    if active:
+#      rule = rule.activate(self,op,sp)        # how handle op (*) #=> foo |_self> ??  op (|a> + |b>) returns foo (|a> + |b>)
+#    return rule.multiply(coeff)              # I'm not sure multiply(coeff) makes sense for sp_recall().
+      if type(rule) in [memoizing_rule,stored_rule]:
+        try:
+          resulting_rule = extract_compound_superposition(self,rule,sp)[0]
+        except:
+          resulting_rule = ket("",0)
+          logger.warning("except while processing stored_rule")
+        if type(rule) is memoizing_rule:
+          self.sp_learn(op,sp,resulting_rule)
+        rule = resulting_rule
+    logger.debug("leaving sp_recall")
+    return rule                                
+
+
 # op is a string, or a ket in form |op: some-operator>
 # label is a string or a ket
 #
@@ -1559,6 +1661,26 @@ class new_context(object):
 
     return "\n".join(self.dump_rule(op,label,exact) for op in self.ket_rules_dict[ket_label] if exact or (op != "supported-ops") )
 
+  def dump_sp_rule(self,op,label,exact=False):
+    # some prelims:
+    if type(op) == ket:
+      op = op.label[4:]
+    sp_name = label
+
+    rule = self.sp_recall(op,label)
+    rule_string = " => "
+    if type(rule) == stored_rule:
+      rule_string = " #=> "
+    if type(rule) == memoizing_rule:
+      rule_string = " !=> "
+     
+    return op + " (" + sp_name + ")" + rule_string + rule.display(exact)
+
+  def dump_sp_rules(self,label,exact=False):
+    if label not in self.sp_rules_dict:
+      return ""
+    return "\n".join(self.dump_sp_rule(op,label,exact) for op in self.sp_rules_dict[label] if exact or (op != "supported-ops") )
+
 
   # instead of dumping all the rules for a known ket, dump all the rules for all kets in the given superposition:
   # sp should be a ket, or superposition
@@ -1576,7 +1698,13 @@ class new_context(object):
     else:
       context_string = ""
       sep = ""
-    return sep + context_string + "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict ) + sep
+#    return sep + context_string + "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict ) + sep
+    result_string = ""
+    if len(self.ket_rules_dict) > 0:
+      result_string += "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict )
+    if len(self.sp_rules_dict) > 0:
+      result_string += "\n\n" + "\n\n".join(self.dump_sp_rules(x,exact) for x in self.sp_rules_dict )
+    return sep + context_string + result_string + sep  
 
 # not 100% sure we want this, but I'll add it for now:
 # See, new_context() only has 1 context, so dump_multiverse() doesn't make a whole lot of sense.
@@ -1868,6 +1996,15 @@ class context_list(object):
 
   def recall(self,op,label,active=False):
     return self.data[self.index].recall(op,label,active)
+
+  def sp_learn(self,op,label,rule,add_learn=False):
+    self.data[self.index].sp_learn(op,label,rule,add_learn)
+
+  def sp_add_learn(self,op,label,rule):
+    self.data[self.index].sp_add_learn(op,label,rule)
+
+  def sp_recall(self,op,label,active=False):
+    return self.data[self.index].sp_recall(op,label,active)
 
   def dump_ket_rules(self,label,exact=False):
     return self.data[self.index].dump_ket_rules(label,exact)

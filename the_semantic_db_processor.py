@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 11/9/2015
+# Update: 24/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -248,7 +248,11 @@ compound_table = {
   "relative-noise"     : ".relative_noise({0})",
   
 # newly added 8/5/2014:
-  "common"             : ".apply_sp_fn(common,context,\"{0}\")",   
+  "common"             : ".apply_sp_fn(common,context,\"{0}\")",
+# newly added 24/9/2015:
+  "union"             : ".apply_sp_fn(operator_union,context,\"{0}\")",
+
+     
 # newly added 12/5/2014:
   "exp"                : ".apply_sp_fn(exp,context,\"{0}\")",
 # newly added 17/4/2015:
@@ -359,7 +363,10 @@ compound_table = {
   "times"                 : ".apply_fn(pop_float).multiply({0}).apply_fn(push_float)",
   
 # 12/3/2015: another compound operator: pick[n]
-  "pick"                  : ".shuffle().select_range(1,{0})",           
+  "pick"                  : ".shuffle().select_range(1,{0})",
+  
+# 24/9/2015:
+  "top"                   : ".top({0})",             
 
 # 24/3/2015:
   "find-unique"         : ".apply_naked_fn(find_unique,context,\"{0}\")",
@@ -856,7 +863,13 @@ def parse_rule_line(C,s):
     return False    
 
 
-
+# 20/9/2015: load_sw(), save_sw(), save_sw_multi() are all now deprecated.
+# They are now in the new_context() class:
+#    context.save(filename)
+#    context.load(filename)
+#    context.append_save(filename)
+#    context.multi_save(filename)
+#
 # Now, make use of parse_rule_line()
 # load sw file:
 def load_sw(c,file):

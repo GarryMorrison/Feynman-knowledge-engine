@@ -1,0 +1,9 @@
+2015-09-24
+  web-load http://semantic-db.org/sw-examples/fred-sam-friends.sw
+  dump
+  files
+  common[friends] split |Fred Sam>
+  debug on
+  common[friends] split |Fred Sam>
+  q
+

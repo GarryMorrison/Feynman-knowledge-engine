@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 20/9/2015
+# Update: 24/9/2015
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -229,10 +229,10 @@ while True:
     # find the sw file name:
     name = url.split("/")[-1]
     dest = sw_file_dir + "/" + name
-      
+
+    dont_save = False      
     # check if it exists:
     while os.path.exists(dest):
-      dont_save = False
       # either rename or overwrite
       check = input("\n  File \"" + name + "\" already exists.\n  [O]verwrite, [R]ename or [D]on't save? (O,R,D): ")
       if len(check) > 0:
