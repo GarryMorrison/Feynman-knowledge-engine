@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 24/9/2015
+# Update: 25/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -2630,7 +2630,8 @@ def chars(one):
 # 1|True> if one == two
 # 0|True> if one and two are completely disjoint
 # values in between otherwise (makes use of unscaled_simm)
-def test_equal(one,two):
+# name change from test_equal() to equality_test() due to pytest.
+def equality_test(one,two):
   value = unscaled_simm(one,two)            # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
   return ket("True",value)
   

@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 24/9/2015
+# Update: 25/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -455,7 +455,8 @@ def valid_op(op):
   return all(c in ascii_letters + '0123456789-+!?.' for c in op)
 
 
-
+# converts a single operator into python
+# this takes quite a bit of work, because there are such a variety of different operator types, and they all need to be handled separately.
 def process_single_op(op):
   logger.debug("op: " + str(op)) 
 
@@ -549,6 +550,7 @@ def float_int(x):
 
 op_grammar = makeGrammar(our_operator_grammar,{"float_int" : float_int})
 
+# converts an op-sequence into python
 def process(context,ops,x):
   logger.debug("ops: " + ops)
   logger.debug("x: " + str(x))
@@ -686,7 +688,7 @@ def extract_clean_superposition(line):
   line = line.rstrip()          # in case there is white-space at the end of the line.
   r = superposition()           # assumes there is never any white-space at the start of the line!
   for x in line[1:-1].split("> + |"):
-    r.data.append(ket(x))
+    r.data.append(ket(x))       # breaks if a ket is repeated. The fix is: r += ket(x), but that is a tar pit until fast_sp is subbed in. Something I should do soon!! 
   return r  
 
 def old_parse_rule_line(C,s):
@@ -750,6 +752,10 @@ def old_parse_rule_line(C,s):
   else:
     C.add_learn(op,label,rule)
   return True
+
+# new name. For now just an alias:
+def parse_learn_rule(context,s):
+  return parse_rule_line(context,s)
 
 # 28/7/2014: let's improve parse_rule so that we can learn rules indirectly.
 # eg: 
@@ -863,7 +869,7 @@ def parse_rule_line(C,s):
     return False    
 
 
-# 20/9/2015: load_sw(), save_sw(), save_sw_multi() are all now deprecated.
+# 20/9/2015: load_sw(), save_sw(), save_sw_multi() are all now deprecated. I will probably remove them from here at some stage. Probably replace them with functions printing: "moved to new_context() class" 
 # They are now in the new_context() class:
 #    context.save(filename)
 #    context.load(filename)
@@ -921,7 +927,7 @@ def broken_human_readable_size(num):         # Doh. Gets some answers wrong.
 import time
 # find the stats of a .sw file:
 # needs some tweaks yet ...
-# works fine, though is hinting at getting slow for large sw files.
+# works fine, though is hinting at getting slow for large sw files. Yeah. It is now very slow on my large sw collection.
 def extract_sw_stats(file):
   try:
     stats = []
@@ -983,14 +989,19 @@ def process_input_line(C,line,x):
       return process(C,line,x)
   
 
-def process_op_ket(C,line,left_label=None):
+# where is this mess even used! I presume when sub in parsley, this will largely go away.
+# tweaked so that left_object can be a string, a ket or a superposition. Need to test it though.
+def process_op_ket(C,line,left_object=None):
+  if type(left_object) is str:
+    left_object = ket(left_object)              
   try:
     op, rest = line.split("|",1)
     op = op.strip()
     label, rest = rest.split(">",1)
-    if label == "_self" and left_label is not None:
-      label = left_label
-    return process(C,op,ket(label)), rest
+    our_ket = ket(label)
+    if label == "_self" and left_object is not None:
+      our_ket = left_object
+    return process(C,op,our_ket), rest
   except:
     return None
 
@@ -1053,7 +1064,7 @@ whitelist_table_2 = {
   "general-to-specific" : "general_to_specific",
   
 # 4/1/2015:
-  "equal"               : "test_equal",
+  "equal"               : "equality_test",
   
 # 22/2/2015:
   "ED"                  : "Euclidean_distance",

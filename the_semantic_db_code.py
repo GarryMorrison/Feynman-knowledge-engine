@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 24/9/2015
+# Update: 25/9/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -67,12 +67,16 @@ class ket(object):
       return 0
     return 1
 
+# 25/9/2015:
+  def __eq__(self,other):
+    return self.label == other.label and self.value == other.value
+
   # 6/1/2014: finally implement iterator. 
   def __iter__(self):
     yield ket(self.label,self.value)
 
-  def type(self):
-    return "ket"
+#  def type(self):           # do we need this? where is it even used? Commented out for now.
+#    return "ket"
 
   def old_display(self):
     if self.value == 1:
@@ -178,7 +182,7 @@ class ket(object):
 
   def apply_op(self,context,op):
     logger.debug("inside ket apply_op")
-    r = context.sp_recall(op,self,True)       # this is broken! Not sure why, yet.
+    r = context.sp_recall(op,self,True)       # this is broken! Not sure why, yet. I think I fixed it.  
     logger.debug("inside ket apply_op, sp: " + str(r))
     if len(r) == 0:
       r = context.recall(op,self,True)  # see much later in the code for definition of recall.
@@ -1618,7 +1622,7 @@ class new_context(object):
 #    return rule.multiply(coeff)              # I'm not sure multiply(coeff) makes sense for sp_recall().
       if type(rule) in [memoizing_rule,stored_rule]:
         try:
-          resulting_rule = extract_compound_superposition(self,rule,sp)[0]
+          resulting_rule = extract_compound_superposition(self,rule,sp)[0]  # we need to fix ECS so that it can handle superpositions as self-objects. Currently it can only handle strings.
         except:
           resulting_rule = ket("",0)
           logger.warning("except while processing stored_rule")
