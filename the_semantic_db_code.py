@@ -120,9 +120,16 @@ class ket(object):
     return superposition() + self + x
     
 # 14/1/2015:
-# I think this is right ...  
-  def clean_add(self,x):
-    return (superposition() + self).clean_add(x)
+# I think this is right ... # nope py.test says it is broken:  
+  def clean_add(self,x):    # assert x.display() == "3.7|xyz>", AttributeError: 'NoneType' object has no attribute 'display'
+#    return (superposition() + self).clean_add(x)
+#  def clean_add(self,x):
+#    print("clean_add self:",self)
+#    print("clean_add x:",x)
+    r = superposition() + self
+    r.clean_add(x)
+#    print("clean_add r:",r)
+    return r
 
   def apply_bra(self,a_bra):
     return apply_bra_to_ket(a_bra,self)
@@ -459,8 +466,13 @@ class bra(object):
   def __str__(self):
     return self.display()
 
-  def type(self):
-    return "bra"
+# 26/9/2015:
+  def __eq__(self,other):
+    return self.label == other.label and self.value == other.value
+
+
+#  def type(self):                      # pretty sure we don't need this. Commented out for now.
+#    return "bra"
 
 
   def old_display(self):
