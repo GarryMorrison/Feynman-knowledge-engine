@@ -141,3 +141,11 @@ def test_ket_clean_add_a_a_a_b():
   x = ket("a").clean_add(ket("a") + ket("a",3) + ket("b",3.1415))
   assert x.display() == "|a> + 3.142|b>"
 
+
+def test_ket_apply_bra():
+  x = ket("a: b",3.2)
+  assert x.apply_bra() == ""    # don't currently know what it should be
+
+
+
+
