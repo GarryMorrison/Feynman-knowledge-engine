@@ -220,11 +220,17 @@ class ket(object):
 # 24/9/2015:
 # top[5] SP, should return the top 5 kets in the superposition, without changing the order
 # if more than 5 kets have the same value, return all those that match. If you want exactly k matches, we need to do something a little different.
+#  def top(self,k):
+#    if k == 0:
+#      return ket("",0)
+#    value = self.coeff_sort().select_range(k,k).the_value()
+#    return self.drop_below(value)      
+# bah! Makes no sense for the ket version.
+# Here is fixed version:
   def top(self,k):
     if k == 0:
       return ket("",0)
-    value = self.coeff_sort().select_range(k,k).the_value()
-    return self.drop_below(value)      
+    return ket(self.label,self.value)
     
     
 # 6/8/2015:
