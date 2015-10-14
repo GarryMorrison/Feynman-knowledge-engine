@@ -20,7 +20,7 @@ from the_semantic_db_code import *
 from the_semantic_db_functions import *
 from the_semantic_db_processor import *
 
-C = context_list("test function operators")
+context = new_context("test function operators")
 
 def test_fn_ket_length_empty():
   x = ket("",3.14)
@@ -202,7 +202,13 @@ def test_fn_push_float_coeff_label():
   x = ket("x",13)
   assert push_float(x).display() == "|x: 13>"
 
-def test_fn_push_float_no_coeff():
-  x = ket("x: y: z",21.72312345)
-  assert push_float(x).display() == "|x: y: z: 21.72312345>"
+def test_fn_push_float_long_float():
+  x = ket("x: y: z",21.7231234567)
+  assert push_float(x).display() == "|x: y: z: 21.7231234567>"
 
+
+# test both push and pop float at once:
+def test_fn_times():
+  context.learn("height","everest","km: 8")
+  x = ket("everest")
+  assert x.apply_op(context,"height").apply_fn(pop_float).multiply(0.333).apply_fn(push_float).display() == "|km: 2.664>"      

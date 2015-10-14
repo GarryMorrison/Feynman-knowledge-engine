@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/9/2015
+# Update: 13/10/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -171,7 +171,10 @@ fn_table = {
   
 
 # 1/3/2015:
-  "to-coeff"         : "to_coeff",
+  "to-coeff"           : "to_coeff",
+# 12/10/2015: an alias:
+  "clean-ket-label"    : "to_coeff",
+  
 
 # 3/3/2015:
   "extract-movie-year" : "extract_year",
@@ -366,7 +369,9 @@ compound_table = {
   "pick"                  : ".shuffle().select_range(1,{0})",
   
 # 24/9/2015:
-  "top"                   : ".top({0})",             
+  "top"                   : ".top({0})",
+# 13/10/2015:
+  "inhibition"            : ".inhibition({0})",               
 
 # 24/3/2015:
   "find-unique"         : ".apply_naked_fn(find_unique,context,\"{0}\")",

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/9/2015
+# Update: 14/10/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -231,7 +231,11 @@ class ket(object):
     if k == 0:
       return ket("",0)
     return ket(self.label,self.value)
-    
+
+# 13/10/2015:
+  def inhibition(self,t):
+    return ket(self.label,self.value)        
+
     
 # 6/8/2015:
   def index_split(self,k):                      # OK. Now need to test it. Maybe improve for k other than {1,-1}.
@@ -909,6 +913,28 @@ class superposition(object):
     value = self.coeff_sort().select_range(k,k).the_value()        # not 100% sure this is correct
     return self.drop_below(value)      
 
+# 13/10/2105:
+# inhibition[0.7] SP
+#
+  def inhibition(self,t):
+    result = copy.deepcopy(self)
+#    if t == 0:
+#      return result
+#    highest = result.top(1)
+    rest = (result + result.top(1).multiply(-1)).drop()
+#    logger.debug("highest: " + str(highest))
+#    logger.debug("rest:    " + str(rest))
+    
+#    return result
+#    len_highest = len(highest)
+#    len_rest = len(result) - len(highest)
+#    if len_rest <= 0:
+#    if len(rest) <= 0:
+#      return result
+#    result = highest + rest.multiply(-t/len(rest))
+#    result += rest.multiply(-t/len(rest))                 # I think this is pretty close to what I want. Possibly could do with tweaks.
+    result += rest.multiply(-t)  
+    return result                                          # do we need a drop(). Ie: result.drop() ??
 
   def delete_elt(self,k):
     result = copy.deepcopy(self)
