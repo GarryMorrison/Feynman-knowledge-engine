@@ -225,7 +225,7 @@ def test_op_literal_superposition():
   assert str(x) == ""
 
 # 3.2|a> + |b> + 3.142|pi> + -1|d> + |z>
-def test_op_literal_superposition():
+def test_op_bracket_literal_superposition():
   x = op_grammar(" ( 3.2|a> + |b> + 3.1415|pi> -|d> + |z>  ) ").bracket_literal_superposition()
   assert str(x) == ""
 
