@@ -918,21 +918,7 @@ class superposition(object):
 #
   def inhibition(self,t):
     result = copy.deepcopy(self)
-#    if t == 0:
-#      return result
-#    highest = result.top(1)
     rest = (result + result.top(1).multiply(-1)).drop()
-#    logger.debug("highest: " + str(highest))
-#    logger.debug("rest:    " + str(rest))
-    
-#    return result
-#    len_highest = len(highest)
-#    len_rest = len(result) - len(highest)
-#    if len_rest <= 0:
-#    if len(rest) <= 0:
-#      return result
-#    result = highest + rest.multiply(-t/len(rest))
-#    result += rest.multiply(-t/len(rest))                 # I think this is pretty close to what I want. Possibly could do with tweaks.
     result += rest.multiply(-t)  
     return result                                          # do we need a drop(). Ie: result.drop() ??
 
