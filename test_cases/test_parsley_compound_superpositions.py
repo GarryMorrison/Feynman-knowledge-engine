@@ -80,19 +80,38 @@ bracket_ops = S0 '(' op_sequence:first S0 (sequence_ops+:rest S0 ')' S0 -> [('+'
 valid_ket_chars = anything:x ?(x not in '<|>') -> x
 naked_bra = '<' <valid_ket_chars*>:x '|' -> x
 naked_ket = '|' <valid_ket_chars*>:x '>' -> x
+#naked_projection = naked_ket:label1 naked_bra:label2 -> projection(label1,label2)
 coeff_ket = (number | -> 1):value S0 naked_ket:label -> ket(label,value)
+coeff_bra = (number | -> 1):value S0 naked_bra:label -> bra(label,value)
+bra_coeff = naked_bra:label S0 (number | -> 1):value -> bra(label,value)
 
-add = S0 '+' S0 coeff_ket:k -> ('+', k)
-sub = S0 '-' S0 coeff_ket:k -> ('-', k)
-merge = S0 '_' S0 coeff_ket:k -> ('_', k)
-sequence = S0 '.' S0 coeff_ket:k -> ('.', k)
+add_ket = S0 '+' S0 coeff_ket:k -> ('+', k)
+sub_ket = S0 '-' S0 coeff_ket:k -> ('-', k)
+merge_ket = S0 '_' S0 coeff_ket:k -> ('_', k)
+sequence_ket = S0 '.' S0 coeff_ket:k -> ('.', k)
 
-ket_ops = (add | sub | merge | sequence)
+ket_ops = (add_ket | sub_ket | merge_ket | sequence_ket)
 
-literal_superposition = S0 coeff_ket:left S0 (ket_ops+:right S0 -> calculate(left,right)
+literal_superposition = S0 coeff_ket:left S0 (ket_ops+:right S0 -> ket_calculate(left,right)
                                           | -> left)
 
 bracket_literal_superposition = S0 '(' literal_superposition:sp ')' S0 -> sp
+bracket1_literal_superposition = S0 '(' literal_superposition:sp1 ')' S0 -> [sp1]
+bracket2_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ')' S0 -> [sp1,sp2]
+bracket3_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ')' S0 -> [sp1,sp2,sp3]
+bracket4_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ',' literal_superposition:sp4 ')' S0 -> [sp1,sp2,sp3,sp4]
+
+
+add_bra = S0 '+' S0 (bra_coeff | coeff_bra):k -> ('+', k)
+sub_bra = S0 '-' S0 (bra_coeff | coeff_bra):k -> ('-', k)
+#merge_bra = S0 '_' S0 bra_coeff:k -> ('_', k)
+#sequence_bra = S0 '.' S0 bra_coeff:k -> ('.', k)
+
+bra_ops = (add_bra | sub_bra)
+
+literal_bra_superposition = S0 (bra_coeff | coeff_bra):left S0 (bra_ops+:right S0 -> bra_calculate(left,right)
+                                                            | -> left)
+
 """
 
 # what happens if we have eg: "3.73.222751" (ie, more than one dot?)
@@ -101,7 +120,7 @@ def float_int(x):
     return str(int(x))
   return x
 
-def calculate(start,pairs,self_ket_label=None):
+def ket_calculate(start,pairs,self_ket_label=None):
   result = start
   for op, value in pairs:
     if self_ket_label != None and value.label == "_self":
@@ -115,8 +134,19 @@ def calculate(start,pairs,self_ket_label=None):
       result = head + ket(tail.the_label() + value.label)  # currently set to 1
   return result
 
+def bra_calculate(start,pairs,self_bra_label=None):
+  result = start
+  for op, value in pairs:
+    if self_bra_label != None and value.label == "_self":
+      value = bra(self_bra_label)
+    if op == '+':
+      result += value
+    elif op == '-':
+      result += value.multiply(-1)
+  return result
 
-op_grammar = makeGrammar(our_operator_grammar,{"float_int" : float_int,"ket" : ket, "bra" : bra, "calculate" : calculate})
+
+op_grammar = makeGrammar(our_operator_grammar,{"float_int" : float_int,"ket" : ket, "bra" : bra, "ket_calculate" : ket_calculate, "bra_calculate" : bra_calculate})
 
 
 # ('some-frog', 37)
@@ -217,15 +247,52 @@ def test_op_bracket_ops_big_negative_sequences():
   x = op_grammar("  (  op + op2 op3 op4 - op5^2 op4[fish] op6 - op5 )  ").bracket_ops()
   assert str(x) == ""
 
+# 
+def test_op_bracket_ops_negative_element():
+  x = op_grammar("  ( op1 op2 + op3 op4 -3 op5 + op6 op7 )").bracket_ops()
+  assert str(x) == ""
 
 
 # 3.2|a> + |b> + 3.142|pi> + -1|d> + |z>
 def test_op_literal_superposition():
-  x = op_grammar(" 3.2|a> + |b> + 3.1415|pi> -|d> + |z>  ").literal_superposition()
+  x = op_grammar(" 3.2|a> + |b> + 3.1415|pi> -|d> + |z> -3 |omega> ").literal_superposition()
   assert str(x) == ""
 
 # 3.2|a> + |b> + 3.142|pi> + -1|d> + |z>
 def test_op_bracket_literal_superposition():
   x = op_grammar(" ( 3.2|a> + |b> + 3.1415|pi> -|d> + |z>  ) ").bracket_literal_superposition()
+  assert str(x) == ""
+
+
+
+# "fish"
+def test_op_naked_bra():
+  x = op_grammar("<fish|").naked_bra()
+  assert str(x) == ""
+
+#
+def test_op_naked_coeff_bra():
+  x = op_grammar("<fish|").coeff_bra()
+  assert str(x) == ""
+
+#
+def test_op_coeff_bra():
+  x = op_grammar("37.15 <fish|").coeff_bra()
+  assert str(x) == ""
+ 
+#
+def test_op_bra_coeff():
+  x = op_grammar("<fish| 3.15").bra_coeff()
+  assert str(x) == ""
+
+
+#
+def test_op_literal_bra_superposition():
+  x = op_grammar("<pi| 3.141592 + <y| + <x|3 + <z|2").literal_bra_superposition()
+  assert str(x) == ""
+
+#
+def test_op_literal_bra_superposition_mixed():
+  x = op_grammar("3.15<pi| + 7 <y| + <x|3 + <z|2 + <u| ").literal_bra_superposition()
   assert str(x) == ""
 

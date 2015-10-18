@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 14/10/2015
+# Update: 18/10/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -480,6 +480,17 @@ class bra(object):
   def __eq__(self,other):
     return self.label == other.label and self.value == other.value
 
+# 18/10/2015:
+  def __len__(self):
+    if self.label == '':
+      return 0
+    return 1
+
+  def __iter__(self):
+    yield bra(self.label,self.value)
+
+  def __add__(self,x):
+    return bra_superposition() + self + x
 
 #  def type(self):                      # pretty sure we don't need this. Commented out for now.
 #    return "bra"
@@ -1510,6 +1521,155 @@ class fast_superposition(object):
       for label in result.odict:
         result.odict[label] /= sum
     return result
+
+# 18/10/2015: now we are getting closer to being able to parse bra's, we need bra_superposition.
+# And after that projection_superposition.
+# Hrmm... So that is 3 types of classes doing similar things.
+# Is there a neater way to merge them into one?? For now, no.
+#
+# I think we need __str__ and display() ? Maybe a transpose too, that casts back to ket_superposition.
+# 
+class bra_superposition(object):
+  def __init__(self):
+    self.odict = OrderedDict()
+
+  def __str__(self):
+    return self.display()
+    
+  def __len__(self):                 # need to test!
+    if len(self.odict) == 1:
+      for x in self:
+        if x.label == "":
+          return 0
+    return len(self.odict)    
+
+  def __iter__(self):
+    for label in self.odict:
+      value = self.odict[label]
+      yield bra(label,value)
+
+  def __add__(self,one):
+    result = copy.deepcopy(self)
+    if type(one) in [bra, bra_superposition]:
+      for x in one:
+        if x.label != "":                  # treat <| as the identity element. What does this even mean for bra_superpositions??
+          if x.label in result.odict:
+            result.odict[x.label] += x.value
+          else:
+            result.odict[x.label] = x.value
+    return result
+
+  def __sub__(self,one):                   # we need to test this code!
+    result = copy.deepcopy(self)
+    if type(one) in [bra, bra_superposition]:
+      for x in one:
+        if x.label != "":                  # treat <| as the identity element
+          if x.label in result.odict:
+            result.odict[x.label] -= x.value
+          else:
+            result.odict[x.label] = - x.value
+    return result
+
+  # a version of sp add that does not add (ie, ignores) kets already in the superposition.
+  def clean_add(self,one):
+    if type(one) in [bra, bra_superposition]:
+      for x in one:
+        if x.label != "":
+          if x.label not in self.odict:
+            self.odict[x.label] = x.value
+
+  def display(self,exact=False):
+    if len(self) == 0:
+      return "<|"
+    return " + ".join(x.display(exact) for x in self) 
+
+# Pretty sure we don't need this for bra_superpositoin, but leave the code here for now.
+#  # cast from fast_superposition() back to standard superposition().
+#  def superposition(self):
+#    r = superposition()
+#    for x in self:                          # I think this is right.
+#      r.data.append(x)
+#    return r
+
+  # given a string label (corresponding to a bra label)
+  # return its value, 0 if not in superposition:
+  def get_value(self,label):               # what about a set_value(self,label,value)? Probably would be useful. eg in intersection_fn().
+    if label in self.odict:
+      return self.odict[label]
+    return 0
+
+  def count(self):
+    return len(self.odict)
+
+  def count_sum(self):
+    r = 0
+    for label in self.odict:
+      r += self.odict[label]
+    return r
+
+  def bra(self):                          # not sure we need this.
+    if len(self.odict) == 0:
+      return bra("",0)
+    for label in self.odict:
+      value = self.odict[label]
+      return bra(label,value)
+
+  def normalize(self):                    # not sure we need this.
+    sum = 0
+    for label in self.odict:
+      sum += self.odict[label]
+    result = copy.deepcopy(self)
+    if sum > 0:
+      for label in result.odict:
+        result.odict[label] /= sum
+    return result
+
+
+class projection_superposition(object):  # hrmm... Broken in a way. |x><x| is easy to handle using OrderedDict(), but what about |y><x| ?
+  def __init__(self):
+    self.odict = OrderedDict()
+
+  def __str__(self):
+    return self.display()
+    
+  def __len__(self):                 # need to test!
+    if len(self.odict) == 1:
+      for x in self:
+        if x.label == "":
+          return 0
+    return len(self.odict)    
+
+  def __iter__(self):
+    for label in self.odict:
+      value = self.odict[label]
+      yield bra(label,value)
+
+  def __add__(self,one):
+    result = copy.deepcopy(self)
+    if type(one) in [bra, bra_superposition]:
+      for x in one:
+        if x.label != "":                  # treat <| as the identity element. What does this even mean for bra_superpositions??
+          if x.label in result.odict:
+            result.odict[x.label] += x.value
+          else:
+            result.odict[x.label] = x.value
+    return result
+
+  def __sub__(self,one):                   # we need to test this code!
+    result = copy.deepcopy(self)
+    if type(one) in [bra, bra_superposition]:
+      for x in one:
+        if x.label != "":                  # treat <| as the identity element
+          if x.label in result.odict:
+            result.odict[x.label] -= x.value
+          else:
+            result.odict[x.label] = - x.value
+    return result
+
+  def display(self,exact=False):
+    if len(self) == 0:
+      return "|><|"
+    return " + ".join(x.display(exact) for x in self) 
 
 
 # we need this for stored_rule class.
