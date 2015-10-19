@@ -96,10 +96,15 @@ literal_superposition = S0 coeff_ket:left S0 (ket_ops+:right S0 -> ket_calculate
                                           | -> left)
 
 bracket_literal_superposition = S0 '(' literal_superposition:sp ')' S0 -> sp
-bracket1_literal_superposition = S0 '(' literal_superposition:sp1 ')' S0 -> [sp1]
-bracket2_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ')' S0 -> [sp1,sp2]
-bracket3_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ')' S0 -> [sp1,sp2,sp3]
-bracket4_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ',' literal_superposition:sp4 ')' S0 -> [sp1,sp2,sp3,sp4]
+bracket1_literal_superposition = '(' literal_superposition:sp1 ')' -> [sp1]
+bracket2_literal_superposition = '(' literal_superposition:sp1 ',' literal_superposition:sp2 ')' -> [sp1,sp2]
+bracket3_literal_superposition = '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ')' -> [sp1,sp2,sp3]
+bracket4_literal_superposition =  '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ',' literal_superposition:sp4 ')' -> [sp1,sp2,sp3,sp4]
+
+param1_fn = op_sequence:head bracket1_literal_superposition:tail -> [head,tail]
+param2_fn = op_sequence:head bracket2_literal_superposition:tail -> [head,tail]
+param3_fn = op_sequence:head bracket3_literal_superposition:tail -> [head,tail]
+param4_fn = op_sequence:head bracket4_literal_superposition:tail -> [head,tail]
 
 
 add_bra = S0 '+' S0 (bra_coeff | coeff_bra):k -> ('+', k)
@@ -295,4 +300,18 @@ def test_op_literal_bra_superposition():
 def test_op_literal_bra_superposition_mixed():
   x = op_grammar("3.15<pi| + 7 <y| + <x|3 + <z|2 + <u| ").literal_bra_superposition()
   assert str(x) == ""
+
+
+
+#
+def test_op_param2_fn():
+  x = op_grammar("foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
+  assert str(x) == ""
+
+
+#
+def test_op_param2_fn_example_2():
+  x = op_grammar("op3^2 op2 op1 foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
+  assert str(x) == ""
+
 
