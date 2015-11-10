@@ -1,5 +1,4 @@
 # The Feynman Knowledge Engine
-<pre>
 a minimalist but extensible knowledge engine
 
 Currently very pre-alpha
@@ -10,6 +9,7 @@ http://write-up.semantic-db.org/
 A big collection of example sw files:
 http://semantic-db.org/sw-examples/
 
+<pre>
 Installation instructions:
 $ git clone git://github.com/python-parsley/parsley.git
 $ cd parsley/
