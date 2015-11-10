@@ -1,4 +1,5 @@
 # The Feynman Knowledge Engine
+<pre>
 a minimalist but extensible knowledge engine
 
 Currently very pre-alpha
@@ -63,4 +64,6 @@ sa: h
   info off                     switch info messages off
   -- comment                   ignore, this is just a comment line.
   if none of the above         process_input_line(C,line,x)
+
+</pre>
 
