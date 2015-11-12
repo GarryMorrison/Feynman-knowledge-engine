@@ -7,6 +7,8 @@ fi
 
 file="$1"
 
+sha1sum "$file"
+
 size=$(du -h "$file" | cut -f1)
 op_count=$(grep -v "^supported-op" "$file" | grep "^[[:alpha:]]" | sed 's/ |.*$//g' | sort | uniq | wc -l)
 learn_rule_count=$(grep -v "^supported-op" "$file" | grep -c "=> ")
