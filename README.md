@@ -6,6 +6,9 @@ Currently very pre-alpha
 A series of blog posts that tries to explain my ideas:
 http://write-up.semantic-db.org/
 
+A blog post trying to summarize and give an interpretation of the BKO scheme:
+http://write-up.semantic-db.org/166-an-interpretation-of-my-bko-scheme.html
+
 A big collection of example sw files:
 http://semantic-db.org/sw-examples/
 

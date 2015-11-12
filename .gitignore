@@ -1,1 +1,3 @@
 *.pyc
+*.sw-
+tools/sw-examples/improved-imdb.sw
