@@ -12,6 +12,9 @@ http://write-up.semantic-db.org/166-an-interpretation-of-my-bko-scheme.html
 A big collection of example sw files:
 http://semantic-db.org/sw-examples/
 
+Wikipedia to link-structure sw files:
+http://semantic-db.org/wikipedia-sw/
+
 <pre>
 Installation instructions:
 $ git clone git://github.com/python-parsley/parsley.git

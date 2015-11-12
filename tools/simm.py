@@ -3,6 +3,7 @@
 #######################################################################
 # given two files, find their byte, 2-byte and fragment similarity
 # for html good split strings are '<' and '>'
+# for code ' ' is probably sufficient
 #
 # Author: Garry Morrison
 # email: garry@semantic-db.org
