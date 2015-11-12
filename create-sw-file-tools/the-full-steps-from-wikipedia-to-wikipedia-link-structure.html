@@ -1,0 +1,41 @@
+<html>
+<head><title>towards processing all of wikipedia</title></head>
+<body>
+<h1>towards processing all of wikipedia</h1>
+
+The full steps from wikipedia, to wikipedia link structure:
+<br />
+<pre>wiki.xml from here: http://en.wikipedia.org/wiki/Wikipedia:Database_download
+$ bzip2 -dc enwiki-20150515-pages-articles.xml.bz2 &gt; wiki.xml
+$ ./<a href="http://semantic-db.org/the-semantic-agent-v2/fragment_wikipedia_xml.py">fragment_wikipedia_xml.py</a> wiki.xml 30000
+
+for file in $(ls -1 data/fragments/*); do
+  echo "file: $file"
+  ./<a href="http://semantic-db.org/the-semantic-agent-v2/play_with_wikipedia__fast_write.py">play_with_wikipedia__fast_write.py</a> "$file"
+done
+
+$ cd sw-results/
+
+for i in $(seq 0 9); do
+  echo "$i"
+  cat $i--30k--wikipedia-links.sw &gt;&gt; <a href="http://semantic-db.org/sw-examples/300k--wikipedia-links.sw">300k--wikipedia-links.sw</a>
+done
+
+$ bzip2 -v *.sw
+</pre>
+And the resulting sw files are <a href="http://semantic-db.org/wikipedia-sw/">compressed and stored here</a>.<br />
+<br />
+BTW: 
+<pre>
+$ ./<a href="http://semantic-db.org/the-semantic-agent-v2/spit-out-sw-stats.sh">spit-out-sw-stats.sh</a> <a href="http://semantic-db.org/sw-examples/300k--wikipedia-links.sw">300k--wikipedia-links.sw</a>
+(494M, 1 op types and 300000 learn rules)
+links-to: 300000 learn rules
+
+$ ./<a href="http://semantic-db.org/the-semantic-agent-v2/spit-out-sw-stats.sh">spit-out-sw-stats.sh</a> <a href="http://semantic-db.org/sw-examples/300k--wikipedia-links--with-inverse.sw">300k--wikipedia-links--with-inverse.sw</a>
+(1.5G, 2 op types and 4571683 learn rules)
+inverse-links-to: 4272183 learn rules
+links-to: 299499 learn rules
+</pre>
+
+</body>
+</html>
