@@ -117,6 +117,7 @@ bra_ops = (add_bra | sub_bra)
 literal_bra_superposition = S0 (bra_coeff | coeff_bra):left S0 (bra_ops+:right S0 -> bra_calculate(left,right)
                                                             | -> left)
 
+#ket_like = (literal_superposition | bracket_literal_superposition | op_sequence bracket_literal_superposition | bracket_ops bracket_literal_superposition)
 """
 
 # what happens if we have eg: "3.73.222751" (ie, more than one dot?)

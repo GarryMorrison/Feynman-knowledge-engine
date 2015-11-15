@@ -19,7 +19,7 @@ http://semantic-db.org/wikipedia-sw/
 Installation instructions:
 $ git clone git://github.com/python-parsley/parsley.git
 $ cd parsley/
-$ python3 setup.py install
+$ sudo python3 setup.py install
 
 $ cd ..
 $ git clone git://github.com/GarryMorrison/Feynman-knowledge-engine.git

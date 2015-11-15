@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/10/2015
+# Update: 15/11/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -127,8 +127,17 @@ class ket(object):
 #    print("clean_add self:",self)
 #    print("clean_add x:",x)
     r = superposition() + self
-    r.clean_add(x)
+    r.clean_add(x)                 # what is this code doing? Is it passing it to the superposition class?
 #    print("clean_add r:",r)
+    return r
+
+# tidy code later!
+# 15/11/2015:
+  def self_add(self,x):     # is "self_add" the best name for this?
+    logger.debug("inside ket self_add")
+    logger.debug("self: " + str(self))
+    logger.debug("x: " + str(x))
+    r = superposition() + self + x 
     return r
 
   def apply_bra(self,a_bra):
@@ -634,13 +643,16 @@ class superposition(object):
       new_ket = ket(a_ket.label,a_ket.value)
       self.data.append(new_ket)
 
-  def __add__(self,elt):
+  def __add__(self,one):
     result = copy.deepcopy(self)
-    if type(elt) == ket:
-      result.add_ket(elt)
-    if type(elt) == superposition:
-      for x in elt.data:
-        result.add_ket(x)
+#    if type(elt) == ket:
+#      result.add_ket(elt)
+#    if type(elt) == superposition:
+#      for x in elt.data:
+#        result.add_ket(x)
+    if type(one) in [ket, superposition, fast_superposition]:
+      for x in one:
+        result.add_ket(x) 
     return result
   
   # 6/1/2015:  
@@ -657,13 +669,27 @@ class superposition(object):
       self.data.append(ket(a_ket.label,a_ket.value))
 
 # same as above, but also works for superpositions:
-  def clean_add(self,one):
-    if type(one) == ket:
-      self.clean_add_ket(one)
-    if type(one) == superposition:
-      for x in one.data:
-        self.clean_add_ket(x)
+  def clean_add(self,one):                                    # boy, this and related clean_add code is messy!
+#    if type(one) == ket:
+#      self.clean_add_ket(one)
+#    if type(one) == superposition:
+#      for x in one.data:
+#        self.clean_add_ket(x)
+    for x in one:
+      self.clean_add_ket(x)
 
+# 15/11/2015. And needs testing. Also, probably slow! ie, O(n^2) if building a frequency list :(
+  def self_add(self,one):
+    logger.debug("inside superposition self_add")
+    logger.debug("self: " + str(self))
+    logger.debug("one: " + str(one))
+#    result = copy.deepcopy(self)
+#    result += one
+#    return result
+#    self += one
+    if type(one) in [ket, superposition, fast_superposition]:
+      for x in one:
+        self.add_ket(x) 
 
   def display(self,exact=False):
     if len(self.data) == 0:
@@ -1481,6 +1507,12 @@ class fast_superposition(object):
           if x.label not in self.odict:
             self.odict[x.label] = x.value
 
+  def self_add(self,one):
+    result = copy.deepcopy(self)  # not sure this is the best way to implement it, but will do for now.
+    result += one
+    return result
+
+
   # cast from fast_superposition() back to standard superposition().
   def superposition(self):
     r = superposition()
@@ -1717,8 +1749,10 @@ class new_context(object):
     else:
       if op not in self.ket_rules_dict[label]:
         self.ket_rules_dict[label][op] = superposition()
-      self.ket_rules_dict[label][op].clean_add(rule)
-
+#      self.ket_rules_dict[label][op].clean_add(rule)
+      self.ket_rules_dict[label][op].self_add(rule)                  # does this change break anything?? If it does, we will need another approach.
+                                                                     # Hrmm... how test if it breaks? We don't have full test cases yet!
+                                                                     # create inverse still seems to work, I think. 
   def add_learn(self,op,label,rule):
     return self.learn(op,label,rule,True)       # corresponds to "op |x> +=> |y>"
 
