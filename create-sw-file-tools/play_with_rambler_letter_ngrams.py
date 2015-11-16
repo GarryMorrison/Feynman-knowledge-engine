@@ -9,6 +9,13 @@
 # Copyright: GPLv3
 #
 # Usage:
+#  sa: load ngram-letter-pairs--sherlock-holmes--add-learn.sw
+#  sa: letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
+#  sa: letter-ramble^1000 |The>
+#  sa: letter-ramble^500 |Here >
+# 
+# Sample data here:
+# http://semantic-db.org/sw-examples/ngram-letter-pairs--sherlock-holmes--add-learn.sw
 # 
 #
 #######################################################################
