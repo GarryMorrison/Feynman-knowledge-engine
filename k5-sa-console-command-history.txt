@@ -1,0 +1,600 @@
+2015-02-21
+  files
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  dump
+  dump |kuron: mumble>
+  rank-table[kuron,comments,diaries] select[1,20] sort-by[comments] relevant-kets[comments] |>
+  dump
+  history
+  relevant-kets[comments] |>
+  rank-table[kuron,comments,diaries] select[1,20] reverse sort-by[comments] relevant-kets[comments] |>
+  history
+  rank-table[kuron,diaries,comments] select[1,20] reverse sort-by[diaries] relevant-kets[diaries] |>
+  |list> => relevant-kets[comments] |>
+  dump
+  history
+  rank-table[kuron,stories] select[1,2] reverse sort-by[stories] "" |list>
+  history
+  rank-table[kuron,comments,diaries] select[1,20] reverse sort-by[comments] relevant-kets[comments] |>
+  rank-table[kuron,diaries,comments] select[1,20] reverse sort-by[diaries] relevant-kets[diaries] |>
+  rank-table[kuron,stories] select[1,1] reverse sort-by[stories] "" |list>
+  comments-per-diary |*> #=> arithmetic(comments |_self>,|/>,diaries |_self>)
+  history
+  rank-table[kuron,comments,diaries,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  history
+  q
+
+2015-02-21
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  
+  q
+
+2015-02-21
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  dump
+  |list> => relevant-kets[comments] |>
+  comments-per-diary |*> #=> round[1] arithmetic(comments|_self>,|/>,diaries|_self>)
+  rank-table[kuron,comments,diaries,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  history
+  comments |kuron: localroger>
+  diaries |kuron: localroger>
+  comments-per-diary |kuron: localroger>
+  arithmetic(comments|kuron: localroger>,|/>,diaries|kuron: localroger>)
+  round[2] |>
+  round[1] |>
+  round[1] arithmetic(comments|kuron: localroger>,|/>,diaries|kuron: localroger>)
+  round[1] arithmetic(comments|kuron: mumble>,|/>,diaries|kuron: mumble>)
+  q
+
+2015-02-21
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  dump
+  |list> => relevant-kets[comments] |>
+  q
+
+2015-02-21
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  dump
+  comments-per-diary |*> #=> round[1] arithmetic(comments |_self>,|/>,diaries |_self>)
+  comments-per-diary |kuron: localroger>
+  rank-table[kuron,comments,diaries,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  history
+  rank-table[kuron,comments-per-diary] select[1,20] reverse sort-by[comments-per-diary] "" |list>
+  history
+  rank-table[kuron,comments-per-diary] sort-by[comments-per-diary] "" |list>
+  history
+  strict-rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  history
+  strict-rank-table[kuron,comments-per-diary,comments,diaries] reverse sort-by[comments-per-diary] "" |list>
+  history
+  comments-per-mo |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-mo |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  strict-rank-table[kuron,comments-per-mo] reverse sort-by[comments-per-mo] "" |list>
+  history
+  comments-per-day |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-day |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  rank-table[kuron,comments-per-day] reverse sort-by[comments-per-day] "" |list>
+  history
+  rank-table[kuron,diaries-per-day] reverse sort-by[diaries-per-day] "" |list>
+  history
+  rank-table[kuron,diaries-per-day] reverse sort-by[diaries] "" |list>
+  history
+  save history
+
+2015-02-26
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  dump
+  comments-per-diary |*> #=> round[1] arithmetic(comments |_self>,|/>,diaries |_self>)
+  comments-per-diary |kuron: localroger>
+  rank-table[kuron,comments,diaries,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  history
+  rank-table[kuron,comments-per-diary] select[1,20] reverse sort-by[comments-per-diary] "" |list>
+  history
+  rank-table[kuron,comments-per-diary] sort-by[comments-per-diary] "" |list>
+  history
+  strict-rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  history
+  strict-rank-table[kuron,comments-per-diary,comments,diaries] reverse sort-by[comments-per-diary] "" |list>
+  history
+  comments-per-mo |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-mo |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  strict-rank-table[kuron,comments-per-mo] reverse sort-by[comments-per-mo] "" |list>
+  history
+  comments-per-day |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-day |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  rank-table[kuron,comments-per-day] reverse sort-by[comments-per-day] "" |list>
+  history
+  rank-table[kuron,diaries-per-day] reverse sort-by[diaries-per-day] "" |list>
+  history
+  rank-table[kuron,diaries-per-day] reverse sort-by[diaries] "" |list>
+  history
+  save history
+  q
+
+2015-03-22
+  files
+  load k5-stats--delta--2015-01-21--2015-02-21.sw
+  dump
+  comment |kuron: mumble>
+  comments |kuron: mumble
+  comments |kuron: mumble>
+  q
+
+2015-03-22
+  files
+  load k5-stats--delta--2015-02-21--2015-03-22.sw
+  comments-per-diary |*> #=> round[1] arithmetic(comments |_self>,|/>,diaries |_self>)
+  comments-per-day |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-day |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  files
+  load previous-stats.sw
+  dump
+  comment-delta |*> #=> arithmetic(comments |_self>,|->,previous-comments |_self>)
+  diary-delta |*> #=> arithmetic(diaries |_self>,|->,previous-diaries |_self>)
+  comment-delta |kuron: Zombie Osama bin Laden> => |13>
+  comment-delta |kuron: Zombie Osama bin Laden> => arithmetic(comments |_self>,|->,previous-comments |_self>)
+  dump
+  files
+  save 2015-3-22--results.sw
+  dump
+  rank-table[kuron,comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  display |kuron: procrasti>
+  history
+  rank-table[kuron,diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  history
+  save history
+
+2015-03-22
+  files
+  load k5-stats--delta--2015-02-21--2015-03-22.sw
+  comments-per-diary |*> #=> round[1] arithmetic(comments |_self>,|/>,diaries |_self>)
+  comments-per-day |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-day |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  files
+  load previous-stats.sw
+  dump
+  comment-delta |*> #=> arithmetic(comments |_self>,|->,previous-comments |_self>)
+  diary-delta |*> #=> arithmetic(diaries |_self>,|->,previous-diaries |_self>)
+  comment-delta |kuron: Zombie Osama bin Laden> => |13>
+  comment-delta |kuron: Zombie Osama bin Laden> => arithmetic(comments |_self>,|->,previous-comments |_self>)
+  dump
+  files
+  save 2015-3-22--results.sw
+  dump
+  rank-table[kuron,comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  display |kuron: procrasti>
+  history
+  rank-table[kuron,diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  history
+  save history
+  rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  history
+  save history
+
+2015-03-22
+  files
+  load k5-stats--delta--2015-02-21--2015-03-22.sw
+  comments-per-diary |*> #=> round[1] arithmetic(comments |_self>,|/>,diaries |_self>)
+  comments-per-day |*> #=> round[2] arithmetic(comments|_self>,|/>,|30>)
+  diaries-per-day |*> #=> round[2] arithmetic(diaries|_self>,|/>,|30>)
+  files
+  load previous-stats.sw
+  dump
+  comment-delta |*> #=> arithmetic(comments |_self>,|->,previous-comments |_self>)
+  diary-delta |*> #=> arithmetic(diaries |_self>,|->,previous-diaries |_self>)
+  comment-delta |kuron: Zombie Osama bin Laden> => |13>
+  comment-delta |kuron: Zombie Osama bin Laden> => arithmetic(comments |_self>,|->,previous-comments |_self>)
+  dump
+  files
+  save 2015-3-22--results.sw
+  dump
+  rank-table[kuron,comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  display |kuron: procrasti>
+  history
+  rank-table[kuron,diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  history
+  save history
+  rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  history
+  save history
+  q
+
+2015-04-21
+  files
+  load 
+  load 
+  load k5-stats--delta--2015-03-22--2015-04-21.sw
+  load previous-stats.sw
+  load stats-operators.sw
+  dump
+  "" |t1>
+  "" |t2>
+  dump
+  |s1> #=> rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  |s2> #=> rank-table[kuron,diaries,previous-diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  dump
+  "" |s1>
+  "" |s2>
+  "" |t3>
+  q
+
+2015-04-21
+  load k5-stats--delta--2015-03-22--2015-04-21.sw
+  load previous-stats.sw
+  history
+  load stats-operators.sw
+  dump
+  "" |s3>
+  dump
+  |s3> #=> rank-table[kuron,comments,previous-comments,comment-delta] select[1,20] sort-by[comment-delta] "" |list>
+  |s4> #=> rank-table[kuron,diaries,previous-diaries,diary-delta] select[1,20] sort-by[diary-delta] "" |list>
+  "" |s3>
+  |s3> #=> rank-table[kuron,comments,previous-comments,comment-delta] select[1,20] reverse sort-by[comment-delta] such-that[comment-delta-is-greater-0] "" |list>
+  |s4> #=> rank-table[kuron,diaries,previous-diaries,diary-delta] select[1,20] reverse sort-by[diary-delta] such-that[diary-delta-is-greater-0] "" |list>
+  dump
+  "" |s3>
+  comment-delta-is-greater-0 |*> #=> is-greater-than[0] comment-delta |_self>
+  diary-delta-is-greater-0 |*> #=> is-greater-than[0] diary-delta |_self>
+  dump
+  "" |s3>
+  "" |s4>
+  history
+  save 2015-4-21--results.sw
+  dump
+  history
+  q
+
+2015-04-21
+  files
+  load cds-totals--2015-04-21.sw
+  dump
+  table[date-delta,comments,diaries,stories] list-kets |CDS: *>
+  list-kets |CDS: *>
+  history
+  table[date-delta,comments,diaries,stories] rel-kets[comments] |>
+  q
+
+2015-04-22
+  files
+  load 2015-4-21--results.sw
+  dump
+  comments "" |list>
+  pop-float 78|0>
+  pop-float 2|6>
+  pop-float comments "" |list>
+  history
+  pop-float diaries "" |list>
+  pop-float stories "" |list>
+  dump
+  percent-total-comments |*> #=> round[2] arithmetic(comments|_self>,|/>,|2042>)
+  |u1> #=> rank-table[kuron,comments,percent-total-comments] select[1,20] reverse sort-by[comments] "" |list>
+  "" |u1>
+  dump
+  percent-total-comments |*> #=> round[2] 100 arithmetic(comments|_self>,|/>,|2042>)
+  ""|u1>
+  dump
+  percent-total-comments |kuron: procrasti>
+  percent-total-comments |*> #=> round[2] times[100] arithmetic(comments|_self>,|/>,|2042>)
+  ""|u1>
+  percent-total-diaries |*> #=> round[2] times[100] arithmetic(diaries|_self>,|/>,|197>)
+  dump
+  |u2> #=> rank-table[kuron,diaries,percent-total-diaries] select[1,20] reverse sort-by[diaries] "" |list>
+  "" |u2>
+  dump
+  ""|u1>
+  "" |u2>
+  history
+  push-float pop-float comments "" |list>
+  history
+  pop-float comments "" |list>
+  history
+  comments |kuron: procrasti>
+  pop-float comments |kuron: procrasti>
+  100 arithmetic(pop-float comments |kuron: procrasti>,|/>,pop-float comments "" |list>)
+  history
+  100 algebra(pop-float comments |kuron: procrasti>,|/>,pop-float comments "" |list>)
+  history
+  |total comments> => pop-float comments "" |list>
+  "" |total comments>
+  history
+  100 algebra(pop-float comments |kuron: procrasti>,|/>,"" |total comments>)
+  history
+  arithmetic(pop-float comments |kuron: procrasti>,|/>,"" |total comments>)
+  push-float "" |total comments>
+  round[2] times[100] arithmetic(comments |kuron: procrasti>,|/>,push-float "" |total comments>)
+  history
+  |total diaries> => push-float pop-float diaries "" |list>
+  "" |total diaries>
+  history
+  reset
+  files
+  load 2015-4-21--results.sw
+  dump
+  files
+  load stats-operators.sw
+  dump
+  load stats-operators.sw
+  dump
+  "" |u1>
+  dump
+  "" |u2>
+  q
+
+2015-04-22
+  extract-category |diary: 2015-4-22-33915-2470: comment: 1>
+  extract-category^2 |diary: 2015-4-22-33915-2470: comment: 1>
+  q
+
+2015-05-22
+  files
+  load cds-totals--2015-05-22.sw 
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  dump
+  history
+  starts-with |CDS: >
+  q
+
+2015-05-22
+  load cds-totals--2015-05-22.sw
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  dump
+  files
+  load k5-stats--delta--2015-03-22--2015-04-21.sw
+  files
+  dump
+  map[comments,previous-comments] rel-kets[comments] |>
+  map[diaries,previous-diaries] rel-kets[diaries] |>
+  map[stories,previous-stories] rel-kets[stories] |>
+  dump
+  
+  files
+  save 2015-5-22--results.sw
+  q
+
+2015-05-22
+  load 2015-5-22--results.sw
+  dump
+  file
+  files
+  load k5-stats--delta--2015-04-21--2015-05-22.sw
+  dump
+  context
+  q
+
+2015-05-22
+  files
+  load k5-stats--delta--2015-04-21--2015-05-22.sw
+  files
+  load 2015-5-22--results.sw
+  dump
+  files
+  load stats-operators.sw
+  dump
+  files
+  save 2015-5-22--results.sw
+  dump
+  files
+  load cds-totals--2015-05-22.sw
+  dump
+  files
+  save 2015-5-22--results.sw
+  dump
+  
+  |s1>
+  "" |s1>
+  "" |s2>
+  "" |t3>
+  history
+  "" |s3>
+  "" |s4>
+  "" |u1>
+  ""|u2>
+  history
+  dump
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  history
+  history
+  "" |s1>
+  history
+  ""|t3>
+  history
+  save history
+
+2015-05-22
+  files
+  load k5-stats--delta--2015-04-21--2015-05-22.sw
+  files
+  load 2015-5-22--results.sw
+  dump
+  files
+  load stats-operators.sw
+  dump
+  files
+  save 2015-5-22--results.sw
+  dump
+  files
+  load cds-totals--2015-05-22.sw
+  dump
+  files
+  save 2015-5-22--results.sw
+  dump
+  
+  |s1>
+  "" |s1>
+  "" |s2>
+  "" |t3>
+  history
+  "" |s3>
+  "" |s4>
+  "" |u1>
+  ""|u2>
+  history
+  dump
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  history
+  history
+  "" |s1>
+  history
+  ""|t3>
+  history
+  save history
+  q
+
+2015-07-04
+  load 2015-06-22--results.sw
+  files
+  load stats-operators.sw
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comme nts-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  strict-rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta] select[1,20] reverse sort-by[comment-delta] such-that[comment-delta-is-greater-0] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta] select[1,20] reverse sort-by[diary-delta] such-that[diary-delta-is-greater-0] "" |list>
+  [B[B[B[B[B[B
+  rank-table[kuron,comments,percent-total-comments] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,percent-total-diaries] select[1,20] reverse sort-by[diaries] "" |list>
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  q
+
+2015-07-21
+  load 2015-07-21--results.sw
+  dump
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comme nts-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  dump
+  q
+
+2015-07-21
+  files
+  load 2015-07-21--results.sw
+  |total comments> => pop-float comments "" |list>
+  |total diaries> => pop-float diaries "" |list>
+  
+  percent-total-comments |*> #=> round[2] times[100] arithmetic(comments|_self>,|/>,push-float "" |total comments>)
+  percent-total-diaries |*> #=> round[2] times[100] arithmetic(diaries|_self>,|/>,push-float "" |total diaries>)
+  
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  files
+  q
+
+2015-07-21
+  load 2015-07-21--results.sw
+  files
+  load stats-operators.sw
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  [B[B[B[B[Arank-table[kuron,diaries,previous-diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  
+  
+  
+  rank-table[kuron,diaries,previous-diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  
+  strict-rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta] select[1,20] reverse sort-by[comment-delta] such-that[comment-delta-is-greater-0] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta] select[1,20] reverse sort-by[diary-delta] such-that[diary-delta-is-greater-0] "" |list>
+  rank-table[kuron,comments,percent-total-comments] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,percent-total-diaries] select[1,20] reverse sort-by[diaries] "" |list>
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  q
+
+2015-08-21
+  info off
+  files
+  load k5-stats--delta--2015-07-21--2015-08-21.sw
+  files
+  load stats-operators.sw
+  dump
+  files
+  load k5-tables.sw
+  files
+  starts-with |CDS: >
+  q
+
+2015-08-21
+  files
+  load 2015-08-21--results.sw
+  files
+  load k5-tables.sw
+  q
+
+2015-08-21
+  info off
+  files
+  load 2015-08-21--results.sw
+  dump
+  everything-about |*> #=> apply(supported-ops|_self>,|_self>)
+  map[everything-about,everything] "" 
+  map[everything-about,everything] "" |list>
+  dump
+  table[ket,coeff] 100 self-similar[everything] |kuron: mumble>
+  history
+  T |*> #=> table[ket,coeff] 100 self-similar[everything] |_self>
+  T |kuron: mirko>
+  T |kuron: trane>
+  T |kuron: procrasti>
+  dump |kuron: procrasti> + |kuron: TaxiCabJesus>
+  history
+  save history
+
+2015-08-28
+  info off
+  files
+  load 2015-08-21--results.sw
+  dump
+  everything-about |*> #=> apply(supported-ops|_self>,|_self>)
+  map[everything-about,everything] "" 
+  map[everything-about,everything] "" |list>
+  dump
+  table[ket,coeff] 100 self-similar[everything] |kuron: mumble>
+  history
+  T |*> #=> table[ket,coeff] 100 self-similar[everything] |_self>
+  T |kuron: mirko>
+  T |kuron: trane>
+  T |kuron: procrasti>
+  dump |kuron: procrasti> + |kuron: TaxiCabJesus>
+  history
+  save history
+  files
+  q
+
+2015-09-22
+  files
+  load 2015-09-21--results.sw
+  dump
+  files
+  load stats-operators.sw
+  dump
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  strict-rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta] select[1,20] reverse sort-by[comment-delta] such-that[comment-delta-is-greater-0] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta] select[1,20] reverse sort-by[diary-delta] such-that[diary-delta-is-greater-0] "" |list>
+  rank-table[kuron,comments,percent-total-comments] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,percent-total-diaries] select[1,20] reverse sort-by[diaries] "" |list>
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  q
+
+2015-10-25
+  files
+  load 2015-10-22--results.sw
+  files
+  load stats-operators.sw
+  dump
+  rank-table[kuron,comments,previous-comments,comment-delta,comments-per-day,comments-per-diary] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta,diaries-per-day] select[1,20] reverse sort-by[diaries] "" |list>
+  strict-rank-table[kuron,comments-per-diary] reverse sort-by[comments-per-diary] "" |list>
+  rank-table[kuron,comments,previous-comments,comment-delta] select[1,20] reverse sort-by[comment-delta] such-that[comment-delta-is-greater-0] "" |list>
+  rank-table[kuron,diaries,previous-diaries,diary-delta] select[1,20] reverse sort-by[diary-delta] such-that[diary-delta-is-greater-0] "" |list>
+  [B[B[B[B[B[B[B[B[B[B[B[B[B[B[Brank-table[kuron,comments,percent-total-comments] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,comments,percent-total-comments] select[1,20] reverse sort-by[comments] "" |list>
+  rank-table[kuron,diaries,percent-total-diaries] select[1,20] reverse sort-by[diaries] "" |list>
+  table[date-delta,comments,diaries,stories] starts-with |CDS: >
+  q
+
+2015-10-26
+  load 2015-10-22--results.sw
+  dump
+  dump |kuron: procrasti>
+  history
+  q
+

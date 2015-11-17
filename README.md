@@ -15,6 +15,9 @@ http://semantic-db.org/sw-examples/
 Wikipedia to link-structure sw files:
 http://semantic-db.org/wikipedia-sw/
 
+My console history. Essentially a giant collection of examples:
+https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/sa-console-command-history.txt
+
 <pre>
 Installation instructions:
 $ git clone git://github.com/python-parsley/parsley.git
