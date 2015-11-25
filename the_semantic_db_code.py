@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/11/2015
+# Update: 25/11/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1499,6 +1499,24 @@ class fast_superposition(object):
             result.odict[x.label] = - x.value
     return result
 
+# 25/11/2015:
+  def __len__(self):
+    if len(self.odict) == 1:
+      for label in self.odict:
+        if label == "":
+          return 0
+        break
+    return len(self.odict)
+
+  def __str__(self):
+    return self.display()               # not sure want display() and str() separate, but will do for now.
+    
+  def display(self,exact=False):                
+    if len(self) == 0:
+      return '|>'
+    return " + ".join(x.display(exact) for x in self)    
+  
+
   # a version of sp add that does not add (ie, ignores) kets already in the superposition.
   def clean_add(self,one):
     if type(one) in [ket, superposition, fast_superposition]:
@@ -1552,6 +1570,13 @@ class fast_superposition(object):
     if sum > 0:
       for label in result.odict:
         result.odict[label] /= sum
+    return result
+
+# 25/11/2015:
+  def multiply(self,t):
+    result = copy.deepcopy(self)
+    for label in result.odict:
+      result.odict[label] *= t
     return result
 
 # 18/10/2015: now we are getting closer to being able to parse bra's, we need bra_superposition.

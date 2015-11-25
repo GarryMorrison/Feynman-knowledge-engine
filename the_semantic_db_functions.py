@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/9/2015
+# Update: 25/11/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3688,6 +3688,55 @@ def average_categorize(context,parameters):
     print("sp:",sp)
     context.learn(ave,phi + ": " + str(k+1),sp)
   return ket("average categorize")
+
+# 25/11/2015:
+# unique-categorize. If it works as hoped, a kind of principle component thingy.
+# How do we test this thing?? Maybe the simple images example?
+# Hrmm.. might be able to use this (a thing I recall from linear algebra): https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
+# Instead of <u,v> being standard dot-product, use simm(u,v). Might just work.
+# I don't think this will be the unique_categorize I'm after, but should still be useful. And also as a starting point. 
+#
+def unique_categorize(context,parameters):
+  try:
+    op,t,phi,ave = parameters.split(',')
+    t = float(t)
+  except:
+    return ket("",0)
+    
+  one = context.relevant_kets(op)
+  print("one:",one)
+  out_list = []
+  for x in one:
+    print("x:",x)
+    r = fast_superposition() + x.apply_op(context,op)    # Yeah, a hack. But using fast_sp is the easiest way to do the "find-unique" step.
+    print("r:",r)
+    best_k = -1
+    best_simm = 0
+    for k,sp in enumerate(out_list):
+      similarity = silent_simm(r,sp)
+      if similarity > best_simm:
+        best_k = k
+        best_simm = similarity
+    print("best k:",best_k)
+    print("best simm:",best_simm)
+
+    if best_k == -1 or best_simm < t:
+      out_list.append(r)
+    else:
+      k = best_k
+#      out_list[k] += r
+      out_list[k] += r.multiply(best_simm)  # reweight based on result of simm.
+    for k1,sp1 in enumerate(out_list):
+      tmp_sp = fast_superposition()
+      for k2,sp2 in enumerate(out_list):
+        if k1 != k2:
+          tmp_sp += sp2 
+      
+  for k,sp in enumerate(out_list):
+    print("sp:",sp)
+    context.learn(ave,phi + ": " + str(k+1),sp.superposition()) # need to convert fast_sp back to sp. Yeah, when am I going to finally swap in fast_sp full time?? 
+  return ket("average categorize")
+
 
 # 5/8/2015:
 # split-chars |abcde> == |a> + |b> + |c> + |d> + |e>

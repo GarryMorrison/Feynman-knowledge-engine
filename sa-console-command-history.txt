@@ -14698,3 +14698,335 @@
   weird-letter-ramble^1000 |The>
   q
 
+2015-11-19
+  load fred-sam-friends.sw
+  dump
+  apply(|op: friends>,|Fred>)
+  apply(2.3|op: friends>,|Fred>)
+  q
+
+2015-11-19
+  context simple sentence to word2sp example
+  next-1 |this> => |is>
+  next-2 |this> => |a>
+  next-3 |this> => |sentence>
+  next-2gram |this> => |is a>
+  next-3gram |this> => |is a sentence>
+  
+  pre-1 |is> => |this>
+  next-1 |is> => |a>
+  next-2 |is> => |sentence>
+  next-3 |is> => |about>
+  next-2gram |is> => |a sentence>
+  next-3gram |is> => |a sentence about>
+  
+  pre-2 |a> => |this>
+  pre-1 |a> => |is>
+  pre-2gram |a> => |this is>
+  next-1 |a> => |sentence>
+  next-2 |a> => |about>
+  next-3 |a> => |mary>
+  next-2gram |a> => |sentence about>
+  next-3gram |a> => |sentence about mary>
+  
+  pre-3 |sentence> => |this>
+  pre-2 |sentence> => |is>
+  pre-3 |sentence> => |a>
+  pre-3gram |sentence> => |this is a>
+  pre-2gram |sentence> => |is a>
+  next-1 |sentence> => |about>
+  next-2 |sentence> => |mary>
+  next-3 |sentence> => |and>
+  next-2gram |sentence> => |about mary>
+  next-3gram |sentence> => |about mary and>
+  dump
+  save simple-sentence-to-word2sp-example.sw
+  dump exact
+  word2sp-op |*> #=> apply(|op: pre-3> + |op: pre-2> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  dump
+  word2sp-op |sentence>
+  dump
+  info off
+  word2sp-op |sentence>
+  dump
+  word2sp-op |a>
+  word2sp-op |is>
+  hash[4] word2sp-op |is>
+  history
+  dump
+  history
+  save simple-sentence-to-word2sp-example.sw
+  dump
+  the |example sentence> => |This is a sentence about Mary and her pet dog>
+  dump
+  save simple-sentence-to-word2sp-example.sw
+  dump
+  dump
+  word2sp-op |this>
+  word2sp-op |is>
+  word2sp-op |a>
+  word2sp-op |sentence>
+  hash[4] word2sp-op |sentence>
+  dump
+  rel-kets[next-1]
+  map[word2sp-op,word2sp] rel-kets[next-1]
+  dump
+  table[word,coeff] 100 self-similar[word2sp] |this>
+  save history
+
+2015-11-21
+  context simple sentence to word2sp example
+  next-1 |this> => |is>
+  next-2 |this> => |a>
+  next-3 |this> => |sentence>
+  next-2gram |this> => |is a>
+  next-3gram |this> => |is a sentence>
+  
+  pre-1 |is> => |this>
+  next-1 |is> => |a>
+  next-2 |is> => |sentence>
+  next-3 |is> => |about>
+  next-2gram |is> => |a sentence>
+  next-3gram |is> => |a sentence about>
+  
+  pre-2 |a> => |this>
+  pre-1 |a> => |is>
+  pre-2gram |a> => |this is>
+  next-1 |a> => |sentence>
+  next-2 |a> => |about>
+  next-3 |a> => |mary>
+  next-2gram |a> => |sentence about>
+  next-3gram |a> => |sentence about mary>
+  
+  pre-3 |sentence> => |this>
+  pre-2 |sentence> => |is>
+  pre-3 |sentence> => |a>
+  pre-3gram |sentence> => |this is a>
+  pre-2gram |sentence> => |is a>
+  next-1 |sentence> => |about>
+  next-2 |sentence> => |mary>
+  next-3 |sentence> => |and>
+  next-2gram |sentence> => |about mary>
+  next-3gram |sentence> => |about mary and>
+  dump
+  save simple-sentence-to-word2sp-example.sw
+  dump exact
+  word2sp-op |*> #=> apply(|op: pre-3> + |op: pre-2> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  dump
+  word2sp-op |sentence>
+  dump
+  info off
+  word2sp-op |sentence>
+  dump
+  word2sp-op |a>
+  word2sp-op |is>
+  hash[4] word2sp-op |is>
+  history
+  dump
+  history
+  save simple-sentence-to-word2sp-example.sw
+  dump
+  the |example sentence> => |This is a sentence about Mary and her pet dog>
+  dump
+  save simple-sentence-to-word2sp-example.sw
+  dump
+  dump
+  word2sp-op |this>
+  word2sp-op |is>
+  word2sp-op |a>
+  word2sp-op |sentence>
+  hash[4] word2sp-op |sentence>
+  dump
+  rel-kets[next-1]
+  map[word2sp-op,word2sp] rel-kets[next-1]
+  dump
+  table[word,coeff] 100 self-similar[word2sp] |this>
+  save history
+  dump exact
+  test-word2sp-op |*> #=> apply(supported-ops |_self>,|_self>)
+  test-word2sp-op |this>
+  q
+
+2015-11-22
+  load testing-word2sp.sw
+  word2sp-op |*> #=> apply(|op: pre-3> + |op: pre-2> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+  word2sp-op |*> #=> coeff-sort apply(|op: pre-3> + |op: pre-2> + |op: pre-1> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+   map[word2sp-op,word2sp] rel-kets[next-1] |>
+  history
+  word2sp |sherlock>
+  save history
+
+2015-11-22
+  load testing-word2sp.sw
+  word2sp-op |*> #=> apply(|op: pre-3> + |op: pre-2> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+  word2sp-op |*> #=> coeff-sort apply(|op: pre-3> + |op: pre-2> + |op: pre-1> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+   map[word2sp-op,word2sp] rel-kets[next-1] |>
+  history
+  word2sp |sherlock>
+  save history
+  table[word,coeff] select[1,200] 100 self-similar[word2sp] |sherlock>
+  
+  history
+  T |*> #=> table[word,ceoff] select[1,200] 100 self-similar[word2sp] |_self>
+  T |hungry>
+  
+  history
+  T |*> #=> table[word,coeff] select[1,200] 100 self-similar[word2sp] |_self>
+  T |hungry>
+  
+  history
+  save history
+
+2015-11-22
+  load testing-word2sp.sw
+  word2sp-op |*> #=> apply(|op: pre-3> + |op: pre-2> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+  word2sp-op |*> #=> coeff-sort apply(|op: pre-3> + |op: pre-2> + |op: pre-1> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+   map[word2sp-op,word2sp] rel-kets[next-1] |>
+  history
+  word2sp |sherlock>
+  save history
+  table[word,coeff] select[1,200] 100 self-similar[word2sp] |sherlock>
+  
+  history
+  T |*> #=> table[word,ceoff] select[1,200] 100 self-similar[word2sp] |_self>
+  T |hungry>
+  
+  history
+  T |*> #=> table[word,coeff] select[1,200] 100 self-similar[word2sp] |_self>
+  T |hungry>
+  
+  history
+  save history
+  how-many-next-1-op |*> #=> how-many next-1 |_self>
+  map[how-many-next-1-op,how-many-next-1] rel-kets[next-1] |>
+  table[word,coeff] select[1,200] reverse sort-by[how-many-next-1] rel-kets[next-1] |>
+  history
+  table[word,how-many-next-1] select[1,200] reverse sort-by[how-many-next-1] rel-kets[next-1] |>
+  save history
+
+2015-11-22
+  load testing-word2sp.sw
+  word2sp-op |*> #=> apply(|op: pre-3> + |op: pre-2> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+  word2sp-op |*> #=> coeff-sort apply(|op: pre-3> + |op: pre-2> + |op: pre-1> + |op: pre-3gram> + |op: pre-2gram> + |op: next-1> + |op: next-2> + |op: next-3> + |op: next-2gram> + |op: next-3gram>,|_self>)
+  word2sp-op |the>
+   map[word2sp-op,word2sp] rel-kets[next-1] |>
+  history
+  word2sp |sherlock>
+  save history
+  table[word,coeff] select[1,200] 100 self-similar[word2sp] |sherlock>
+  
+  history
+  T |*> #=> table[word,ceoff] select[1,200] 100 self-similar[word2sp] |_self>
+  T |hungry>
+  
+  history
+  T |*> #=> table[word,coeff] select[1,200] 100 self-similar[word2sp] |_self>
+  T |hungry>
+  
+  history
+  save history
+  how-many-next-1-op |*> #=> how-many next-1 |_self>
+  map[how-many-next-1-op,how-many-next-1] rel-kets[next-1] |>
+  table[word,coeff] select[1,200] reverse sort-by[how-many-next-1] rel-kets[next-1] |>
+  history
+  table[word,how-many-next-1] select[1,200] reverse sort-by[how-many-next-1] rel-kets[next-1] |>
+  save history
+  table[word,coeff] select[1,200] coeff-sort next-1 |the>
+  
+  history
+  save sherlock-word2sp-trial--saved.sw
+  q
+
+2015-11-22
+  load 30k-wikipedia-links.sw
+  load 30k--wikipedia-links.sw
+  find-inverse[links-to]
+  T |*> #=> table[page,coeff] select[1,200] 100 self-similar[inverse-links-to] |_self>
+  T |WP: Geoffrey_Hinton>
+  
+  history
+  T |WP: Adelaide>
+  history
+  T |WP: Los_Angeles>
+  
+  history
+  save history
+
+2015-11-23
+  load testing-word2sp.sw
+  grams-op |*> #=> apply(|op: pre-3gram> + |op: next-3gram>,|_self>)
+  grams-op |this>
+  history
+  grams-op |*> #=> coeff-sort apply(|op: pre-3gram> + |op: next-3gram>,|_self>)
+  grams-op |this>
+  history
+  map[grams-op,grams] rel-kets[next-1] |>
+  T |*> #=> table[word,coeff] select[1,200] 100 self-similar[grams] |_self>
+  T |this>
+  
+  T |sherlock>
+  
+  T |sat>
+  
+  T |remarked>
+  q
+
+2015-11-23
+  load testing-word2sp.sw
+  T |*> #=> table[word,coeff] select[1,200] 100 self-similar[pre-next-3gram] |_self>
+  T |hungry>
+  T |sat>
+  T |sherlock>
+  q
+
+2015-11-23
+  load ngram-letter-pairs--sherlock-holmes--add-learn.sw
+  letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
+  letter-ramble^200 |The>
+  history
+  old-letter-ramble |*> #=> merge-labels(|_self> + pick-elt next-2-letters extract-3-tail-chars |_self>)
+  old-letter-ramble^200 |The>
+  history
+  q
+
+2015-11-25
+  load 30k-wikipedia-links.sw
+  load 30k--wikipedia-links.sw
+  find-inverse[links-to]
+  T |*> #=> table[page,coeff] select[1,200] 100 self-similar[inverse-links-to] |_self>
+  T |WP: Geoffrey_Hinton>
+  
+  history
+  T |WP: Adelaide>
+  history
+  T |WP: Los_Angeles>
+  
+  history
+  save history
+  T |WP: Ronald_Reagan>
+  history
+  T |WP: Hunger_(motivational_stata)>
+  T |WP: Hunger_(motivational_state)>
+  
+  T |WP: Central_processing_unit>
+  T |Linux>
+  T |WP: Linux>
+  
+  T |WP: BitTorrent>
+  T |WP: artificial_intelligence>
+  T |WP: France>
+  
+  history
+  T |WP: San_Francisco>
+  
+  history
+  how-many inverse-links-to |WP: San_Francisco>
+  q
+
