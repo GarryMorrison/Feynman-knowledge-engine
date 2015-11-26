@@ -38,3 +38,20 @@ def test_fast_sp_multiply():
   r = (fast_superposition() + ket("x",3) + ket("y") + ket("x",0.2) + ket("z",5.7)).multiply(4)
   assert str(r) == '12.8|x> + 4|y> + 22.8|z>'
 
+def test_fast_sp_superposition():
+  r = (fast_superposition() + ket("x",0.4)).superposition()
+  assert type(r) == superposition
+  
+
+def test_fast_sp_single_simm():
+  r1 = fast_superposition() + ket("x",0.3)
+  r2 = fast_superposition() + ket("x")
+  simm = silent_simm(r1,r2)
+  assert str(simm) == '0.3'  
+
+def test_fast_sp_simple_simm():
+  r1 = fast_superposition() + ket("a") + ket("b")
+  r2 = fast_superposition() + ket("b")
+  simm = silent_simm(r1,r2)
+  assert str(simm) == '0.5'
+

@@ -15030,3 +15030,67 @@
   how-many inverse-links-to |WP: San_Francisco>
   q
 
+2015-11-25
+  load fred-sam-friends.sw
+  dump
+  find-unique[friends]
+  dump
+  q
+
+2015-11-26
+  select[1,5] split |a b>
+  table[ket,bah] |x>
+  round[2] |x: 1.23456789>
+  q
+
+2015-11-26
+  ngrams[1,2,3] |x>
+  q
+
+2015-11-26
+   ngrams[1,2,3] |x>
+  q
+
+2015-11-26
+  ngrams[1,2,3] |x>
+  ngrams[1] |a b c d e f>
+  ngrams[2] |a b c d e f>
+  ngrams[3] |a b c d e f>
+  ngrams[1,3] |a b c d e f>
+  ngrams[1,2,3] |a b c d e f>
+  q
+
+2015-11-26
+  letter-ngrams[1] |abcdef>
+  letter-ngrams[1,2,3] |abcdef>
+  q
+
+2015-11-26
+  letter-ngrams[1,2,3] |abcdef>
+  letter-ngrams[1] (|xy> + |uv>)
+  q
+
+2015-11-26
+  letter-ngram[1,x] |xyu>
+  letter-ngrams[1,x] |uvxy>
+  q
+
+2015-11-26
+  list-of |words> => |frog> + |hat> + |horse>
+  word2ngram-op |*> #=> letter-ngrams[1,2,3] |_self>
+  map[word2ngram-op,word2ngram] list-of |words>
+  dump
+  q
+
+2015-11-26
+  load common-English-words.sw
+  word2ngram-op |*> #=> letter-ngrams[1,2,3] |_self>
+  map[word2ngram-op,word2ngram] list-of |common English words>
+  history
+  map[word2ngram-op,word2ngram] |elefant>
+  table[word,coeff] select[1,100] 100 self-similar[word2ngram] |elefant>
+  -- so not a perfect spell check algo
+  -- 1) it is too slow (above table took 2 min)
+  -- 2) it ignores ordering of fragments. elefant is similar to mantelet, because of "ele" and "ant"
+  save history
+

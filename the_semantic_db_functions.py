@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/11/2015
+# Update: 26/11/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3612,6 +3612,10 @@ def one_gram(one):
 def create_word_n_grams(s,N):
   return [" ".join(s[i:i+N]) for i in range(len(s)-N+1)]
 
+def create_letter_n_grams(s,N):
+  return ["".join(s[i:i+N]) for i in range(len(s)-N+1)]
+
+
 def two_gram(one):
   text = one.label if type(one) == ket else one
   if text.startswith('text: '):
@@ -3637,7 +3641,38 @@ def three_gram(one):
     result += ket(w)
   return result
 
+def make_ngrams(one,parameters,ngram_type):
+  logger.debug("one: " + str(one))
+  logger.debug("parameters: " + parameters)
+  logger.debug("ngram-type: " + ngram_type)
+  sizes = parameters.split(',')
+  for k in sizes:                 # check our sizes are all integers. The list should be short, so the O(n) is very cheap.
+    if not k.isdigit():
+      return ket("",0)
+  
+  text = one.label if type(one) == ket else one
+  if text.startswith('text: '):
+    text = text[6:]
 
+  if ngram_type == "word":
+    words = [w for w in re.split('[^a-z0-9_\']',text.lower().replace('\\n',' ')) if w]       # do we want .lower() in there?
+    create_ngram_fn = create_word_n_grams
+  elif ngram_type == "letter":
+    words = list(text)
+    create_ngram_fn = create_letter_n_grams
+  else:
+    return ket("",0)
+
+#  result = fast_superposition()           # seems to bug out. 
+  result = superposition()
+  for k in sizes:
+    for w in create_ngram_fn(words,int(k)):
+      result += ket(w)
+#  return result.superposition()
+  return result      
+       
+      
+  
 # 30/4/2015:
 # plus-or-minus |x> returns |+ x> + |- x>
 # plus-or-minus |+ x> returns |+ x> + |- x>
@@ -3694,7 +3729,9 @@ def average_categorize(context,parameters):
 # How do we test this thing?? Maybe the simple images example?
 # Hrmm.. might be able to use this (a thing I recall from linear algebra): https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
 # Instead of <u,v> being standard dot-product, use simm(u,v). Might just work.
-# I don't think this will be the unique_categorize I'm after, but should still be useful. And also as a starting point. 
+# I don't think this will be the unique_categorize I'm after, but should still be useful. And also as a starting point.
+#
+# Hrm... I don't think I know what I am doing here. I need to give it a lot more thought!    
 #
 def unique_categorize(context,parameters):
   try:
@@ -3730,7 +3767,8 @@ def unique_categorize(context,parameters):
       tmp_sp = fast_superposition()
       for k2,sp2 in enumerate(out_list):
         if k1 != k2:
-          tmp_sp += sp2 
+          tmp_sp += sp2
+# ...           
       
   for k,sp in enumerate(out_list):
     print("sp:",sp)
@@ -3846,4 +3884,12 @@ def respond_to_pattern(one,two,three):
   similarity = silent_simm(r,two)
   return one + three.multiply(similarity)
   
+
+# 26/11/2015:
+# Let's try to implement edit-distance using operators.
+# https://en.wikipedia.org/wiki/Edit_distance
+#
+#def edit_insert(one,parameters):
+#def edit_delete():
+#def edit_substitute():
                

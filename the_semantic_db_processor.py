@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 13/10/2015
+# Update: 26/11/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -406,8 +406,11 @@ compound_table = {
 
 # 25/8/2015: a couple of aliases
   "hash"                   : ".apply_fn(ket_hash,\"{0}\")",
-  "sp-to-dat"              : ".apply_sp_fn(hash_data,\"{0}\")",     
-
+  "sp-to-dat"              : ".apply_sp_fn(hash_data,\"{0}\")",
+  
+# 26/11/2015:
+  "letter-ngrams"                 : ".apply_fn(make_ngrams,\"{0}\",\"letter\")",       
+  "word-ngrams"                   : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
 }
 
 
