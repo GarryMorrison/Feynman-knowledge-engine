@@ -50,16 +50,16 @@ for x in context.relevant_kets("*"):
     
   for op in context.recall("supported-ops",x):
     op_label = 'label="' + op.label[4:] + '"'
-    arrow_type = ',arrowhead="normal"'
+    arrow_type = 'arrowhead="normal"'
 
     sp = context.recall(op,x)
     if type(sp) == stored_rule:
       sp = ket(sp.rule)
-      arrow_type = ',arrowhead="box"'
+      arrow_type = 'arrowhead="box"'
 
     if type(sp) == memoizing_rule:
       sp = ket(sp.rule)
-      arrow_type = ',arrowhead="tee"'
+      arrow_type = 'arrowhead="tee"'
 
     for y in sp:
       if y.label not in node_dict:
@@ -68,7 +68,7 @@ for x in context.relevant_kets("*"):
         k += 1
       else:
         y_node = node_dict[y.label]
-      f.write(x_node + " -> " + y_node + ' [' + op_label + arrow_type + ']\n')
+      f.write(x_node + " -> " + y_node + ' [' + op_label + ',' + arrow_type + ']\n')
 
 # now write out the node labels:
 for label in node_dict:
