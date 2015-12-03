@@ -1,0 +1,13 @@
+digraph g {
+context -> context_name
+context_name [label="learning plurals"]
+n0 -> n1 [label="plural",arrowhead="box"]
+n2 -> n3 [label="plural",arrowhead="normal"]
+n4 -> n5 [label="plural",arrowhead="normal"]
+n3 [label="word: mice"]
+n5 [label="word: feet"]
+n0 [label="word: *"]
+n2 [label="word: mouse"]
+n4 [label="word: foot"]
+n1 [label="merge-labels(|_self> + |s>)"]
+}

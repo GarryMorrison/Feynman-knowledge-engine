@@ -15128,3 +15128,19 @@
   hash-data[4] molecular-pieces |molecule: methanol>
   q
 
+2015-12-03
+  load bots.sw
+  dump
+  everything-op |*> #=> apply(supported-ops |_self>,|_self>)
+  map[everything-op,everything-about] starts-with |bot: >
+  dump
+  everything-about starts-with |bot: >
+  coeff-sort everything-about starts-with |bot: >
+  table[bot,coeff] 100 self-similar[everything-about] |bot: Madison>
+  table[bot,coeff] 100 self-similar[everything-about] |bot: Emma>
+  table[bot,coeff] 100 self-similar[everything-about] |bot: Bella>
+  common[everything-about] starts-with |bot: >
+  common[everything-about] (|bot: Madison> + |bot: Emma>)
+  history
+  q
+

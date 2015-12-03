@@ -18,7 +18,7 @@ http://semantic-db.org/wikipedia-sw/
 My console history. Essentially a giant collection of examples:
 https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/sa-console-command-history.txt
 
-visualizing sw files, via the DOT language:
+Visualizing sw files, via the DOT language:
 http://write-up.semantic-db.org/169-visualizing-sw-files.html
 
 <pre>
