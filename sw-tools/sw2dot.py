@@ -63,7 +63,7 @@ if context.context_name() != "sw file to dot file":
 # walk the sw file:
 node_dict = {}
 k = 0
-for x in context.relevant_kets("*"):
+for x in context.relevant_kets("*"):             # find all kets in the sw file
   if x.label not in node_dict:
     x_node = "n" + str(k)
     node_dict[x.label] = x_node
@@ -71,11 +71,11 @@ for x in context.relevant_kets("*"):
   else:
     x_node = node_dict[x.label]
     
-  for op in context.recall("supported-ops",x):
+  for op in context.recall("supported-ops",x):   # find the supported operators for a given ket
     op_label = op.label[4:]
     arrow_type = "normal"
 
-    sp = context.recall(op,x)
+    sp = context.recall(op,x)                    # find the superposition for a given operator applied to the given ket
     if type(sp) == stored_rule:
       sp = ket(sp.rule)
       arrow_type = "box"
