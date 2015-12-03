@@ -1,0 +1,17 @@
+digraph g {
+context -> context_name
+context_name [label="Fibonacci"]
+n0 -> n1 [label="fib",arrowhead="normal"]
+n1 -> n1 [label="fib",arrowhead="normal"]
+n2 -> n3 [label="n-1",arrowhead="box"]
+n2 -> n4 [label="n-2",arrowhead="box"]
+n2 -> n5 [label="fib",arrowhead="box"]
+n2 -> n6 [label="fib-ratio",arrowhead="box"]
+n2 [label="*"]
+n4 [label="arithmetic(|_self>,|->,|2>)"]
+n6 [label="arithmetic( fib |_self> , |/>, fib n-1 |_self> )"]
+n0 [label="0"]
+n5 [label="arithmetic( fib n-1 |_self>, |+>, fib n-2 |_self>)"]
+n3 [label="arithmetic(|_self>,|->,|1>)"]
+n1 [label="1"]
+}

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/11/2015
+# Update: 3/12/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1747,6 +1747,10 @@ class new_context(object):
     self.name = name                            # BTW, it is intended to erase what is currently defined for the current context.
     self.ket_rules_dict = OrderedDict()
     self.sp_rules_dict = OrderedDict()
+    
+# 3/12/2015:
+  def context_name(self):
+    return self.name    
 
 # op is a string
 # label is a string or a ket
@@ -2191,11 +2195,18 @@ class new_context(object):
       with open(filename,'r') as f:
         for line in f:
           if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
-            return
+            return                               # maybe move try/except to around parse_rule_line() instead of entire file?
           parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
     except:
       logger.info("failed to load: " + filename)
-      
+
+# 3/12/2015: new feature context.print_universe() and context.print_multiverse()
+  def print_universe(self,exact_dump=False):
+    print(self.dump_universe(exact_dump))
+
+  def print_multiverse(self,exact_dump=False):
+    print(self.dump_multiverse(exact_dump))
+              
                                                                       
 class context_list(object):
   def __init__(self,name):
@@ -2239,7 +2250,7 @@ class context_list(object):
     return text  
 
   def context_name(self):
-    return self.data[self.index].name
+    return self.data[self.index].context_name()
 
   def learn(self,op,label,rule,add_learn=False):
     self.data[self.index].learn(op,label,rule,add_learn)
@@ -2351,3 +2362,10 @@ class context_list(object):
           parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
     except:
       logger.info("failed to load: " + filename)
+
+# 3/12/2015: new feature context.print_universe() and context.print_multiverse()
+  def print_universe(self,exact_dump=False):
+    print(self.data[self.index].dump_universe(exact_dump))
+
+  def print_multiverse(self,exact_dump=False):
+    print(self.dump_multiverse(exact_dump))

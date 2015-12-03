@@ -15094,3 +15094,37 @@
   -- 2) it ignores ordering of fragments. elefant is similar to mantelet, because of "ele" and "ant"
   save history
 
+2015-11-26
+  load common-English-words.sw
+  word2ngram-op |*> #=> letter-ngrams[1,2,3] |_self>
+  map[word2ngram-op,word2ngram] list-of |common English words>
+  history
+  map[word2ngram-op,word2ngram] |elefant>
+  table[word,coeff] select[1,100] 100 self-similar[word2ngram] |elefant>
+  -- so not a perfect spell check algo
+  -- 1) it is too slow (above table took 2 min)
+  -- 2) it ignores ordering of fragments. elefant is similar to mantelet, because of "ele" and "ant"
+  save history
+  
+  q
+
+2015-12-03
+  load frog.sw
+  dump
+  dump exact
+  q
+
+2015-12-03
+  load methanol.sw
+  dump
+  table[piece,atom-type,bonds-to] molecular-pieces |molecule: methanol>
+  history
+  atom-type molecular-pieces |molecule: methanol>
+  q
+
+2015-12-03
+  load methanol.sw
+  dump
+  hash-data[4] molecular-pieces |molecule: methanol>
+  q
+

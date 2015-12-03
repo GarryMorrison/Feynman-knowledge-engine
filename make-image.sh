@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# == 0 ] ; then
-  echo -e "\nUsage: ./make-image.sh filename\n"
+  echo -e "\nUsage: ./make-image.sh filename.dat\n"
   exit
 fi
 
