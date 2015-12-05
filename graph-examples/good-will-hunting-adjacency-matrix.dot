@@ -1,16 +1,11 @@
 digraph g {
-context -> context_name
-context_name [label="good will hunting adjacency matrix"]
-n0 -> n1 [label="adj",arrowhead="normal"]
-n0 -> n2 [label="adj",arrowhead="normal"]
-n1 -> n0 [label="adj",arrowhead="normal"]
-n1 -> n2 [label="adj",arrowhead="normal"]
-n1 -> n3 [label="adj",arrowhead="normal"]
-n3 -> n1 [label="adj",arrowhead="normal"]
-n2 -> n0 [label="adj",arrowhead="normal"]
-n2 -> n1 [label="adj",arrowhead="normal"]
-n3 [label="3"]
-n0 [label="1"]
-n2 [label="4"]
-n1 [label="2"]
+"context" -> "good will hunting adjacency matrix"
+"1" -> "2" [label="adj",arrowhead=normal]
+"1" -> "4" [label="adj",arrowhead=normal]
+"2" -> "1" [label="adj",arrowhead=normal]
+"2" -> "4" [label="adj",arrowhead=normal]
+"2" -> "3" [label="adj",arrowhead=normal]
+"3" -> "2" [label="adj",arrowhead=normal]
+"4" -> "1" [label="adj",arrowhead=normal]
+"4" -> "2" [label="adj",arrowhead=normal]
 }

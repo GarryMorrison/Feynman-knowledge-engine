@@ -15144,3 +15144,44 @@
   history
   q
 
+2015-12-04
+  load fibonacci.sw
+  dump
+  map[fib] range(|2>,|10>)
+  dump
+  history
+  save fibonacci-saved.sw
+  q
+
+2015-12-04
+  load fibonacci.sw
+  dump
+  map[fib] range(|2>,|30>)
+  dump
+  save fibonacci-saved.sw
+  q
+
+2015-12-04
+  load methanol.sw
+  dump
+  table[pieces,atom-type,bonds-to] molecular-pieces |molecule: methanol>
+  history
+  atom-type molecular-pieces |molecule: methanol>
+  dump
+  relevant-kets[*]
+  supported-ops relevant-kets[*]
+  debug on
+  supported-ops relevant-kets[*]
+  q
+
+2015-12-04
+  strange-int |6>
+  strange-int |8>
+  strange-int |10>
+  strange-int |number: 10>
+  SoPF-op |*> #=> strange-int |_self>
+  map[SoPF-op,SoPF] range(|2>,|100>)
+  dump
+  history
+  q
+
