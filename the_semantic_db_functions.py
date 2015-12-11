@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/11/2015
+# Update: 4/12/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -189,7 +189,8 @@ def show_range(start,finish,step="n: 1"):
     stop = int(v2) + 1           # maybe bug. also in float version!
     step = int(v3)
     for k in range(start,stop,step):
-      result += ket(label + str(k))            # fast_superposition will speed this line up.
+      #result += ket(label + str(k))            # fast_superposition will speed this line up.
+      result.data.append(ket(label + str(k)))   # temp hack/fix. Remove when swap in fast_superposition. Made a vast improvement for range(|2>,|50000>)
   except:     
     try:
       start = float(v1)

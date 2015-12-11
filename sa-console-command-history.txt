@@ -15185,3 +15185,353 @@
   history
   q
 
+2015-12-04
+  table[number] select[1,50] range(|number: 2>,|number: 50000>)
+  q
+
+2015-12-04
+  table[number] select[1,50] range(|number: 2>,|number: 50000>)
+  history
+  table[number] select[1,10] range(|2>,|50000>)
+  q
+
+2015-12-04
+  strange-int |*> #=> strange-int |_self>
+  strange-int-list |*> #=> strange-int-list |_self>
+  length-of-strange-int-list |*> #=> how-many strange-int-list |_self>
+  length-of-strange-int-list |number: 1000>
+  table[number,strange-int,strange-int-list,length-of-strange-int-list] reverse sorty-by[length-of-strange-int-list] range(|number: 2>,|number: 30>)
+  history
+  table[number,strange-int,strange-int-list,length-of-strange-int-list] reverse sort-by[length-of-strange-int-list] range(|number: 2>,|number: 30>)
+  history
+  table[number,strange-int,strange-int-list,length-of-strange-int-list] select[1,50] reverse sort-by[length-of-strange-int-list] range(|number: 2>,|number: 50000>)
+  history
+  table[number,strange-int,strange-int-list,length-of-strange-int-list] select[1,100] reverse sort-by[length-of-strange-int-list] range(|number: 2>,|number: 100000>)
+  
+  history
+  
+  save history
+
+2015-12-05
+  SoPF-op |*> #=> strange-int merge-labels(|number: > + |_self>)
+  map[SoPF-op,SoPF] range(|2>,|100>)
+  dump
+  history
+  extract-value |number: 37>
+  SoPF-op |*> #=> extract-value strange-int merge-labels(|number: > + |_self>)
+  map[SoPF-op,SoPF] range(|2>,|100>)
+  dump
+  save sum-of-prime-factors.sw
+  history
+  map[SoPF-op,SoPF] range(|2>,|1000>)
+  history
+  save sum-of-prime-factors.sw
+  factor |number: 28>
+  history
+  strange-int |*> #=> strange-int |_self>
+  table[number,strange-int] range(|2>,|20>)
+  history
+  table[number,strange-int] range(|number: 2>,|number: 20>)
+  history
+  strange-int-list |number: 1000>
+  strange-int-list |*> #=> strange-int-list |_self>
+  table[number,strange-int,strange-int-list] range(|number: 2>,|number: 30>)
+  history
+  
+  how-long-is-strange-int-list |*> #=> how-many strange-int-list |_self>
+  table[number,strange-int,strange-int-list,how-long-is-strange-int-list] range(|number: 2>,|number: 30>)
+  history
+  table[number,strange-int,strange-int-list,how-long-is-strange-int-list] reverse sort-by[how-long-is-strange-int-list] range(|number: 2>,|number: 30>)
+  history
+  table[number,strange-int,strange-int-list,how-long-is-strange-int-list] select[1,50] reverse sort-by[how-long-is-strange-int-list] range(|number: 2>,|number: 50000>)
+  save history
+
+2015-12-06
+  rescale[5] (3|x> + |y>)
+  debug on
+  rescale[5] (3|x> + |y>)
+  q
+
+2015-12-06
+  context procrasti example
+  the-utility-function-for |procrasti of kuro5hin> => 25|maximize bitcoin> + 13|make kr5ddit a success> + 10|get laid> + 6.3|have a coffee> + 2|the heat wave goes away> + |...>
+  the-derivation-of-the-username-for |procrasti of kuro5hin> => |someone that procrastinates a lot>
+  the-website-created-by |procrasti of kuro5hin> => |url: https://kr5ddit.com>
+  where-lives |procrasti of kuro5hin> => |I think Perth>
+  dump
+  the-normalized-utility-function-for |procrasti of kuro5hin> => normalize[100] the-utility-function-for |_self>
+  dump
+  history
+  table[procrasti,*] |procrasti of kuro5hin>
+  display |procrasti of kuro5hin>
+  save history
+
+2015-12-06
+  context procrasti example
+  the-utility-function-for |procrasti of kuro5hin> => 25|maximize bitcoin> + 13|make kr5ddit a success> + 10|get laid> + 6.3|have a coffee> + 2|the heat wave goes away> + |...>
+  the-derivation-of-the-username-for |procrasti of kuro5hin> => |someone that procrastinates a lot>
+  the-website-created-by |procrasti of kuro5hin> => |url: https://kr5ddit.com>
+  where-lives |procrasti of kuro5hin> => |I think Perth>
+  dump
+  the-normalized-utility-function-for |procrasti of kuro5hin> => normalize[100] the-utility-function-for |_self>
+  dump
+  history
+  table[procrasti,*] |procrasti of kuro5hin>
+  display |procrasti of kuro5hin>
+  save history
+  dump
+  q
+
+2015-12-08
+  a |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: chair> + |number: 5573>
+  dump
+  is-number |*> => |no>
+  is-number |number: *> => |yes>
+  dump
+  is-number a |list>
+  history
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  dump
+  number-filter |*> #=> 0|_self>
+  number-filter |number: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter |*> #=> 0|_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |*> #=> 0|_self>
+  animal-filter |animal: *> #=> |_self>
+  dump
+  animal-filter the |list>
+  furniture-filter the |list>
+  save history
+
+2015-12-08
+  a |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: chair> + |number: 5573>
+  dump
+  is-number |*> => |no>
+  is-number |number: *> => |yes>
+  dump
+  is-number a |list>
+  history
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  dump
+  number-filter |*> #=> 0|_self>
+  number-filter |number: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter |*> #=> 0|_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |*> #=> 0|_self>
+  animal-filter |animal: *> #=> |_self>
+  dump
+  animal-filter the |list>
+  furniture-filter the |list>
+  save history
+  dump
+  test-number-filter |*> #=> drop 0|_self>
+  dump
+  test-number-filter |number: *> #=> |_self>
+  test-number-filter the |list>
+  dump
+  save history
+
+2015-12-09
+  a |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: chair> + |number: 5573>
+  dump
+  is-number |*> => |no>
+  is-number |number: *> => |yes>
+  dump
+  is-number a |list>
+  history
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  dump
+  number-filter |*> #=> 0|_self>
+  number-filter |number: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter |*> #=> 0|_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |*> #=> 0|_self>
+  animal-filter |animal: *> #=> |_self>
+  dump
+  animal-filter the |list>
+  furniture-filter the |list>
+  save history
+  dump
+  test-number-filter |*> #=> drop 0|_self>
+  dump
+  test-number-filter |number: *> #=> |_self>
+  test-number-filter the |list>
+  dump
+  save history
+  test-number-filter |*> #=> |>
+  dump
+  test-number-filter the |list>
+  test-animal-filter |*> => |>
+  dump
+  context KR
+  above |red block> => |blue block>
+  above |green block> => |red block>
+  dump
+  above |green block> => |blue block>
+  dump
+  mother-of |John> => |Liz>
+  is-sitting-on mother-of |John> => |chair>
+  is-sitting-on |Liz>
+  dump
+  has-gender |mystery person> => |male>
+  has-DOB |mystery person> => |date: 4/8/1961>
+  has-race |mystery person> => |African American>
+  has-hair-color |mystery person> => |black>
+  has-address |mystery person> => |White House>
+  dump
+  guess-who-is |mystery person> => |Barack Obama>
+  save history
+
+2015-12-09
+  a |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: chair> + |number: 5573>
+  dump
+  is-number |*> => |no>
+  is-number |number: *> => |yes>
+  dump
+  is-number a |list>
+  history
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  dump
+  number-filter |*> #=> 0|_self>
+  number-filter |number: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter |*> #=> 0|_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |*> #=> 0|_self>
+  animal-filter |animal: *> #=> |_self>
+  dump
+  animal-filter the |list>
+  furniture-filter the |list>
+  save history
+  dump
+  test-number-filter |*> #=> drop 0|_self>
+  dump
+  test-number-filter |number: *> #=> |_self>
+  test-number-filter the |list>
+  dump
+  save history
+  test-number-filter |*> #=> |>
+  dump
+  test-number-filter the |list>
+  test-animal-filter |*> => |>
+  dump
+  context KR
+  above |red block> => |blue block>
+  above |green block> => |red block>
+  dump
+  above |green block> => |blue block>
+  dump
+  mother-of |John> => |Liz>
+  is-sitting-on mother-of |John> => |chair>
+  is-sitting-on |Liz>
+  dump
+  has-gender |mystery person> => |male>
+  has-DOB |mystery person> => |date: 4/8/1961>
+  has-race |mystery person> => |African American>
+  has-hair-color |mystery person> => |black>
+  has-address |mystery person> => |White House>
+  dump
+  guess-who-is |mystery person> => |Barack Obama>
+  save history
+  dump
+  q
+
+2015-12-09
+  is-a |Socrates> => |human>
+  is-a |human> => |mortal>
+  dump
+  exp-max[is-a] |Socrates>
+  exp[is-a,2] |Socrates>
+  exp[is-a,1] |Socrates>
+  save history
+
+2015-12-10
+  URI |*> #=> merge-labels(|URI: http://example.com/example-ontology#> + |_self>)
+  URI |Fred>
+  URI (|Fred> + |Sam> + |Jack>)
+  dump
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + |_self>)
+  URI |op: friends>
+  URI |Fred>
+  dump
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + extract-value |_self>)
+  URI |op: friends>
+  history
+  save history
+
+2015-12-10
+  URI |*> #=> merge-labels(|URI: http://example.com/example-ontology#> + |_self>)
+  URI |Fred>
+  URI (|Fred> + |Sam> + |Jack>)
+  dump
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + |_self>)
+  URI |op: friends>
+  URI |Fred>
+  dump
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + extract-value |_self>)
+  URI |op: friends>
+  history
+  save history
+  same-as |Fred> => |Fred Smith of Sydney>
+  dump
+  is-mother |Mary> => |yes>
+  dump
+  is-a-mother |Mary> => |yes>
+  is-a-parent |*> #=> if(is-a-mother |_self>,|yes>,|no>)
+  is-a-parent |Mary>
+  is-a-parent |Fred>
+  history
+  load fred-sam-friends.sw
+  context
+  URI |*> #=> merge-labels(|URI: http://example.com/example-ontology#> + |_self>)
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + extract-value |_self>)
+  dump
+  URI friends |Fred>
+  dump
+  URI supported-ops |Fred>
+  save history
+
+2015-12-11
+  URI |*> #=> merge-labels(|URI: http://example.com/example-ontology#> + |_self>)
+  URI |Fred>
+  URI (|Fred> + |Sam> + |Jack>)
+  dump
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + |_self>)
+  URI |op: friends>
+  URI |Fred>
+  dump
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + extract-value |_self>)
+  URI |op: friends>
+  history
+  save history
+  same-as |Fred> => |Fred Smith of Sydney>
+  dump
+  is-mother |Mary> => |yes>
+  dump
+  is-a-mother |Mary> => |yes>
+  is-a-parent |*> #=> if(is-a-mother |_self>,|yes>,|no>)
+  is-a-parent |Mary>
+  is-a-parent |Fred>
+  history
+  load fred-sam-friends.sw
+  context
+  URI |*> #=> merge-labels(|URI: http://example.com/example-ontology#> + |_self>)
+  URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + extract-value |_self>)
+  dump
+  URI friends |Fred>
+  dump
+  URI supported-ops |Fred>
+  save history
+  rel-kets[*]
+  supported-ops rel-kets[*]
+  debug on
+  supported-ops rel-kets[*]
+  q
+
