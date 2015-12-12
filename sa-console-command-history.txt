@@ -15535,3 +15535,118 @@
   supported-ops rel-kets[*]
   q
 
+2015-12-12
+  is-a |Socrates> => |human>
+  is-a |human> => |mortal>
+  dump
+  exp-max[is-a] |Socrates>
+  exp[is-a,2] |Socrates>
+  exp[is-a,1] |Socrates>
+  save history
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 2>,|number: 3>)
+  debug on
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 2>,|number: 3>)
+  history
+  cell-value |grid: 1 22> => |5>
+  |cell> => |grid: 1 22>
+  dump
+  cell-value "" |cell> => arithmetic(cell-value |_self>,|+>,|1>)
+  dump
+  cell-value "" |cell> => arithmetic(cell-value |_self>,|+>,|1>)
+  dump
+  save history
+
+2015-12-12
+  load bigger-binary-tree.sw
+  q
+
+2015-12-12
+  load bigger-binary-tree.sw
+  dump
+  left-op |*> #=> merge-labels(|0> + |_self>)
+  right-op |*> #=> merge-labels(|1> + |_self>)
+  dump
+  left-op |100>
+  right-op |100>
+  dump
+  child |*> #=> left |_self> + right |_self>
+  child |x>
+  child^2 |x>
+  child^3 |x>
+  child^4 |x>
+  history
+  child^3 |x>
+  dump
+  map[left-op,left] child^3 |x>
+  history
+  map[right-op,right] child^3 |x>
+  child^4 |x>
+  history
+  save history
+
+2015-12-13
+  load bigger-binary-tree.sw
+  dump
+  left-op |*> #=> merge-labels(|0> + |_self>)
+  right-op |*> #=> merge-labels(|1> + |_self>)
+  dump
+  left-op |100>
+  right-op |100>
+  dump
+  child |*> #=> left |_self> + right |_self>
+  child |x>
+  child^2 |x>
+  child^3 |x>
+  child^4 |x>
+  history
+  child^3 |x>
+  dump
+  map[left-op,left] child^3 |x>
+  history
+  map[right-op,right] child^3 |x>
+  child^4 |x>
+  history
+  save history
+  child^2 |x>
+  label weighted-pick-elt child^2 |x> => |some label>
+  dump
+  history
+  child^2 |x>
+  history
+  context
+  context bigger binary tree
+  left-op |*> #=> merge-labels(|_self> + |0>)
+  right-op |*> #=> merge-labels(|_self> + |1>)
+  left |x> => |0>
+  right |x> => |1>
+  history
+  child |*> #=> left |_self> + right |_self>
+  child |x>
+  child^2 |x>
+  map[left-op,left] child |x>
+  map[right-op,right] child |x>
+  dump
+  left |0> => |00>
+  right |1> => |11>
+  dump
+  history
+  map[left-op,left] child^2 |x>
+  history
+  map[right-op,right] child^2 |x>
+  dump
+  history
+  map[left-op,left] child^3 |x>
+  map[right-op,right] child^3 |x>
+  
+  map[left-op,left] child^4 |x>
+  map[right-op,right] child^4 |x>
+  
+  map[left-op,left] child^5 |x>
+  map[right-op,right] child^5 |x>
+  
+  map[left-op,left] child^6 |x>
+  map[right-op,right] child^6 |x>dump
+  dump
+  save bigger-binary-tree.sw
+  q
+
