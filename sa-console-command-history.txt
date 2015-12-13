@@ -15650,3 +15650,42 @@
   save bigger-binary-tree.sw
   q
 
+2015-12-13
+  load improved-geonames-au.sw
+  dump |id: 995l324>
+  dump |id: 9957324>
+  find-inverse[name]
+  inverse-name |Adelaide>
+  table[Adelaide,*] inverse-name |Adelaide>
+  table[Perth,*] inverse-name |Perth>
+  table[StPeters,*] inverse-name |St Peters>
+  table[Sydney,*] inverse-name |Sydney>
+  table[city,*] select[1,200] reverse sort-by[population] starts-with |id: >
+  
+  history
+  table[place,name,population,latitude,longitude,tz] select[1,200] reverse sort-by[population] starts-with |id: >
+  
+  history
+  rank-table[place,name,population,latitude,longitude,tz] select[1,200] reverse sort-by[population] starts-with |id: >
+  history
+  table[Clare,*] inverse-name |Clare>
+  history
+  
+  load improved-geonames-cities-15000.sw
+  rank-table[place,name,population,latitude,longitude,tz] select[1,20] reverse sort-by[population] starts-with |id: >
+  history
+  rank-table[place,name,population,latitude,longitude,tz] select[1,30] reverse sort-by[population] starts-with |id: >
+  history
+  
+  population |id: 1796236>
+  to-comma-number population |id: 1796236>
+  population-comma |*> #=> to-comma-number population |_self>
+   rank-table[place,name,population-comma,latitude,longitude,tz] select[1,30] reverse sort-by[population] starts-with |id: >
+  history
+  
+  icontext
+  population-comma |*> #=> to-comma-number population |_self>
+  rank-table[place,name,population-comma,latitude,longitude,tz] select[1,200] reverse sort-by[population] starts-with |id: >
+  history
+  save history
+

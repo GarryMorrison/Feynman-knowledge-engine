@@ -1,0 +1,35 @@
+|context> => |context: mind pixels>
+source |context: mind pixels> => |URL: http://write-up.semantic-db.org/113-mapping-mindpixels-to-bko-rules.html>
+
+is-cold |icecream> => |yes>
+is-a-planet |earth> => |yes>
+is-a-color |green> => |yes>
+does-fly |airplanes> => |yes>
+is-hot-during |summer> => |yes>
+is-in-south-america |chile> => |yes>
+is-a-man |Socrates> => |yes>
+uses-electricity |computer> => |yes>
+spoken-language |france> => |french>
+was-a-us-president |Abraham Lincoln> => |yes>
+is-white |milk> => |yes>
+have-emotions |people> => |yes>
+
+gender |human species> => |male> + |female>
+is-made-of-rock |mountain> => |yes>
+is-a-computer-company |sun microsystems> => |yes>
+see-with |eyes> => |yes>
+smell-with |nose> => |yes>
+is-bad-for-your-health |smoking> => |yes>
+has-four-legs |dog> => |yes>
+has-a-heart |animal> => |yes>
+is-a-planet |earth> => |yes> -- duplicate rule
+is-liquid |water> => |yes>
+is-a-cartoon-character |bugs bunny> => |yes>
+communicates-by-telephone |humans> => |yes>
+is-a-drink |beer> => |yes>
+how-many-months |year> => |number: 12>
+hurts-your-eyes-when-you-look-at-it |sun> => |yes>
+has-doors |car> => |yes>
+is-a-fruit |orange> => |yes>
+is-a-color |orange> => |yes>
+is-a-necessity |water> => |yes>
