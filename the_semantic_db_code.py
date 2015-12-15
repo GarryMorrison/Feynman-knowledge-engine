@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 3/12/2015
+# Update: 15/12/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -17,6 +17,7 @@ import sys
 import random
 import copy
 import re
+import math
 
 from operator import mul
 
@@ -282,6 +283,10 @@ class ket(object):
     if result.value > 0:
       result.value = t
     return result
+
+# 15/12/2015:
+  def softmax(self):
+    return ket(self.label,1)
 
   def rescale(self,t=1):
     result = copy.deepcopy(self)
@@ -1050,6 +1055,15 @@ class superposition(object):
         x.value = t*x.value/the_sum  
     return result
 
+  def softmax(self):
+    result = copy.deepcopy(self)
+    the_sum = sum(math.exp(x.value) for x in result.data)
+    if the_sum > 0:
+      for x in result.data:
+        x.value = math.exp(x.value)/the_sum  
+    return result
+
+
   def rescale(self,t=1):
     if len(self.data) == 0:
       return ket("")
@@ -1362,7 +1376,14 @@ def set_to(x,t):
 # 4/1/2015:
 def subtraction_invert(x,t):
   return t - x
-    
+
+# 15/12/2015:
+def log(x,t=None):
+  if x <= 0:
+    return 0
+  if t == None:
+    return math.log(x)       # default is base e, ie natural logarithm
+  return math.log(x,t)       # choose another base
 
 # we need this since pattern_recognition() requires simm().
 # bug's out if I put this at the top of the page.

@@ -1,0 +1,13 @@
+digraph g {
+"context" -> "semantic network example"
+"Mammal" -> "Vertebra" [label="has",arrowhead=normal]
+"Mammal" -> "Animal" [label="is-an",arrowhead=normal]
+"Cat" -> "Mammal" [label="is-a",arrowhead=normal]
+"Cat" -> "Fur" [label="has",arrowhead=normal]
+"Bear" -> "Mammal" [label="is-a",arrowhead=normal]
+"Bear" -> "Fur" [label="has",arrowhead=normal]
+"Whale" -> "Mammal" [label="is-a",arrowhead=normal]
+"Whale" -> "Water" [label="lives-in",arrowhead=normal]
+"Fish" -> "Animal" [label="is-an",arrowhead=normal]
+"Fish" -> "Water" [label="lives-in",arrowhead=normal]
+}

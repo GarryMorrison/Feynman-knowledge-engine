@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/11/2015
+# Update: 15/12/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -36,6 +36,8 @@ built_in_table = {
 # "find-value"       : "find_value",
   "normalize"        : "normalize",
   "rescale"          : "rescale",
+  "softmax"          : "softmax",      # added 15/12/2015
+  
 # "rescale"          : "rescale",
 # "sigmoid"          : "apply_sigmoid",
 # "function"         : "apply_fn",
@@ -107,7 +109,9 @@ sigmoid_table = {
 # 27/8/2015: a couple of sigmoid aliases:
   "BF"                 : "binary_filter",
   "XF"                 : "xor_filter",
-  
+
+# 15/12/2015:
+  "log"                : "log",  
 }                                   
 
 # some ket -> ket functions:
@@ -409,8 +413,11 @@ compound_table = {
   "sp-to-dat"              : ".apply_sp_fn(hash_data,\"{0}\")",
   
 # 26/11/2015:
-  "letter-ngrams"                 : ".apply_fn(make_ngrams,\"{0}\",\"letter\")",       
-  "word-ngrams"                   : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
+  "letter-ngrams"          : ".apply_fn(make_ngrams,\"{0}\",\"letter\")",       
+  "word-ngrams"            : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
+  
+# 15/12/2015:
+  "log"                    : ".apply_sigmoid(log,{0})",  
 }
 
 

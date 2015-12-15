@@ -15689,3 +15689,521 @@
   history
   save history
 
+2015-12-14
+  14^2 |x>
+  h
+  ident |*> #=> |_self>
+  ident |x>
+  history
+  q
+
+2015-12-14
+  has-skin |animal> => |yes>
+  has-skin |animal: *> => |yes>
+  kind-of |animal> => |animal: fish>
+  kind-of |animal> => |animal: birds>
+  kind-of |animal> => |animal: mammals>
+  has-skin |animal: mammals>
+  dump
+  eats |animal> => |yes>
+  eats |animal: *> => |yes>
+  dump
+  history
+  kind-of |animal> => |animal: fish> + |animal: birds> + |animal: mammals>
+  dump
+  has-gills |animal: fish> => |yes>
+  has-scales |animal: fish> => |yes>
+  dump
+  has-feathers |animal: birds> => |yes>
+  has-beak |animal: birds> => |yes>
+  dump
+  has-fur |animal: mammals> => |yes>
+  dump
+  save animals.sw
+  history
+  q
+
+2015-12-14
+  q
+
+2015-12-14
+  is-a |Socrates> => |human>
+  is-a |human> => |mortal>
+  dump
+  exp-max[is-a] |Socrates>
+  exp[is-a,2] |Socrates>
+  exp[is-a,1] |Socrates>
+  save history
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 2>,|number: 3>)
+  debug on
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 2>,|number: 3>)
+  history
+  cell-value |grid: 1 22> => |5>
+  |cell> => |grid: 1 22>
+  dump
+  cell-value "" |cell> => arithmetic(cell-value |_self>,|+>,|1>)
+  dump
+  cell-value "" |cell> => arithmetic(cell-value |_self>,|+>,|1>)
+  dump
+  save history
+  history
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 1000000>,|number: 1500000>)
+  history
+  
+  history
+  strange-int-prime-op |*> #=> strange-int-prime |_self>
+  map[strange-int-prime-op,strange-int-prime] range(|number: 2>,|number: 1000>)
+  dump
+  find-inverse[strange-int-prime]
+  dump
+  inverse-strange-int-prime |number: 5>
+  history
+  is-prime-op |*> #=> is-prime |_self>
+  is-prime |number: 5>
+  is-prime |number: 6>
+  map[is-prime-op,is-prime] range(|number: 2>,|number: 1000>)
+  dump
+  find-inverse[is-prime]
+  inverse-is-prime |yes>
+  history
+  inverse-strange-int-prime-list |*> #=> select[1,20] inverse-strange-int-prime |_self>
+  table[prime,inverse-strange-int-prime-list] select[1,20] inverse-is-prime |yes>
+  history
+  inverse-strange-int-prime-list |*> #=> select[1,30] inverse-strange-int-prime |_self>
+  table[prime,inverse-strange-int-prime-list] select[1,50] inverse-is-prime |yes>
+  .
+  history
+  inverse-strange-int-prime-list |*> #=> select[1,25] inverse-strange-int-prime |_self>
+  table[prime,inverse-strange-int-prime-list] select[1,75] inverse-is-prime |yes>
+  history
+  inverse-strange-int-prime-list |*> #=> select[1,20] inverse-strange-int-prime |_self>
+  table[prime,inverse-strange-int-prime-list] select[1,75] inverse-is-prime |yes>
+  
+  history
+  inverse-strange-int-prime-list |*> #=> select[1,25] inverse-strange-int-prime |_self>
+  table[prime,inverse-strange-int-prime-list] select[1,75] inverse-is-prime |yes>
+  history
+  history 1000
+  
+  q
+
+2015-12-14
+  child |*> #=> left |_self> + right |_self>
+  left-op |*> #=> merge-labels(|0> + |_self>)
+  right-op |*> #=> merge-labels(|1> + |_self>)
+  left |x> => |0>
+  right |x> => |1>
+  left |0> => |00>
+  right |0> => |01>
+  left |1> => |10>
+  right |1> => |11>dump
+  dump
+  child |x>
+  child^2 |x>
+    map[left-op,left] child^2 |x>
+    map[right-op,right] child^2 |x>
+  
+    map[left-op,left] child^3 |x>
+    map[right-op,right] child^3 |x>
+  
+    map[left-op,left] child^4 |x>
+    map[right-op,right] child^4 |x>
+  
+    map[left-op,left] child^5 |x>
+    map[right-op,right] child^5 |x>
+  
+    map[left-op,left] child^6 |x>
+    map[right-op,right] child^6 |x>dump
+  
+  dump
+  context
+  context bigger binary tree
+  child |*> #=> left |_self> + right |_self>
+  left-op |*> #=> merge-labels(|0> + |_self>)
+  right-op |*> #=> merge-labels(|1> + |_self>)
+  left |x> => |0>
+  right |x> => |1>
+  left |0> => |00>
+  right |0> => |01>
+  left |1> => |10>
+  right |1> => |11>
+  
+    map[left-op,left] child^2 |x>
+    map[right-op,right] child^2 |x>
+  
+    map[left-op,left] child^3 |x>
+    map[right-op,right] child^3 |x>
+  
+    map[left-op,left] child^4 |x>
+    map[right-op,right] child^4 |x>
+  
+    map[left-op,left] child^5 |x>
+    map[right-op,right] child^5 |x>
+  
+    map[left-op,left] child^6 |x>
+    map[right-op,right] child^6 |x>
+  
+  dump
+  history
+  q
+
+2015-12-14
+  child |*> #=> left |_self> + right |_self>
+  left-op |*> #=> merge-labels(|_self> + |0>)
+  right-op |*> #=> merge-labels(||_self> + |1>)
+  left |x> => |0>
+  right |x> => |1>
+  left |0> => |00>
+  right |0> => |01>
+  left |1> => |10>
+  right |1> => |11>
+  
+      map[left-op,left] child^2 |x>
+      map[right-op,right] child^2 |x>
+  
+      map[left-op,left] child^3 |x>
+      map[right-op,right] child^3 |x>
+  
+      map[left-op,left] child^4 |x>
+      map[right-op,right] child^4 |x>
+  
+      map[left-op,left] child^5 |x>
+      map[right-op,right] child^5 |x>
+  
+      map[left-op,left] child^6 |x>
+      map[right-op,right] child^6 |x>
+  
+  
+  dump
+  q
+
+2015-12-14
+  child |*> #=> left |_self> + right |_self>
+  left-op |*> #=> merge-labels(|_self> + |0>)
+  right-op |*> #=> merge-labels(|_self> + |1>)
+  left |x> => |0>
+  right |x> => |1>
+  left |0> => |00>
+  right |0> => |01>
+  left |1> => |10>
+  right |1> => |11>
+  
+      map[left-op,left] child^2 |x>
+      map[right-op,right] child^2 |x>
+  
+      map[left-op,left] child^3 |x>
+      map[right-op,right] child^3 |x>
+  
+      map[left-op,left] child^4 |x>
+      map[right-op,right] child^4 |x>
+  
+      map[left-op,left] child^5 |x>
+      map[right-op,right] child^5 |x>
+  
+      map[left-op,left] child^6 |x>
+      map[right-op,right] child^6 |x>
+  
+  
+  dump
+  
+  q
+
+2015-12-14
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  number-filter |*> #=> |>
+  number-filter |number: *> #=> |_self>
+  furniture-filter |*> #=> |>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |*> #=> |>
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |*> #=> |>
+  animal-number-filter |animal: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  dump
+  number-filter |*> #=> |>
+  furniture-filter |*> #=> |>
+  animal-filter |*> #=> |>
+  animal-number-filter |*> #=> |>
+  
+  number-filter |number: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  
+  furniture-filter |furniture: *> #=> |_self>
+  
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |animal: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter the |list
+  furniture-filter the |list>
+  animal-filter the |list>
+  animal-number-filter the |list>
+  dump
+  save animal-number-furniture-filter.sw
+  context URI's
+  load fred-sam-friends.sw
+  dump
+  dump exact
+    URI |*> #=> merge-labels(|URI: http://example.com/example-ontology#> + |_self>)
+    URI |op: *> #=> merge-labels(|URI: http://example.com/example-operator-ontology#> + extract-value |_self>)
+  
+  URI supported-ops |Fred>
+  URI friends |Fred>
+  history
+  URI |op: friends>
+  URI |Fred>
+  URI friends |Fred>
+  context semantic network
+  is-a |canary> => |bird>
+  color |canary> => |yellow>
+  size |canary> => |small>
+  is-a |penguin> => |bird>
+  movement |penguin> => |swim>
+  dump
+  is-a |bird> => |vertebrate>
+  has-part |bird> => |wings>
+  reproduction |bird> => |egg-laying>
+  dump
+  context semantic network example
+  has |Mammal> => |Vertebra>
+  is-an |Mammal> => |Animal>
+  is-a |Cat> => |Mammal>
+  has |Cat> => |Fur>
+  is-a |Bear> => |Mammal>
+  has |Bear> => |Fur>
+  is-a |Whale> => |Mammal>
+  lives-in |Whale> => |Water>
+  is-an |Fish> => |Animal>
+  lives-in |Fish> => |Water>
+  dump
+  save semantic-network-example.sw
+  q
+
+2015-12-14
+  op |node 1> => 0.9 |node 2>
+  op |node 2> => |node 3>
+  op |node 2> => 0.9 |node 3>
+  op |node 3> => 0.9 |node 4> + 0.9 |node 11>
+  op |node 11> => 0.9 |node 12>
+  op |node 12> => 0.9 |node 13>
+  op |node 13> => 0.9 |node 14>
+  op |node 14> => 0.9 |node 15>
+  op |node 14> => 0.9 |node 15>
+  op |node 15> => 0.9 |node 16>
+  dump
+  op |node 4> => 0.9 |node 5>
+  op |node 5> => 0.9 |node 6>
+  op |node 6> => 0.9 |node 7>
+  op |node 7> => 0.9 |node 8>
+  op |node 8> => 0.9 |node 9>
+  op |node 9> => 0.9 |node 10>
+  dump
+  decay-factor |*> #=> 0.85 |_self>
+  dump
+  decay-factor op |node 1>
+  decay-factor op decay-factor op decay-factor op |node 1>
+  decay-factor op decay-factor op decay-factor op decay-factor op |node 1>
+  decay-factor op |node 1>
+  decay-factor op decay-factor op |node 1>
+  decay-factor op decay-factor op decay-factor op |node 1>
+  decay-factor op decay-factor op decay-factor op decay-factor op |node 1>
+  dump
+  
+  history
+  decay-factor op 100 |node 1>
+  decay-factor op decay-factor op 100 |node 1>
+  decay-factor op decay-factor op decay-factor op 100 |node 1>
+  decay-factor op decay-factor op decay-factor op decay-factor op 100 |node 1>
+  sa: decay-factor op 100 |node 1>
+  inside process_brackets: decay-factor op 100 |node 1>
+  INFO: ket: node 1
+  INFO: ket: node 2
+  els final result: 0.85|node 2>
+  76.5|node 2>
+  
+    Time taken: 2 milliseconds
+  
+  sa: decay-factor op decay-factor op 100 |node 1>
+  inside process_brackets: decay-factor op decay-factor op 100 |node 1>
+  INFO: ket: node 1
+  INFO: ket: node 2
+  els final result: 0.85|node 2>
+  INFO: ket: node 2
+  INFO: ket: node 3
+  els final result: 0.85|node 3>
+  58.523|node 3>
+  
+    Time taken: 5 milliseconds
+  
+  sa: decay-factor op decay-factor op decay-factor op 100 |node 1>
+  inside process_brackets: decay-factor op decay-factor op decay-factor op 100 |node 1>
+  INFO: ket: node 1
+  INFO: ket: node 2
+  els final result: 0.85|node 2>
+  INFO: ket: node 2
+  INFO: ket: node 3
+  els final result: 0.85|node 3>
+  INFO: ket: node 3
+  INFO: ket: node 4
+  els final result: 0.85|node 4>
+  INFO: ket: node 11
+  els final result: 0.85|node 11>
+  44.77|node 4> + 44.77|node 11>
+  
+    Time taken: 7 milliseconds
+  
+  sa: decay-factor op decay-factor op decay-factor op decay-factor op 100 |node 1>
+  inside process_brackets: decay-factor op decay-factor op decay-factor op decay-factor op 100 |node 1>
+  INFO: ket: node 1
+  INFO: ket: node 2
+  els final result: 0.85|node 2>
+  INFO: ket: node 2
+  INFO: ket: node 3
+  els final result: 0.85|node 3>
+  INFO: ket: node 3
+  INFO: ket: node 4
+  els final result: 0.85|node 4>
+  INFO: ket: node 11
+  els final result: 0.85|node 11>
+  INFO: ket: node 4
+  INFO: ket: node 11
+  INFO: ket: node 5
+  els final result: 0.85|node 5>
+  INFO: ket: node 12
+  els final result: 0.85|node 12>
+  34.249|node 5> + 34.249|node 12>
+  
+  dump
+  decay-factor-op |*> #=> 0.85 op |_self>
+  exp[decay-factor-op,4] 100 |node 1>
+  decay-factor-op |*> #=> decay-factor op |_self>
+  exp[decay-factor-op,4] 100 |node 1>
+  history
+  exp[decay-factor-op,4] 100 |node 1>
+  exp-max[decay-factor-op] 100 |node 1>
+  history
+  history 1000
+  q
+
+2015-12-14
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 2>,|number: 500000>)
+  history
+  
+  table[number,coeff] select[1,100] coeff-sort strange-int-prime range(|number: 500000>,|number: 1000000>)
+  
+  history
+  history
+  q
+
+2015-12-15
+  op |node 1> => 0.9|node 2>
+  op |node 2> => 0.9|node 3>
+  op |node 3> => 0.9|node 4> + 0.9|node 11>
+  op |node 11> => 0.9|node 12>
+  op |node 12> => 0.9|node 13>
+  op |node 13> => 0.9|node 14>
+  op |node 14> => 0.9|node 15>
+  op |node 15> => 0.9|node 16>
+  op |node 4> => 0.9|node 5>
+  op |node 5> => 0.9|node 6>
+  op |node 6> => 0.9|node 7>
+  op |node 7> => 0.9|node 8>
+  op |node 8> => 0.9|node 9>
+  op |node 9> => 0.9|node 10>
+  decay-factor |*> #=> 0.85 |_self>
+  dump
+  drop-decay-factor-op |*> #=> drop-below[20] decay-factor op |_self>
+  decay-factor-op |*> #=> decay-factor op |_self>
+  dump
+  exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[drop-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[drop-decay-factor-op] 100 |node 1>
+  dump
+  history
+  drop-decay-factor-op 100 |node 1>
+  debug on
+  drop-decay-factor-op 100 |node 1>
+  drop-below[20] decay-factor op 100 |node 1>
+  history
+  drop-decay-factor-op (100 |node 1>)
+  drop-decay-factor-op 100 |node 1>
+  history
+  -- drop-decay-factor-op is not working as expected. need to work out why.
+  save history
+
+2015-12-15
+  op |node 1> => 0.9|node 2>
+  op |node 2> => 0.9|node 3>
+  op |node 3> => 0.9|node 4> + 0.9|node 11>
+  op |node 11> => 0.9|node 12>
+  op |node 12> => 0.9|node 13>
+  op |node 13> => 0.9|node 14>
+  op |node 14> => 0.9|node 15>
+  op |node 15> => 0.9|node 16>
+  op |node 4> => 0.9|node 5>
+  op |node 5> => 0.9|node 6>
+  op |node 6> => 0.9|node 7>
+  op |node 7> => 0.9|node 8>
+  op |node 8> => 0.9|node 9>
+  op |node 9> => 0.9|node 10>
+  decay-factor |*> #=> 0.85 |_self>
+  dump
+  drop-decay-factor-op |*> #=> drop-below[20] decay-factor op |_self>
+  decay-factor-op |*> #=> decay-factor op |_self>
+  dump
+  exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[drop-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[drop-decay-factor-op] 100 |node 1>
+  dump
+  history
+  drop-decay-factor-op 100 |node 1>
+  debug on
+  drop-decay-factor-op 100 |node 1>
+  drop-below[20] decay-factor op 100 |node 1>
+  history
+  drop-decay-factor-op (100 |node 1>)
+  drop-decay-factor-op 100 |node 1>
+  history
+  -- drop-decay-factor-op is not working as expected. need to work out why.
+  save history
+  drop-below[20] decay-factor op 100 |node 1>
+  drop-decay-factor-op |*> #=> drop-below[20] decay-factor op |_self>
+  drop-decay-factor-op 100 |node 1>
+  history 1000
+  tweak-drop-decay-factor-op |*> #=> drop-below[0.2] decay-factor op |_self>
+  tweak-drop-decay-factor-op 100 |node 1>
+  history
+  table[node,coeff] exp-max[tweak-drop-decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] drop-below[20] exp-max[decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] drop-below[20] exp-max[decay-factor-op] 100 |node 1>
+  save history
+
+2015-12-15
+  log 10|x>
+  log 2.71218 |x>
+  q
+
+2015-12-15
+  log 2.71218 |x>
+  log[2] 8|x>
+  log[10] 1000|x>
+  log 0|x>
+  log -3|x>
+  q
+
+2015-12-15
+  log -3|x>
+  q
+
+2015-12-15
+  softmax 10|x>
+  softmax (10|x> + 5|y> + 30|z> + |u> + 0.5|v>)
+  softmax (20|x> + 25|y>)
+  q
+
