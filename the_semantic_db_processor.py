@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/12/2015
+# Update: 17/12/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -417,7 +417,12 @@ compound_table = {
   "word-ngrams"            : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
   
 # 15/12/2015:
-  "log"                    : ".apply_sigmoid(log,{0})",  
+  "log"                    : ".apply_sigmoid(log,{0})",
+  
+# 17/12/2015:
+  "delete"                 : ".apply_fn(edit_delete,\"{0}\")",
+  "insert"                 : ".apply_fn(edit_insert,\"{0}\")",    
+  "substitute"             : ".apply_fn(edit_substitute,\"{0}\")",
 }
 
 

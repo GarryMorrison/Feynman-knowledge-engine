@@ -15,6 +15,11 @@
 #
 # examples: http://semantic-db.blogspot.com.au/2015/05/announcing-command-line-file-similarity.html
 #
+# for details on simm, see here:
+# http://write-up.semantic-db.org/70-a-similarity-metric.html
+# http://write-up.semantic-db.org/71-a-list-implementation-of-the-simm.html
+# 
+#
 #######################################################################
 
 

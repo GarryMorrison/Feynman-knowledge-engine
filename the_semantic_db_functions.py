@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 4/12/2015
+# Update: 17/12/2015
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3893,4 +3893,53 @@ def respond_to_pattern(one,two,three):
 #def edit_insert(one,parameters):
 #def edit_delete():
 #def edit_substitute():
-               
+#
+# 17/12/2015: let's finally get to this.
+# start with:
+# delete[k,0]
+# insert[s,0]
+#
+# It works:
+# LCS distance: 
+# sa: insert[g,6] insert[i,4] delete[e,4] insert[s,0] delete[k,0] |kitten>
+# |sitting>
+#
+# Levenshtein distance:
+# sa: insert[g,6] substitute[i,e,4] substitute[s,k,0] |kitten>
+# |sitting>
+#
+# one is a ket
+# delete[k,0]
+def edit_delete(one,parameters):                # cool. Seems to work!
+  try:
+    char,k = parameters.split(',')
+    k = int(k)
+    text = one.label
+    if text[k] == char:
+      result = text[:k] + text[k+1:]
+    return ket(result,one.value)
+  except:
+    return one
+
+# insert[s,0]
+def edit_insert(one,parameters):
+  try:
+    char,k = parameters.split(',')
+    k = int(k)
+    text = one.label
+    result = text[:k] + char + text[k:]
+    return ket(result,one.value)
+  except:
+    return one
+
+# substitue[s,k,0]
+def edit_substitute(one,parameters):
+  try:
+    char1,char2,k = parameters.split(',')
+    k = int(k)
+    text = one.label
+    if text[k] == char2:
+      text = text[:k] + char1 + text[k+1:]
+    return ket(text,one.value)
+  except:
+    return one                        

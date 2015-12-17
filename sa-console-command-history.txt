@@ -16207,3 +16207,161 @@
   softmax (20|x> + 25|y>)
   q
 
+2015-12-15
+  op |node 1> => 0.9|node 2>
+  op |node 2> => 0.9|node 3>
+  op |node 3> => 0.9|node 4> + 0.9|node 11>
+  op |node 11> => 0.9|node 12>
+  op |node 12> => 0.9|node 13>
+  op |node 13> => 0.9|node 14>
+  op |node 14> => 0.9|node 15>
+  op |node 15> => 0.9|node 16>
+  op |node 4> => 0.9|node 5>
+  op |node 5> => 0.9|node 6>
+  op |node 6> => 0.9|node 7>
+  op |node 7> => 0.9|node 8>
+  op |node 8> => 0.9|node 9>
+  op |node 9> => 0.9|node 10>
+  decay-factor |*> #=> 0.85 |_self>
+  dump
+  drop-decay-factor-op |*> #=> drop-below[20] decay-factor op |_self>
+  decay-factor-op |*> #=> decay-factor op |_self>
+  dump
+  exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[drop-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] exp-max[drop-decay-factor-op] 100 |node 1>
+  dump
+  history
+  drop-decay-factor-op 100 |node 1>
+  debug on
+  drop-decay-factor-op 100 |node 1>
+  drop-below[20] decay-factor op 100 |node 1>
+  history
+  drop-decay-factor-op (100 |node 1>)
+  drop-decay-factor-op 100 |node 1>
+  history
+  -- drop-decay-factor-op is not working as expected. need to work out why.
+  save history
+  drop-below[20] decay-factor op 100 |node 1>
+  drop-decay-factor-op |*> #=> drop-below[20] decay-factor op |_self>
+  drop-decay-factor-op 100 |node 1>
+  history 1000
+  tweak-drop-decay-factor-op |*> #=> drop-below[0.2] decay-factor op |_self>
+  tweak-drop-decay-factor-op 100 |node 1>
+  history
+  table[node,coeff] exp-max[tweak-drop-decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] drop-below[20] exp-max[decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] drop-below[20] exp-max[decay-factor-op] 100 |node 1>
+  save history
+  dump
+  context spreading activation
+  op |node 1> => 0.9|node 2>
+  
+  op |node 2> => 0.9|node 3>
+  
+  op |node 3> => 0.9|node 4> + 0.9|node 11>
+  
+  op |node 11> => 0.9|node 12>
+  
+  op |node 12> => 0.9|node 13>
+  
+  op |node 13> => 0.9|node 14>
+  
+  op |node 14> => 0.9|node 15>
+  
+  op |node 15> => 0.9|node 16>
+  
+  op |node 4> => 0.9|node 5>
+  
+  op |node 5> => 0.9|node 6>
+  
+  op |node 6> => 0.9|node 7>
+  
+  op |node 7> => 0.9|node 8>
+  
+  op |node 8> => 0.9|node 9>
+  
+  op |node 9> => 0.9|node 10>
+  
+  decay-factor |*> #=> 0.85 |_self>
+  decay-factor-op |*> #=> decay-factor op |_self>
+  dump
+  save spreading-activation.sw
+  dump
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  dump
+  history
+  table[node,coeff] exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] drop-below[20] exp-max[decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] drop-below[20] exp-max[decay-factor-op] 100 |node 1>
+  table[node,coeff] threshold-filter[20] exp-max[decay-factor-op] 100 |node 1>
+  history
+  table[node,coeff] threshold-filter[20] exp-max[decay-factor-op] 100 |node 1>
+  q
+
+2015-12-17
+  delete[k,0] |kitten>
+  delete[s,0] |kitten>
+  delete[i,1] |kitten>
+  debug on
+  delete[k,0] |kitten>
+  delete[s,0] |kitten>
+  delete[i,1] |kitten>
+  delete[k,20] |kitten>
+  q
+
+2015-12-17
+  insert[g,6] |sittin>
+  insert[f,0] |sittin>
+  insert[g,6] insert[i,4] delete[3,4] insert[s,0] delete[k,0] |kitten>
+  insert[g,6] insert[i,4] delete[e,4] insert[s,0] delete[k,0] |kitten>
+  q
+
+2015-12-17
+  substitute[s,k,0] |kitten>
+  substitute[k,s,0] |kitten>
+  substitute[s,k,1] |kitten>
+  q
+
+2015-12-17
+  debug on
+  substitute[s,k,0] |kitten>
+  q
+
+2015-12-17
+  substitute[s,k,0] |kitten>
+  q
+
+2015-12-17
+  substitute[s,k,0] |kitten>
+  insert[g,6] substitute[i,e,4] substitute[s,k,0] |kitten>
+  insert[g,6] insert[i,4] delete[e,4] insert[s,0] delete[k,0] |kitten>
+  delete[k,0] 15.3|kitten>
+  q
+
+2015-12-17
+  delete[k,0] 15.3|kitten>
+  q
+
+2015-12-17
+  log |x>
+  log 2.71218 |x>
+  log 2.71828 |x>
+  log[2] 128|x>
+  log[10] (5|a> + 10|b> + 100|c> + 375|d> + 123456|e>)
+  softmax 0|x>
+  load common-English-words.sw
+  word2ngram-op |*> #=> letter-ngrams[1,2,3] |_self>
+  map[word2ngram-op,word2ngram] list-of |common English words>
+  map[word2ngram-op,word2ngram] |elefant>
+  table[word,coeff] select[1,30] 100 self-similar[word2ngram] |elefant>
+  history
+  
+  q
+
