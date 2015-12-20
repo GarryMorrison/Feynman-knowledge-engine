@@ -1,0 +1,11 @@
+digraph g {
+"context" -> "visualizing edit distance"
+"kitten" -> "sitten" [label="op1",arrowhead=normal]
+"kitten" -> "itten" [label="op4",arrowhead=normal]
+"sitten" -> "sittin" [label="op2",arrowhead=normal]
+"sitten" -> "sittn" [label="op6",arrowhead=normal]
+"sittin" -> "sitting" [label="op3",arrowhead=normal]
+"sittin" -> "sitting" [label="op8",arrowhead=normal]
+"itten" -> "sitten" [label="op5",arrowhead=normal]
+"sittn" -> "sittin" [label="op7",arrowhead=normal]
+}

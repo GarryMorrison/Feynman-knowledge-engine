@@ -1058,7 +1058,7 @@ class superposition(object):
   def softmax(self):
     result = copy.deepcopy(self)
     the_sum = sum(math.exp(x.value) for x in result.data)
-    if the_sum > 0:
+    if the_sum > 0:                                      # pretty sure the_sum is always > 0. exp(x) and all.
       for x in result.data:
         x.value = math.exp(x.value)/the_sum  
     return result

@@ -16365,3 +16365,226 @@
   
   q
 
+2015-12-18
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  n-1 |3>
+  fact |*> #=> arithmetic(|_self>,|*>,fact n-1 |_self>)
+  fact |3>
+  dump
+  fact |0> => |1>
+  fact |3>
+  fact |4>
+  fact |5>
+  history
+  dump
+  fact |30>
+  fact |50>
+  fact |1000>
+  fact |1000>
+  fact |500>
+  fact |100>
+  q
+
+2015-12-19
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  number-filter |*> #=> |>
+  furniture-filter |*> #=> |>
+  animal-filter |*> #=> |>
+  animal-number-filter |*> #=> |>
+  
+  number-filter |number: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  
+  furniture-filter |furniture: *> #=> |_self>
+  
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |animal: *> #=> |_self>
+  
+  dump
+  how-many-numbers-in |*> #=> how-many number-filter |_self>
+  how-many-numbers-in the |list>
+  number-filter the |list>
+  how-many |>
+  
+  -- nope. It won't work correctly until we have learn sp rules.
+  -- eg: how-many-numbers-in (*) #=> how-many number-filter |_self>
+  q
+
+2015-12-19
+  F |C: 42>
+  context branching
+  do-some-thing-with |branch a> #=> shout |Hello World!>
+  do-some-thing-with |branch b> #=> shout |Goodbye World!>
+  choose |branch> #=> do-some-thing-with if(foo|x>,|branch a>,|branch b>)
+  foo |x> => |True>
+  choose |branch>
+  foo |x> => |False>
+  choose |branch>
+  history
+  F |C: 44>
+  F |C: 42>
+  history
+  save history
+
+2015-12-20
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  fact |*> #=> arithmetic(|_self>,|*>,n-1 |_self>)
+  fact |3>
+  fact range(|0>,|20>)
+  dump
+  fact |*> #=> arithmetic(|_self>,|*>,fact n-1 |_self>)
+  fact range(|0>,|10>)
+  dump
+  fact |3>
+  dump
+  fact |0> => |1>
+  fact |3>
+  fact |4>
+  fact range(|0>,|10>)
+  history
+  save history
+
+2015-12-20
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  fact |*> #=> arithmetic(|_self>,|*>,n-1 |_self>)
+  fact |3>
+  fact range(|0>,|20>)
+  dump
+  fact |*> #=> arithmetic(|_self>,|*>,fact n-1 |_self>)
+  fact range(|0>,|10>)
+  dump
+  fact |3>
+  dump
+  fact |0> => |1>
+  fact |3>
+  fact |4>
+  fact range(|0>,|10>)
+  history
+  save history
+  context visualizing edit distance
+  op1 |kitten> => substitute[s,k,0] |_self>
+  op2 substitute[s,k,0] |kitten> => substitute[i,e,4] |_self>
+  op3 substitute[i,e,4] substitute[s,k,0] |kitten> => insert[g,6] |_self>
+  
+  dump
+  op4 |kitten> => delete[k,0] |_self>
+  op5 op4 |kitten> => insert[s,0] |_self>
+  op6 op5 op4 |kitten> => delete[e,4] |_self>
+  op7 op6 op5 op4 |kitten> => insert[i,4] |_self>
+  op8 op7 op6 op5 op4 |kitten> => insert[g,6] |_self>
+  
+  dump
+  history
+  dump
+  save visualizing-edit-distance.sw
+  q
+
+2015-12-20
+  load build-visualize-edit-distance-file.sw
+  dump
+  q
+
+2015-12-20
+  number-filter |*> #=> |>
+  furniture-filter |*> #=> |>
+  animal-filter |*> #=> |>
+  animal-number-filter |*> #=> |>
+  
+  number-filter |number: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  
+  furniture-filter |furniture: *> #=> |_self>
+  
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |animal: *> #=> |_self>
+  dump
+  how-many-numbers-in |*> #=> how-many number-filter |_self>
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  how-many-numbers-in the |list>
+  history
+  how-many-numbers-in the |list>
+  the |list>
+  history 1000
+  q
+
+2015-12-20
+  load early-us-presidents.sw
+  dump
+  everything-op |*> #=> apply(supported-ops |_self>,|_self>)
+  map[everything-op,everything] rel-kets[*] |>
+  dump
+  everything |early US Presidents: _list>
+  how-many everything |early US Presidents: _list>
+  how-many everything^2 |early US Presidents: _list>
+  how-many everything^3 |early US Presidents: _list>
+  history
+  how-many-everything |*> #=> how-many everything |_self>
+  how-many-everything-2 |*> #=> how-many everything^2 |_self>
+  how-many-everything-3 |*> #=> how-many everything^3 |_self>
+  table[ket,how-many-everything,how-many-everything-2,how-many-everything-3] rel-kets[*] |>
+  F |C: 40>
+  F |C: 43>
+  F |C: 21>
+  history
+  save history
+
+2015-12-20
+  load bots.sw
+  dump
+    everything-op |*> #=> apply(supported-ops |_self>,|_self>)
+    map[everything-op,everything] rel-kets[*] |>
+  
+    how-many-everything |*> #=> how-many everything |_self>
+    how-many-everything-2 |*> #=> how-many everything^2 |_self>
+    how-many-everything-3 |*> #=> how-many everything^3 |_self>
+  
+  
+  dump
+  table[ket,how-many-everything,how-many-everything-2,how-many-everything-3] rel-kets[*] |>
+  display |bot: Madison>
+  
+  history
+    table[ket,how-many-everything,how-many-everything-2,how-many-everything-3] rel-kets[*] |>
+  context
+  context understand
+  q
+
+2015-12-20
+  load fred-sam-friends.sw
+  load understand.sw
+  q
+
+2015-12-20
+  load fred-sam-friends.sw
+  load understand.sw
+  q
+
+2015-12-20
+  
+  load fred-sam-friends.sw
+  dump
+  load understand.sw
+  history
+  context
+  load animals.sw
+  load understand.sw
+  reset
+  load breakfast-menu.sw
+  load understand.sw
+  dump
+  history
+  reset
+  load breakfast-menu.sw
+  load understand.sw
+  history
+  q
+
+2015-12-20
+  load fred-sam-friends.sw
+  load how-well-do-you-know.sw
+  how-well-do-you-know |*> #=> how-many-everything |_self>
+  how-well-do-you-know |Fred>
+  how-well-do-you-know |null>
+  history
+  q
+
