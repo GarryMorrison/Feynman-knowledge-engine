@@ -1,0 +1,10 @@
+digraph g {
+"context" -> "visualizing edit distance"
+"kitten" -> "sitten" [label="substitute[s,k,0]",arrowhead=normal]
+"kitten" -> "itten" [label="delete[k,0]",arrowhead=normal]
+"sitten" -> "sittin" [label="substitute[i,e,4]",arrowhead=normal]
+"sitten" -> "sittn" [label="delete[e,4]",arrowhead=normal]
+"sittin" -> "sitting" [label="insert[g,6]",arrowhead=normal]
+"itten" -> "sitten" [label="insert[s,0]",arrowhead=normal]
+"sittn" -> "sittin" [label="insert[i,4]",arrowhead=normal]
+}

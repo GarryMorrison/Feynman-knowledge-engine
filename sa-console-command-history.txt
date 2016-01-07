@@ -16588,3 +16588,107 @@
   history
   q
 
+2015-12-20
+  load george.sw
+  load how-well-do-you-know.sw
+  q
+
+2015-12-21
+  load early-us-presidents.sw
+  dump
+  everything-op |*> #=> apply(supported-ops |_self>,|_self>)
+  map[everything-op,everything] rel-kets[*] |>
+  dump
+  everything |early US Presidents: _list>
+  how-many everything |early US Presidents: _list>
+  how-many everything^2 |early US Presidents: _list>
+  how-many everything^3 |early US Presidents: _list>
+  history
+  how-many-everything |*> #=> how-many everything |_self>
+  how-many-everything-2 |*> #=> how-many everything^2 |_self>
+  how-many-everything-3 |*> #=> how-many everything^3 |_self>
+  table[ket,how-many-everything,how-many-everything-2,how-many-everything-3] rel-kets[*] |>
+  F |C: 40>
+  F |C: 43>
+  F |C: 21>
+  history
+  save history
+  
+  table[ket,how-many-everything,how-many-everything-2,how-many-everything-3] rel-kets[*] |>
+  history
+  context
+  context test add learn
+  op |x> => 3.2|fish>
+  dump
+  op |x> #=> -3|fish>
+  dump
+  op |x> => 3.2|fish>
+  op |x> +=> -3|fish>
+  dump
+  op |x> +=> - op |_self>
+  dump
+  q
+
+2015-12-23
+  F |C: 42>
+  context branching
+  do-some-thing-with |branch a> #=> shout |Hello World!>
+  do-some-thing-with |branch b> #=> shout |Goodbye World!>
+  choose |branch> #=> do-some-thing-with if(foo|x>,|branch a>,|branch b>)
+  foo |x> => |True>
+  choose |branch>
+  foo |x> => |False>
+  choose |branch>
+  history
+  F |C: 44>
+  F |C: 42>
+  history
+  save history
+  q
+
+2015-12-23
+  context category theory is bko?
+  f |a> => |b>
+  g |b> => |c>
+  h |c> => |d>
+  dump
+  h g f |a>
+  id |*> #=> |_self>
+  id |b>
+  id |c>
+  H |*> #=> g f |_self>
+  H |a>
+  dump
+  save category-theory.sw
+  context sum of prime factors
+  SoPF-op |*> #=> strange-int |_self>
+  map[SoPF-op,SoPF] range(|number: 2>,|number: 1000>)
+  dump
+  history
+  context
+  icontext
+  q
+
+2015-12-23
+  word-ngram[1,2,3] |text: the fish lives here>
+  word-ngrams[1,2,3] |text: the fish lives here>
+  load next-breakfast-menu.sw
+  dump
+  word-ngrams[1,2,3] |text: the fish lives here>
+  prepend-word |*> #=> merge-labels(|word: > + |_self>
+  prepend-word word-ngrams[1,2,3] |text: the fish lives here>
+  history
+  prepend-word |fish>
+  prepend-word |*> #=> merge-labels(|word: > + |_self>)
+  prepend-word |fish>
+  6
+  prepend-word word-ngrams[1,2,3] |text: the fish lives here>
+  everything-op |*> #=> apply(supported-ops |_self>,|_self>)
+  map[everything-op,everything] rel-kets[*] |>
+  history
+  everything prepend-word word-ngrams[1,2,3] |text: two eggs band or sausage toast>
+  history
+  prepend-word word-ngrams[1,2,3] |text: two eggs band or sausage toast>
+  everything |word: two>
+  q
+
