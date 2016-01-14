@@ -16692,3 +16692,361 @@
   everything |word: two>
   q
 
+2016-01-08
+  load fre
+  load fred-sam-friends.sw
+  load how-well-do-you-know.sw
+  load early-us-presidents.sw
+  load how-well-do-you-know.sw
+  q
+
+2016-01-10
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+
+2016-01-10
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+  context ket arithmetic
+  5.2 |x> + 3.4|x>
+  11 13 |x>
+  7^3 |x>
+  save history
+
+2016-01-10
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+  context ket arithmetic
+  5.2 |x> + 3.4|x>
+  11 13 |x>
+  7^3 |x>
+  save history
+  2 (5.2 |x> + 3.4|x>)
+  save history
+
+2016-01-11
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+  context ket arithmetic
+  5.2 |x> + 3.4|x>
+  11 13 |x>
+  7^3 |x>
+  save history
+  2 (5.2 |x> + 3.4|x>)
+  save history
+  F |*> #=> F |_self>
+  table[C,F] range(|0>,|100>,|0.5>)
+  history
+  F |*> #=> F merge-labels(|C: > + |_self>)
+  table[C,F] range(|0>,|100>,|0.5>)
+  
+  the |list> => range(|1>,|15>)
+  the |list>
+  mult-2 |*> #=> times[2] |_self>
+  mult-2 the |list>
+  add-3 |*> #=> arithmetic(|_self>,|+>,|3>)
+  add-3 the |list>
+  mult-2 add-3 the |list>
+  history
+  save history
+
+2016-01-11
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+  context ket arithmetic
+  5.2 |x> + 3.4|x>
+  11 13 |x>
+  7^3 |x>
+  save history
+  2 (5.2 |x> + 3.4|x>)
+  save history
+  F |*> #=> F |_self>
+  table[C,F] range(|0>,|100>,|0.5>)
+  history
+  F |*> #=> F merge-labels(|C: > + |_self>)
+  table[C,F] range(|0>,|100>,|0.5>)
+  
+  the |list> => range(|1>,|15>)
+  the |list>
+  mult-2 |*> #=> times[2] |_self>
+  mult-2 the |list>
+  add-3 |*> #=> arithmetic(|_self>,|+>,|3>)
+  add-3 the |list>
+  mult-2 add-3 the |list>
+  history
+  save history
+  mult-2^3 add-3 the |list>
+  history
+  save history
+
+2016-01-12
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+  context ket arithmetic
+  5.2 |x> + 3.4|x>
+  11 13 |x>
+  7^3 |x>
+  save history
+  2 (5.2 |x> + 3.4|x>)
+  save history
+  F |*> #=> F |_self>
+  table[C,F] range(|0>,|100>,|0.5>)
+  history
+  F |*> #=> F merge-labels(|C: > + |_self>)
+  table[C,F] range(|0>,|100>,|0.5>)
+  
+  the |list> => range(|1>,|15>)
+  the |list>
+  mult-2 |*> #=> times[2] |_self>
+  mult-2 the |list>
+  add-3 |*> #=> arithmetic(|_self>,|+>,|3>)
+  add-3 the |list>
+  mult-2 add-3 the |list>
+  history
+  save history
+  mult-2^3 add-3 the |list>
+  history
+  save history
+  very |*> #=> 0.9 |_self>
+  a-little |*> #=> 0.2 |_self>
+  a-little |hungry>
+  very |hungry>
+  save history
+
+2016-01-13
+  context if example
+  if-pattern |node: 1> => |X>
+  if-pattern |node: 2> => |Y>
+  if-pattern |node: 3> => |X> + |Y>
+  dump
+  if-pattern |input> => |X>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  if-pattern |input> => |X> + |Y>
+  table[ket,coeff] similar[if-pattern] |input>
+  dump
+  then |node: 1> => |X OR Y>
+  then |node: 2> => |X OR Y>
+  then |node: 3> => |X AND Y>
+  history
+  table[ket,coeff] then similar[if-pattern] |input>
+  dump
+  table[ket,coeff] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[90] similar[if-pattern] |input>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  if-pattern |input> => |X>
+  table[ket,coeff] then drop-below[0.9] similar[if-pattern] |input>
+  save history
+  context ket arithmetic
+  5.2 |x> + 3.4|x>
+  11 13 |x>
+  7^3 |x>
+  save history
+  2 (5.2 |x> + 3.4|x>)
+  save history
+  F |*> #=> F |_self>
+  table[C,F] range(|0>,|100>,|0.5>)
+  history
+  F |*> #=> F merge-labels(|C: > + |_self>)
+  table[C,F] range(|0>,|100>,|0.5>)
+  
+  the |list> => range(|1>,|15>)
+  the |list>
+  mult-2 |*> #=> times[2] |_self>
+  mult-2 the |list>
+  add-3 |*> #=> arithmetic(|_self>,|+>,|3>)
+  add-3 the |list>
+  mult-2 add-3 the |list>
+  history
+  save history
+  mult-2^3 add-3 the |list>
+  history
+  save history
+  very |*> #=> 0.9 |_self>
+  a-little |*> #=> 0.2 |_self>
+  a-little |hungry>
+  very |hungry>
+  save history
+  history
+  q
+
+2016-01-14
+  times-by[2] |number: 2.5>
+  divide-by[3] |number: 1>
+  round[3] divide-by[3] |number: 1>
+  q
+
+2016-01-14
+  add[3] |number: 5>
+  plus[3] |number: 5>
+  debug on
+  plus[3] |number: 5>
+  q
+
+2016-01-14
+  plus[3] |number: 5.2>
+  minus[2.5] |number: 5>
+  q
+
+2016-01-14
+  add[3.2] |number: 5>
+  take[7] |number: 10>
+  take[7] |10>
+  pop-float |10>
+  plus[3] 2|number: 7>
+  round[3] 2|number: 7.1234567>
+  q
+
+2016-01-14
+  round[3] 2|number: 7.1234567890>
+  q
+
+2016-01-14
+  plus[3] 2|number: 7>
+  times-by[3] 5|number: 7.2>
+  q
+
+2016-01-14
+  divide-by[7] 5.2|number: 28>
+  minus[13] 44.44|number: 27>
+  take[2] 3.21|number: 9>
+  q
+
+2016-01-14
+  op |x> => |y>
+  dump
+  q
+

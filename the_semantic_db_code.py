@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/12/2015
+# Update: 14/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -296,6 +296,11 @@ class ket(object):
 
   def multiply(self,t):
     return ket(self.label,self.value*t)
+    
+# 14/1/2016:
+  def add(self,t):
+    return ket(self.label,self.value + t)
+    
 
 # 6/1/2015: hrmm... maybe abs, absolute_noise, and relative_noise should be sigmoids!
 # newly added 2/4/2014:
@@ -587,6 +592,18 @@ def label_descent(x):
     except:
       result.append("*")
       return result
+
+# 14/1/2016:
+def list_2_sp(one):
+  r = superposition()
+  if type(one) == list:
+    for x in one:                                # what do we want to do if type(x) is not int, float or string?
+      if type(x) == int or type(x) == float:
+        r += ket("number: " + str(x))
+      elif type(x) == str:
+        r += ket(x)
+  return r
+    
 
 # 18/1/2015: could probably tidy this!
 # and I think, in a lot of use cases we don't even need it!
@@ -1080,6 +1097,14 @@ class superposition(object):
       x.value = x.value*t
     return result
 
+# 14/1/2016:
+  def add(self,t):
+    result = copy.deepcopy(self)
+    for x in result.data:
+      x.value = x.value + t
+    return result
+
+
 # 6/1/2015: again, abs, absolute_noise and relative_noise should be sigmoids. Pretty sure!
 # OK. Abs and absolute_noise we can certainly migrate to sigmoids.
 # But relative-noise needs to know max_coeff, which is impossible with sigmoids.
@@ -1384,6 +1409,13 @@ def log(x,t=None):
   if t == None:
     return math.log(x)       # default is base e, ie natural logarithm
   return math.log(x,t)       # choose another base
+  
+# 14/1/2016:
+def square(x):
+  return x*x
+  
+def sqrt(x):
+  return math.sqrt(x)  
 
 # we need this since pattern_recognition() requires simm().
 # bug's out if I put this at the top of the page.
@@ -1432,7 +1464,12 @@ class stored_rule(object):
       return superposition()  
   
   def multiply(self,value):
-    return self                                    # will probably do a better job of multiplication later.
+    return self                                    # will probably do a better job of multiplication later. Is it even used?
+
+# 14/1/2016:    
+  def add(self,value):
+    return self                                    # will probably do a better job of addition later. Is it even used?
+    
 
 # 13/2/2015:
 # essentially a copy of stored_rule
@@ -1481,6 +1518,9 @@ class memoizing_rule(object):
   def multiply(self,value):
     return self                                    # will probably do a better job of multiplication later.
 
+# 14/1/2016:
+  def add(self,value):
+    return self                                    # will probably do a better job of addition later.
 
 # 10/1/2015:
 # let's try and write a fast_superposition() version of this using ordered dictionaries.
@@ -1786,6 +1826,16 @@ class new_context(object):
       label = label.label
     if type(rule) == str:                        # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
       rule = ket(rule)                           # if string, cast to ket
+
+    if type(rule) == list:                       # if list, cast to superposition
+      r = superposition()
+      for x in rule:
+        if type(x) == int or type(x) == float:
+          r += ket("number: " + str(x))
+        elif type(x) == str:
+          r += ket(x)
+      rule = r
+                
     if len(rule) == 0:                           # do not learn rules that are |>
       return
 

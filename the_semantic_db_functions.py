@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/12/2015
+# Update: 14/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3346,7 +3346,7 @@ def in_range(one,t1,t2):
 # 21/2/2015: round[3] |number: 3.1415> == |number: 3.142>
 # assumes one is a ket, t is an integer
 #
-def round_numbers(one,t):
+def old_round_numbers(one,t):
   cat, value = extract_category_value(one.label)
   try:
     value = float(value)
@@ -3358,6 +3358,39 @@ def round_numbers(one,t):
   if rounded_value.is_integer():
     rounded_value = int(rounded_value)
   return ket(cat + str(rounded_value))
+
+# 14/1/2016:
+# Instead of just round_numbers(), let's implement a more general numbers_fn().
+# Eventually we want: round[3], times-by[2], divide-by[7], plus[5.2], minus[9], and maybe others.
+#
+# foo() is a 2 param fn, one is a ket, t is number
+def numbers_fn(foo,one,t):
+  cat, value = extract_category_value(one.label)
+  try:
+    value = float(value)
+  except:
+    return one
+  if len(cat) > 0:
+    cat += ": "
+  result_value = foo(value,t)
+  if result_value.is_integer():
+    result_value = int(result_value)
+  return ket(cat + str(result_value),one.value)
+
+def round_numbers(one,t):               # cool, this one seems to work. Now need to do the rest.
+  return numbers_fn(round,one,t)
+  
+def times_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
+  def multiply(a,b):
+    return a*b
+  return numbers_fn(multiply,one,t)
+  
+def plus_numbers(one,t):
+  def add(a,b):
+    return a+b
+  return numbers_fn(add,one,t)
+        
+
 
 # to-coeff 12|> == |>
 # to-ceoff 26|a: b> == 26| >

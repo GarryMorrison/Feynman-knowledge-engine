@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/12/2015
+# Update: 14/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -111,7 +111,11 @@ sigmoid_table = {
   "XF"                 : "xor_filter",
 
 # 15/12/2015:
-  "log"                : "log",  
+  "log"                : "log",
+  
+# 14/1/2016:
+  "square"             : "square",           # for now these two are sigmoids. Maybe wan't to change that later?
+  "sqrt"               : "sqrt",    
 }                                   
 
 # some ket -> ket functions:
@@ -367,7 +371,25 @@ compound_table = {
   "discrim-drop"          : ".discrimination_drop({0})",
   
 # 4/3/2015:                 yeah, we are starting to define compound operators now. Though is slightly inelegant in terms of injection attacks!
-  "times"                 : ".apply_fn(pop_float).multiply({0}).apply_fn(push_float)",
+#  "times"                 : ".apply_fn(pop_float).multiply({0}).apply_fn(push_float)",
+  
+# 14/1/2016:
+#  "times-by"              : ".apply_fn(pop_float).multiply({0}).apply_fn(push_float)",    # OK. These sort of work, but not perfect. I think I will change how they are implemented.  
+#  "divide-by"             : ".apply_fn(pop_float).multiply(1/{0}).apply_fn(push_float)",  # eg: plus[3] 2|number: 7> returns |number: 17>
+#  "plus"                  : ".apply_fn(pop_float).add({0}).apply_fn(push_float)",         # I think we would prefer 2|number: 10> 
+#  "minus"                 : ".apply_fn(pop_float).add(-{0}).apply_fn(push_float)",
+#  "add"                   : ".apply_fn(pop_float).add({0}).apply_fn(push_float)",
+#  "take"                  : ".apply_fn(pop_float).add(-{0}).apply_fn(push_float)",
+
+# 14/1/2016: new and improved. These have better properties, and avoid the pop-float, push-float mess.
+  "times"                 : ".apply_fn(times_numbers,{0})",
+  "times-by"              : ".apply_fn(times_numbers,{0})",
+  "divide-by"             : ".apply_fn(times_numbers,1/{0})",
+  "plus"                  : ".apply_fn(plus_numbers,{0})",
+  "minus"                 : ".apply_fn(plus_numbers,-{0})",
+  "add"                   : ".apply_fn(plus_numbers,{0})",
+  "take"                  : ".apply_fn(plus_numbers,-{0})",
+  
   
 # 12/3/2015: another compound operator: pick[n]
   "pick"                  : ".shuffle().select_range(1,{0})",
