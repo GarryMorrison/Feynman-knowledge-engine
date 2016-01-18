@@ -17050,3 +17050,290 @@
   dump
   q
 
+2016-01-14
+  context new fib
+  fib |0> => |1>
+  fib |1> => |1>
+  fib |*> #=> arithmetic(fib minus[1] |_self>,|+>,fib minus[2] |_self>)
+  fib |5>
+  dump
+  fib |10>
+  dump
+  save new-fib.sw
+  q
+
+2016-01-14
+  fib |number: 0> => |number: 1>
+  fib |number: 1> => |number: 1>
+  fib |number: *> #=> arithmetic(fib minus[1] |_self>,|+>,fib minus[2] |_self>)
+  fib |number: 10>
+  dump
+  square 3|x>
+  sqrt 25|x>
+  sqrt 2|x>
+  push-float sqrt 2|x>
+  history
+  q
+
+2016-01-17
+  fact |0> => |1>
+  fact |*> #=> arithmetic(|_self>,|*>,fact minus[1] |_self>)
+  fact range(|0>,|20>)
+  fact |3>
+  times-by[0.9] |number: 40000>
+  divide-by[9] times-by[5] |10>
+  times-by[5/9] |number: 7>
+  context category theory
+  context
+  f |a> => |b>
+  g |b> => |c>
+  h |c> => |d>
+  id |*> #=> |_self>
+  id-a |a> => |a>
+  id-b |b> => |b>
+  id-c |c> => |c>
+  dump
+  g f |a>
+  h g f |a>
+  f id-a |a>
+  id-b f |a>
+  f |a>
+  q
+
+2016-01-17
+  load breakfast-menu.sw
+  load how-well-do-you-know.sw
+  dump
+  q
+
+2016-01-17
+  load fred-sam-friends.sw
+  load how-well-do-you-know.sw
+  dump
+  "" |table>
+  dump
+  q
+
+2016-01-18
+  load fred-sam-friends.sw
+  load how-well-do-you-know.sw
+  dump
+  the |table>
+  info off
+  the |table>
+  load names.sw
+  rel-kets[names]
+  how-many names rel-kets[names]
+  how-many-names |*> #=> how-many names |_self>
+  table[ket,how-many-names] rel-kets[names]
+  insert[s,0] delete[k,0] |kitten>
+  delete[k,0] insert[s,0] |kitten>
+  f |a> => |x1>
+  g |x1> => |b>
+  g f |a>
+  g |a> => |x2>
+  f |x2> => |b>
+  f g |a>
+  g f |a>
+  context
+  q
+
+2016-01-18
+  load common-English-words.sw
+  word2ngram-op |*> #=> letter-ngrams[1,2,3] |_self>
+  map[word2ngram-op,word2ngram] list-of |common English words>
+  letter-ngrams[1,2,3] |elefant>
+  table[word,coeff] select[1,30] 100 similar-input[word2ngram] letter-ngrams[1,2,3] |elefant>
+  q
+
+2016-01-18
+  3.0 |x>
+  3.0 7.0 |x>
+  debug on
+  3.0 7.0 |x>
+  q
+
+2016-01-18
+  3.0 7.0 |x>
+  3 7 |x>
+  3 7.0 |x>
+  3.0 7 |x>
+  3.1 7 |x>
+  3.1 7.2 |x>
+  3.1 7.0 |x>
+  q
+
+2016-01-18
+  3.0 7.0 |x>
+  9/5 10 |x>
+  q
+
+2016-01-18
+  9/5 10 |x>
+  3.0 7.0 |x>
+  q
+
+2016-01-18
+  9/5 10 |x>
+  q
+
+2016-01-18
+  9/5 10 |x>
+  q
+
+2016-01-18
+  debug on
+  9/5 10 |x>
+  q
+
+2016-01-18
+  9/5 10 |x>
+  times-by[9/5] |number: 10>
+  q
+
+2016-01-18
+  9/5 10 |x>
+  3/7.2 10 |x>
+  q
+
+2016-01-18
+  9/5 10 |x>
+  9.2 10 |x>
+  9 10 |x>
+  9/5 |x>
+  q
+
+2016-01-18
+  9/5 |x>
+  10 |x>
+  7 10 |x>
+  9/5 10 |x>
+  times-by[9/5] |number: 10>
+  3.0 7.0 9/5 10 |x>
+  3.0 10 |x>
+  3.1 10 |x>
+  q
+
+2016-01-18
+  load fred-sam-friends.sw
+  dump
+  how-many supported-ops |Fred>
+  debug on
+  how-many exp-max[friends] |Fred>
+  op |x> => |y>
+  how-many exp-max[op] |x>
+  exp-max[op] |x>
+  exp-max[friends] |Fred>
+  exp-max[supported-ops] |Fred>
+  history
+  how-many drop exp-max[friends] |Fred>
+  load fibonacci.sw
+  dump
+  exp-max[n-1] |*>
+  exp-max[fib] |*>
+  dump
+  icontext
+  ket-sort friends |Fred>
+  how-many |*> #=> |foo>
+  how-many |fish>
+  C |F: -270>
+  history
+  q
+
+2016-01-18
+  9/5 10 |x>
+  3.0 10 |x>
+  3.1/5 |x>
+  3.0 7.0 5.1 10 |X>
+  times-by[9/5] |number: 10>
+  times-by[3.1415926535] |number: 1>
+  divide-by[5/9] |number: 10>
+  times-by[9/5] divide-by[9/5] |number: 7>
+  round[5] times-by[9/5] divide-by[9/5] |number: 7>
+  3.1/5 |x>
+  C |F: 212>
+  3.2|x> + 5.3|x> + 7|x>
+  5 11 17
+  5 11 17 |x>
+  debug off
+  5 11 17 |x>
+  13^9 |x>
+  5.2^2
+  5.2^2 |x>
+  5.2^2 (3|x> + 7.1|x> + 9.8|x>)
+  2 3 7^7 (5|x> + 9.2|x>)
+  3.2|x> + 5.3|x> -7|x>
+  3.2|x> + 5.3|x> - 7|x>
+  3.2|x> + 5.3|x> + -7 |x>
+  9/5 10 |x>
+  fact |0> => |1>
+  fact |*> #=> arithmetic( |_self>, |*>, fact minus[1] |_self>)
+  dump
+  fact |4>
+  to-USD |currency: GBP: *> #=> extract-value |_self>
+  to-USD |currency: GBP: 30>
+  to-USD |currency: GBP: *> #=> times-by[1.62] extract-value |_self>
+  to-USD |currency: GBP: 30>
+  to-USD |currency: GBP: *> #=> merge-labels(|currency: USD: > + times-by[1.62] extract-value |_self>)
+  to-USD |currency: GBP: 30>
+  history
+  context GBP USD exchange rate
+  to-USD |currency: USD: *> #=> |_self>
+  to-GBP |currency: GBP: *> #=> |_self>
+  to-USD |currency: GBP: *> #=> merge-labels(|currency: USD: > + times-by[1.43] extract-value |_self>)
+  
+  to-GBP |currency: USD: *> #=> merge-labels(|currency: GBP: > + divide-by[1.43] extract-value |_self>)
+  
+  
+  dump
+  to-USD |currency: GBP: 1>
+  to-USD |currency: GBP: 2>
+  to-GBP to-USD |currency: GBP: 2>
+  dump
+  save gbp-usd-exchange-rate.sw
+  q
+
+2016-01-18
+  context temperature conversion
+  to-Kelvin |temperature: Kelvin: *> #=> |_self>
+  to-Celsius |temperature: Kelvin: *> #=> |temperature: Celsius: > _ minus[273.15] extract-value |_self>
+  to-Fahrenheit |temperature: Kelvin: *> #=> |temperature: Fahrenheit: > _ minus[459.67] times-by[9/5] extract-value |_self>
+  
+  to-Kelvin |temperature: Celsius: *> #=> |temperature: Kelvin: > _ plus[273.15] extract-value |_self>
+  to-Celsius |temperature: Celsius: *> #=> |_self>
+  to-Fahrenheit |temperature: Celsius: *> #=> |temperature: Fahrenheit: > _ plus[32] times-by[9/5] extract-value |_self>
+  
+  to-Kelvin |temperature: Fahrenheit: *> #=> |temperature: Kelvin: > _ times-by[5/9] plus[459.67] extract-value |_self>
+  to-Celsius |temperature: Fahrenheit: *> #=> |temperature: Celsius: > _ times-by[5/9 minus[32] extract-value |_self>
+  to-Fahrenheit |temperature: Fahrenheit: *> #=> |_self>
+  dump
+  to-Celsius |temperature: Fahrenheit: 32>
+  to-Kelvin |temperature: Kelvin: *> #=> |_self>
+  to-Celsius |temperature: Kelvin: *> #=> merge-labels(|temperature: Celsius: > + minus[273.15] extract-value |_self>)
+  to-Fahrenheit |temperature: Kelvin: *> #=> merge-labels(|temperature: Fahrenheit: > + minus[459.67] times-by[9/5] extract-value |_self>)
+  
+  to-Kelvin |temperature: Celsius: *> #=> merge-labels(|temperature: Kelvin: > + plus[273.15] extract-value |_self>)
+  to-Celsius |temperature: Celsius: *> #=> |_self>
+  to-Fahrenheit |temperature: Celsius: *> #=> merge-labels(|temperature: Fahrenheit: > + plus[32] times-by[9/5] extract-value |_self>)
+  
+  to-Kelvin |temperature: Fahrenheit: *> #=> merge-labels(|temperature: Kelvin: > + times-by[5/9] plus[459.67] extract-value |_self>)
+  to-Celsius |temperature: Fahrenheit: *> #=> merge-labels(|temperature: Celsius: > + times-by[5/9 minus[32] extract-value |_self>)
+  to-Fahrenheit |temperature: Fahrenheit: *> #=> |_self>
+  
+  dump
+  to-Celsius |temperature: Fahrenheit: 32>
+  to-Celsius |temperature: Fahrenheit: *> #=> merge-labels(|temperature: Celsius: > + times-by[5/9] minus[32] extract-value |_self>)
+  
+  dump
+  to-Celsius |temperature: Fahrenheit: 32>
+  to-Celsius |temperature: Fahrenheit: 100>
+  dump
+  save temperature-conversion.sw
+  q
+
+2016-01-18
+  h
+  web-load http://semantic-db.org/sw-examples/gbp-usd-exchange-rate.sw
+  web-load http://semantic-db.org/sw-examples/temperature-conversion.sw
+  q
+

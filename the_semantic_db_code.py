@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 14/1/2016
+# Update: 18/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -391,6 +391,18 @@ class ket(object):
     f = self.apply_op(context,op1)            
     return context.pattern_recognition(f,op2) 
     
+# 14/1/2016: we need to test it though.
+# implements: similar-input[op] |x>                                  # I don't think this makes much sense, in light of: similar-input[op] some |superposition>  
+#  def similar_input(self,context,op):              
+#    return context.pattern_recognition(self,op).delete_ket(self)    # we delete self, ie |x>, from the result, since it is always a 100% match anyway.
+    
+# 14/1/2016: 
+# implements: self-similar-input[op] |x>
+# ie don't delete |x>
+#  def self_similar_input(self,context,op):                          # NB: the name change
+  def similar_input(self,context,op):
+    return context.pattern_recognition(self,op) 
+
 
 # implements: find-topic[op] |x> 
   def find_topic(self,context,op):           
@@ -1275,6 +1287,11 @@ class superposition(object):
       for x in result.data:
         x.value = sigmoid(x.value,t1,t2)
     return result
+
+# 18/1/2016:
+  def similar_input(self,context,op):
+    return context.pattern_recognition(self,op) 
+
 
 # deprecated. This use case is now: X.the_label()
 # usage: X.ket()
