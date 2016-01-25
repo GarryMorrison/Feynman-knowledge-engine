@@ -17337,3 +17337,20 @@
   web-load http://semantic-db.org/sw-examples/temperature-conversion.sw
   q
 
+2016-01-19
+  3.0 7.0 |x>
+  9/5 10 |x>
+  debug on
+  9/5 10 |x>
+  9/5^2 |x>
+  do-you-know |>
+  q
+
+2016-01-19
+  load fred-sam-friends.sw
+  dump
+  mbr(|Ed>,friends |Fred>)
+  is-mbr(|Ed>,friends |Fred>)
+  is-mbr(|Frank>,friends |Fred>)
+  q
+

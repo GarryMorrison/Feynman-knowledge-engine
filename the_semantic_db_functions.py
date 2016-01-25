@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 14/1/2016
+# Update: 19/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3573,6 +3573,18 @@ def mbr(e,two):
     return ket("",0)
   return ket(e.label,value)
 
+# 19/1/2/2016:
+# is-mbr(|x>,SP) returns |yes> if |x> is in the SP, |no> otherwise.
+# eg:
+# friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+# sa: is-mbr(|Ed>,friends |Fred>)
+# |yes>
+# sa: is-mbr(|Frank>,friends |Fred>)
+# |no>
+#
+def is_mbr(e,two):
+  return mbr(e,two).is_not_empty()
+  
 
 # 9/4/2015:
 # subset(one,two)

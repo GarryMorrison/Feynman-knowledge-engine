@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/1/2016
+# Update: 19/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -569,7 +569,7 @@ positive_int = <digit+>:n -> int(n)
 # what about minus sign?
 #simple_float = ('-' | -> ''):sign <(digit | '.')+>:n -> float_int(sign + n)
 # handle 9.3/5.2
-simple_float = ('-' | -> ''):sign <(digit | '.')+>:numerator ('/' <(digit | '.')+> | -> '1'):denominator -> float_int(sign + numerator + '/' + denominator)
+simple_float = ('-' | -> ''):sign <(digit | '.')+>:numerator ('/' <(digit | '.')+> | -> '1'):denominator -> float_int(sign + numerator,denominator)
 
 
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
@@ -591,18 +591,10 @@ op_sequence = (S0 op:first (S1 op)*:rest S0 -> [first] + rest)
 """
 
 # what happens if we have eg: "3.73.222751" (ie, more than one dot?)
-#
-# hrmm... float('9/5') bugs out! Seems we need fractions.
-# And yeah, this is an ugly function! I wonder if there is a cleaner way to do it?
-#from fractions import Fraction
-def float_int(x):
-  logger.debug("float-int x: " + x)
-#  x = float(Fraction(x))
-  n,d = x.split('/')                   # makes use of simple_float always being in form a/b.
+def float_int(n,d):
   x = float(n)/float(d)
-  if float(x).is_integer():
-    # return str(int(x))               # is buggy. eg, int('3.0') causes an exception
-    return str(int(float(x)))
+  if x.is_integer():
+    return str(int(x))
   return str(x)
 
 op_grammar = makeGrammar(our_operator_grammar,{"float_int" : float_int})
@@ -1129,6 +1121,9 @@ whitelist_table_2 = {
 # 26/2/2015:
   "mbr"                 : "mbr",
   "measure"             : "mbr",
+
+# 19/1/2016:
+  "is-mbr"              : "is_mbr",  
   
 # 9/4/2015:
   "subset"              : "subset",

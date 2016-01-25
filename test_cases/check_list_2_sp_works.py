@@ -9,7 +9,7 @@
 # Update:
 # Copyright: GPLv3
 #
-# Usage: ./check_list_2_sp_works.py
+# Usage: ./play_with_list_2_sp.py
 #
 #######################################################################
 
@@ -38,6 +38,8 @@ print(list_2_sp(list3))
 context.learn("list-of","small primes",list1)
 context.learn("list-of","common animals",list2)
 context.learn("list-of","test elements",list3)
+
+context.learn("friends","Fred",["Sam","Frank","Jim","Rob"])
 
 # see what we have learnt:
 context.print_universe()
