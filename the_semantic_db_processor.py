@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 19/1/2016
+# Update: 21/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -392,6 +392,9 @@ compound_table = {
   "minus"                 : ".apply_fn(plus_numbers,-{0})",
   "add"                   : ".apply_fn(plus_numbers,{0})",
   "take"                  : ".apply_fn(plus_numbers,-{0})",
+# 21/1/2016:
+  "mod"                   : ".apply_fn(mod_numbers,{0})",
+  "is-mod"                : ".apply_fn(is_mod_numbers,{0})",
   
   
 # 12/3/2015: another compound operator: pick[n]

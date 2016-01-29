@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 19/1/2016
+# Update: 28/1/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3196,7 +3196,7 @@ def int_coeffs_to_word(one,context):
   if value != 1:
     label = one.apply_op(context,"plural").the_label() # .the_label() to make sure it is a ket.    
     if label == '':
-      label = one.label                                  # maybe return |> if plural not known? or the fed in ket?
+      label = one.label                                  # maybe return |> if plural not known? or the fed in ket? The fed in ket, is the correct way to do this.
   return ket(str(value) + " " + label)
 
 
@@ -3389,7 +3389,16 @@ def plus_numbers(one,t):
   def add(a,b):
     return a+b
   return numbers_fn(add,one,t)
-        
+
+def mod_numbers(one,t):
+  def mod(a,b):
+    return a % b
+  return numbers_fn(mod,one,t)        
+
+def is_mod_numbers(one,t):
+  def mod(a,b):
+    return a % b
+  return equal(numbers_fn(mod,one,t),0).is_not_empty()        
 
 
 # to-coeff 12|> == |>

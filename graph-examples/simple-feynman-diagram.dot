@@ -1,0 +1,8 @@
+digraph g {
+"context" -> "simple Feynman diagram"
+"e1" -> "gamma 1" [label="electron",arrowhead=normal]
+"gamma 1" -> "e2" [label="electron",arrowhead=normal]
+"gamma 1" -> "gamma 2" [label="photon",arrowhead=normal]
+"e3" -> "gamma 2" [label="electron",arrowhead=normal]
+"gamma 2" -> "e4" [label="electron",arrowhead=normal]
+}
