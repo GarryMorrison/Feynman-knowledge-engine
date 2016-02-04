@@ -17776,3 +17776,116 @@
   day-of-the-week |date: 2016/1/28>
   q
 
+2016-01-30
+  ngop |*> #=> letter-ngrams[1,2,3] |_self>
+  ket-simm(ngop |university of adelaide>,ngop |adelaide university>)
+  ket-simm(word-ngrams[1] |university of adelaide>,word-ngrams[1] |adelaide university>)
+  history
+  ngop |*> #=> letter-ngrams[1,2,3,4] |_self>
+  ket-simm(ngop |university of adelaide>,ngop |adelaide university>)
+  ngop |*> #=> letter-ngrams[1,2,3] |_self>
+  ket-simm(ngop |captain picarrd>,ngop |captain jean-luc picarrd>)
+  ket-simm(ngop |fred jones>,ngop |jones fred>)
+  -- a note: letter-ngrams[1,2,3] does for text what we want to do for images. Break into component parts. I guess need an |image: 5: 5: AF352E4> data type or something, so we can pass image fragments around as superpositions.
+  save history
+
+2016-02-04
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+
+2016-02-04
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/1/2016
+# Update: 3/2/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3996,4 +3996,15 @@ def edit_substitute(one,parameters):
       text = text[:k] + char1 + text[k+1:]
     return ket(text,one.value)
   except:
-    return one                        
+    return one
+    
+
+# 3/2/2016:
+# guess-ket |fred>          -- return the best matching known ket (using simm and so on)
+# guess-ket[3] |Sam>        -- return the best 3 matching known kets
+# guess-ket[*] |robbie>     -- return all matching known kets
+#
+# one is a ket
+def guess_ket(one,context,t=None):
+  the_label = one.label
+  the_kets = context.relevant_kets("*")                            

@@ -21,6 +21,9 @@ https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/sa-console
 Visualizing sw files, via the DOT language:
 http://write-up.semantic-db.org/169-visualizing-sw-files.html
 
+A definition of the if-then machine, a proposed approximation to a single neuron:
+http://write-up.semantic-db.org/186-introducing-the-if-then-machine.html
+
 <pre>
 Installation instructions:
 $ git clone git://github.com/python-parsley/parsley.git
