@@ -17889,3 +17889,1694 @@
   then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
   save history
 
+2016-02-04
+  ngop |*> #=> letter-ngrams[1,2,3] |_self>
+  ket-simm(ngop |university of adelaide>,ngop |adelaide university>)
+  ket-simm(word-ngrams[1] |university of adelaide>,word-ngrams[1] |adelaide university>)
+  history
+  ngop |*> #=> letter-ngrams[1,2,3,4] |_self>
+  ket-simm(ngop |university of adelaide>,ngop |adelaide university>)
+  ngop |*> #=> letter-ngrams[1,2,3] |_self>
+  ket-simm(ngop |captain picarrd>,ngop |captain jean-luc picarrd>)
+  ket-simm(ngop |fred jones>,ngop |jones fred>)
+  -- a note: letter-ngrams[1,2,3] does for text what we want to do for images. Break into component parts. I guess need an |image: 5: 5: AF352E4> data type or something, so we can pass image fragments around as superpositions.
+  save history
+  ket-simm(ngop |tough enough>,ngop |tough ain't enough>)
+  invert how-many split |a b c>
+  invert pop-float how-many split |a b c>
+  save history
+
+2016-02-04
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+
+2016-02-05
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+
+2016-02-05
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+
+2016-02-06
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+
+2016-02-06
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+  context
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  table[node,coeff] 100 similar-input[seq1] then clean drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then clean drop-below[0.9] similar-input[seq2] the |input>
+  history
+  save history
+
+2016-02-07
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+  context
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  table[node,coeff] 100 similar-input[seq1] then clean drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then clean drop-below[0.9] similar-input[seq2] the |input>
+  history
+  save history
+  dump
+  rel-kets[seq,seq2]
+  dump rel-kets[seq]
+  
+  rel-kets[seq]
+  dump rel-kets[seq] |>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq2] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  .
+  save history
+
+2016-02-07
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+  context
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  table[node,coeff] 100 similar-input[seq1] then clean drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then clean drop-below[0.9] similar-input[seq2] the |input>
+  history
+  save history
+  dump
+  rel-kets[seq,seq2]
+  dump rel-kets[seq]
+  
+  rel-kets[seq]
+  dump rel-kets[seq] |>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq2] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  .
+  save history
+  history
+  
+  table[node,coeff] 100 similar-input[seq] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  save history
+
+2016-02-07
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+  context
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  table[node,coeff] 100 similar-input[seq1] then clean drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then clean drop-below[0.9] similar-input[seq2] the |input>
+  history
+  save history
+  dump
+  rel-kets[seq,seq2]
+  dump rel-kets[seq]
+  
+  rel-kets[seq]
+  dump rel-kets[seq] |>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq2] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  .
+  save history
+  history
+  
+  table[node,coeff] 100 similar-input[seq] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  save history
+  seq3 |node: 17: 1> => the |sp1>
+  seq3 |node: 17: 2> => the |sp2>
+  seq3 |node: 17: 3> => the |sp3>
+  seq3 |node: 17: 4> => the |sp4>
+  seq3 |node: 17: 5> => the |sp5>
+  then |node: 17: *> => |the SP sequence>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  then drop-below[0.9] similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  history
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  dump
+  history 1000
+  
+  
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  history
+  debug on
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  debug off
+  then drop-below[0.9] similar-input[seq3] pick[9] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example |*> #=> then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example
+  projection-example
+  projection-example
+  projection-example
+  projection-example
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  projection-example
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  pick[2] split |a b c d e>
+  .
+  .
+  .
+  .
+  .
+  history
+  history 1000
+  projection-example |*> #=> then drop-below[0.9] similar-input[seq3] pick[9] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example
+  .
+  .
+  .
+  projection-example |x>
+  projection-example 0|x>
+  .
+  id
+  h
+  x = x
+  id
+  projection-example
+  .
+  history
+  save history
+
+2016-02-08
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+  context
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  table[node,coeff] 100 similar-input[seq1] then clean drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then clean drop-below[0.9] similar-input[seq2] the |input>
+  history
+  save history
+  dump
+  rel-kets[seq,seq2]
+  dump rel-kets[seq]
+  
+  rel-kets[seq]
+  dump rel-kets[seq] |>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq2] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  .
+  save history
+  history
+  
+  table[node,coeff] 100 similar-input[seq] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  save history
+  seq3 |node: 17: 1> => the |sp1>
+  seq3 |node: 17: 2> => the |sp2>
+  seq3 |node: 17: 3> => the |sp3>
+  seq3 |node: 17: 4> => the |sp4>
+  seq3 |node: 17: 5> => the |sp5>
+  then |node: 17: *> => |the SP sequence>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  then drop-below[0.9] similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  history
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  dump
+  history 1000
+  
+  
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  history
+  debug on
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  debug off
+  then drop-below[0.9] similar-input[seq3] pick[9] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example |*> #=> then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example
+  projection-example
+  projection-example
+  projection-example
+  projection-example
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  projection-example
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  pick[2] split |a b c d e>
+  .
+  .
+  .
+  .
+  .
+  history
+  history 1000
+  projection-example |*> #=> then drop-below[0.9] similar-input[seq3] pick[9] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example
+  .
+  .
+  .
+  projection-example |x>
+  projection-example 0|x>
+  .
+  id
+  h
+  x = x
+  id
+  projection-example
+  .
+  history
+  save history
+  current |temperature> => |C: 25.2>
+  current |temperature>
+  F current |temperature>
+  history
+  dump
+  context category theory
+  f |a> => |b>
+  f |b> => |c>
+  g |a> => |b>
+  g |b> => |c>
+  g f |a>
+  f g |a>
+  history
+  g f |a>
+  f g |a>
+  f |a> => 3.2 |b>
+  f |a> = |x>
+  g |x> => |b>
+  g |a> => |y>
+  f |y> => |b>
+  history
+  g f |a>
+  f |a> => |x>
+  g f |a>
+  f g |a>
+  history
+  
+  
+  f |a> => 0.71 |b>
+  f |b> => 0.71 |c>
+  g |a> => 3.5 |b>
+  g |b> => 3.5 |c>
+  g f |a>
+  f g |a>
+  icontext
+  dump
+  split |sp1 sp2 sp3 sp4 sp5>
+  pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  the |sp2>
+  pick[9] the |sp2>
+  similar-input[seq3] (4.74|x: 5> + 8.05|x: 1> + 14.833|x: 9> + 3.91|x: 7> + 4.543|x: 2> + 1.059|x: 6> + 11.074|x: 10> + 17.714|x: 8> + 3.443|x: 4>)
+  drop-below[0.9] (0.826|node: 17: 2> + 0.692|node: 17: 1> + 0.663|node: 17: 4> + 0.526|node: 17: 3> + 0.512|node: 17: 5>)
+  then |>
+  history
+  save history
+

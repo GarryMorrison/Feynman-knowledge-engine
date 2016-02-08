@@ -4006,5 +4006,7 @@ def edit_substitute(one,parameters):
 #
 # one is a ket
 def guess_ket(one,context,t=None):
+  def process_string(s):
+    s = s.lower()
   the_label = one.label
   the_kets = context.relevant_kets("*")                            
