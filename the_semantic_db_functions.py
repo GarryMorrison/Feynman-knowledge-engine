@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 3/2/2016
+# Update: 9/2/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3188,7 +3188,7 @@ def such_that(one,context,ops):     # what happens if coeff != 1, eg 0?
 # |1 apple, 3 mice, 2 teeth and 9 cats>
 #
 # assumes one is a ket
-def int_coeffs_to_word(one,context):
+def int_coeffs_to_word(one,context):                      # at some point maybe we want float_coeffs_to_word??
   label = one.label
   value = int(one.value)
   if value == 0:
@@ -3999,14 +3999,72 @@ def edit_substitute(one,parameters):
     return one
     
 
-# 3/2/2016:
+# 9/2/2016:
 # guess-ket |fred>          -- return the best matching known ket (using simm and so on)
-# guess-ket[3] |Sam>        -- return the best 3 matching known kets
-# guess-ket[*] |robbie>     -- return all matching known kets
+# guess-ket[3] |Sam>        -- return the best 3 matching known kets, providing simm > 0
+# guess-ket[*] |robbie>     -- return all matching known kets, providing simm > 0
 #
 # one is a ket
-def guess_ket(one,context,t=None):
+def guess_ket(one,context,t='1'):
   def process_string(s):
-    s = s.lower()
-  the_label = one.label
-  the_kets = context.relevant_kets("*")                            
+    one = ket(s.lower())                                            # I presume we want s.lower(). Maybe sometimes we don't? 
+    return make_ngrams(one,'1,2,3','letter')
+  try:
+    guess = process_string(one.label)
+    r = superposition()
+    for x in context.relevant_kets("*"):                            # what about kets that are only on the right hand side of a learn rule? This misses them. One way is run "create inverse", but is there a better way?
+      similarity = silent_simm(guess,process_string(x.label))
+      r.data.append(x.multiply(similarity))                         # later swap in r += x.multiply(similarity)
+    if t == '*':
+      return r.drop().coeff_sort()
+    else:
+      return r.drop().coeff_sort().select_range(1,int(t))    
+  except:
+    return ket("",0)
+
+# 9/2/2016:
+# guess-operator[age]          -- return the best matching known operator (using simm and so on)
+# guess-operator[friend,3]     -- return the best 3 matching known operators, providing simm > 0
+# guess-operator[mother,*]     -- return all matching known operators, providing simm > 0
+#
+def guess_operator(context,parameters):
+  try:
+    op,t = parameters.split(',')
+    if t != '*':
+      t = int(t)
+  except:
+    op = parameters
+    t = 1
+  def process_string(s):
+    one = ket(s.lower())
+    return make_ngrams(one,'1,2,3','letter')
+  try:
+    guess = process_string(op)
+    r = superposition()
+    for x in context.supported_operators():  
+      similarity = silent_simm(guess,process_string(x.label[4:]))   # need to convert 'op: age' to 'age'
+      r.data.append(x.multiply(similarity))                         # later swap in r += x.multiply(similarity)
+    if t == '*':
+      return r.drop().coeff_sort()
+    else:
+      return r.drop().coeff_sort().select_range(1,t)    
+  except:
+    return ket("",0)
+    
+# 9/2/2016:
+# rename_kets: 
+# takes a superposition (one), and for each ket replaces the string in ket two with the string in ket three
+#
+# one is a superposition, two and three are kets.
+def rename_kets(one,two,three):
+  try:
+    s1 = two.the_label()
+    s2 = three.the_label()
+    result = superposition()
+    for x in one:
+      y = ket(x.label.replace(s1,s2),x.value)
+      result.data.append(y)                                         # later swap in result += y
+    return result
+  except:
+    return ket("",0) 
+                             

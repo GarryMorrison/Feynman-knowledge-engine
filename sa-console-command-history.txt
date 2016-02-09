@@ -19580,3 +19580,80 @@
   history
   save history
 
+2016-02-09
+  current-time
+  current-date
+  day-of-the-week
+  q
+
+2016-02-09
+  load fred-sam-friends.sw
+  dump
+  guess-ket |freddie>
+  q
+
+2016-02-09
+  op |abcdefg>
+  op |Abxyzuv>
+  guess-ket |AB>
+  dump
+  op |abcdefg> => |z>
+  op |Abxyzuv> => |z>
+  dump
+  guess-ket |ab>
+  guess-ket[2] |ab>
+  guess-ket[*] |ab>
+  op |uvzabcpqr> => |z>
+  guess-ket[2] |ab>
+  guess-ket[*] |ab>
+  dump exact
+  q
+
+2016-02-09
+  the-age-of |Fred> => |age: 37>
+  guess-operator[age]
+  guess-operator[age] split |a b c d e>
+  ag |Sam> => |age: 25>
+  guess-operator[age]
+  guess-operator[age,2]
+  age |Rob> => |age: 19>
+  guess-operator[age,2]
+  guess-operators[age,3]
+  guess-operator[age,3]
+  guess-operator[age,*]
+  dump
+  q
+
+2016-02-09
+  the-age-of |Fred> => |age: 37>
+  
+  ag |Sam> => |age: 25>
+  
+  age |Rob> => |age: 19>
+  
+  dump
+  guess-operator[age]
+  guess-operator[age,*]
+  apply(guess-operator[age],guess-ket |Freddie>)
+  guess-ket |Freddie>
+  apply(guess-operator[age] |>,guess-ket |Freddie>)
+  dump
+  apply(guess-operator[age] |>,guess-ket |robbie>)
+  save history
+
+2016-02-09
+  rename-kets(|abScde>,|S>,|xSy>)
+  q
+
+2016-02-09
+  rename-kets(|abScde>,|S>,|xSy>)
+  rename-kets(|abScde>,|a> + |b>,|x> + |y>)
+  rename-kets(|fred> + |sam> + |rob>,|r>,|R>)
+  q
+
+2016-02-09
+  current-date
+  day-of-the-week current-date
+  current-time
+  q
+

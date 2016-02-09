@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/1/2016
+# Update: 9/2/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1820,11 +1820,13 @@ class new_context(object):
     self.name = name
     self.ket_rules_dict = OrderedDict()
     self.sp_rules_dict = OrderedDict()
+    self.supported_operators_dict = OrderedDict()
 
   def set(self,name):                           # not 100% sure this is the best way, or correct.
     self.name = name                            # BTW, it is intended to erase what is currently defined for the current context.
     self.ket_rules_dict = OrderedDict()
     self.sp_rules_dict = OrderedDict()
+    self.supported_operators_dict = OrderedDict()
     
 # 3/12/2015:
   def context_name(self):
@@ -1855,6 +1857,9 @@ class new_context(object):
                 
     if len(rule) == 0:                           # do not learn rules that are |>
       return
+
+    # 9/2/2016:
+    self.supported_operators_dict[op] = True     # learn supported operators in this context
 
     if label not in self.ket_rules_dict:
       self.ket_rules_dict[label] = OrderedDict()
@@ -2172,6 +2177,15 @@ class new_context(object):
         if op in self.ket_rules_dict[label]:
           result.data.append(ket(label))                                  # "result += ket(label)" when swap in fast_sp
     return result
+    
+  # 9/2/2016:
+  # returns a superposition,with all coeffs 1, of all operators in a given context
+  def supported_operators(self):
+    result = superposition()
+    for op in self.supported_operators_dict:
+      result.data.append(ket("op: " + op))
+    return result
+        
 
 # 14/4/2015:
 # given a ket, return matching lists of kets.
@@ -2407,6 +2421,11 @@ class context_list(object):
  
   def relevant_kets(self,op):
     return self.data[self.index].relevant_kets(op)
+
+  # 9/2/2016
+  def supported_operators(self):
+    return self.data[self.index].supported_operators()
+    
     
 #  def list_kets(self,e):
 #    return self.data[self.index].list_kets(e)    

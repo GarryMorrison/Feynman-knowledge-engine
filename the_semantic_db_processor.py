@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 21/1/2016
+# Update: 9/2/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -451,6 +451,10 @@ compound_table = {
   "delete"                 : ".apply_fn(edit_delete,\"{0}\")",
   "insert"                 : ".apply_fn(edit_insert,\"{0}\")",    
   "substitute"             : ".apply_fn(edit_substitute,\"{0}\")",
+  
+# 9/2/2016:
+  "guess-ket"              : ".apply_fn(guess_ket,context,\"{0}\")",
+  "guess-operator"         : ".apply_naked_fn(guess_operator,context,\"{0}\")",  
 }
 
 
@@ -485,7 +489,10 @@ ket_context_table = {
   "starts-with"        : "starts_with",
   
 # 4/5/2015:
-  "show-image"         : "show_image",    
+  "show-image"         : "show_image", 
+  
+# 9/2/2016:
+  "guess-ket"          : "guess_ket",     
 }
 
 
@@ -1157,7 +1164,10 @@ whitelist_table_3 = {
   "process-reaction" : "process_reaction",
   
 # 16/9/2015:
-  "respond-to-pattern" : "respond_to_pattern",    
+  "respond-to-pattern" : "respond_to_pattern",
+  
+# 9/2/2016:
+  "rename-kets"   : "rename_kets",      
 }
 
 # the code needed for this not yet implemented.
