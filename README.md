@@ -21,8 +21,11 @@ https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/sa-console
 Visualizing sw files, via the DOT language:
 http://write-up.semantic-db.org/169-visualizing-sw-files.html
 
-A definition of the if-then machine, a proposed approximation to a single neuron:
-http://write-up.semantic-db.org/186-introducing-the-if-then-machine.html
+A definition of the if-then machine, a proposed approximation to a single neuron:<br>
+http://write-up.semantic-db.org/186-introducing-the-if-then-machine.html<br>
+http://write-up.semantic-db.org/187-learning-a-sequence-using-if-then-machines.html<br>
+http://write-up.semantic-db.org/188-learning-days-of-the-week-using-if-then-machines.html<br>
+http://write-up.semantic-db.org/189-learning-simple-images-using-if-then-machines.html<br>
 
 <pre>
 Installation instructions:

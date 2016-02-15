@@ -19657,3 +19657,829 @@
   current-time
   q
 
+2016-02-10
+  context week day if-then machines
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  day |node: 1: 1> => ngrams |Monday>
+  then |node: 1: *> => |Tuesday>
+  day |node: 2: 1> => ngrams |Tuesday>
+  then |node: 2: *> => |Wednesday>
+  history
+  reset
+    context week day if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    then |node: 7: *> => |Monday>
+  
+    tomorrow |*> #=> then drop-below[0.6] similar-input[day] ngrams |_self>
+  
+  
+  dump
+  tomorrow |tues>
+  tomorrow |tuesday>
+  tomorrow |Tuesday>
+  lower-case |Tues>
+  reset
+    context week day if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] lower-case |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    then |node: 7: *> => |Monday>
+  
+    tomorrow |*> #=> then drop-below[0.6] similar-input[day] ngrams |_self>
+  
+  
+  dump
+  tomorrow |tues>
+  tomorrow |tuesday>
+  similar-input[day] ngrams |tues>
+  similar-input[day] ngrams |tue>
+  reset
+    context week day if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] lower-case |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+  
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    then |node: 7: *> => |Monday>
+  
+    tomorrow |*> #=> then drop-below[0.6] similar-input[day] ngrams |_self>
+  
+  dump
+  tomorrow |tue>
+  tomorrow |tues>
+  tomorrow^2 |tues>
+  tomorrow^7 |tues>
+  tomorrow |tues>
+  tomorrow^2 |tues>
+  tomorrow^5 |tues>
+  tomorrow^6 |tues>
+  tomorrow |Sunday>
+  ket-simm(ngrams |Sunday>,ngrams |Monday>)
+    tomorrow |*> #=> then drop-below[0.7] similar-input[day] ngrams |_self>
+  tomorrow^7 |tues>
+  tomorrow |tues>
+  similar-input[day] |tues>
+  similar-input[day] ngrams |tues>
+    tomorrow |*> #=> then drop-below[0.65] similar-input[day] ngrams |_self>
+  tomorrow |tues>
+  tomorrow |mon>
+  tomorrow |mondy>
+  tomorrow |weds>
+  tomorrow |wed>
+  tomorrow |wedensday>
+  tomorrow^7 |wedensday>
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+    day |node: 1: 3> => ngrams |Mo>
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    day |node: 2: 3> => ngrams |Tu>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    day |node: 3: 3> => ngrams |We>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    day |node: 4: 3> => ngrams |Th>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    day |node: 5: 3> => ngrams |Fr>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    day |node: 6: 3> => ngrams |Sa>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    day |node: 7: 3> => ngrams |Su>
+    then |node: 7: *> => |Monday>
+  
+  tomorrow |Tu>
+  tomorrow |Wed>
+  tomorrow |t>
+  dump
+  current-date
+  day-of-the-week current-date
+  tomorrow day-of-the-week current-date
+  history 1000
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+    day |node: 1: 3> => ngrams |Mo>
+    then |node: 1: *> => |Tuesday>
+    previous |node: 1: *> => |Sunday>
+   
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    day |node: 2: 3> => ngrams |Tu>
+    then |node: 2: *> => |Wednesday>
+    previous |node: 2: *> => |Monday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    day |node: 3: 3> => ngrams |We>
+    then |node: 3: *> => |Thursday>
+    previous |node: 3: *> => |Tuesday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    day |node: 4: 3> => ngrams |Th>
+    then |node: 4: *> => |Friday>
+    previous |node: 4: *> => |Wednesday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    day |node: 5: 3> => ngrams |Fr>
+    then |node: 5: *> => |Saturday>
+    previous |node: 5: *> => |Thursday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    day |node: 6: 3> => ngrams |Sa>
+    then |node: 6: *> => |Sunday>
+    previous |node: 6: *> => |Friday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    day |node: 7: 3> => ngrams |Su>
+    then |node: 7: *> => |Monday>
+    previous |node: 7: *> => |Saturday>
+  
+    tomorrow |*> #=> then drop-below[0.65] similar-input[day] ngrams |_self>
+    yesterday |*> #=> previous drop-below[0.65] similar-input[day] ngrams |_self>
+  
+  yesterday |monday>
+  yesterday^7 |monday>
+  yesterday |weds>
+  tomorrow^2 |weds>
+  yesterday tomorrow |wed>
+  yesterday |Su>
+  tomorrow |day>
+  tomorrow |sday>
+  tomorrow |esday>
+  tomorrow |tues>
+  tomorrow |weddy>
+  tomorrow |weds>
+  tomorrow |thursdy>
+  tomorrow |thrus>
+  tomorrow |thru>
+  tomorrow |thrusday>
+  current-date
+  day-of-the-week current-date
+  tomorrow day-of-the-week current-date
+  tomorrow^2 day-of-the-week current-date
+  tomorrow split |Sunday Thursday>
+  save history
+
+2016-02-11
+  context week day if-then machines
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  day |node: 1: 1> => ngrams |Monday>
+  then |node: 1: *> => |Tuesday>
+  day |node: 2: 1> => ngrams |Tuesday>
+  then |node: 2: *> => |Wednesday>
+  history
+  reset
+    context week day if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    then |node: 7: *> => |Monday>
+  
+    tomorrow |*> #=> then drop-below[0.6] similar-input[day] ngrams |_self>
+  
+  
+  dump
+  tomorrow |tues>
+  tomorrow |tuesday>
+  tomorrow |Tuesday>
+  lower-case |Tues>
+  reset
+    context week day if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] lower-case |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    then |node: 7: *> => |Monday>
+  
+    tomorrow |*> #=> then drop-below[0.6] similar-input[day] ngrams |_self>
+  
+  
+  dump
+  tomorrow |tues>
+  tomorrow |tuesday>
+  similar-input[day] ngrams |tues>
+  similar-input[day] ngrams |tue>
+  reset
+    context week day if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] lower-case |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+  
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    then |node: 7: *> => |Monday>
+  
+    tomorrow |*> #=> then drop-below[0.6] similar-input[day] ngrams |_self>
+  
+  dump
+  tomorrow |tue>
+  tomorrow |tues>
+  tomorrow^2 |tues>
+  tomorrow^7 |tues>
+  tomorrow |tues>
+  tomorrow^2 |tues>
+  tomorrow^5 |tues>
+  tomorrow^6 |tues>
+  tomorrow |Sunday>
+  ket-simm(ngrams |Sunday>,ngrams |Monday>)
+    tomorrow |*> #=> then drop-below[0.7] similar-input[day] ngrams |_self>
+  tomorrow^7 |tues>
+  tomorrow |tues>
+  similar-input[day] |tues>
+  similar-input[day] ngrams |tues>
+    tomorrow |*> #=> then drop-below[0.65] similar-input[day] ngrams |_self>
+  tomorrow |tues>
+  tomorrow |mon>
+  tomorrow |mondy>
+  tomorrow |weds>
+  tomorrow |wed>
+  tomorrow |wedensday>
+  tomorrow^7 |wedensday>
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+    day |node: 1: 3> => ngrams |Mo>
+    then |node: 1: *> => |Tuesday>
+  
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    day |node: 2: 3> => ngrams |Tu>
+    then |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    day |node: 3: 3> => ngrams |We>
+    then |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    day |node: 4: 3> => ngrams |Th>
+    then |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    day |node: 5: 3> => ngrams |Fr>
+    then |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    day |node: 6: 3> => ngrams |Sa>
+    then |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    day |node: 7: 3> => ngrams |Su>
+    then |node: 7: *> => |Monday>
+  
+  tomorrow |Tu>
+  tomorrow |Wed>
+  tomorrow |t>
+  dump
+  current-date
+  day-of-the-week current-date
+  tomorrow day-of-the-week current-date
+  history 1000
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+    day |node: 1: 3> => ngrams |Mo>
+    then |node: 1: *> => |Tuesday>
+    previous |node: 1: *> => |Sunday>
+   
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    day |node: 2: 3> => ngrams |Tu>
+    then |node: 2: *> => |Wednesday>
+    previous |node: 2: *> => |Monday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    day |node: 3: 3> => ngrams |We>
+    then |node: 3: *> => |Thursday>
+    previous |node: 3: *> => |Tuesday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    day |node: 4: 3> => ngrams |Th>
+    then |node: 4: *> => |Friday>
+    previous |node: 4: *> => |Wednesday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    day |node: 5: 3> => ngrams |Fr>
+    then |node: 5: *> => |Saturday>
+    previous |node: 5: *> => |Thursday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    day |node: 6: 3> => ngrams |Sa>
+    then |node: 6: *> => |Sunday>
+    previous |node: 6: *> => |Friday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    day |node: 7: 3> => ngrams |Su>
+    then |node: 7: *> => |Monday>
+    previous |node: 7: *> => |Saturday>
+  
+    tomorrow |*> #=> then drop-below[0.65] similar-input[day] ngrams |_self>
+    yesterday |*> #=> previous drop-below[0.65] similar-input[day] ngrams |_self>
+  
+  yesterday |monday>
+  yesterday^7 |monday>
+  yesterday |weds>
+  tomorrow^2 |weds>
+  yesterday tomorrow |wed>
+  yesterday |Su>
+  tomorrow |day>
+  tomorrow |sday>
+  tomorrow |esday>
+  tomorrow |tues>
+  tomorrow |weddy>
+  tomorrow |weds>
+  tomorrow |thursdy>
+  tomorrow |thrus>
+  tomorrow |thru>
+  tomorrow |thrusday>
+  current-date
+  day-of-the-week current-date
+  tomorrow day-of-the-week current-date
+  tomorrow^2 day-of-the-week current-date
+  tomorrow split |Sunday Thursday>
+  save history
+  tomorrow^7 |sun>
+  tomorrow^7 |sunnie>
+  minus[3] times-by[2] plus[12] |0>
+  minus[3] times-by[2] plus[12] |1>
+    context weekday if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] lower-case |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+    day |node: 1: 3> => ngrams |Mo>
+    previous |node: 1: *> => |Sunday>
+    id |node: 1: *> => |Monday>
+    next |node: 1: *> => |Tuesday>
+   
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    day |node: 2: 3> => ngrams |Tu>
+    previous |node: 2: *> => |Monday>
+    id |node: 2: *> => |Tuesday>
+    next |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    day |node: 3: 3> => ngrams |We>
+    previous |node: 3: *> => |Tuesday>
+    id |node: 3: *> => |Wednesday>
+    next |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    day |node: 4: 3> => ngrams |Th>
+    previous |node: 4: *> => |Wednesday>
+    id |node: 4: *> => |Thursday>
+    next |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    day |node: 5: 3> => ngrams |Fr>
+    previous |node: 5: *> => |Thursday>
+    id |node: 5: *> => |Friday>
+    next |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    day |node: 6: 3> => ngrams |Sa>
+    previous |node: 6: *> => |Friday>
+    id |node: 6: *> => |Saturday>
+    next |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    day |node: 7: 3> => ngrams |Su>
+    previous |node: 7: *> => |Saturday>
+    id |node: 7: *> => |Sunday>
+    next |node: 7: *> => |Monday>
+  
+    yesterday |*> #=> previous drop-below[0.65] similar-input[day] ngrams |_self>
+    today |*> #=> id drop-below[0.65] similar-input[day] ngrams |_self>
+    tomorrow |*> #=> next drop-below[0.65] similar-input[day] ngrams |_self>
+  
+  dump
+  context
+  context weekday if-then machines
+    ngrams |*> #=> letter-ngrams[1,2,3] lower-case |_self>
+  
+    day |node: 1: 1> => ngrams |Monday>
+    day |node: 1: 2> => ngrams |mon>
+    day |node: 1: 3> => ngrams |Mo>
+    previous |node: 1: *> => |Sunday>
+    id |node: 1: *> => |Monday>
+    next |node: 1: *> => |Tuesday>
+   
+    day |node: 2: 1> => ngrams |Tuesday>
+    day |node: 2: 2> => ngrams |tue>
+    day |node: 2: 3> => ngrams |Tu>
+    previous |node: 2: *> => |Monday>
+    id |node: 2: *> => |Tuesday>
+    next |node: 2: *> => |Wednesday>
+  
+    day |node: 3: 1> => ngrams |Wednesday>
+    day |node: 3: 2> => ngrams |wed>
+    day |node: 3: 3> => ngrams |We>
+    previous |node: 3: *> => |Tuesday>
+    id |node: 3: *> => |Wednesday>
+    next |node: 3: *> => |Thursday>
+  
+    day |node: 4: 1> => ngrams |Thursday>
+    day |node: 4: 2> => ngrams |thurs>
+    day |node: 4: 3> => ngrams |Th>
+    previous |node: 4: *> => |Wednesday>
+    id |node: 4: *> => |Thursday>
+    next |node: 4: *> => |Friday>
+  
+    day |node: 5: 1> => ngrams |Friday>
+    day |node: 5: 2> => ngrams |fri>
+    day |node: 5: 3> => ngrams |Fr>
+    previous |node: 5: *> => |Thursday>
+    id |node: 5: *> => |Friday>
+    next |node: 5: *> => |Saturday>
+  
+    day |node: 6: 1> => ngrams |Saturday>
+    day |node: 6: 2> => ngrams |sat>
+    day |node: 6: 3> => ngrams |Sa>
+    previous |node: 6: *> => |Friday>
+    id |node: 6: *> => |Saturday>
+    next |node: 6: *> => |Sunday>
+  
+    day |node: 7: 1> => ngrams |Sunday>
+    day |node: 7: 2> => ngrams |sun>
+    day |node: 7: 3> => ngrams |Su>
+    previous |node: 7: *> => |Saturday>
+    id |node: 7: *> => |Sunday>
+    next |node: 7: *> => |Monday>
+  
+    yesterday |*> #=> previous drop-below[0.65] similar-input[day] ngrams |_self>
+    today |*> #=> id drop-below[0.65] similar-input[day] ngrams |_self>
+    tomorrow |*> #=> next drop-below[0.65] similar-input[day] ngrams |_self>
+  dump
+  context
+  tomorrow |sun>
+  tomorrow |tues>
+  tomorrow^3 |tues>
+  tomorrow yesterday |fri>
+  yesterday |thurs>
+  today |Sa>
+  yesterday |thurs>
+  yesterday |thursd>
+  yesterday |thrusday>
+  current-date
+  current-time
+  day-of-the-week current-date
+  day-of-the-week |date: 2016-1-1>
+  yesterday^3 day-of-the-week current-date
+  extract-value day-of-the-week current-date
+  yesterday^3 extract-value day-of-the-week current-date
+  tomorrow^5 extract-value day-of-the-week current-date
+  tomorrow^3 (|Monday> + |Tuesday> + |Saturday>)
+  tomorrow^7 |tues>
+  yesterday tomorrow |fri>
+  tomorrow^7 |thurs>
+  yesterday^21 |thurs>
+  similar-input[day] ngrams |Monday>
+  id similar-input[day] ngrams |Monday>
+  id drop-below[0.6] similar-input[day] ngrams |Monday>
+  dump
+  save weekday-if-then-machines.sw
+  dump
+  exp-max[tomorrow] |Monday>
+  dump
+  day-after-tomorrow |*> #=> tomorrow^2 day-of-the-week current-date |>
+  day-after-tomorrow |x>
+  dump
+  
+  save weekday-if-then-machines.sw
+  q
+
+2016-02-12
+  context simple image if-then machine
+  
+  image |node: 1: 1> => pixels |letter: H>
+  image |node: 1: 2> => pixels |noisy: H>
+  image |node: 1: 3> => pixels |noisy: H2>
+  then |node: 1: *> => |letter H>
+  
+  image |node: 2: 1> => pixels |letter: I>
+  image |node: 2: 2> => pixels |noisy: I>
+  image |node: 2: 3> => pixels |noisy: I2>
+  then |node: 2: *> => |letter I>
+  
+  image |node: 3: 1> => pixels |letter: O>
+  then |node: 3: *> => |letter O>
+  
+  dump
+  reset
+  load H-I-pat-rec.sw
+  dump
+  image |node: 1: 1> => pixels |letter: H>
+  image |node: 1: 2> => pixels |noisy: H>
+  image |node: 1: 3> => pixels |noisy: H2>
+  then |node: 1: *> => |letter H>
+  
+  image |node: 2: 1> => pixels |letter: I>
+  image |node: 2: 2> => pixels |noisy: I>
+  image |node: 2: 3> => pixels |noisy: I2>
+  then |node: 2: *> => |letter I>
+  
+  image |node: 3: 1> => pixels |letter: O>
+  then |node: 3: *> => |letter O>
+  
+  dump
+  history
+  the |list of images> => |node: 1: 1> + |node: 1: 2> + |node: 1: 3> + |node: 2: 1> + |node: 2: 2> + |node: 2: 3> + |node: 3: 1>
+  
+  similar-input[image] image pick-elt the |list of images>
+  .
+  .
+  .
+  .
+  then select[1,1] similar-input[image] image pick-elt the |list of images>
+  .
+  .
+  .
+  .
+  .
+  .
+  which-image |*> #=> then select[1,1] similar-input[image] image |_self>
+  which-image |node: 2: 3>
+  which-image |node: 1: 2>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image absolute-noise[1] |node: 1: 1>
+  then select[1,1] similar-input[image] absolute-noise[1] image |node: 1: 1>
+  then select[1,1] similar-input[image] absolute-noise[1] image |node: 2: 3>
+  then select[1,1] similar-input[image] absolute-noise[3] image |node: 1: 2>
+  then select[1,1] similar-input[image] absolute-noise[10] image |node: 1: 2>
+  then select[1,1] similar-input[image] absolute-noise[30] image |node: 1: 2>
+  dump
+  which-image the |list of images>
+  dump
+  then select[1,1] similar-input[image] absolute-noise[30] image |node: 3: 1>
+  save H-I-if-then-machine-example.sw
+  save history
+
+2016-02-14
+  context simple image if-then machine
+  
+  image |node: 1: 1> => pixels |letter: H>
+  image |node: 1: 2> => pixels |noisy: H>
+  image |node: 1: 3> => pixels |noisy: H2>
+  then |node: 1: *> => |letter H>
+  
+  image |node: 2: 1> => pixels |letter: I>
+  image |node: 2: 2> => pixels |noisy: I>
+  image |node: 2: 3> => pixels |noisy: I2>
+  then |node: 2: *> => |letter I>
+  
+  image |node: 3: 1> => pixels |letter: O>
+  then |node: 3: *> => |letter O>
+  
+  dump
+  reset
+  load H-I-pat-rec.sw
+  dump
+  image |node: 1: 1> => pixels |letter: H>
+  image |node: 1: 2> => pixels |noisy: H>
+  image |node: 1: 3> => pixels |noisy: H2>
+  then |node: 1: *> => |letter H>
+  
+  image |node: 2: 1> => pixels |letter: I>
+  image |node: 2: 2> => pixels |noisy: I>
+  image |node: 2: 3> => pixels |noisy: I2>
+  then |node: 2: *> => |letter I>
+  
+  image |node: 3: 1> => pixels |letter: O>
+  then |node: 3: *> => |letter O>
+  
+  dump
+  history
+  the |list of images> => |node: 1: 1> + |node: 1: 2> + |node: 1: 3> + |node: 2: 1> + |node: 2: 2> + |node: 2: 3> + |node: 3: 1>
+  
+  similar-input[image] image pick-elt the |list of images>
+  .
+  .
+  .
+  .
+  then select[1,1] similar-input[image] image pick-elt the |list of images>
+  .
+  .
+  .
+  .
+  .
+  .
+  which-image |*> #=> then select[1,1] similar-input[image] image |_self>
+  which-image |node: 2: 3>
+  which-image |node: 1: 2>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image pick-elt the |list of images>
+  which-image absolute-noise[1] |node: 1: 1>
+  then select[1,1] similar-input[image] absolute-noise[1] image |node: 1: 1>
+  then select[1,1] similar-input[image] absolute-noise[1] image |node: 2: 3>
+  then select[1,1] similar-input[image] absolute-noise[3] image |node: 1: 2>
+  then select[1,1] similar-input[image] absolute-noise[10] image |node: 1: 2>
+  then select[1,1] similar-input[image] absolute-noise[30] image |node: 1: 2>
+  dump
+  which-image the |list of images>
+  dump
+  then select[1,1] similar-input[image] absolute-noise[30] image |node: 3: 1>
+  save H-I-if-then-machine-example.sw
+  save history
+  history
+  q
+
+2016-02-15
+  ngop |*> #=> letter-ngrams[1,2,3] |_self>
+  ket-simm(ngop |university of adelaide>,ngop |adelaide university>)
+  ket-simm(word-ngrams[1] |university of adelaide>,word-ngrams[1] |adelaide university>)
+  history
+  ngop |*> #=> letter-ngrams[1,2,3,4] |_self>
+  ket-simm(ngop |university of adelaide>,ngop |adelaide university>)
+  ngop |*> #=> letter-ngrams[1,2,3] |_self>
+  ket-simm(ngop |captain picarrd>,ngop |captain jean-luc picarrd>)
+  ket-simm(ngop |fred jones>,ngop |jones fred>)
+  -- a note: letter-ngrams[1,2,3] does for text what we want to do for images. Break into component parts. I guess need an |image: 5: 5: AF352E4> data type or something, so we can pass image fragments around as superpositions.
+  save history
+  ket-simm(ngop |tough enough>,ngop |tough ain't enough>)
+  invert how-many split |a b c>
+  invert pop-float how-many split |a b c>
+  save history
+  dump
+  ket-simm(ngop |donald trump>,ngop |trump>)
+  history
+  q
+
