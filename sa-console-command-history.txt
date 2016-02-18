@@ -20483,3 +20483,26 @@
   history
   q
 
+2016-02-17
+  the-age-of |Fred> => |age: 27>
+  the-age-of |Frank> => |age: 33>
+  the-age-of |Robert> => |age: 29>
+  the-age-of |Rob> => |age: 31>
+  dump
+  guess-ket |freddie>
+  guess-ket[*] |freddie>
+  guess-operator[age]
+  apply(guess-operator[age] |>,guess-ket |roberto>)
+  guess-ket |roberto>
+  mod[2] |4>
+  is-mod-2 |*> #=> is-mod[2] |_self>
+  such-that[is-mod-2] range(|1>,|15>)
+  such-that[is-mod[2]] range(|1>,|15>)
+  history
+  q
+
+2016-02-17
+  process-catalytic-reaction(|x>,|a> + |b>,|c>)
+  process-catalytic-reaction(split |a b x y>,split |a b>,|FISH!>)
+  q
+

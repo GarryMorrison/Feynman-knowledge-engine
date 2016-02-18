@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/2/2016
+# Update: 16/2/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3911,13 +3911,29 @@ def hash_data(one,size):
 
 # eg: process-reaction(current-sp,2|H2> + |O2>,2|H2O>) == current-sp - (2|H2> + |O2>) + 2|H2O>
 # Cool. Seems to work.
+# 16/2/2016: maybe process-consuming-reaction() is a better name, to tie in with process-catalytic-reacion()
 #
 # one, two and three are superpositions
 def process_reaction(one,two,three):
+  def del_fn(x,y):   # NB: creates negative coeffs.
+    return x - y
   if intersection(two,one).count_sum() != two.count_sum():
     return one
   else:
-    return intersection_fn(del_fn3,one,two).drop() + three              # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
+    return intersection_fn(del_fn,one,two).drop() + three              # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
+
+# 16/2/2016:
+# process-catalytic-reaction(current-sp,|a> + |b>,|c> +|d>) = current-sp + |c> + |d> if |a> + |b> is in current-sp
+# What if |c> + |d> is already in current-sp? Do you add it again?
+# I suspect process-catalytic-reaction() can be used to encode maths proofs. One is the current state of knowledge. Two is the necessary conditions for the proof to be true. Three is the implications of that proof.
+# Another example is simple physics problems. You write down what you know, and any possibly relevant equations. Then try to figure out a pathway to the desired result.  
+#
+def process_catalytic_reaction(one,two,three):
+  if intersection(two,one).count_sum() != two.count_sum():
+    return one
+  else:
+    return one + three
+    
 
 # x,y are floats
 def filter_fn(x,y):

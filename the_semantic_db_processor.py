@@ -1162,6 +1162,10 @@ whitelist_table_3 = {
   
 # 11/9/2015:
   "process-reaction" : "process_reaction",
+# 17/2/2016:
+  "process-consuming-reaction" : "process_reaction",               # an alias
+  "process-catalytic-reaction" : "process_catalytic_reaction",
+    
   
 # 16/9/2015:
   "respond-to-pattern" : "respond_to_pattern",

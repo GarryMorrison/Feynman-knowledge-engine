@@ -3,22 +3,22 @@ a minimalist but extensible knowledge engine
 
 Currently very pre-alpha
 
-A series of blog posts that tries to explain my ideas:
+A series of blog posts that tries to explain my ideas:<br>
 http://write-up.semantic-db.org/
 
-A blog post trying to summarize and give an interpretation of the BKO scheme:
+A blog post trying to summarize and give an interpretation of the BKO scheme:<br>
 http://write-up.semantic-db.org/166-an-interpretation-of-my-bko-scheme.html
 
-A big collection of example sw files:
+A big collection of example sw files:<br>
 http://semantic-db.org/sw-examples/
 
-Wikipedia to link-structure sw files:
+Wikipedia to link-structure sw files:<br>
 http://semantic-db.org/wikipedia-sw/
 
-My console history. Essentially a giant collection of examples:
+My console history. Essentially a giant collection of examples:<br>
 https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/sa-console-command-history.txt
 
-Visualizing sw files, via the DOT language:
+Visualizing sw files, via the DOT language:<br>
 http://write-up.semantic-db.org/169-visualizing-sw-files.html
 
 A definition of the if-then machine, a proposed approximation to a single neuron:<br>
@@ -26,6 +26,9 @@ http://write-up.semantic-db.org/186-introducing-the-if-then-machine.html<br>
 http://write-up.semantic-db.org/187-learning-a-sequence-using-if-then-machines.html<br>
 http://write-up.semantic-db.org/188-learning-days-of-the-week-using-if-then-machines.html<br>
 http://write-up.semantic-db.org/189-learning-simple-images-using-if-then-machines.html<br>
+
+Towards a definition of intelligence:<br>
+http://write-up.semantic-db.org/191-towards-a-definition-of-intelligence.html
 
 <pre>
 Installation instructions:
