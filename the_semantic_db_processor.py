@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/2/2016
+# Update: 3/3/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -421,7 +421,12 @@ compound_table = {
   "max-filter"             : ".apply_sigmoid(max_filter,{0})",
 
 # 10/5/2015:
-  "image-load"             : ".apply_naked_fn(improved_image_load,\"{0}\")",  
+#  "image-load"             : ".apply_naked_fn(improved_image_load,\"{0}\")",  
+# 2/3/2016:
+  "image-load"             : ".apply_naked_fn(new_image_load,\"{0}\")",
+# 3/3/2016:
+  "image-histogram"        : ".apply_naked_fn(image_histogram,\"{0}\")",
+  
 
 # 11/5/2015:
   "image-save"             : ".apply_sp_fn(improved_image_save_show,\"{0}\")",  

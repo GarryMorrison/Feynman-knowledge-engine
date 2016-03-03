@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/2/2016
+# Update: 3/3/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -2993,6 +2993,55 @@ def image_smooth(one,k):
     pixel_list = superposition()
   except:
     return ket("failed to smooth image")            
+
+# 2/3/2016:
+# time to revisit image load. I have some new ideas how I want to handle it now:
+# load-image[image.png] |>
+# returns: |image: 200 200: AF36782BA...>
+# ie, we are creating an image data-type. Much more efficient than the superposition idea.
+# After that, save-image, edge-enhance[20], and image-ngrams[5] (where an image-ngram is partitioning an image into size k*k smaller images)
+#
+from PIL import Image
+def new_image_load(filename):
+  logger.debug("image name: " + filename)
+  def int_to_hex(x):
+    return "%0.2X" % x
+  
+  try:
+    im = Image.open(filename)
+    logger.debug("imaged open")
+    width = im.size[0]
+    height = im.size[1]
+    ket_image_string = "image: %s %s: " % (width,height)
+    for h in range(height):
+      for w in range(width):
+        r, g, b = im.getpixel((w,h))[:3]                           # assumes image is RGB or RGBA, maybe fix later.
+        ket_image_string += int_to_hex(r)
+        ket_image_string += int_to_hex(g)
+        ket_image_string += int_to_hex(b)
+                  
+# show the image:
+    im.show()
+    return ket(ket_image_string)
+  except:
+    return ket("",0)
+#    return ket("failed to load image")     
+
+# 3/3/2016:
+# image.histogram() looks interesting. With quick testing on the Lenna image, seems it would make a very nice first order image -> superposition mapping.
+# image-histogram[image.png] |>
+# Then test with a couple of examples.
+#
+def image_histogram(filename):
+  try:
+    im = Image.open(filename)
+    result = superposition()
+    for k,x in enumerate(im.histogram()):
+      result.data.append(ket(str(k),x))                            # later swap in result += ket(str(k),x)
+    return result      
+  except:
+    logger.debug("failed to load image")
+    return ket("",0)
     
 # convert float to int if possible:
 def float_to_int(x,t=3):

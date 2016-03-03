@@ -20506,3 +20506,1149 @@
   process-catalytic-reaction(split |a b x y>,split |a b>,|FISH!>)
   q
 
+2016-02-19
+  the-friends-of |Fred> => 2|Sam> + |Max>
+  age |Sam> => 3|age: 33>
+  age the-friends-of |Fred>
+  history
+  context if-then machine
+  seq |node 1: 1> => |X>
+  seq |node 1: 2> => |Y>
+  seq |node 1: 3> => |X> + |Y>
+  then |node 1: *> => |X or Y>
+  seq |node 2: 1> = |X> + |Y>
+  then |node 2: *> => |X and Y>
+  dump
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  history
+  seq |node 2: 1> => |X> + |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  dump
+  save simple-if-then-machine.sw
+  shout |fish> + |x>
+  then drop-below[0.8] similar-input[seq] |Z>
+  dump
+  rel-kets[seq]
+  seq |node 3: 1> => |X> + |Y> + |Z>
+  then |node 3: *> => |X and Y and Z>
+  dump
+  similar-input[seq] |Y>
+  similar-input[seq] (|X> + |Y>)
+  similar-input[seq] (|X> + |Y> + |Z>)
+  drop-below[0.8] similar-input[seq] |Y>
+  drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  then drop-below[0.8] similar-input[seq] |x>
+  then drop-below[0.8] similar-input[seq] |X>
+  then drop-below[0.8] similar-input[seq] |Y>
+  then drop-below[0.8] similar-input[seq] |Z>
+  then drop-below[0.8] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.8] similar-input[seq] (|X> + |Y> + |Z>)
+  rel-kets[seq]
+  history
+  save history
+  then drop-below[0.6] similar-input[seq] |X>
+  then drop-below[0.6] similar-input[seq] |Y>
+  then drop-below[0.6] similar-input[seq] |Z>
+  then drop-below[0.6] similar-input[seq] (|X> + |Y>)
+  then drop-below[0.6] similar-input[seq] (|X> + |Y> + |Z>)
+  save history
+  dump
+  save simple-if-then-machine.sw
+  context play
+  seq |node 1> => letter-ngrams[1,2,3] |the man on the moon>
+  then |node 1> => |the man on the moon>
+  dump
+  then similar-input[seq] letter-ngrams[1,2,3] |the man>
+  then similar-input[seq] letter-ngrams[1,2,3] |the man on>
+  save history
+  context bigger if-then machine
+  ngrams |*> #=> letter-ngrams[1,2,3] |_self>
+  seq |node 1> => ngrams |the cat sat on the mat>
+  then |node 1> => |the cat sat on the mat>
+  seq |node 2> => ngrams |the man on the moon>
+  then |node 2> => |the man on the moon>
+  then similar-input[seq] ngrams |the >
+  then similar-input[seq] ngrams |the cat>
+  then similar-input[seq] ngrams |the cat sat>
+  then similar-input[seq] ngrams |the cat sat on the>
+  then similar-input[seq] ngrams |the cat sat on the moon>
+  then similar-input[seq] ngrams |the man on the>
+  save history
+  history
+  dump
+  then similar-input[seq] ngrams |the cat sat on the mat>
+  then similar-input[seq] ngrams |the man on the moon>
+  guess-phrase |*> #=> then similar-input[seq] ngrams |_self>
+  guess-phrase |the >
+  guess-phrase |the cat>
+  guess-phrase |the cat sat>
+  guess-phrase |the cat sat on the>
+  guess-phrase |the cat sat on the moon>
+  guess-phrase |the man on the>
+  guess-phrase |the cat sat on the mat>
+  guess-phrase |the man on the moon>
+  save history
+  context if-then machine learning a sequence
+  -- define our superpositions:
+  the |sp1> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[5] 0 range(|x: 1>,|x: 10>)
+  -- define our if-then machines:
+  seq |node 1: 1> => the |sp1>
+  then |node 1: *> => the |sp2>
+  
+  seq |node 2: 1> => the |sp2>
+  then |node 2: *> => the |sp3>
+  
+  seq |node 3: 1> => the |sp3>
+  then |node 3: *> => the |sp4>
+  
+  seq |node 4: 1> => the |sp4>
+  then |node 4: *> => the |sp5>
+  
+  seq |node 5: 1> => the |sp5>
+  then |node 5: *> => |the finish line>
+  dump
+  -- see what we have:
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  context
+  context fixed if-then machine learning a sequence
+  history
+  -- define our superpositions:
+  the |sp1> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp2> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp3> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp4> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  the |sp5> => absolute-noise[20] 0 range(|x: 1>,|x: 10>)
+  
+  seq |node: 1: 1> => the |sp1>
+  then |node: 1: *> => the |sp2>
+  
+  seq |node: 2: 1> => the |sp2>
+  then |node: 2: *> => the |sp3>
+  
+  seq |node: 3: 1> => the |sp3>
+  then |node: 3: *> => the |sp4>
+  
+  seq |node: 4: 1> => the |sp4>
+  then |node: 4: *> => the |sp5>
+  
+  seq |node: 5: 1> => the |sp5>
+  then |node: 5: *> => |the finish line>
+  
+  the |input> => the |sp1>
+  table[node,coeff] 100 similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  table[node,coeff] 100 similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] then drop-below[0.9] similar-input[seq] the |input>
+  dump
+  .
+  
+  dump
+  history
+  history 1000
+  
+  seq2 |node: 1: 1> => absolute-noise[1] the |sp1>
+  seq2 |node: 2: 1> => absolute-noise[1] the |sp2>
+  seq2 |node: 3: 1> => absolute-noise[1] the |sp3>
+  seq2 |node: 4: 1> => absolute-noise[1] the |sp4>
+  seq2 |node: 5: 1> => absolute-noise[1] the |sp5>
+  history
+  history
+    table[node,coeff] 100 similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+    table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] then drop-below[0.9] similar-input[seq2] the |input>
+  dump
+  table[node,coeff] 100 similar-input[seq2] absolute-noise[1] the |input>
+  .
+  save history
+  context
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  table[node,coeff] 100 similar-input[seq1] then clean drop-below[0.9] similar-input[seq2] the |input>
+  table[node,coeff] 100 similar-input[seq2] then clean drop-below[0.9] similar-input[seq2] the |input>
+  history
+  save history
+  dump
+  rel-kets[seq,seq2]
+  dump rel-kets[seq]
+  
+  rel-kets[seq]
+  dump rel-kets[seq] |>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq2] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  .
+  save history
+  history
+  
+  table[node,coeff] 100 similar-input[seq] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  save history
+  seq3 |node: 17: 1> => the |sp1>
+  seq3 |node: 17: 2> => the |sp2>
+  seq3 |node: 17: 3> => the |sp3>
+  seq3 |node: 17: 4> => the |sp4>
+  seq3 |node: 17: 5> => the |sp5>
+  then |node: 17: *> => |the SP sequence>
+  dump
+  history
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  then drop-below[0.9] similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  table[node,coeff] 100 similar-input[seq3] absolute-noise[5] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  history
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  dump
+  history 1000
+  
+  
+  save if-then-machine-learning-a-sequence.sw
+  dump
+  history
+  debug on
+  then drop-below[0.9] similar-input[seq3] absolute-noise[10] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  debug off
+  then drop-below[0.9] similar-input[seq3] pick[9] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  .
+  .
+  .
+  .
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example |*> #=> then drop-below[0.9] similar-input[seq3] pick[8] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example
+  projection-example
+  projection-example
+  projection-example
+  projection-example
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  projection-example
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  pick[2] split |a b c d e>
+  .
+  .
+  .
+  .
+  .
+  history
+  history 1000
+  projection-example |*> #=> then drop-below[0.9] similar-input[seq3] pick[9] the pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  projection-example
+  .
+  .
+  .
+  projection-example |x>
+  projection-example 0|x>
+  .
+  id
+  h
+  x = x
+  id
+  projection-example
+  .
+  history
+  save history
+  current |temperature> => |C: 25.2>
+  current |temperature>
+  F current |temperature>
+  history
+  dump
+  context category theory
+  f |a> => |b>
+  f |b> => |c>
+  g |a> => |b>
+  g |b> => |c>
+  g f |a>
+  f g |a>
+  history
+  g f |a>
+  f g |a>
+  f |a> => 3.2 |b>
+  f |a> = |x>
+  g |x> => |b>
+  g |a> => |y>
+  f |y> => |b>
+  history
+  g f |a>
+  f |a> => |x>
+  g f |a>
+  f g |a>
+  history
+  
+  
+  f |a> => 0.71 |b>
+  f |b> => 0.71 |c>
+  g |a> => 3.5 |b>
+  g |b> => 3.5 |c>
+  g f |a>
+  f g |a>
+  icontext
+  dump
+  split |sp1 sp2 sp3 sp4 sp5>
+  pick-elt split |sp1 sp2 sp3 sp4 sp5>
+  the |sp2>
+  pick[9] the |sp2>
+  similar-input[seq3] (4.74|x: 5> + 8.05|x: 1> + 14.833|x: 9> + 3.91|x: 7> + 4.543|x: 2> + 1.059|x: 6> + 11.074|x: 10> + 17.714|x: 8> + 3.443|x: 4>)
+  drop-below[0.9] (0.826|node: 17: 2> + 0.692|node: 17: 1> + 0.663|node: 17: 4> + 0.526|node: 17: 3> + 0.512|node: 17: 5>)
+  then |>
+  history
+  save history
+  to-comma-number times-by[18] |number: 75>
+  select[1,2] |x>
+  q
+
+2016-02-19
+  load weekday-if-then-machines.sw
+  dump
+  rel-kets[id]
+  is-a |*> => |day of the week>
+  map[is-a] rel-kets[id]
+  dump
+  dump |*> 
+  is-a |*> #=> is-a select[1,1] similar-input[day] ngrams |_self>
+  is-a |tues>
+  is-a |Su>
+  dump
+  dump |*> 
+  ngrams |*> #=> letter-ngrams[1,2,3] lower-case extract-value |_self>
+  day-after-tomorrow |>
+  dump |*> 
+  history
+  save weekday-if-then-machines-v2.sw
+  dump
+  history
+  save history
+
+2016-02-19
+  load weekday-if-then-machines.sw
+  dump
+  rel-kets[id]
+  is-a |*> => |day of the week>
+  map[is-a] rel-kets[id]
+  dump
+  dump |*> 
+  is-a |*> #=> is-a select[1,1] similar-input[day] ngrams |_self>
+  is-a |tues>
+  is-a |Su>
+  dump
+  dump |*> 
+  ngrams |*> #=> letter-ngrams[1,2,3] lower-case extract-value |_self>
+  day-after-tomorrow |>
+  dump |*> 
+  history
+  save weekday-if-then-machines-v2.sw
+  dump
+  history
+  save history
+  context testing
+  op 3|x> => |y>
+  dump
+  q
+
+2016-02-21
+  load fred-sam-friends.sw
+  dump
+  apply-person-type |*> #=> merge-labels(|person: > + |_self>)
+  apply-person-type friends |Fred>
+  new-friends apply-person-type |Fred> => apply-person-type friends |Fred>
+  dump
+  change-type |*> #=> merge-labels(|P: > + extract-value |_self>)
+  change-type new-friends |person: Fred>
+  history
+  new-friends-2 change-type |person: Fred> => change-type friends |person: Fred>
+  dump
+  history
+  new-friends-2 change-type |person: Fred> => change-type new-friends |person: Fred>
+  dump
+  ket-simm(letter-ngrams[1,2,3] |John Watson>,letter-ngrams[1,2,3] |Joan Watson>)
+  ket-simm(letter-ngrams[1,2,3] |caturday>,letter-ngrams[1,2,3] |saturday>)
+  history
+  save history
+
+2016-02-23
+  load fred-sam-friends.sw
+  dump
+  apply-person-type |*> #=> merge-labels(|person: > + |_self>)
+  apply-person-type friends |Fred>
+  new-friends apply-person-type |Fred> => apply-person-type friends |Fred>
+  dump
+  change-type |*> #=> merge-labels(|P: > + extract-value |_self>)
+  change-type new-friends |person: Fred>
+  history
+  new-friends-2 change-type |person: Fred> => change-type friends |person: Fred>
+  dump
+  history
+  new-friends-2 change-type |person: Fred> => change-type new-friends |person: Fred>
+  dump
+  ket-simm(letter-ngrams[1,2,3] |John Watson>,letter-ngrams[1,2,3] |Joan Watson>)
+  ket-simm(letter-ngrams[1,2,3] |caturday>,letter-ngrams[1,2,3] |saturday>)
+  history
+  save history
+  measure-currency split |a b c>
+  clean 3|x>
+  clean -2|x>
+  clean 0|x>
+  3.7 (2|a> + 0.3|b> + |c> + 11.1|d>)
+  history
+  ket-simm(letter-ngrams[1,2,3] |John Watson>,letter-ngrams[1,2,3] |Joan Watson>)
+  ket-simm(3.141592 letter-ngrams[1,2,3] |John Watson>,letter-ngrams[1,2,3] |Joan Watson>)
+  C |F: 310>
+  7 |x>
+  3.1415|x>
+  5/7 |x>
+  5.2/7.3 |x>
+  clean 3 |x>
+  clean^5 3 |x>
+  3.2|x> + 7.1|x>
+  do-you-know |>
+  do-you-know 0|x>
+  how-many 0|x>
+  |x> + -|x>
+  drop (|x> + -|x>)
+  history
+  q
+
+2016-02-24
+  factor |number: 35>
+  factor |number: 9999911>
+  factor |number: 149>
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  dump
+  age |person: George>
+  occupation |person: George>
+  friends |person: George>
+  dump exact
+  supported-ops |person: George>
+  apply(|fish>,|person: George>)
+  load fred-sam-friends.sw
+  dump
+  context
+  apply(|op: friends>,split |Fred Sam>)
+  icontext
+  apply(|op: age> + |op: dob> + |op: height>,|person: George>)
+  apply(|cat> + |dog>,|person: George>)
+  apply(|op: C>,|F: 20>)
+  foo-op |a>
+  op |b>
+  op |b> #=> |>
+  op |b>
+  dump
+  q
+
+2016-02-25
+  op |a> => |x> + |y> + |z>
+  op |a>
+  op |a> +=> |x> + |z> + |u> + |w>
+  op |a>
+  history
+  reset
+  op |a> => |x> + |y> + |z>
+  op |a> => op |a> + |x> + |z> + |u> + |w>
+  op |a>
+  op |a> => |start value>
+  value |r1> => op |a>
+  value |r2> #=> op |a>
+  value |r1>
+  value |r2>
+  op |a> => |second value>
+  value |r1>
+  value |r2>
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  reset
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  is-alive |Schrodinger's cat>
+  dump
+  op |person: *> #=> |_self>
+  op |person: Fred>
+  [Bis-living-organism |plant> => |yes>
+  is-living-organism |plant: *> => |yes>
+  is-living-organism |plant: tree>
+  is-living-organism |plant: tree: elm>
+  is-living-organism |plant: tree: oak: the one next to my house>
+  is-living-organism |plant: shrub>
+  id |*> #=> |_self>
+  id |x>
+  id |foo: bah>
+  context
+  context george
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>
+  everything-you-know-about |person: George>
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>)
+  everything-you-know-about |person: George>
+  everything-you-know-about |person: George>
+  supported-ops |person: George>
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  dump
+  icontext
+  identity-element |*> #=> id |_self>
+  the-identity-element |*> #=> id |_self>
+  icontextr
+  icontext
+  guess-operator |george>
+  guess-ket |george>
+  interesting-things-you-know-about guess-ket |george>
+  guess-operator[interesting-things-about] guess-ket |george>
+  apply(guess-operator[interesting-things-about] |>, guess-ket |george>)
+  save history
+
+2016-02-25
+  op |a> => |x> + |y> + |z>
+  op |a>
+  op |a> +=> |x> + |z> + |u> + |w>
+  op |a>
+  history
+  reset
+  op |a> => |x> + |y> + |z>
+  op |a> => op |a> + |x> + |z> + |u> + |w>
+  op |a>
+  op |a> => |start value>
+  value |r1> => op |a>
+  value |r2> #=> op |a>
+  value |r1>
+  value |r2>
+  op |a> => |second value>
+  value |r1>
+  value |r2>
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  reset
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  is-alive |Schrodinger's cat>
+  dump
+  op |person: *> #=> |_self>
+  op |person: Fred>
+  [Bis-living-organism |plant> => |yes>
+  is-living-organism |plant: *> => |yes>
+  is-living-organism |plant: tree>
+  is-living-organism |plant: tree: elm>
+  is-living-organism |plant: tree: oak: the one next to my house>
+  is-living-organism |plant: shrub>
+  id |*> #=> |_self>
+  id |x>
+  id |foo: bah>
+  context
+  context george
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>
+  everything-you-know-about |person: George>
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>)
+  everything-you-know-about |person: George>
+  everything-you-know-about |person: George>
+  supported-ops |person: George>
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  dump
+  icontext
+  identity-element |*> #=> id |_self>
+  the-identity-element |*> #=> id |_self>
+  icontextr
+  icontext
+  guess-operator |george>
+  guess-ket |george>
+  interesting-things-you-know-about guess-ket |george>
+  guess-operator[interesting-things-about] guess-ket |george>
+  apply(guess-operator[interesting-things-about] |>, guess-ket |george>)
+  save history
+  dump
+  relevant-kets[age]
+  context filters
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  
+  Define some filters:
+  -- the general rule is that our filters return the empty ket, also known as the superposition identity element:
+  number-filter |*> #=> |>
+  furniture-filter |*> #=> |>
+  animal-filter |*> #=> |>
+  animal-number-filter |*> #=> |>
+  
+  -- now define specific exceptions to the general rules:
+  number-filter |number: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |animal: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter the |list>
+  animal-filter the |list>
+  animal-number-filter the |list>
+  h
+  history
+  save history
+
+2016-02-27
+  op |a> => |x> + |y> + |z>
+  op |a>
+  op |a> +=> |x> + |z> + |u> + |w>
+  op |a>
+  history
+  reset
+  op |a> => |x> + |y> + |z>
+  op |a> => op |a> + |x> + |z> + |u> + |w>
+  op |a>
+  op |a> => |start value>
+  value |r1> => op |a>
+  value |r2> #=> op |a>
+  value |r1>
+  value |r2>
+  op |a> => |second value>
+  value |r1>
+  value |r2>
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  reset
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  is-alive |Schrodinger's cat>
+  dump
+  op |person: *> #=> |_self>
+  op |person: Fred>
+  [Bis-living-organism |plant> => |yes>
+  is-living-organism |plant: *> => |yes>
+  is-living-organism |plant: tree>
+  is-living-organism |plant: tree: elm>
+  is-living-organism |plant: tree: oak: the one next to my house>
+  is-living-organism |plant: shrub>
+  id |*> #=> |_self>
+  id |x>
+  id |foo: bah>
+  context
+  context george
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>
+  everything-you-know-about |person: George>
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>)
+  everything-you-know-about |person: George>
+  everything-you-know-about |person: George>
+  supported-ops |person: George>
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  dump
+  icontext
+  identity-element |*> #=> id |_self>
+  the-identity-element |*> #=> id |_self>
+  icontextr
+  icontext
+  guess-operator |george>
+  guess-ket |george>
+  interesting-things-you-know-about guess-ket |george>
+  guess-operator[interesting-things-about] guess-ket |george>
+  apply(guess-operator[interesting-things-about] |>, guess-ket |george>)
+  save history
+  dump
+  relevant-kets[age]
+  context filters
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  
+  Define some filters:
+  -- the general rule is that our filters return the empty ket, also known as the superposition identity element:
+  number-filter |*> #=> |>
+  furniture-filter |*> #=> |>
+  animal-filter |*> #=> |>
+  animal-number-filter |*> #=> |>
+  
+  -- now define specific exceptions to the general rules:
+  number-filter |number: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |animal: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter the |list>
+  animal-filter the |list>
+  animal-number-filter the |list>
+  h
+  history
+  save history
+  is-a-number |*> => |no>
+  is-a-number |number: *> => |yes>
+  dump
+  is-a-number the |list>
+  is-an-animal |*> => |no>
+  is-an-animal |animal: *> => |yes>
+  is-an-animal the |list>
+  is-a-number the |list>
+  is-a-number number-filter the |list>
+  is-an-animal animal-filter the |list>
+  how-many number-filter the |list>
+  how-many animal-filter the |list>
+  how-many animal-number-filter the |list>
+  abs -3 |x>
+  set-to[5] -7.2 |x>
+  NOT 0|x>
+  not 0|x>
+  clean (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  threshold-filter[2] (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  drop clean (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  drop (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  history
+  save history
+
+2016-02-28
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  dump
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  the-list-of-interesting-operators |Robert> => |op: mother> + |op: father>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  mother |Robert> => |Emma>
+  father |Robert> => |Richard>
+  interesting-things-you-know-about |Robert>
+  dump
+  context qm
+  measure |quantum system> !=> weighted-pick-elt normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  dump
+  measure |quantum system>
+  measure |quantum system> !=> normalize weighted-pick-elt normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system>
+  dump
+  history
+  normalized |superposition> => normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  dump
+  measure |quantum system>
+  history
+  save history
+
+2016-03-01
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  dump
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  the-list-of-interesting-operators |Robert> => |op: mother> + |op: father>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  mother |Robert> => |Emma>
+  father |Robert> => |Richard>
+  interesting-things-you-know-about |Robert>
+  dump
+  context qm
+  measure |quantum system> !=> weighted-pick-elt normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  dump
+  measure |quantum system>
+  measure |quantum system> !=> normalize weighted-pick-elt normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system>
+  dump
+  history
+  normalized |superposition> => normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  dump
+  measure |quantum system>
+  history
+  save history
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  measure |quantum system>
+  history
+  context simple QM measurement system
+  normalized |superposition> => normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  dump
+  history
+  dump
+  measure |quantum system>
+  dump
+  context for all x
+  has-some-property |X: *> => |yes>
+  has-some-property |X: y> => |no>
+  has-some-property |X: z> => |no>
+  dump
+  the |list> => |X: a> + 2.3|X: b> + |X: c> + |X: x> + |X: y> + |X: z>
+  the |list>
+  such-that[has-some-property] the |list>
+  history
+  save history
+
+2016-03-02
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  dump
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  the-list-of-interesting-operators |Robert> => |op: mother> + |op: father>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  mother |Robert> => |Emma>
+  father |Robert> => |Richard>
+  interesting-things-you-know-about |Robert>
+  dump
+  context qm
+  measure |quantum system> !=> weighted-pick-elt normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  dump
+  measure |quantum system>
+  measure |quantum system> !=> normalize weighted-pick-elt normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system>
+  dump
+  history
+  normalized |superposition> => normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  dump
+  measure |quantum system>
+  history
+  save history
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  measure |quantum system>
+  history
+  context simple QM measurement system
+  normalized |superposition> => normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+  measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+  dump
+  history
+  dump
+  measure |quantum system>
+  dump
+  context for all x
+  has-some-property |X: *> => |yes>
+  has-some-property |X: y> => |no>
+  has-some-property |X: z> => |no>
+  dump
+  the |list> => |X: a> + 2.3|X: b> + |X: c> + |X: x> + |X: y> + |X: z>
+  the |list>
+  such-that[has-some-property] the |list>
+  history
+  save history
+  such-that[has-some-property] the |list>
+  q
+
+2016-03-02
+  op |a> => |x> + |y> + |z>
+  op |a>
+  op |a> +=> |x> + |z> + |u> + |w>
+  op |a>
+  history
+  reset
+  op |a> => |x> + |y> + |z>
+  op |a> => op |a> + |x> + |z> + |u> + |w>
+  op |a>
+  op |a> => |start value>
+  value |r1> => op |a>
+  value |r2> #=> op |a>
+  value |r1>
+  value |r2>
+  op |a> => |second value>
+  value |r1>
+  value |r2>
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  reset
+  is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+  dump
+  is-alive |Schrodinger's cat>
+  dump
+  op |person: *> #=> |_self>
+  op |person: Fred>
+  [Bis-living-organism |plant> => |yes>
+  is-living-organism |plant: *> => |yes>
+  is-living-organism |plant: tree>
+  is-living-organism |plant: tree: elm>
+  is-living-organism |plant: tree: oak: the one next to my house>
+  is-living-organism |plant: shrub>
+  id |*> #=> |_self>
+  id |x>
+  id |foo: bah>
+  context
+  context george
+  age |person: George> => |age: 29>
+  dob |person: George> => |date: 1984-05-23>
+  hair-colour |person: George> => |hair-colour: brown>
+  eye-colour |person: George> => |eye-colour: blue>
+  gender |person: George> => |gender: male>
+  height |person: George> => |height: cm: 176>
+  wife |person: George> => |person: Beth>
+  occupation |person: George> => |occupation: car salesman>
+  friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+  mother |person: George> => |person: Sarah>
+  father |person: George> => |person: David>
+  sisters |person: George> => |person: Emily>
+  brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+  email |person: George> => |email: george.douglas@gmail.com>
+  education |person: George> => |education: high-school> 
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>
+  everything-you-know-about |person: George>
+  everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>)
+  everything-you-know-about |person: George>
+  everything-you-know-about |person: George>
+  supported-ops |person: George>
+  the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+  interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+  interesting-things-you-know-about |person: George>
+  dump
+  icontext
+  identity-element |*> #=> id |_self>
+  the-identity-element |*> #=> id |_self>
+  icontextr
+  icontext
+  guess-operator |george>
+  guess-ket |george>
+  interesting-things-you-know-about guess-ket |george>
+  guess-operator[interesting-things-about] guess-ket |george>
+  apply(guess-operator[interesting-things-about] |>, guess-ket |george>)
+  save history
+  dump
+  relevant-kets[age]
+  context filters
+  the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+  
+  Define some filters:
+  -- the general rule is that our filters return the empty ket, also known as the superposition identity element:
+  number-filter |*> #=> |>
+  furniture-filter |*> #=> |>
+  animal-filter |*> #=> |>
+  animal-number-filter |*> #=> |>
+  
+  -- now define specific exceptions to the general rules:
+  number-filter |number: *> #=> |_self>
+  animal-number-filter |number: *> #=> |_self>
+  furniture-filter |furniture: *> #=> |_self>
+  animal-filter |animal: *> #=> |_self>
+  animal-number-filter |animal: *> #=> |_self>
+  dump
+  number-filter the |list>
+  furniture-filter the |list>
+  animal-filter the |list>
+  animal-number-filter the |list>
+  h
+  history
+  save history
+  is-a-number |*> => |no>
+  is-a-number |number: *> => |yes>
+  dump
+  is-a-number the |list>
+  is-an-animal |*> => |no>
+  is-an-animal |animal: *> => |yes>
+  is-an-animal the |list>
+  is-a-number the |list>
+  is-a-number number-filter the |list>
+  is-an-animal animal-filter the |list>
+  how-many number-filter the |list>
+  how-many animal-filter the |list>
+  how-many animal-number-filter the |list>
+  abs -3 |x>
+  set-to[5] -7.2 |x>
+  NOT 0|x>
+  not 0|x>
+  clean (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  threshold-filter[2] (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  drop clean (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  drop (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+  history
+  save history
+  q
+
+2016-03-03
+  image-load[child.png]
+  
+  q
+
+2016-03-03
+  image-load[Lenna.png]
+  q
+
+2016-03-03
+  image-load[220px-Lenna.png]
+  image-load[bko-as-neurons.png]
+  q
+
+2016-03-03
+  image-load[small-lenna.png]
+  q
+
+2016-03-03
+  image-histogram[Lenna.png]
+  
+  history
+  the |Lenna sp> => image-histogram[Lenna.png]
+  dump
+  history
+  the |Lenna sp> => image-histogram[Lenna.png] |>
+  dump
+  history
+  the |small Lenna sp> => image-histogram[small-lenna.png] |>
+  dump
+  history
+  the |child sp> => image-histogram[child.png] |>
+  rel-kets[the]
+  table[sp,coeff] 100 self-similar[the] |Lenna sp>
+  history
+  the |wolfmoon sp> => image-histogram[three-wolfmoon-output.png] |>
+  table[sp,coeff] 100 self-similar[the] |Lenna sp>
+  save history
+
