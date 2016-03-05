@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 3/3/2016
+# Update: 4/3/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3021,7 +3021,7 @@ def new_image_load(filename):
         ket_image_string += int_to_hex(b)
                   
 # show the image:
-    im.show()
+#    im.show()
     return ket(ket_image_string)
   except:
     return ket("",0)
@@ -3042,6 +3042,45 @@ def image_histogram(filename):
   except:
     logger.debug("failed to load image")
     return ket("",0)
+
+# 4/3/2016:
+# time to revisit image save
+# image-save[bah.png] image-load[foo.png] |>
+# where image-save[some.png] takes input in the new image data type format: |image: 15 17: AB376C...>
+# cool, seems to work!
+#
+def new_image_save(one,filename):
+  try:
+    datatype, size, data = one.label.split(": ")
+    if datatype != "image":
+      logger.debug("not image datatype")
+      return one
+    width,height = size.split(" ")
+    width = int(width)
+    height = int(height)
+    expected_length = 6*width*height                             # It is hexadecimal, so 2+2+2 for RGB, times width*height
+    if len(data) != expected_length:
+      logger.debug("wrong image data length")
+      return ket("")
+  except:
+    return ket("")                                                # on error do we want to return |> or 0|> ?? Or, in this case maybe we want to return one, the input superposition?
+
+  size = (width,height)
+  im = Image.new('RGB',size)
+  image_data = []
+  for triple in [data[i:i+6] for i in range(0, len(data), 6)]:
+    print("triple: " + triple)  
+    r = int(triple[0:2],16)
+    g = int(triple[2:4],16)
+    b = int(triple[4:6],16)
+    print("R:",r)
+    print("G:",g)
+    print("B:",b)
+    image_data.append((r,g,b))
+  im.putdata(image_data)    
+  im.show()
+#  im.save(filename)
+  return ket("making progress!")
     
 # convert float to int if possible:
 def float_to_int(x,t=3):

@@ -21652,3 +21652,84 @@
   table[sp,coeff] 100 self-similar[the] |Lenna sp>
   save history
 
+2016-03-04
+  image-save[foo.png] |bah: 37 37: ABAD>
+  debug on
+  image-save[foo.png] |bah: 37 37: ABAD>
+  q
+
+2016-03-04
+  image-save[foo.png] |bah: 37 37: ABAD>
+  image-save[foo.png] |image: 37 37: ABAD>
+  image-save[foo.png] |image: 1 1: ABAD37>
+  image-save[foo.png] |image: 1 2: 373728AB9712>
+  q
+
+2016-03-04
+  image-save[foo.png] |image: 1 2: 373728AB9712>
+  q
+
+2016-03-04
+  image-save[foo.png] |image: 1 2: 373728AB9712>
+  q
+
+2016-03-04
+  image-save[foo.png] |image: 1 2: 373728AB9712>
+  image-save[foo.png] image-load[child.png] |>
+  history
+  q
+
+2016-03-04
+  image-save[foo.png] image-load[child.png] |>
+  history
+  image-save[foo.png] image-load[Lenna.png]
+  history
+  q
+
+2016-03-04
+  image-save[foo.png] image-load[child.png] |>
+  q
+
+2016-03-04
+  image-save[foo.png] image-load[child.png] |>
+  history
+  image-save[] image-load[child.png] |>
+  image-save[''] image-load[child.png] |>
+  image-save[x.png] image-load[child.png]
+  q
+
+2016-03-05
+  image-save[x.png] |image: 1 1: 000000>
+  image-save[x.png] |image: 1 1: FFFFFF>
+  q
+
+2016-03-05
+  image-histogram[Lenna.png]
+  
+  history
+  the |Lenna sp> => image-histogram[Lenna.png]
+  dump
+  history
+  the |Lenna sp> => image-histogram[Lenna.png] |>
+  dump
+  history
+  the |small Lenna sp> => image-histogram[small-lenna.png] |>
+  dump
+  history
+  the |child sp> => image-histogram[child.png] |>
+  rel-kets[the]
+  table[sp,coeff] 100 self-similar[the] |Lenna sp>
+  history
+  the |wolfmoon sp> => image-histogram[three-wolfmoon-output.png] |>
+  table[sp,coeff] 100 self-similar[the] |Lenna sp>
+  save history
+  history
+  the |Lenna sp> => image-histogram[Lenna.png] |>
+  the |small Lenna sp> => image-histogram[small-lenna.png] |>
+  the |child sp> => image-histogram[child.png] |>
+  the |wolfmoon sp> => image-histogram[three-wolfmoon-output.png] |>
+  table[sp,coeff] 100 self-similar[the] |Lenna sp>
+  table[sp,coeff] 100 self-similar[the] |child sp>
+  table[sp,coeff] 100 self-similar[the] |wolfmoon sp>
+  q
+

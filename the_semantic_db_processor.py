@@ -426,10 +426,13 @@ compound_table = {
   "image-load"             : ".apply_naked_fn(new_image_load,\"{0}\")",
 # 3/3/2016:
   "image-histogram"        : ".apply_naked_fn(image_histogram,\"{0}\")",
+# 4/3/2016:
+  "image-save"             : ".apply_fn(new_image_save,\"{0}\")",
+  
   
 
 # 11/5/2015:
-  "image-save"             : ".apply_sp_fn(improved_image_save_show,\"{0}\")",  
+#  "image-save"             : ".apply_sp_fn(improved_image_save_show,\"{0}\")",  
 
 # 12/5/2015:
   "average-categorize"     : ".apply_naked_fn(average_categorize,context,\"{0}\")",
