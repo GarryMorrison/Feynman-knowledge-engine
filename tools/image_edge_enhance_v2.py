@@ -129,6 +129,7 @@ def edge_enhance(image,k):
     return r
 
   # smooth our image matrices:
+  # NB: we have to work with matrices and not images because we need to preserve floats at each step of smooth. Otherwise it harms the algo.
   # first, define some work-space matrices:
   new_M_r = [[0 for w in range(width+2)] for h in range(height+2)]
   new_M_g = [[0 for w in range(width+2)] for h in range(height+2)]
