@@ -35,7 +35,7 @@ try:
   im = Image.open(filename)
 except:
   print("couldn't open image file:",filename)
-
+  sys.exit(1)
 
 # implements a Gaussian smooth.
 # the 1D version: f[k] -> f[k-1]/4 + f[k]/2 + f[k+1]/4 rapidly approaches a bell curve if you apply it several times.

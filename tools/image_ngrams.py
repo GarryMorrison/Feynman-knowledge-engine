@@ -37,7 +37,7 @@ try:
   im = Image.open(filename)
 except:
   print("couldn't open image file:",filename)
-
+  sys.exit(1)
 
 destination = "image-ngrams/"
 # check if destination directory exists:
