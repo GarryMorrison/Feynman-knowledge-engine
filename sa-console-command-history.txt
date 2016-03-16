@@ -22043,3 +22043,26 @@
   matrix[op]
   q
 
+2016-03-16
+  
+  op |a> => split |b>
+  op |b> => split |a c f>
+  op |c> => split |b d>
+  op |d> => split |c e>
+  op |e> => split |d>
+  op |f> => split |b g>
+  op |g> => split |f h>
+  op |h> => split |g>
+  dump
+  reset
+  op |a> => split |b>
+  op |b> => split |a c d>
+  op |c> => split |b>
+  op |d> => split |b e>
+  op |e> => split |d f>
+  op |f> => split |e g>
+  op |g> => split |f h>
+  op |h> => split |g>
+  dump
+  q
+

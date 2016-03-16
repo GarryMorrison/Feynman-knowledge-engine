@@ -114,5 +114,17 @@ for name in list_of_files:
 print("\nthe k = %s network classes:\n----------------------------" % str(k))
 for hash in network_classes:
   the_class = network_classes[hash]
-  print(", ".join(the_class))
-print("----------------------------")
+#  print(", ".join(the_class))
+  print(hash + ": " + ", ".join(the_class))
+print("----------------------------\n")
+
+print("2nd-order-k%s-network:" % str(k))
+for i,hash in enumerate(network_classes):
+  the_class = network_classes[hash]
+  the_class_sp = '|' + '> + |'.join(the_class) + '>'
+  print('class |%s> => ' % str(i+1) + the_class_sp)
+
+print()
+for i,hash in enumerate(network_classes):
+  print('hash |%s> => |%s>' % (str(i),hash))
+
