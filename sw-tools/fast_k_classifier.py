@@ -21,6 +21,12 @@
 #
 # Usage: ./k_classifier.py k network-1.sw [network-2.sw network-3.sw ...]
 #
+# Hrmmm... the two Ramsey graphs given on this page:
+# http://cstheory.stackexchange.com/questions/1064/polynomial-time-algorithm-for-graph-isomorphism-testing
+# are in the same class for k in {0,1,...18}, but different for k >= 19
+# So, is my algo broken? Is there a bug in the modulus code I used to speed it up?
+# Hrmm... maybe the bug is in: v2 = int(r.count_sum())
+#
 #######################################################################
 
 
@@ -46,7 +52,7 @@ except:
 
 
 # define our primes:
-primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113]
+primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229]
 
 # check we have enough primes:
 if 2*k + 2 > len(primes):
@@ -56,6 +62,9 @@ if 2*k + 2 > len(primes):
 # hardwire in the operator label:
 op = "op"
 
+# define our modulus (a prime):
+#m = 32416190071
+m = 4257452468389
 
 # define our node to signature function:
 # context is a context, node is a ket, op is a string, k is a positive integer
@@ -81,7 +90,8 @@ def node_to_signature(context,node,op,k):
   v_list.reverse()                  # just reverse the list. Yeah, slightly bigger integers than reverse-sort, but reduces the chance of an accidental collision.
   print("v_list:",v_list)
   for i,v in enumerate(v_list):
-    signature *= primes[i]**v
+#    signature *= primes[i]**v
+    signature = ((signature % m) * pow(primes[i],v,m) ) % m
   print("signature:",signature)
   return signature
 
@@ -96,7 +106,9 @@ def file_to_hash(filename,op,k):
   # walk the network:
   # NB: multiplication is Abelian, so the order we examine nodes does not matter.
   for x in context.relevant_kets(op):
-    signature *= node_to_signature(context,x,op,k)
+#    signature *= node_to_signature(context,x,op,k)
+    signature = ((signature % m) * node_to_signature(context,x,op,k) ) % m
+  print("sig:",signature)
   return hashlib.sha1(str(signature).encode('utf-8')).hexdigest()
 
 
