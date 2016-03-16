@@ -3001,7 +3001,7 @@ def image_smooth(one,k):
 # ie, we are creating an image data-type. Much more efficient than the superposition idea.
 # After that, save-image, edge-enhance[20], and image-ngrams[5] (where an image-ngram is partitioning an image into size k*k smaller images)
 #
-from PIL import Image
+#from PIL import Image
 def new_image_load(filename):
   logger.debug("image name: " + filename)
   def int_to_hex(x):

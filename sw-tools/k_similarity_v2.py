@@ -10,6 +10,9 @@
 # 2b) they are not isomorphic but our algo has a coincidence
 # potentially our algo doesn't work and is always of type (2b) except for very obvious cases!
 # ok. Seems to work! Though the signature integers are very large. But the code is fast, at least for the 8 node networks I have been testing it with.
+# NB: what is the big-O for this code? Doesn't look too bad!
+# Details here:
+# http://write-up.semantic-db.org/194-introducing-network-k-similarity.html
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org

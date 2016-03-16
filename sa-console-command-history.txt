@@ -21733,3 +21733,313 @@
   table[sp,coeff] 100 self-similar[the] |wolfmoon sp>
   q
 
+2016-03-13
+  op |A> => |B> + |C> + |G>
+  op |B> => |A> + |D> + |H>
+  op |C> => |A> + |D> + |E>
+  op |D> => |C> + |F> + |B>
+  op |E> => |C> + |F> + |G>
+  op |F> => |E> + |D> + |H>
+  op |G> => |A> + |E> + |H>
+  op |H> => |G> + |F> + |B>
+  dump
+  debug on
+  how-many |A>
+  how-many op |A>
+  pop-float |number: 3>
+  q
+
+2016-03-14
+  load network-1.sw
+  h
+  cd ..
+  load network-1.sw
+  ls
+  q
+
+2016-03-14
+  foo |op: fish> => |op: bah>
+  dump
+  dump exact
+  q
+
+2016-03-14
+  load fred-sam-friends.sw
+  create inverse
+  dump
+  q
+
+2016-03-15
+  load network-1.sw
+  matrix[op]
+  op^2 |A>
+  op^3 |A>
+  op |A>
+  op^2 |A>
+  op^3 |A>
+  op^4 |A>
+  op^0 |A>
+  op^1 |A>
+  op^2 |A>
+  op^3 |A>
+  op^4 |A>
+  op^5 |A>
+  
+  op |E>
+  op^2 |E>
+  op^3 |E>
+  op^4 |E>
+  op^5 |E>
+  debug on
+  how-many op^2 |A>
+  count-sum op^5 |E>
+  q
+
+2016-03-15
+  load network-1.sw
+  matrix[op]
+  merged-matrix[op,op]
+  q
+
+2016-03-15
+  load network-1.sw
+  dump
+  op^2 |A>
+  op^3 |A>
+  op^4 |A>
+  load network-2.sw
+  dump
+  op^2 |A>
+  op^3 |A>
+  op^6 |B>
+  op^6 |C>
+  op^3 |F>
+  load network-1.sw
+  dump
+  op^4 |C>
+  history
+  op^6 |A>
+  mbr(|A>,3|A>)
+  mbr(|B>,|A>)
+  is-mbr(|B>,|A>)
+  is-mbr(|A>,7|A> +|B>)
+  history
+  has-3-cycle |*> #=> is-mbr(|_self>,op^3 |_self>)
+  has-4-cycle |*> #=> is-mbr(|_self>,op^4 |_self>)
+  has-5-cycle |*> #=> is-mbr(|_self>,op^5 |_self>)
+  has-6-cycle |*> #=> is-mbr(|_self>,op^6 |_self>)
+  has-7-cycle |*> #=> is-mbr(|_self>,op^7 |_self>)
+  has-8-cycle |*> #=> is-mbr(|_self>,op^8 |_self>)
+  has-9-cycle |*> #=> is-mbr(|_self>,op^9 |_self>)
+  has-10-cycle |*> #=> is-mbr(|_self>,op^10 |_self>)
+  
+  dump
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-2.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-5.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-6.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-20.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  save history
+
+2016-03-15
+  load network-1.sw
+  has-3-cycle |*> #=> is-mbr(|_self>,op^3 |_self>)
+  has-4-cycle |*> #=> is-mbr(|_self>,op^4 |_self>)
+  has-5-cycle |*> #=> is-mbr(|_self>,op^5 |_self>)
+  has-6-cycle |*> #=> is-mbr(|_self>,op^6 |_self>)
+  has-7-cycle |*> #=> is-mbr(|_self>,op^7 |_self>)
+  has-8-cycle |*> #=> is-mbr(|_self>,op^8 |_self>)
+  has-9-cycle |*> #=> is-mbr(|_self>,op^9 |_self>)
+  has-10-cycle |*> #=> is-mbr(|_self>,op^10 |_self>)
+  
+  dump
+  history
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  reset
+  load network-2.sw
+  has-3-cycle |*> #=> is-mbr(|_self>,op^3 |_self>)
+  has-4-cycle |*> #=> is-mbr(|_self>,op^4 |_self>)
+  has-5-cycle |*> #=> is-mbr(|_self>,op^5 |_self>)
+  has-6-cycle |*> #=> is-mbr(|_self>,op^6 |_self>)
+  has-7-cycle |*> #=> is-mbr(|_self>,op^7 |_self>)
+  has-8-cycle |*> #=> is-mbr(|_self>,op^8 |_self>)
+  has-9-cycle |*> #=> is-mbr(|_self>,op^9 |_self>)
+  has-10-cycle |*> #=> is-mbr(|_self>,op^10 |_self>)
+  
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  q
+
+2016-03-15
+  load network-5.sw
+  
+  load has-k-cycle.sw
+  
+  dump
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-6.sw
+  load has-k-cycle.sw
+  
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  reset
+  load network-7.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-9.sw
+  
+  
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-11.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-12.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  reset
+  history
+  load network-13.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-14.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  reset
+  history
+  load network-15.sw
+  load network-16.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-17.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  reset
+  history
+  load network-18.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  reset
+  load network-19.sw
+  load network-20.sw
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  q
+
+2016-03-16
+  load network-1.sw
+  dump
+  op^2 |A>
+  op^3 |A>
+  op^4 |A>
+  load network-2.sw
+  dump
+  op^2 |A>
+  op^3 |A>
+  op^6 |B>
+  op^6 |C>
+  op^3 |F>
+  load network-1.sw
+  dump
+  op^4 |C>
+  history
+  op^6 |A>
+  mbr(|A>,3|A>)
+  mbr(|B>,|A>)
+  is-mbr(|B>,|A>)
+  is-mbr(|A>,7|A> +|B>)
+  history
+  has-3-cycle |*> #=> is-mbr(|_self>,op^3 |_self>)
+  has-4-cycle |*> #=> is-mbr(|_self>,op^4 |_self>)
+  has-5-cycle |*> #=> is-mbr(|_self>,op^5 |_self>)
+  has-6-cycle |*> #=> is-mbr(|_self>,op^6 |_self>)
+  has-7-cycle |*> #=> is-mbr(|_self>,op^7 |_self>)
+  has-8-cycle |*> #=> is-mbr(|_self>,op^8 |_self>)
+  has-9-cycle |*> #=> is-mbr(|_self>,op^9 |_self>)
+  has-10-cycle |*> #=> is-mbr(|_self>,op^10 |_self>)
+  
+  dump
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-2.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-5.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-6.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  load network-20.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  history
+  save history
+  q
+
+2016-03-16
+  op |a1> => |a2>
+  op |a2> => |a3>
+  op |a3> => |a4>
+  op |a4> => |a5>
+  op |a5> => |a6>
+  op |a6> => |a7>
+  op |a7> => |a8>
+  op |a8> => |a9>
+  op |a9> => |a10>
+  op |a10> => |a1> + |b1>
+  
+  op |b1> => |b2>
+  op |b2> => |b3>
+  op |b3> => |b4>
+  op |b4> => |b5>
+  op |b5> => |b6>
+  op |b6> => |b7>
+  op |b7> => |b1>
+  has-3-cycle |*> #=> is-mbr(|_self>,op^3 |_self>)
+  has-4-cycle |*> #=> is-mbr(|_self>,op^4 |_self>)
+  has-5-cycle |*> #=> is-mbr(|_self>,op^5 |_self>)
+  has-6-cycle |*> #=> is-mbr(|_self>,op^6 |_self>)
+  has-7-cycle |*> #=> is-mbr(|_self>,op^7 |_self>)
+  has-8-cycle |*> #=> is-mbr(|_self>,op^8 |_self>)
+  has-9-cycle |*> #=> is-mbr(|_self>,op^9 |_self>)
+  has-10-cycle |*> #=> is-mbr(|_self>,op^10 |_self>)
+  has-11-cycle |*> #=> is-mbr(|_self>,op^11 |_self>)
+  has-12-cycle |*> #=> is-mbr(|_self>,op^12 |_self>)
+  has-13-cycle |*> #=> is-mbr(|_self>,op^13 |_self>)
+  
+  dump
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle,has-11-cycle,has-12-cycle,has-13-cycle] rel-kets[op]
+  q
+
+2016-03-16
+  op |1> => split |2 5 6>
+  op |2> => split |1 3 6>
+  op |3> => split |2 4>
+  op |4> => split |3 5>
+  op |5> => split |1 4 6>
+  op |6> => split |1 2 5>
+  
+  matrix[op]
+  op |1> => split |2 3>
+  op |2> => split |1 3 4>
+  op |3> => split |1 2 4 5>
+  op |4> => split |2 3 6>
+  op |5> => split |3 6>
+  op |6> => split |4 5>
+  
+  matrix[op]
+  q
+
