@@ -26,6 +26,13 @@
 # are in the same class for k in {0,1,...18}, but different for k >= 19
 # So, is my algo broken? Is there a bug in the modulus code I used to speed it up?
 # Hrmm... maybe the bug is in: v2 = int(r.count_sum())
+# Fixed! It was indeed the float to int code that was the bug.
+# Those two graphs now give the same signature up to k = 40.
+#
+# Also, I suspect, we can stop roughly when v1 is equal to the number of nodes in the network.
+# Or maybe one round after that. The idea being the op^k has reached the entire network.
+# I don't know a clean way to make sure that all nodes have reached that point.
+# Alternatively, maybe k = 3 or 4 is sufficient to pretty much prove isomorphism??
 #
 #######################################################################
 
@@ -52,7 +59,12 @@ except:
 
 
 # define our primes:
-primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229]
+# from here: https://primes.utm.edu/lists/small/10000.txt
+primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113]
+primes += [127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229]
+primes += [233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349]
+primes += [353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463]
+
 
 # check we have enough primes:
 if 2*k + 2 > len(primes):
@@ -65,6 +77,7 @@ op = "op"
 # define our modulus (a prime):
 #m = 32416190071
 m = 4257452468389
+#m = 4257452468389*32416190071
 
 # define our node to signature function:
 # context is a context, node is a ket, op is a string, k is a positive integer
