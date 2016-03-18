@@ -28,6 +28,9 @@
 # Hrmm... maybe the bug is in: v2 = int(r.count_sum())
 # Fixed! It was indeed the float to int code that was the bug.
 # Those two graphs now give the same signature up to k = 40.
+# BTW, the fix was a temporary change in the ket() class. I had to change value to int(value) from float(value)
+# this means, when I switch it back to float(value), which the full project needs, it will break again.
+# Just a warning.
 #
 # Also, I suspect, we can stop roughly when v1 is equal to the number of nodes in the network.
 # Or maybe one round after that. The idea being the op^k has reached the entire network.
@@ -101,8 +104,8 @@ def node_to_signature(context,node,op,k):
 
   print("v_list:",v_list)
 #  v_list.sort(reverse=True)        # we reverse sort the list, so largest v's are applied to smallest primes. This is quite a big saving.
-  v_list.reverse()                  # just reverse the list. Yeah, slightly bigger integers than reverse-sort, but reduces the chance of an accidental collision.
-  print("v_list:",v_list)
+#  v_list.reverse()                  # just reverse the list. Yeah, slightly bigger integers than reverse-sort, but reduces the chance of an accidental collision.
+  print("v_list:",v_list)            # actually, using modular arithmetic, v_list.reverse() doesn't do much for us.
   for i,v in enumerate(v_list):
 #    signature *= primes[i]**v
     signature = ((signature % m) * pow(primes[i],v,m) ) % m

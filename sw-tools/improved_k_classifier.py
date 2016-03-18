@@ -6,6 +6,9 @@
 # Full Feynman Knowledge Engine is here:
 # https://github.com/GarryMorrison/Feynman-knowledge-engine
 #
+# My k-similarity idea is explained here:
+# http://write-up.semantic-db.org/194-introducing-network-k-similarity.html
+#
 # Hrmm... I wonder if standard dictionaries are faster than OrderedDict's? Since unlike the full project, we don't need superposition ordering information.
 # Yup. Cut run time in half for Ramsey-graph-1.sw and Ramsey-graph-2.sw for k = 44
 # from "real 0m3.743s" to "real 0m1.553s"
@@ -163,8 +166,8 @@ def node_to_signature_v1(context,node,k,m):
   signature = 1
   r = superposition([node])
   for n in range(0,2*k+2,2):
-    v1 = r.count()
-    v2 = r.count_sum()
+    v1 = r.count()                      # these are the simplest mapping of superposition to an integer.
+    v2 = r.count_sum()                  # there are probably other better ones.
     signature = ((signature % m) * pow(primes[n],v1,m) ) % m
     signature = ((signature % m) * pow(primes[n+1],v2,m) ) % m
 #    print("n:",n)
@@ -204,8 +207,8 @@ def node_to_signature_v2(context,node,k,m):
 #  print("v_list:",v_list)
 #  v_list.sort(reverse=True)        # we reverse sort the list, so largest v's are applied to smallest primes. This is quite a big saving.
 #  v_list.reverse()                  # just reverse the list. Yeah, slightly bigger integers than reverse-sort, but reduces the chance of an accidental collision.
-#  print("v_list:",v_list)
-  for i,v in enumerate(v_list):
+#  print("v_list:",v_list)           # since we are now using modulus arithmetic, v_list.reverse() doesn't gain us anything.
+  for i,v in enumerate(v_list):      # it is now better to leave it out, so method 1 and 2 give the same signature.
     signature = ((signature % m) * pow(primes[i],v,m) ) % m
 #  print("signature:",signature)
   return signature
