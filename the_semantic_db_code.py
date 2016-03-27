@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/2/2016
+# Update: 26/3/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -56,7 +56,7 @@ class ket(object):
   def __init__(self,label='?',value=1):
     self.label = label
     self.value = float(value)  # perhaps look into decimal type.
-                               # http://docs.python.org/2/library/decimal.html
+#    self.value = int(value)                           # http://docs.python.org/2/library/decimal.html
                                # nah. float seems appropriate.
 
   def __str__(self):
@@ -473,7 +473,15 @@ class ket(object):
       return ket(self.label,self.value)
     else:
       return ket("",0)
-
+      
+# 26/3/2016:
+  def drop_zero(self):
+    if abs(x.value) > 0.0001:
+      return ket(self.label,self.value)
+    else: 
+      return ket("",0)
+    
+    
 
 # I'm using this in show_range, arithemetic etc, so can feed in sp or ket.
 # deprecated. Now use x.the_label()
@@ -947,6 +955,14 @@ class superposition(object):
     result = copy.deepcopy(self)
     result.data = [x for x in result.data if x.value <= t ]
     return result
+
+# 26/3/2016:
+  def drop_zero(self):
+    result = copy.deepcopy(self)
+#    result.data = [x for x in result.data if x.value != 0 ]
+    result.data = [x for x in result.data if abs(x.value) > 0.0001]     
+    return result
+
 
 # NB: we use: 1 <= k <= len, not 0 <= k < len to access ket objects.
 # NB: though we still use -1 for the last element, -2 for the second last element, etc.

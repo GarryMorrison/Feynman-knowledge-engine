@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 4/3/2016
+# Update: 26/3/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1309,11 +1309,26 @@ def old_category_number_to_number(one):         # find better name!
     return ket(" ",0)
   return ket(" ",one.value * n)
 
+# 26/3/2016:
+# so that algebra() can handle rationals too.
+# copied from here: 
+# http://stackoverflow.com/questions/575925/how-to-convert-rational-and-decimal-number-strings-to-floats-in-python
+#
+def parse_float_string(x):
+    parts = x.split('/', 1)
+    if len(parts) == 1:
+        return float(x)
+    elif len(parts) == 2:
+        return float(parts[0])/float(parts[1])
+    else:
+        raise ValueError
+
 def category_number_to_number(one):         # find better name!
   one = one.ket()
   cat, value = extract_category_value(one.label)
   try:
-    n = float(value)
+#    n = float(value)
+    n = parse_float_string(value)    
   except:
     if cat == 'number':                     # not 100% want to keep these two lines
       return ket(" ",0)
@@ -1385,14 +1400,14 @@ def algebra(one,operator,two,Abelian=True):
   if op not in ['+','-','*','^']:
     return ket(" ",0)
 
-  if op == '+':
-    return algebra_add(one,two)            # Abelian option here too?
+  if op == '+':                                        # drop_zero() added so that terms with coeff 0 are dropped.
+    return algebra_add(one,two).drop_zero()            # Abelian option here too?
   elif op == '-':
-    return algebra_subtract(one,two)       # ditto.
+    return algebra_subtract(one,two).drop_zero()       # ditto.
   elif op == '*':
-    return algebra_mult(one,two,Abelian)
+    return algebra_mult(one,two,Abelian).drop_zero()
   elif op == '^':
-    return algebra_power(one,two,Abelian)
+    return algebra_power(one,two,Abelian).drop_zero()
   else:
     return ket(" ",0)
 
@@ -4171,4 +4186,36 @@ def rename_kets(one,two,three):
     return result
   except:
     return ket("",0) 
-                             
+
+
+# 20/3/2016:
+#
+# path-op[op] sp
+# eg:
+# op |A> => |B: 1> + |C: 2> + |G: 3>
+# op |B> => |A: 4> + |D: 5> + |H: 6>
+#
+# then:
+# path-op[op] |B: 1>
+# == |A: 1: 4> + |D: 1: 5> + |H: 1: 6>
+#
+# one is a ket (so linear in kets), op is a string
+def path_op(one,context,op):
+  try:
+    split_ket_string = one.label.split(': ',1)
+    element = split_ket_string[0]
+    rule = context.recall(op,element)
+    if len(split_ket_string) == 1:
+      return rule
+    path_history = split_ket_string[1]
+    print("element:",element)
+    print("path_history:",path_history)
+    print("rule:",rule)
+    r = superposition()
+    for x in rule:
+      x_element, x_path_history = x.label.split(': ',1)
+      r += ket('%s: %s: %s' % (x_element,path_history,x_path_history))
+    return r      
+  except Exception as e:
+    print("reason:",e)  
+    return ket("",0)                                 

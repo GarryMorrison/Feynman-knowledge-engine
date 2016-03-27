@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 3/3/2016
+# Update: 26/3/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -51,6 +51,9 @@ built_in_table = {
   "measure-currency" : "number_count_sum",  
   "product"          : "number_product",
   "drop"             : "drop",
+# 26/3/2016:
+  "drop-zero"        : "drop_zero",
+  
 # "drop-below"       : "drop_below",
 # "drop-above"       : "drop_above",
 # "select-range"     : "select_range",
@@ -462,7 +465,10 @@ compound_table = {
   
 # 9/2/2016:
   "guess-ket"              : ".apply_fn(guess_ket,context,\"{0}\")",
-  "guess-operator"         : ".apply_naked_fn(guess_operator,context,\"{0}\")",  
+  "guess-operator"         : ".apply_naked_fn(guess_operator,context,\"{0}\")",
+  
+# 20/3/2016:
+  "path-op"                : ".apply_fn(path_op,context,\"{0}\")",    
 }
 
 

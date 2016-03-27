@@ -22245,3 +22245,2147 @@
   to-comma-number fact |17>
   q
 
+2016-03-17
+  load network-1.sw
+  dump
+  op 3|A>
+  debug on
+  op 3|A>
+  q
+
+2016-03-17
+  q
+
+2016-03-18
+  ls
+  cd networks
+  files
+  file
+  h
+  files
+  q
+
+2016-03-18
+  cd
+  ls
+  cd networks
+  files
+  load network-1-a.sw
+  dump
+  matrix[op]
+  q
+
+2016-03-19
+  
+  cd networks
+  files
+  load network-6-a.sw
+  dump
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |1>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  reset
+  history
+  load network-6-b.sw
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-3 |*> #=> count-sum op^3 |_self>
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,sum-3,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  
+  
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  history
+  load network-6-a.sw
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  load has-k-cycle.sw
+  cd sw-examples
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  cd networks
+  history
+  load network-6-b.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  clean-op-4 |*> #=> push-float coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  table[node,sum-4,product-4,clean-op-4] sort-by[product-4] rel-kets[op]
+  op^2 |1>
+  coeff-sort op^2 |1>
+  coeff-sort op^2 |2>
+  push-float coeff-sort op^2 |1>
+  push-float coeff-sort op^4 |1>
+  
+  history
+  save history
+
+2016-03-19
+  
+  cd networks
+  files
+  load network-6-a.sw
+  dump
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |1>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  reset
+  history
+  load network-6-b.sw
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-3 |*> #=> count-sum op^3 |_self>
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,sum-3,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  
+  
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  history
+  load network-6-a.sw
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  load has-k-cycle.sw
+  cd sw-examples
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  cd networks
+  history
+  load network-6-b.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  clean-op-4 |*> #=> push-float coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  table[node,sum-4,product-4,clean-op-4] sort-by[product-4] rel-kets[op]
+  op^2 |1>
+  coeff-sort op^2 |1>
+  coeff-sort op^2 |2>
+  push-float coeff-sort op^2 |1>
+  push-float coeff-sort op^4 |1>
+  
+  history
+  save history
+  load network-6-a.sw
+  sum-5 |*> #=> count-sum op^5 |_self>
+  product-5 |*> #=> product op^5 |_self>
+  clean-op- |*> #=> push-float coeff-sort op^5 |_self>
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  clean-op-5 |*> #=> push-float coeff-sort op^5 |_self>
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-6-b.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-7-a.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-7-b.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  history
+  save history
+
+2016-03-19
+  
+  cd networks
+  files
+  load network-6-a.sw
+  dump
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |1>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  reset
+  history
+  load network-6-b.sw
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-3 |*> #=> count-sum op^3 |_self>
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,sum-3,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  
+  
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  history
+  load network-6-a.sw
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  load has-k-cycle.sw
+  cd sw-examples
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  cd networks
+  history
+  load network-6-b.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  clean-op-4 |*> #=> push-float coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  table[node,sum-4,product-4,clean-op-4] sort-by[product-4] rel-kets[op]
+  op^2 |1>
+  coeff-sort op^2 |1>
+  coeff-sort op^2 |2>
+  push-float coeff-sort op^2 |1>
+  push-float coeff-sort op^4 |1>
+  
+  history
+  save history
+  load network-6-a.sw
+  sum-5 |*> #=> count-sum op^5 |_self>
+  product-5 |*> #=> product op^5 |_self>
+  clean-op- |*> #=> push-float coeff-sort op^5 |_self>
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  clean-op-5 |*> #=> push-float coeff-sort op^5 |_self>
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-6-b.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-7-a.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-7-b.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  history
+  save history
+  load network-7-a.sw
+  sum-10 |*> #=> count-sum op^10 |_self>
+  product-10 |*> #=> product op^10 |_self>
+  clean-op-10 |*> #=> push-float coeff-sort op^10 |_self>
+  table[node,sum-10,product-10,clean-op-10] rel-kets[op]
+  history
+  network-7-b.sw
+  load network-7-b.sw
+  table[node,sum-10,product-10,clean-op-10] rel-kets[op]
+  sum-100 |*> #=> count-sum op^100 |_self>
+  product-100 |*> #=> product op^100 |_self>
+  clean-op-100 |*> #=> push-float coeff-sort op^100 |_self>
+  table[node,sum-100,product-100,clean-op-100] rel-kets[op]
+  load network-7-a.sw
+  table[node,sum-100,product-100,clean-op-100] rel-kets[op]
+  clean-op-2000 |*> #=> push-float coeff-sort op^2000 |_self>
+  table[node,clean-op-2000] rel-kets[op]
+  clean-op-2000 |*> #=> push-float coeff-sort op^2000 |_self>
+  table[node,clean-op-2000] rel-kets[op]
+  clean-op-1000 |*> #=> push-float coeff-sort op^1000 |_self>
+  table[node,clean-op-1000] rel-kets[op]
+  clean-op-500 |*> #=> push-float coeff-sort op^500 |_self>
+  table[node,clean-op-500] rel-kets[op]
+  clean-op-200 |*> #=> push-float coeff-sort op^200 |_self>
+  table[node,clean-op-200] rel-kets[op]
+  history
+  
+  load network-7-b.sw
+  table[node,clean-op-200] rel-kets[op]
+  history
+  save history
+
+2016-03-20
+  
+  cd networks
+  files
+  load network-6-a.sw
+  dump
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |1>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  reset
+  history
+  load network-6-b.sw
+  product-2 |*> #=> product op^2 |_self>
+  op-2 |*> #=> op^2 |_self>
+  table[node,product-2,op-2] sort-by[product-2] rel-kets[op]
+  
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-3 |*> #=> count-sum op^3 |_self>
+  product-3 |*> #=> product op^3 |_self>
+  op-3 |*> #=> op^3 |_self>
+  table[node,sum-3,product-3,op-3] sort-by[product-3] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  
+  
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  history
+  load network-6-a.sw
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  op-4 |*> #=> coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  load has-k-cycle.sw
+  cd sw-examples
+  load has-k-cycle.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  cd networks
+  history
+  load network-6-b.sw
+  table[node,has-3-cycle,has-4-cycle,has-5-cycle,has-6-cycle,has-7-cycle,has-8-cycle,has-9-cycle,has-10-cycle] rel-kets[op]
+  sum-4 |*> #=> count-sum op^4 |_self>
+  product-4 |*> #=> product op^4 |_self>
+  clean-op-4 |*> #=> push-float coeff-sort op^4 |_self>
+  table[node,sum-4,product-4,op-4] sort-by[product-4] rel-kets[op]
+  table[node,sum-4,product-4,clean-op-4] sort-by[product-4] rel-kets[op]
+  op^2 |1>
+  coeff-sort op^2 |1>
+  coeff-sort op^2 |2>
+  push-float coeff-sort op^2 |1>
+  push-float coeff-sort op^4 |1>
+  
+  history
+  save history
+  load network-6-a.sw
+  sum-5 |*> #=> count-sum op^5 |_self>
+  product-5 |*> #=> product op^5 |_self>
+  clean-op- |*> #=> push-float coeff-sort op^5 |_self>
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  clean-op-5 |*> #=> push-float coeff-sort op^5 |_self>
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-6-b.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-7-a.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  load network-7-b.sw
+  table[node,sum-5,product-5,clean-op-5] sort-by[product-5] rel-kets[op]
+  history
+  save history
+  load network-7-a.sw
+  sum-10 |*> #=> count-sum op^10 |_self>
+  product-10 |*> #=> product op^10 |_self>
+  clean-op-10 |*> #=> push-float coeff-sort op^10 |_self>
+  table[node,sum-10,product-10,clean-op-10] rel-kets[op]
+  history
+  network-7-b.sw
+  load network-7-b.sw
+  table[node,sum-10,product-10,clean-op-10] rel-kets[op]
+  sum-100 |*> #=> count-sum op^100 |_self>
+  product-100 |*> #=> product op^100 |_self>
+  clean-op-100 |*> #=> push-float coeff-sort op^100 |_self>
+  table[node,sum-100,product-100,clean-op-100] rel-kets[op]
+  load network-7-a.sw
+  table[node,sum-100,product-100,clean-op-100] rel-kets[op]
+  clean-op-2000 |*> #=> push-float coeff-sort op^2000 |_self>
+  table[node,clean-op-2000] rel-kets[op]
+  clean-op-2000 |*> #=> push-float coeff-sort op^2000 |_self>
+  table[node,clean-op-2000] rel-kets[op]
+  clean-op-1000 |*> #=> push-float coeff-sort op^1000 |_self>
+  table[node,clean-op-1000] rel-kets[op]
+  clean-op-500 |*> #=> push-float coeff-sort op^500 |_self>
+  table[node,clean-op-500] rel-kets[op]
+  clean-op-200 |*> #=> push-float coeff-sort op^200 |_self>
+  table[node,clean-op-200] rel-kets[op]
+  history
+  
+  load network-7-b.sw
+  table[node,clean-op-200] rel-kets[op]
+  history
+  save history
+  exp[op,3] |1>
+  exp-op-20 |*> #=> push-float coeff-sort exp[op,20] |_self>
+  table[node,exp-op-20] rel-kets[op]
+  history
+  load network-7-a.sw
+  table[node,exp-op-20] rel-kets[op]
+  q
+
+2016-03-20
+  load network-7-a--as-result-sw.sw
+  dump
+  clean-op-0 |*> #=> push-float coeff-sort op-0 |_self>
+  clean-op-1 |*> #=> push-float coeff-sort op-1 |_self>
+  clean-op-2 |*> #=> push-float coeff-sort op-2 |_self>
+  clean-op-3 |*> #=> push-float coeff-sort op-3 |_self>
+  
+  table[node,clean-op-0,clean-op-1,clean-op-2,clean-op-3] rel-kets[op-0]
+  history
+  load network-7-b--as-result-sw.sw
+  table[node,clean-op-0,clean-op-1,clean-op-2,clean-op-3] rel-kets[op-0]
+  history
+  q
+
+2016-03-20
+  find-leading-category |a: b: c: d: e>
+  debug on
+  find-leading-category |a: b: c: d: e>
+  remove-leading-catgory |a: b: c: d: e>
+  remove-leading-category |a: b: c: d: e>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  dump
+  path-op[op] |B: 1>
+  debug on
+  path-op[op] |B: 1>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  path-op[op] |A: 7: 3: 2: 5>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  path-op[op]^2 |B: 1>
+  path-op[op] |A>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  path-op[op] |A>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  path-op[op] |B: 1>
+  path-op[op] |A>
+  path-op[op]^2 |A>
+  q
+
+2016-03-20
+  load network-1--labeled.sw
+  
+  p1 |*> #=> path-op[op] |_self>
+  p2 |*> #=> path-op[op]^2 |_self>
+  p3 |*> #=> path-op[op]^3 |_self>
+  p4 |*> #=> path-op[op]^4 |_self>
+  p5 |*> #=> path-op[op]^5 |_self>
+  p6 |*> #=> path-op[op]^6 |_self>
+  
+  h1 |*> #=> how-many path-op[op] |_self>
+  h2 |*> #=> how-many path-op[op]^2 |_self>
+  h3 |*> #=> how-many path-op[op]^3 |_self>
+  h4 |*> #=> how-many path-op[op]^4 |_self>
+  h5 |*> #=> how-many path-op[op]^5 |_self>
+  h6 |*> #=> how-many path-op[op]^6 |_self>
+  
+  table[node,p1,h1,p2,h2,p3,h3,p4,h4,p5,h5,p6,h6] rel-kets[op] |>
+  table[node,p1,h1,p2,h2,h3,h4,h5,h6] rel-kets[op] |>
+  is-A |*> #=> |no>
+  is-B |*> #=> |no>
+  is-C |*> #=> |no>
+  is-D |*> #=> |no>
+  is-E |*> #=> |no>
+  is-F |*> #=> |no>
+  is-G |*> #=> |no>
+  is-H |*> #=> |no>
+  
+  is-A |A: *> #=> |yes>
+  is-B |B: *> #=> |yes>
+  is-C |C: *> #=> |yes>
+  is-D |D: *> #=> |yes>
+  is-E |E: *> #=> |yes>
+  is-F |F: *> #=> |yes>
+  is-G |G: *> #=> |yes>
+  is-H |H: *> #=> |yes>
+  
+  no-A |*> #=> how-many such-that[is-A] path-op[op]^6 |_self>
+  no-B |*> #=> how-many such-that[is-B] path-op[op]^6 |_self>
+  no-C |*> #=> how-many such-that[is-C] path-op[op]^6 |_self>
+  no-D |*> #=> how-many such-that[is-D] path-op[op]^6 |_self>
+  no-E |*> #=> how-many such-that[is-E] path-op[op]^6 |_self>
+  no-F |*> #=> how-many such-that[is-F] path-op[op]^6 |_self>
+  no-G |*> #=> how-many such-that[is-G] path-op[op]^6 |_self>
+  no-H |*> #=> how-many such-that[is-H] path-op[op]^6 |_self>
+  
+  
+  
+  dump
+  path-op[op]^2 |A>
+  such-that[is-A] path-op[op]^2 |A>
+  table[node,no-A,no-B,no-C,no-D,no-E,no-F,no-G,no-H] rel-kets[op] |>
+  path-op[op]^4 |A>
+  history
+  such-that[is-A] path-op[op]^5 |A>
+  history
+  such-that[is-A] path-op[op]^6 |A>
+  save history
+
+2016-03-20
+  load network-1--labeled.sw
+  
+  p1 |*> #=> path-op[op] |_self>
+  p2 |*> #=> path-op[op]^2 |_self>
+  p3 |*> #=> path-op[op]^3 |_self>
+  p4 |*> #=> path-op[op]^4 |_self>
+  p5 |*> #=> path-op[op]^5 |_self>
+  p6 |*> #=> path-op[op]^6 |_self>
+  
+  h1 |*> #=> how-many path-op[op] |_self>
+  h2 |*> #=> how-many path-op[op]^2 |_self>
+  h3 |*> #=> how-many path-op[op]^3 |_self>
+  h4 |*> #=> how-many path-op[op]^4 |_self>
+  h5 |*> #=> how-many path-op[op]^5 |_self>
+  h6 |*> #=> how-many path-op[op]^6 |_self>
+  
+  table[node,p1,h1,p2,h2,p3,h3,p4,h4,p5,h5,p6,h6] rel-kets[op] |>
+  table[node,p1,h1,p2,h2,h3,h4,h5,h6] rel-kets[op] |>
+  is-A |*> #=> |no>
+  is-B |*> #=> |no>
+  is-C |*> #=> |no>
+  is-D |*> #=> |no>
+  is-E |*> #=> |no>
+  is-F |*> #=> |no>
+  is-G |*> #=> |no>
+  is-H |*> #=> |no>
+  
+  is-A |A: *> #=> |yes>
+  is-B |B: *> #=> |yes>
+  is-C |C: *> #=> |yes>
+  is-D |D: *> #=> |yes>
+  is-E |E: *> #=> |yes>
+  is-F |F: *> #=> |yes>
+  is-G |G: *> #=> |yes>
+  is-H |H: *> #=> |yes>
+  
+  no-A |*> #=> how-many such-that[is-A] path-op[op]^6 |_self>
+  no-B |*> #=> how-many such-that[is-B] path-op[op]^6 |_self>
+  no-C |*> #=> how-many such-that[is-C] path-op[op]^6 |_self>
+  no-D |*> #=> how-many such-that[is-D] path-op[op]^6 |_self>
+  no-E |*> #=> how-many such-that[is-E] path-op[op]^6 |_self>
+  no-F |*> #=> how-many such-that[is-F] path-op[op]^6 |_self>
+  no-G |*> #=> how-many such-that[is-G] path-op[op]^6 |_self>
+  no-H |*> #=> how-many such-that[is-H] path-op[op]^6 |_self>
+  
+  
+  
+  dump
+  path-op[op]^2 |A>
+  such-that[is-A] path-op[op]^2 |A>
+  table[node,no-A,no-B,no-C,no-D,no-E,no-F,no-G,no-H] rel-kets[op] |>
+  path-op[op]^4 |A>
+  history
+  such-that[is-A] path-op[op]^5 |A>
+  history
+  such-that[is-A] path-op[op]^6 |A>
+  save history
+  q
+
+2016-03-20
+  load network-1.sw
+  matrix[op]
+  merged-matrix[op,op,op,op]
+  merged-matrix[op,op,op,op,op,op]
+  cd networks
+  files
+  load network-7-a.sw
+  merged-matrix[op,op,op,op,op,op]
+  .
+  history
+  load network-7-b.sw
+  merged-matrix[op,op,op,op,op,op]
+  reset
+  load network-7-a.sw
+  merged-matrix[op,op,op,op,op,op]
+  load network-7-b.sw
+  merged-matrix[op,op,op,op,op,op]
+  matrix[op,op]
+  q
+
+2016-03-20
+  load network-1.sw
+  matrix[op]
+   
+  cd networks
+  files
+  q
+
+2016-03-20
+  q
+
+2016-03-20
+  load testing-networks.sw
+  dump
+  table[node,no-1,no-2,no-3,no-4,no-5,no-6,no-6,no-8] rel-kets[op] |>
+  save history
+
+2016-03-20
+  load testing-networks.sw
+  dump
+  path-op[op]^3 |1>
+  history
+  such-that[is-1] path-op[op]^3 |1>
+  history
+  such-that[is-1] path-op[op]^2 |1>
+  such-that[is-1-] path-op[op]^4 |1>
+  history
+  such-that[is-1] path-op[op]^4 |1>
+  history
+  how-many such-that[is-1] path-op[op]^4 |1>
+  such-that[is-1] path-op[op]^4 |1>
+  save history
+
+2016-03-20
+  load testing-networks.sw
+  dump
+  table[node,no-1,no-2,no-3,no-4,no-5,no-6,no-6,no-8] rel-kets[op] |>
+  save history
+  q
+
+2016-03-21
+  load network-1.sw
+  dump
+  matrix[op]
+  merged-matrix[op,op]
+  history
+  |r1> => 2|A> + 3|B> + 5|C> + 7|D> + 11|E> + 13|F> + 17|G> + 19|H>
+  op |A>
+  op "" |r1>
+  rel-kets[op]
+  op rel-kets[op]
+  op^2 "" |r1>
+  q
+
+2016-03-21
+  load network-3.sw
+  dump
+  q
+
+2016-03-21
+  load network-4.sw
+  dump
+  q
+
+2016-03-23
+  load network-13.sw
+  matrix[op]
+  q
+
+2016-03-24
+  context permutation table
+  Pab |X> => |0>
+  Pac |X> => |0>
+  Pab |X> => |O>
+  dump
+  Pbc |X> => |0>
+  dump
+  Pba |*> #=> Pab |_self>
+  Pca |*> #=> Pac |_self>
+  Pcb |*> #=> Pbc |_self>
+  dump
+  Pab |Y> => |Y>
+  Pac |Y> => |Y>
+  Pbc |Y> => |Y>
+  dump
+  Pab |X1> => |0>
+  Pab |X2> => |X3>
+  Pab |X3> => |X2>
+  dump
+  Pac |X1> => -|X3>
+  Pac |X2> => |0>
+  Pac |X3> => -|X1>
+  dump
+  Pbc |X1> => |X2>
+  Pbc |X2> => |X1>
+  Pbc |X3> => |0>
+  dump
+  Pac |Y1> => |Y1>
+  Pac |Y2> => |Y3>
+  Pac |Y3> => |Y2>
+  Pac |Y1> => |Y3>
+  Pac |Y2> => |Y2>
+  Pac |Y3> => |Y1>
+  dump
+  
+  
+  dump
+  Pab |Y1> => |Y1>
+  Pab |Y2> => |Y3>
+  Pab |Y3> => |Y2>
+  Pbc |Y1> => |Y2>
+  Pbc |Y2> => |Y1>
+  Pbc |Y3> => |Y3>
+  dump
+  save simple-permutation-table.sw
+  dump
+  Pabc |*> #=> Pca Pbc Pab |_self>
+  Pacb |*> #=> Pba Pcb Pac |_self>
+  dump
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  dump
+  Pacb |Y1>
+  Pacb |Y2>
+  Pacb |Y3>
+  Pabc |X>
+  dump
+  Pacb |X>
+  dump
+  Pac |0> => |0>
+  Pab |0> => |0>
+  Pbc |0> => |0>
+  dump
+  Pabc |X>
+  Pbc |0>
+  dump
+  history
+  save simple-permutation-table.sw
+  q
+
+2016-03-25
+  load simple-permutation-table.sw
+  Pab |X> => |0>
+  Pac |X> => |0>
+  Pbc |X> => |0>
+  
+  Pba |*> #=> Pab |_self>
+  Pca |*> #=> Pac |_self>
+  Pcb |*> #=> Pbc |_self>
+  
+  -- I think these are broken!
+  Pabc |*> #=> Pca Pbc Pab |_self>
+  Pacb |*> #=> Pba Pcb Pac |_self>
+  
+  Pab |Y> => |Y>
+  Pac |Y> => |Y>
+  Pbc |Y> => |Y>
+  
+  Pab |X1> => |0>
+  Pac |X1> => -1.0|X3>
+  Pbc |X1> => |X2>
+  
+  Pab |X2> => |X3>
+  Pac |X2> => |0>
+  Pbc |X2> => |X1>
+  
+  Pab |X3> => |X2>
+  Pac |X3> => -1.0|X1>
+  Pbc |X3> => |0>
+  
+  Pac |Y1> => |Y3>
+  Pab |Y1> => |Y1>
+  Pbc |Y1> => |Y2>
+  
+  Pac |Y2> => |Y2>
+  Pab |Y2> => |Y3>
+  Pbc |Y2> => |Y1>
+  
+  Pac |Y3> => |Y1>
+  Pab |Y3> => |Y2>
+  Pbc |Y3> => |Y3>
+  
+  Pac |0> => |0>
+  Pab |0> => |0>
+  Pbc |0> => |0>
+  dump
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  dump
+  Pabc |*> #=> Pac Pab |_self>
+  Pacb |*>  #=> Pbc Pab |_self>
+  dump
+  history 1000
+  save simple-permutation-table.sw
+  dump
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  Pabc |X1>
+  Pabc |X2>
+  Pabc |X3>
+  Pacb |X3>
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb |Y2>\
+  Pacb |Y3>
+  Pabc^3 |Y1>
+  Pabc^3 |Y2>
+  Pabc^3 |Y3>
+  Pacb^3 |Y1>
+  Pacb^3 |Y2>
+  Pacb^3 |Y3>
+  dump
+  Pabc^2 |X1>
+  Pacb^2 |X1>
+  Pabc^2 |X2>
+  Pabc^2 |X2>
+  Pacb^2 |X1>
+  Pacb^2 |X1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb|Y2>
+  Pabc^2 |Y1>
+  Pabc^2 |Y2>
+  Pabc^2 |Y3>
+  Pabc^3 |Y2>
+  Pacb^2 |Y1>
+  Pacb^2 |Y2>
+  Pacb^2 |Y3>
+  Pac^2 |X3>
+  Pac^2 |X1>
+  Pac^2 |X2>
+  Pbc^2 |X1>
+  Pab^2 |Y1>
+  Pab^2 |Y2>
+  Pab^2 |Y3>
+  context mod 5 operator group
+  op |*> #=> mod[6] arithmetic(|_self>,|+>,|1>)
+  op |0>
+  op|1>
+  op|2>
+  op|5>
+  op|6>
+  op-4 |*> #=> op^4 |_self>
+  op-4 |3>
+  op-4^2 |3>
+  history
+  op-4^3 |3>
+  op-4^3 |3>
+  op-4^3 |2>
+  op-4^3 |5>
+  history
+  op-5 |*> #=> op^5 |_self>
+  op-5^6 |3>
+  op-5^3 |4>
+  op-5^6 |5>
+  context algebra
+  algebra(|a> + |1>,|^>,|2>)
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  debug on
+  algebra(|a> + |1>,|^>,|2>)
+  debug on
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  v |111> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c>
+  
+  v |112> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c>
+  
+  v |113> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c>
+  
+  v |122> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c>
+  
+  v |123> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c>
+  
+  v |133> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c>
+  
+  v |211> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c>
+  
+  v |212> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c>
+  
+  v |213> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |222> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b>
+  
+  v |223> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b>
+  
+  v |233> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b>
+  
+  v |311> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c>
+  
+  v |312> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |313> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c>
+  
+  v |322> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b>
+  
+  v |323> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b>
+  
+  v |333> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a>
+  
+  dump
+  display |*> #=> display-algebra v |_self>
+  dump
+  history
+  
+  
+  dump
+  
+  history
+  display-v |*> #=> display-algebra v |_self>
+  dump
+  table[row,display-v] rel-kets[v]
+  .
+  history
+  rank-table[row,display-v] rel-kets[v]
+  .
+  save history
+
+2016-03-25
+  load simple-permutation-table.sw
+  Pab |X> => |0>
+  Pac |X> => |0>
+  Pbc |X> => |0>
+  
+  Pba |*> #=> Pab |_self>
+  Pca |*> #=> Pac |_self>
+  Pcb |*> #=> Pbc |_self>
+  
+  -- I think these are broken!
+  Pabc |*> #=> Pca Pbc Pab |_self>
+  Pacb |*> #=> Pba Pcb Pac |_self>
+  
+  Pab |Y> => |Y>
+  Pac |Y> => |Y>
+  Pbc |Y> => |Y>
+  
+  Pab |X1> => |0>
+  Pac |X1> => -1.0|X3>
+  Pbc |X1> => |X2>
+  
+  Pab |X2> => |X3>
+  Pac |X2> => |0>
+  Pbc |X2> => |X1>
+  
+  Pab |X3> => |X2>
+  Pac |X3> => -1.0|X1>
+  Pbc |X3> => |0>
+  
+  Pac |Y1> => |Y3>
+  Pab |Y1> => |Y1>
+  Pbc |Y1> => |Y2>
+  
+  Pac |Y2> => |Y2>
+  Pab |Y2> => |Y3>
+  Pbc |Y2> => |Y1>
+  
+  Pac |Y3> => |Y1>
+  Pab |Y3> => |Y2>
+  Pbc |Y3> => |Y3>
+  
+  Pac |0> => |0>
+  Pab |0> => |0>
+  Pbc |0> => |0>
+  dump
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  dump
+  Pabc |*> #=> Pac Pab |_self>
+  Pacb |*>  #=> Pbc Pab |_self>
+  dump
+  history 1000
+  save simple-permutation-table.sw
+  dump
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  Pabc |X1>
+  Pabc |X2>
+  Pabc |X3>
+  Pacb |X3>
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb |Y2>\
+  Pacb |Y3>
+  Pabc^3 |Y1>
+  Pabc^3 |Y2>
+  Pabc^3 |Y3>
+  Pacb^3 |Y1>
+  Pacb^3 |Y2>
+  Pacb^3 |Y3>
+  dump
+  Pabc^2 |X1>
+  Pacb^2 |X1>
+  Pabc^2 |X2>
+  Pabc^2 |X2>
+  Pacb^2 |X1>
+  Pacb^2 |X1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb|Y2>
+  Pabc^2 |Y1>
+  Pabc^2 |Y2>
+  Pabc^2 |Y3>
+  Pabc^3 |Y2>
+  Pacb^2 |Y1>
+  Pacb^2 |Y2>
+  Pacb^2 |Y3>
+  Pac^2 |X3>
+  Pac^2 |X1>
+  Pac^2 |X2>
+  Pbc^2 |X1>
+  Pab^2 |Y1>
+  Pab^2 |Y2>
+  Pab^2 |Y3>
+  context mod 5 operator group
+  op |*> #=> mod[6] arithmetic(|_self>,|+>,|1>)
+  op |0>
+  op|1>
+  op|2>
+  op|5>
+  op|6>
+  op-4 |*> #=> op^4 |_self>
+  op-4 |3>
+  op-4^2 |3>
+  history
+  op-4^3 |3>
+  op-4^3 |3>
+  op-4^3 |2>
+  op-4^3 |5>
+  history
+  op-5 |*> #=> op^5 |_self>
+  op-5^6 |3>
+  op-5^3 |4>
+  op-5^6 |5>
+  context algebra
+  algebra(|a> + |1>,|^>,|2>)
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  debug on
+  algebra(|a> + |1>,|^>,|2>)
+  debug on
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  v |111> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c>
+  
+  v |112> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c>
+  
+  v |113> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c>
+  
+  v |122> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c>
+  
+  v |123> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c>
+  
+  v |133> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c>
+  
+  v |211> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c>
+  
+  v |212> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c>
+  
+  v |213> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |222> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b>
+  
+  v |223> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b>
+  
+  v |233> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b>
+  
+  v |311> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c>
+  
+  v |312> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |313> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c>
+  
+  v |322> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b>
+  
+  v |323> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b>
+  
+  v |333> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a>
+  
+  dump
+  display |*> #=> display-algebra v |_self>
+  dump
+  history
+  
+  
+  dump
+  
+  history
+  display-v |*> #=> display-algebra v |_self>
+  dump
+  table[row,display-v] rel-kets[v]
+  .
+  history
+  rank-table[row,display-v] rel-kets[v]
+  .
+  save history
+  context
+  context ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |5> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |6> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |7> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |8> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |9> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |10> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c> + -1|Q112>
+  
+  eqn |11> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |a*a*b> + 2|Q223*a*b*b> + |Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |12> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*b*b*c> + |Q122*b*c*c> + 3|Q123*a*b*c> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q122*a*b*b> + |Q223*a*a*b> + |Q223*a*c*c> + |Q233*a*a*c> + |Q113*a*b*b> + |Q133*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |13> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |14> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |15> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |16> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |17> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |18> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |19> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c> + -1|Q113>
+  
+  eqn |20> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q113*b*c*c> + 3|Q123*a*b*c> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*a*a*c> + |Q122*b*c*c> + |Q223*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q223*a*a*b> + |Q233*a*b*b> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |21> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*c*c> + 2|Q123*a*a*c> + |b*c*c> + 2|Q223*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |22> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |23> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b> + -1|Q223>
+  
+  eqn |24> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q122*c*c*c> + 2|Q123*a*c*c> + |a*c*c> + 2|Q223*a*a*c> + |Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |25> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |26> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |27> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  history 1000
+  display-v |*> #=> display-algebra v |_self>
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+
+2016-03-25
+  load simple-permutation-table.sw
+  Pab |X> => |0>
+  Pac |X> => |0>
+  Pbc |X> => |0>
+  
+  Pba |*> #=> Pab |_self>
+  Pca |*> #=> Pac |_self>
+  Pcb |*> #=> Pbc |_self>
+  
+  -- I think these are broken!
+  Pabc |*> #=> Pca Pbc Pab |_self>
+  Pacb |*> #=> Pba Pcb Pac |_self>
+  
+  Pab |Y> => |Y>
+  Pac |Y> => |Y>
+  Pbc |Y> => |Y>
+  
+  Pab |X1> => |0>
+  Pac |X1> => -1.0|X3>
+  Pbc |X1> => |X2>
+  
+  Pab |X2> => |X3>
+  Pac |X2> => |0>
+  Pbc |X2> => |X1>
+  
+  Pab |X3> => |X2>
+  Pac |X3> => -1.0|X1>
+  Pbc |X3> => |0>
+  
+  Pac |Y1> => |Y3>
+  Pab |Y1> => |Y1>
+  Pbc |Y1> => |Y2>
+  
+  Pac |Y2> => |Y2>
+  Pab |Y2> => |Y3>
+  Pbc |Y2> => |Y1>
+  
+  Pac |Y3> => |Y1>
+  Pab |Y3> => |Y2>
+  Pbc |Y3> => |Y3>
+  
+  Pac |0> => |0>
+  Pab |0> => |0>
+  Pbc |0> => |0>
+  dump
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  dump
+  Pabc |*> #=> Pac Pab |_self>
+  Pacb |*>  #=> Pbc Pab |_self>
+  dump
+  history 1000
+  save simple-permutation-table.sw
+  dump
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  Pabc |X1>
+  Pabc |X2>
+  Pabc |X3>
+  Pacb |X3>
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb |Y2>\
+  Pacb |Y3>
+  Pabc^3 |Y1>
+  Pabc^3 |Y2>
+  Pabc^3 |Y3>
+  Pacb^3 |Y1>
+  Pacb^3 |Y2>
+  Pacb^3 |Y3>
+  dump
+  Pabc^2 |X1>
+  Pacb^2 |X1>
+  Pabc^2 |X2>
+  Pabc^2 |X2>
+  Pacb^2 |X1>
+  Pacb^2 |X1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb|Y2>
+  Pabc^2 |Y1>
+  Pabc^2 |Y2>
+  Pabc^2 |Y3>
+  Pabc^3 |Y2>
+  Pacb^2 |Y1>
+  Pacb^2 |Y2>
+  Pacb^2 |Y3>
+  Pac^2 |X3>
+  Pac^2 |X1>
+  Pac^2 |X2>
+  Pbc^2 |X1>
+  Pab^2 |Y1>
+  Pab^2 |Y2>
+  Pab^2 |Y3>
+  context mod 5 operator group
+  op |*> #=> mod[6] arithmetic(|_self>,|+>,|1>)
+  op |0>
+  op|1>
+  op|2>
+  op|5>
+  op|6>
+  op-4 |*> #=> op^4 |_self>
+  op-4 |3>
+  op-4^2 |3>
+  history
+  op-4^3 |3>
+  op-4^3 |3>
+  op-4^3 |2>
+  op-4^3 |5>
+  history
+  op-5 |*> #=> op^5 |_self>
+  op-5^6 |3>
+  op-5^3 |4>
+  op-5^6 |5>
+  context algebra
+  algebra(|a> + |1>,|^>,|2>)
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  debug on
+  algebra(|a> + |1>,|^>,|2>)
+  debug on
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  v |111> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c>
+  
+  v |112> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c>
+  
+  v |113> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c>
+  
+  v |122> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c>
+  
+  v |123> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c>
+  
+  v |133> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c>
+  
+  v |211> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c>
+  
+  v |212> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c>
+  
+  v |213> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |222> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b>
+  
+  v |223> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b>
+  
+  v |233> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b>
+  
+  v |311> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c>
+  
+  v |312> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |313> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c>
+  
+  v |322> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b>
+  
+  v |323> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b>
+  
+  v |333> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a>
+  
+  dump
+  display |*> #=> display-algebra v |_self>
+  dump
+  history
+  
+  
+  dump
+  
+  history
+  display-v |*> #=> display-algebra v |_self>
+  dump
+  table[row,display-v] rel-kets[v]
+  .
+  history
+  rank-table[row,display-v] rel-kets[v]
+  .
+  save history
+  context
+  context ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |5> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |6> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |7> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |8> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |9> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |10> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c> + -1|Q112>
+  
+  eqn |11> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |a*a*b> + 2|Q223*a*b*b> + |Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |12> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*b*b*c> + |Q122*b*c*c> + 3|Q123*a*b*c> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q122*a*b*b> + |Q223*a*a*b> + |Q223*a*c*c> + |Q233*a*a*c> + |Q113*a*b*b> + |Q133*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |13> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |14> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |15> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |16> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |17> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |18> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |19> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c> + -1|Q113>
+  
+  eqn |20> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q113*b*c*c> + 3|Q123*a*b*c> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*a*a*c> + |Q122*b*c*c> + |Q223*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q223*a*a*b> + |Q233*a*b*b> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |21> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*c*c> + 2|Q123*a*a*c> + |b*c*c> + 2|Q223*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |22> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |23> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b> + -1|Q223>
+  
+  eqn |24> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q122*c*c*c> + 2|Q123*a*c*c> + |a*c*c> + 2|Q223*a*a*c> + |Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |25> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |26> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |27> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  history 1000
+  display-v |*> #=> display-algebra v |_self>
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+  display-algebra -2|1>
+  display-algebra -2| >
+  display-algebra 2|1>
+  display-algebra 2| >
+  context
+  context improved ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |5> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |6> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |7> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |8> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |9> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |10> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+
+2016-03-25
+  load simple-permutation-table.sw
+  Pab |X> => |0>
+  Pac |X> => |0>
+  Pbc |X> => |0>
+  
+  Pba |*> #=> Pab |_self>
+  Pca |*> #=> Pac |_self>
+  Pcb |*> #=> Pbc |_self>
+  
+  -- I think these are broken!
+  Pabc |*> #=> Pca Pbc Pab |_self>
+  Pacb |*> #=> Pba Pcb Pac |_self>
+  
+  Pab |Y> => |Y>
+  Pac |Y> => |Y>
+  Pbc |Y> => |Y>
+  
+  Pab |X1> => |0>
+  Pac |X1> => -1.0|X3>
+  Pbc |X1> => |X2>
+  
+  Pab |X2> => |X3>
+  Pac |X2> => |0>
+  Pbc |X2> => |X1>
+  
+  Pab |X3> => |X2>
+  Pac |X3> => -1.0|X1>
+  Pbc |X3> => |0>
+  
+  Pac |Y1> => |Y3>
+  Pab |Y1> => |Y1>
+  Pbc |Y1> => |Y2>
+  
+  Pac |Y2> => |Y2>
+  Pab |Y2> => |Y3>
+  Pbc |Y2> => |Y1>
+  
+  Pac |Y3> => |Y1>
+  Pab |Y3> => |Y2>
+  Pbc |Y3> => |Y3>
+  
+  Pac |0> => |0>
+  Pab |0> => |0>
+  Pbc |0> => |0>
+  dump
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  dump
+  Pabc |*> #=> Pac Pab |_self>
+  Pacb |*>  #=> Pbc Pab |_self>
+  dump
+  history 1000
+  save simple-permutation-table.sw
+  dump
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  Pabc |X1>
+  Pabc |X2>
+  Pabc |X3>
+  Pacb |X3>
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb |Y2>\
+  Pacb |Y3>
+  Pabc^3 |Y1>
+  Pabc^3 |Y2>
+  Pabc^3 |Y3>
+  Pacb^3 |Y1>
+  Pacb^3 |Y2>
+  Pacb^3 |Y3>
+  dump
+  Pabc^2 |X1>
+  Pacb^2 |X1>
+  Pabc^2 |X2>
+  Pabc^2 |X2>
+  Pacb^2 |X1>
+  Pacb^2 |X1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb|Y2>
+  Pabc^2 |Y1>
+  Pabc^2 |Y2>
+  Pabc^2 |Y3>
+  Pabc^3 |Y2>
+  Pacb^2 |Y1>
+  Pacb^2 |Y2>
+  Pacb^2 |Y3>
+  Pac^2 |X3>
+  Pac^2 |X1>
+  Pac^2 |X2>
+  Pbc^2 |X1>
+  Pab^2 |Y1>
+  Pab^2 |Y2>
+  Pab^2 |Y3>
+  context mod 5 operator group
+  op |*> #=> mod[6] arithmetic(|_self>,|+>,|1>)
+  op |0>
+  op|1>
+  op|2>
+  op|5>
+  op|6>
+  op-4 |*> #=> op^4 |_self>
+  op-4 |3>
+  op-4^2 |3>
+  history
+  op-4^3 |3>
+  op-4^3 |3>
+  op-4^3 |2>
+  op-4^3 |5>
+  history
+  op-5 |*> #=> op^5 |_self>
+  op-5^6 |3>
+  op-5^3 |4>
+  op-5^6 |5>
+  context algebra
+  algebra(|a> + |1>,|^>,|2>)
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  debug on
+  algebra(|a> + |1>,|^>,|2>)
+  debug on
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  v |111> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c>
+  
+  v |112> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c>
+  
+  v |113> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c>
+  
+  v |122> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c>
+  
+  v |123> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c>
+  
+  v |133> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c>
+  
+  v |211> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c>
+  
+  v |212> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c>
+  
+  v |213> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |222> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b>
+  
+  v |223> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b>
+  
+  v |233> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b>
+  
+  v |311> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c>
+  
+  v |312> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |313> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c>
+  
+  v |322> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b>
+  
+  v |323> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b>
+  
+  v |333> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a>
+  
+  dump
+  display |*> #=> display-algebra v |_self>
+  dump
+  history
+  
+  
+  dump
+  
+  history
+  display-v |*> #=> display-algebra v |_self>
+  dump
+  table[row,display-v] rel-kets[v]
+  .
+  history
+  rank-table[row,display-v] rel-kets[v]
+  .
+  save history
+  context
+  context ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |5> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |6> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |7> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |8> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |9> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |10> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c> + -1|Q112>
+  
+  eqn |11> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |a*a*b> + 2|Q223*a*b*b> + |Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |12> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*b*b*c> + |Q122*b*c*c> + 3|Q123*a*b*c> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q122*a*b*b> + |Q223*a*a*b> + |Q223*a*c*c> + |Q233*a*a*c> + |Q113*a*b*b> + |Q133*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |13> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |14> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |15> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |16> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |17> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |18> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |19> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c> + -1|Q113>
+  
+  eqn |20> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q113*b*c*c> + 3|Q123*a*b*c> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*a*a*c> + |Q122*b*c*c> + |Q223*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q223*a*a*b> + |Q233*a*b*b> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |21> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*c*c> + 2|Q123*a*a*c> + |b*c*c> + 2|Q223*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |22> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |23> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b> + -1|Q223>
+  
+  eqn |24> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q122*c*c*c> + 2|Q123*a*c*c> + |a*c*c> + 2|Q223*a*a*c> + |Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |25> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |26> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |27> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  history 1000
+  display-v |*> #=> display-algebra v |_self>
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+  display-algebra -2|1>
+  display-algebra -2| >
+  display-algebra 2|1>
+  display-algebra 2| >
+  context
+  context improved ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |5> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |6> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |7> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |8> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |9> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |10> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+  history
+  [A
+  history 1000
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+
+2016-03-26
+  algebra(|a>,|*>,|-1/2>)
+  algebra(2|a>,|*>,|-1/2>)
+  algebra(|a>,|*>,|2>)
+  to-number 3|5>
+  to-number |-1/2>
+  q
+
+2016-03-26
+  to-number |-1/2>
+  
+  
+   algebra(2|a>,|*>,|-1/2>)
+  q
+
+2016-03-26
+  to-number 3|5>
+  to-number 3|0>
+  to-number -3|0>
+  to-number -1|0>
+  to-number -1|-1/2>
+  algebra(|0>,|*>,|-1>)
+  algebra(-|1>,|*>,|-1/2>)
+  q
+
+2016-03-26
+  algebra(|-1/2>,|*>,-1|1>)
+  q[A
+  
+  q
+
+2016-03-26
+  algebra(|x>,|->,|2>)
+  algebra(|x>,|->,|x>)
+  q
+
+2016-03-27
+  load simple-permutation-table.sw
+  Pab |X> => |0>
+  Pac |X> => |0>
+  Pbc |X> => |0>
+  
+  Pba |*> #=> Pab |_self>
+  Pca |*> #=> Pac |_self>
+  Pcb |*> #=> Pbc |_self>
+  
+  -- I think these are broken!
+  Pabc |*> #=> Pca Pbc Pab |_self>
+  Pacb |*> #=> Pba Pcb Pac |_self>
+  
+  Pab |Y> => |Y>
+  Pac |Y> => |Y>
+  Pbc |Y> => |Y>
+  
+  Pab |X1> => |0>
+  Pac |X1> => -1.0|X3>
+  Pbc |X1> => |X2>
+  
+  Pab |X2> => |X3>
+  Pac |X2> => |0>
+  Pbc |X2> => |X1>
+  
+  Pab |X3> => |X2>
+  Pac |X3> => -1.0|X1>
+  Pbc |X3> => |0>
+  
+  Pac |Y1> => |Y3>
+  Pab |Y1> => |Y1>
+  Pbc |Y1> => |Y2>
+  
+  Pac |Y2> => |Y2>
+  Pab |Y2> => |Y3>
+  Pbc |Y2> => |Y1>
+  
+  Pac |Y3> => |Y1>
+  Pab |Y3> => |Y2>
+  Pbc |Y3> => |Y3>
+  
+  Pac |0> => |0>
+  Pab |0> => |0>
+  Pbc |0> => |0>
+  dump
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  dump
+  Pabc |*> #=> Pac Pab |_self>
+  Pacb |*>  #=> Pbc Pab |_self>
+  dump
+  history 1000
+  save simple-permutation-table.sw
+  dump
+  Pabc |X>
+  Pacb |X>
+  Pabc |Y>
+  Pacb |Y>
+  Pabc |X1>
+  Pabc |X2>
+  Pabc |X3>
+  Pacb |X3>
+  Pabc |Y1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb |Y2>\
+  Pacb |Y3>
+  Pabc^3 |Y1>
+  Pabc^3 |Y2>
+  Pabc^3 |Y3>
+  Pacb^3 |Y1>
+  Pacb^3 |Y2>
+  Pacb^3 |Y3>
+  dump
+  Pabc^2 |X1>
+  Pacb^2 |X1>
+  Pabc^2 |X2>
+  Pabc^2 |X2>
+  Pacb^2 |X1>
+  Pacb^2 |X1>
+  Pabc |Y2>
+  Pabc |Y3>
+  Pacb |Y1>
+  Pacb|Y2>
+  Pabc^2 |Y1>
+  Pabc^2 |Y2>
+  Pabc^2 |Y3>
+  Pabc^3 |Y2>
+  Pacb^2 |Y1>
+  Pacb^2 |Y2>
+  Pacb^2 |Y3>
+  Pac^2 |X3>
+  Pac^2 |X1>
+  Pac^2 |X2>
+  Pbc^2 |X1>
+  Pab^2 |Y1>
+  Pab^2 |Y2>
+  Pab^2 |Y3>
+  context mod 5 operator group
+  op |*> #=> mod[6] arithmetic(|_self>,|+>,|1>)
+  op |0>
+  op|1>
+  op|2>
+  op|5>
+  op|6>
+  op-4 |*> #=> op^4 |_self>
+  op-4 |3>
+  op-4^2 |3>
+  history
+  op-4^3 |3>
+  op-4^3 |3>
+  op-4^3 |2>
+  op-4^3 |5>
+  history
+  op-5 |*> #=> op^5 |_self>
+  op-5^6 |3>
+  op-5^3 |4>
+  op-5^6 |5>
+  context algebra
+  algebra(|a> + |1>,|^>,|2>)
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  debug on
+  algebra(|a> + |1>,|^>,|2>)
+  debug on
+  display-algebra algebra(|a> + |1>,|^>,|2>)
+  v |111> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c>
+  
+  v |112> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c>
+  
+  v |113> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c>
+  
+  v |122> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c>
+  
+  v |123> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c>
+  
+  v |133> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c>
+  
+  v |211> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c>
+  
+  v |212> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c>
+  
+  v |213> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |222> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b>
+  
+  v |223> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b>
+  
+  v |233> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b>
+  
+  v |311> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c>
+  
+  v |312> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b>
+  
+  v |313> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c>
+  
+  v |322> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b>
+  
+  v |323> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b>
+  
+  v |333> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a>
+  
+  dump
+  display |*> #=> display-algebra v |_self>
+  dump
+  history
+  
+  
+  dump
+  
+  history
+  display-v |*> #=> display-algebra v |_self>
+  dump
+  table[row,display-v] rel-kets[v]
+  .
+  history
+  rank-table[row,display-v] rel-kets[v]
+  .
+  save history
+  context
+  context ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |5> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |6> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |7> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |b*b*c> + 2|Q223*b*c*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |8> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*a*c*c> + |Q122*a*a*c> + 3|Q123*a*b*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q122*b*c*c> + |Q223*b*b*c> + |Q223*a*a*b> + |Q233*a*b*b> + |Q113*b*c*c> + |Q133*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |9> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |10> => |a*a*c> + 2|Q112*a*b*c> + 2|Q113*a*c*c> + |Q122*b*b*c> + 2|Q123*b*c*c> + |Q133*c*c*c> + |Q112*a*a*a> + 2|Q122*a*a*b> + 2|Q123*a*a*c> + |a*b*b> + 2|Q223*a*b*c> + |Q233*a*c*c> + |Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q223*b*b*b> + 2|Q233*b*b*c> + |b*c*c> + -1|Q112>
+  
+  eqn |11> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |a*a*b> + 2|Q223*a*b*b> + |Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |12> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*b*b*c> + |Q122*b*c*c> + 3|Q123*a*b*c> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q122*a*b*b> + |Q223*a*a*b> + |Q223*a*c*c> + |Q233*a*a*c> + |Q113*a*b*b> + |Q133*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |13> => |a*c*c> + |Q112*b*c*c> + |Q113*c*c*c> + 2|Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + 2|Q113*a*b*c> + 2|Q123*b*b*c> + 2|Q133*b*c*c> + |Q122*a*a*a> + |a*a*b> + |Q223*a*a*c> + 2|Q123*a*a*b> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q133*a*b*b> + |Q233*b*b*b> + |b*b*c> + -1|Q122>
+  
+  eqn |14> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |15> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |16> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q113*a*a*c> + 3|Q123*a*b*c> + |Q133*a*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + |Q122*a*a*c> + |Q223*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |17> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |a*a*c> + 2|Q223*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |18> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |19> => |a*a*b> + 2|Q112*a*b*b> + 2|Q113*a*b*c> + |Q122*b*b*b> + 2|Q123*b*b*c> + |Q133*b*c*c> + |Q112*a*a*c> + 2|Q122*a*b*c> + 2|Q123*a*c*c> + |b*b*c> + 2|Q223*b*c*c> + |Q233*c*c*c> + |Q113*a*a*a> + 2|Q123*a*a*b> + 2|Q133*a*a*c> + |Q223*a*b*b> + 2|Q233*a*b*c> + |a*c*c> + -1|Q113>
+  
+  eqn |20> => 3|a*b*c> + |Q112*a*a*b> + |Q113*a*b*b> + |Q112*b*b*c> + |Q122*a*b*b> + |Q123*b*b*b> + |Q113*b*c*c> + 3|Q123*a*b*c> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*a*a*c> + |Q122*b*c*c> + |Q223*b*b*c> + |Q123*c*c*c> + |Q223*a*c*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q123*a*a*a> + |Q133*a*a*b> + |Q223*a*a*b> + |Q233*a*b*b> + |Q133*a*c*c> + |Q233*a*a*c> + -1|Q123>
+  
+  eqn |21> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*c*c> + 2|Q123*a*a*c> + |b*c*c> + 2|Q223*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |22> => 3|a*b*c> + |Q112*b*b*c> + |Q113*b*c*c> + |Q112*a*a*b> + |Q122*a*b*b> + 3|Q123*a*b*c> + |Q113*a*b*b> + |Q123*b*b*b> + |Q133*b*b*c> + |Q112*a*c*c> + |Q122*b*c*c> + |Q123*c*c*c> + |Q122*a*a*c> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*b*c*c> + |Q113*a*a*c> + |Q133*a*c*c> + |Q123*a*a*a> + |Q223*a*a*b> + |Q233*a*a*c> + |Q133*a*a*b> + |Q233*a*b*b> + -1|Q123>
+  
+  eqn |23> => |b*c*c> + 2|Q112*a*b*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q123*a*b*b> + |Q133*b*b*b> + |Q112*c*c*c> + 2|Q122*a*c*c> + 2|Q123*b*c*c> + |a*a*c> + 2|Q223*a*b*c> + |Q233*b*b*c> + |Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q223*a*a*a> + 2|Q233*a*a*b> + |a*b*b> + -1|Q223>
+  
+  eqn |24> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q122*c*c*c> + 2|Q123*a*c*c> + |a*c*c> + 2|Q223*a*a*c> + |Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |25> => |a*b*b> + |Q112*b*b*b> + |Q113*b*b*c> + 2|Q112*a*b*c> + 2|Q122*b*b*c> + 2|Q123*b*c*c> + 2|Q113*a*a*b> + 2|Q123*a*b*b> + 2|Q133*a*b*c> + |Q122*a*c*c> + |b*c*c> + |Q223*c*c*c> + 2|Q123*a*a*c> + 2|Q223*a*b*c> + 2|Q233*a*c*c> + |Q133*a*a*a> + |Q233*a*a*b> + |a*a*c> + -1|Q133>
+  
+  eqn |26> => |b*b*c> + |Q112*a*b*b> + |Q113*b*b*b> + 2|Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + 2|Q113*a*b*c> + 2|Q123*a*a*b> + 2|Q133*a*b*b> + |Q122*c*c*c> + |a*c*c> + |Q223*b*c*c> + 2|Q123*a*c*c> + 2|Q223*a*a*c> + 2|Q233*a*b*c> + |Q133*a*a*c> + |Q233*a*a*a> + |a*a*b> + -1|Q233>
+  
+  eqn |27> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  history 1000
+  display-v |*> #=> display-algebra v |_self>
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+  display-algebra -2|1>
+  display-algebra -2| >
+  display-algebra 2|1>
+  display-algebra 2| >
+  context
+  context improved ds3
+  eqn |1> => |a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |c*c*c> + -1|1>
+  
+  eqn |2> => |a*a*c> + |Q112*a*a*a> + |Q113*a*a*b> + 2|Q112*a*b*c> + 2|Q122*a*a*b> + 2|Q123*a*b*b> + 2|Q113*a*c*c> + 2|Q123*a*a*c> + 2|Q133*a*b*c> + |Q122*b*b*c> + |a*b*b> + |Q223*b*b*b> + 2|Q123*b*c*c> + 2|Q223*a*b*c> + 2|Q233*b*b*c> + |Q133*c*c*c> + |Q233*a*c*c> + |b*c*c> + -1|Q112>
+  
+  eqn |3> => |a*a*b> + |Q112*a*a*c> + |Q113*a*a*a> + 2|Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q113*a*b*c> + 2|Q123*a*c*c> + 2|Q133*a*a*c> + |Q122*b*b*b> + |b*b*c> + |Q223*a*b*b> + 2|Q123*b*b*c> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q133*b*c*c> + |Q233*c*c*c> + |a*c*c> + -1|Q113>
+  
+  eqn |4> => |a*c*c> + 2|Q112*a*a*c> + 2|Q113*a*b*c> + |Q122*a*a*a> + 2|Q123*a*a*b> + |Q133*a*b*b> + |Q112*b*c*c> + 2|Q122*a*b*c> + 2|Q123*b*b*c> + |a*a*b> + 2|Q223*a*b*b> + |Q233*b*b*b> + |Q113*c*c*c> + 2|Q123*a*c*c> + 2|Q133*b*c*c> + |Q223*a*a*c> + 2|Q233*a*b*c> + |b*b*c> + -1|Q122>
+  
+  eqn |5> => 3|a*b*c> + |Q112*a*c*c> + |Q113*a*a*c> + |Q112*a*a*b> + |Q122*a*a*c> + |Q123*a*a*a> + |Q113*a*b*b> + 3|Q123*a*b*c> + |Q133*a*a*b> + |Q112*b*b*c> + |Q122*b*c*c> + |Q122*a*b*b> + |Q223*a*a*b> + |Q123*b*b*b> + |Q223*b*b*c> + |Q233*a*b*b> + |Q113*b*c*c> + |Q123*c*c*c> + |Q133*a*c*c> + |Q223*a*c*c> + |Q233*a*a*c> + |Q133*b*b*c> + |Q233*b*c*c> + -1|Q123>
+  
+  eqn |6> => |a*b*b> + 2|Q112*a*b*c> + 2|Q113*a*a*b> + |Q122*a*c*c> + 2|Q123*a*a*c> + |Q133*a*a*a> + |Q112*b*b*b> + 2|Q122*b*b*c> + 2|Q123*a*b*b> + |b*c*c> + 2|Q223*a*b*c> + |Q233*a*a*b> + |Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q223*c*c*c> + 2|Q233*a*c*c> + |a*a*c> + -1|Q133>
+  
+  eqn |7> => |c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + |a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |b*b*b> + -1|1>
+  
+  eqn |8> => |b*c*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q112*a*b*c> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q113*b*b*c> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q122*a*a*b> + |a*a*c> + |Q223*a*a*a> + 2|Q123*a*b*b> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q133*b*b*b> + |Q233*b*b*c> + |a*b*b> + -1|Q223>
+  
+  eqn |9> => |b*b*c> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q122*c*c*c> + 2|Q123*a*c*c> + |Q133*a*a*c> + |Q112*a*b*b> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + |a*c*c> + 2|Q223*a*a*c> + |Q233*a*a*a> + |Q113*b*b*b> + 2|Q123*b*b*c> + 2|Q133*a*b*b> + |Q223*b*c*c> + 2|Q233*a*b*c> + |a*a*b> + -1|Q233>
+  
+  eqn |10> => |b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + |a*a*a> + -1|1>
+  
+  dump
+  history
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+  history
+  [A
+  history 1000
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  save history
+  debug on
+  ket-sort split |x a c>
+  eqn |1> => -1|Q111> + |Q111*a*a*a> + 3|Q112*a*a*b> + 3|Q113*a*a*c> + 3|Q122*a*b*b> + 6|Q123*a*b*c> + 3|Q133*a*c*c> + |Q222*b*b*b> + 3|Q223*b*b*c> + 3|Q233*b*c*c> + |Q333*c*c*c>
+  
+  eqn |2> => |Q111*a*a*c> + -1|Q112> + |Q112*a*a*a> + 2|Q112*a*b*c> + |Q113*a*a*b> + 2|Q113*a*c*c> + 2|Q122*a*a*b> + |Q122*b*b*c> + 2|Q123*a*a*c> + 2|Q123*a*b*b> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q133*c*c*c> + |Q222*a*b*b> + 2|Q223*a*b*c> + |Q223*b*b*b> + |Q233*a*c*c> + 2|Q233*b*b*c> + |Q333*b*c*c>
+  
+  eqn |3> => |Q111*a*a*b> + |Q112*a*a*c> + 2|Q112*a*b*b> + -1|Q113> + |Q113*a*a*a> + 2|Q113*a*b*c> + 2|Q122*a*b*c> + |Q122*b*b*b> + 2|Q123*a*a*b> + 2|Q123*a*c*c> + 2|Q123*b*b*c> + 2|Q133*a*a*c> + |Q133*b*c*c> + |Q222*b*b*c> + |Q223*a*b*b> + 2|Q223*b*c*c> + 2|Q233*a*b*c> + |Q233*c*c*c> + |Q333*a*c*c>
+  
+  eqn |4> => |Q111*a*c*c> + 2|Q112*a*a*c> + |Q112*b*c*c> + 2|Q113*a*b*c> + |Q113*c*c*c> + -1|Q122> + |Q122*a*a*a> + 2|Q122*a*b*c> + 2|Q123*a*a*b> + 2|Q123*a*c*c> + 2|Q123*b*b*c> + |Q133*a*b*b> + 2|Q133*b*c*c> + |Q222*a*a*b> + |Q223*a*a*c> + 2|Q223*a*b*b> + 2|Q233*a*b*c> + |Q233*b*b*b> + |Q333*b*b*c>
+  
+  eqn |5> => |Q111*a*b*c> + |Q112*a*a*b> + |Q112*a*c*c> + |Q112*b*b*c> + |Q113*a*a*c> + |Q113*a*b*b> + |Q113*b*c*c> + |Q122*a*a*c> + |Q122*a*b*b> + |Q122*b*c*c> + -1|Q123> + |Q123*a*a*a> + 3|Q123*a*b*c> + |Q123*b*b*b> + |Q123*c*c*c> + |Q133*a*a*b> + |Q133*a*c*c> + |Q133*b*b*c> + |Q222*a*b*c> + |Q223*a*a*b> + |Q223*a*c*c> + |Q223*b*b*c> + |Q233*a*a*c> + |Q233*a*b*b> + |Q233*b*c*c> + |Q333*a*b*c>
+  
+  eqn |6> => |Q111*a*b*b> + 2|Q112*a*b*c> + |Q112*b*b*b> + 2|Q113*a*a*b> + |Q113*b*b*c> + |Q122*a*c*c> + 2|Q122*b*b*c> + 2|Q123*a*a*c> + 2|Q123*a*b*b> + 2|Q123*b*c*c> + -1|Q133> + |Q133*a*a*a> + 2|Q133*a*b*c> + |Q222*b*c*c> + 2|Q223*a*b*c> + |Q223*c*c*c> + |Q233*a*a*b> + 2|Q233*a*c*c> + |Q333*a*a*c>
+  
+  eqn |7> => |Q111*c*c*c> + 3|Q112*a*c*c> + 3|Q113*b*c*c> + 3|Q122*a*a*c> + 6|Q123*a*b*c> + 3|Q133*b*b*c> + -1|Q222> + |Q222*a*a*a> + 3|Q223*a*a*b> + 3|Q233*a*b*b> + |Q333*b*b*b>
+  
+  eqn |8> => |Q111*b*c*c> + 2|Q112*a*b*c> + |Q112*c*c*c> + |Q113*a*c*c> + 2|Q113*b*b*c> + |Q122*a*a*b> + 2|Q122*a*c*c> + 2|Q123*a*a*c> + 2|Q123*a*b*b> + 2|Q123*b*c*c> + 2|Q133*a*b*c> + |Q133*b*b*b> + |Q222*a*a*c> + -1|Q223> + |Q223*a*a*a> + 2|Q223*a*b*c> + 2|Q233*a*a*b> + |Q233*b*b*c> + |Q333*a*b*b>
+  
+  eqn |9> => |Q111*b*b*c> + |Q112*a*b*b> + 2|Q112*b*c*c> + 2|Q113*a*b*c> + |Q113*b*b*b> + 2|Q122*a*b*c> + |Q122*c*c*c> + 2|Q123*a*a*b> + 2|Q123*a*c*c> + 2|Q123*b*b*c> + |Q133*a*a*c> + 2|Q133*a*b*b> + |Q222*a*c*c> + 2|Q223*a*a*c> + |Q223*b*c*c> + -1|Q233> + |Q233*a*a*a> + 2|Q233*a*b*c> + |Q333*a*a*b>
+  
+  eqn |10> => |Q111*b*b*b> + 3|Q112*b*b*c> + 3|Q113*a*b*b> + 3|Q122*b*c*c> + 6|Q123*a*b*c> + 3|Q133*a*a*b> + |Q222*c*c*c> + 3|Q223*a*c*c> + 3|Q233*a*a*c> + -1|Q333> + |Q333*a*a*a>
+  
+  table[eqn,display-eqn] rel-kets[eqn]
+  .
+  q
+
+2016-03-27
+  display-eqn |*> #=> display-algebra eqn |_self>
+  table[eqn,display-eqn] rel-kets[eqn]
+  eqn |1> => -1|1> + |a*a*a*a> + -1|b*b*b*b> + |c*c*c*c> + -1|d*d*d*d> + 4|Q1112*a*a*a*b> + 4|Q1113*a*a*a*c> + 4|Q1114*a*a*a*d> + 6|Q1122*a*a*b*b> + 12|Q1123*a*a*b*c> + 12|Q1124*a*a*b*d> + 6|Q1133*a*a*c*c> + 12|Q1134*a*a*c*d> + 6|Q1144*a*a*d*d> + 4|Q1222*a*b*b*b> + 12|Q1223*a*b*b*c> + 12|Q1224*a*b*b*d> + 12|Q1233*a*b*c*c> + 24|Q1234*a*b*c*d> + 12|Q1244*a*b*d*d> + 4|Q1333*a*c*c*c> + 12|Q1334*a*c*c*d> + 12|Q1344*a*c*d*d> + 4|Q1444*a*d*d*d> + 4|Q2223*b*b*b*c> + 4|Q2224*b*b*b*d> + 6|Q2233*b*b*c*c> + 12|Q2234*b*b*c*d> + 6|Q2244*b*b*d*d> + 4|Q2333*b*c*c*c> + 12|Q2334*b*c*c*d> + 12|Q2344*b*c*d*d> + 4|Q2444*b*d*d*d> + 4|Q3334*c*c*c*d> + 6|Q3344*c*c*d*d> + 4|Q3444*c*d*d*d>
+  table[eqn,display-eqn] rel-kets[eqn]
+  .
+  .
+  q
+
+2016-03-27
+  op |a> => split |b c d>
+  op |b> => split |a c d>
+  op |c> => split |a b d>
+  op |d> => split |a b c>
+  matrix[op]
+  q
+
