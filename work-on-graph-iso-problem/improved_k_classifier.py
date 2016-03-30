@@ -39,6 +39,10 @@
 # 6,7,8,9 should all be non-iso, yet only 6 reports non-iso.
 # Is this fixable?? I suspect not!
 #
+# OK. With some thought. It still works quite frequently.
+# Provided there is a k where adj^k is different then it will work.
+# adj being the adjacency matrix for the graph.
+#
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
