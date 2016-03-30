@@ -24389,3 +24389,50 @@
   matrix[op]
   q
 
+2016-03-27
+  cd
+  ls
+  cd networks
+  files
+  load network-6-a.sw
+  dump
+  merged-matrix[op,op,op,op,op,op]
+  files
+  load network-6-b.sw
+  merged-matrix[op,op,op,op,op,op]
+  q
+
+2016-03-27
+  op |a> => split |b d e c>
+  op |b> => split |a c d e>
+  op |c> => split |a b d e>
+  op |d> => split |a b c>
+  op |e> => split |b a c>
+  matrix[op]
+  op |a> => split |b c d>
+  op |b> => split |a c d e>
+  op |c> => split |a b d>
+  op |d> => split |a b c e>
+  op |e> => split |b d>
+  matrix[op]
+  q
+
+2016-03-27
+  load network-13.sw
+  matrix[op]
+  load network-14.sw
+  matrix[op]
+  q
+
+2016-03-28
+  is-a |Socrates> => |human>
+  is-a |human> => |mortal>
+  exp-max[is-a] |Socrates>
+  q
+
+2016-03-29
+  factor |number: 120>
+  factor |number: 48>
+  factor |number: 90>
+  q
+

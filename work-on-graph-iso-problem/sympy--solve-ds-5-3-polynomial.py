@@ -17,6 +17,7 @@
 
 import sys
 import functools                                    # so reduce() works in python 3.
+from collections import OrderedDict
 
 from sympy import *
 init_printing()
@@ -180,10 +181,31 @@ print(eqn)
 # maybe need to warn if Q_table values are going to be non-integer, though hopefully all the LCM stuff will prevent it!
 #
 Q_table = {}
+rest_table = OrderedDict()
 count = 0
 for term in eqn.args:
-  coeff,Q,rest = str(term).split('*',2)
-  print("coeff:%s\tQ:%s\trest:%s" % (coeff,Q,rest))
+  str_term = str(term)
+  if str_term[0] == 'Q':
+    coeff = '1'
+    Q,rest = str_term.split('*',1)
+  else:
+    coeff,Q,rest = str_term.split('*',2)
+
+  if rest not in rest_table:
+    rest_table[rest] = [coeff + "*" + Q]
+  else:
+    rest_table[rest].append(coeff + "*" + Q)
+
+  if Q in Q_table:                                               # only need to learn it once
+    continue
+  if rest not in det_table:
+    continue
+  print("coeff:%s\tQ:%s\trest:%s\tdet_table:%s" % (coeff,Q,rest,det_table[rest]))
+  if int(coeff) == 0:
+    print("WARNING: unexpected 0")
+    continue
+
+#  print("coeff:%s\tQ:%s\trest:%s" % (coeff,Q,rest))
   if not coeff.isalpha():                          # does this break sometimes??
 #    Q_table[Q] = int(coeff) // det_table[rest]     # preserve integerness, so don't map to imprecise floats
 #    Q_table[Q] = int(coeff) / det_table[rest]       # nope! In this case not integer. How handle then?? LCM of det-table?
@@ -202,6 +224,10 @@ Q_table_LCM = lcmm(*Q_integers)
 
 print("Q_integers:",Q_integers)
 print("Q_table_LCM:",Q_table_LCM)
+
+for key,value in rest_table.items():
+  print("%s: %s" % (key,value))
+
 #sys.exit(0)
 
 
@@ -229,7 +255,7 @@ for i,j,k,l,m, in product(range(5), repeat=5):
 pprint(eqn)
 print("----------------------------------------\ntest if zero:")
 pprint(eqn - (Q_table_LCM // det_table_LCM) * R_det)
-#sys.exit(0)
+sys.exit(0)
 
 print("=======================================================")
 
