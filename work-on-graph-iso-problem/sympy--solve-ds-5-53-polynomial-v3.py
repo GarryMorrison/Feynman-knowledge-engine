@@ -24,23 +24,15 @@
 # sympy--solve-ds-5-53-polynomial-v2.py
 # took 5 minutes for the same problem.
 #
-# tweak how we build our list of Q's. Might make the linsolve code slower though ...
-#
-# Seems Qijklm Ria Rjb Rkc Rld Rme = Qabcde, does not have all diagonal elements the same.
-# If I put in the Q33333 = Q44444 = 1, the system is not solvable!
-# Here is a hint why. eqn1 + eqn2 + eqn3 + eqn4 + eqn5, with all integers set to 1:
-# 3*Q00000 + 15*Q00001 + 15*Q00002 + 30*Q00011 + 60*Q00012 + 30*Q00022 + 30*Q00111 
-# + 90*Q00112 + 90*Q00122 + 30*Q00222 + 15*Q01111 + 60*Q01112 + 90*Q01122 + 60*Q01222 + 15*Q02222 + 
-# 3*Q11111 + 15*Q11112 + 30*Q11122 + 30*Q11222 + 15*Q12222 + 3*Q22222 + 243*Q33333 + 243*Q44444
-# Note the coeff of Q00000, Q11111, Q22222 = 3
-# but the coeff of Q33333, Q44444 = 243
-# This being the hint they are different from the first two. If you look at the structure of R1, this is kind of plausible.
-# Yup. Just tested. Q00000, Q11111, Q22222 = 1 and Q33333, Q44444 = 0 is solvable.
+# Now, going to try R2. Nope. Failed. Though not with a result = emptyset.
+# Try another equation? Or need more integers?
+# 3 equations were sufficient. We added: a,b,c,d,e = 2,2,2,2,2
+# I now have some hope of solving R = R2 * R1
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-03-30
-# Update: 2016-4-4
+# Update: 2016-3-31
 # Copyright: GPLv3
 #
 # Usage: ./play_with_sympy.py
@@ -60,7 +52,7 @@ from sympy import *
 from sympy.solvers.solveset import linsolve
 init_printing()
 rational = True
-manual = True
+
 
 # learn a matrix:
 def learn_matrix(R,R_str):
@@ -114,8 +106,8 @@ R1 = a*eye(5)/q + b*P3/q + c*P3**2/q
 # define our R2 = exp(P5 t):
 R2 = d*eye(5)/s + e*P5/s + f*P5**2/s + g*P5**3/s + h*P5**4/s
 
-#R = R2 * R1
-R = R1
+R = R2 * R1
+#R = R1
 #R = R2
 # see if it is correct: Yup. Is good.
 pprint(R1)
@@ -155,65 +147,42 @@ def J5(d,e,f,g,h):
 #print("zero:",J5(7,7,7,7,7))   # Jp(a,a,a,...,a) = 0. Good. This check helped spot a bug.
 #sys.exit(0)
 
-#our_integer_J3_solutions = []
-# find integer solutions to: J3(a,b,c) = det(r) = d^3
-# then find rational solutions to J3(a,b,c) = 1
-#for x,y,z,r in itertools.product(range(2,50), repeat=4):
-##  J3 = R_det.subs([(a,x), (b,y), (c,z)])
-#  indices = [x,y,z]
-#  if len(set(indices)) == 1:               # trivial solution: J3(a,a,a) = 0
-#    continue
-#  if indices == sorted(indices):
-##for r in range(2,100):
-##  for x,y,z in combinations(range(2,100), 3):
-#    if J3(x,y,z) == r**3:
-#      print("%s %s %s: %s" % (x,y,z,r))
-#      our_integer_J3_solutions.append([x,y,z,r])
-
-#our_integer_J5_3_solutions = []
-# find integer solutions to: J3(a,b,c) = det(r) = d^3
-# then find rational solutions to J3(a,b,c) = 1
-#for x,y,z,r in itertools.product(range(2,50), repeat=4):
-##  J3 = R_det.subs([(a,x), (b,y), (c,z)])
-#  indices = [x,y,z]
-#  if len(set(indices)) == 1:               # trivial solution: J3(a,a,a) = 0
-#    continue
-#  if indices == sorted(indices):
-#for r in range(2,500):                     # swap this version in later
-#  for x,y,z in itertools.combinations(range(2,500), 3):
-#    if J5_3(x,y,z) == r**5:
-#      print("%s %s %s: %s" % (x,y,z,r))
-#      our_integer_J5_3_solutions.append([x,y,z,r])
-
 # load them from disk, since they take so long to make in python:
 # in practice a massive speed up. In the background I have c code to make them fast!
 our_integer_J5_3_solutions = []
 filename = "J5_3_integers_200.txt"
-with open(filename,'r') as f:
-  for line in f:
+with open(filename,'r') as foo_file:
+  for line in foo_file:
     line = line.strip()
     print("line:",line)
     x,y,z,r = line.split(' ')
     our_integer_J5_3_solutions.append([int(x),int(y),int(z),int(r)])
+
+# load them from disk, since they take so long to make in python:
+# in practice a massive speed up. In the background I have c code to make them fast!
+our_integer_J5_5_solutions = []
+filename = "J5_5_integers_200.txt"
+with open(filename,'r') as foo_file:               # You can't use f as the file handle, since it is a symbol. ie a bug!
+  for line in foo_file:
+    line = line.strip()
+    print("line:",line)
+    u,v,x,y,z,r = line.split(' ')
+    our_integer_J5_5_solutions.append([int(u),int(v),int(x),int(y),int(z),int(r)])
 print("-----------")
 #sys.exit(0)
 
-#our_integer_J5_solutions = []
-# find integer solutions to: J5(a,b,c,d,e) = det(R2) = s^5
-#for u,v,x,y,z,r in product(range(2,50), repeat=6):
-#  indices = [u,v,x,y,z]
-#  if len(set(indices)) == 1:               # trivial solution: J3(a,a,a) = 0
-#    continue
-#  if indices == sorted(indices):           # only consider one of each, no point learning duplicates
-#    if J5(u,v,x,y,z) == r**5:
-#      print("%s %s %s %s %s: %s" % (u,v,x,y,z,r))
-#      our_integer_J5_solutions.append([x,y,z,r])
-
+# check our J5_5/J5_3 integer solutions against det(R):
+# only need to do this once. Took 35 minutes!!
+#for a1,b1,c1,q1 in our_integer_J5_3_solutions:
+#  for d1,e1,f1,g1,h1,s1 in our_integer_J5_5_solutions:
+##  print("%s %s %s %s %s: %s" % (u,v,x,y,z,r))
+##  r0 = R_det.subs([(d,u), (e,v), (f,x), (g,y), (h,z), (s,r)])
+#    r0 = R_det.subs([(a,a1), (b,b1), (c,c1), (q,q1), (d,d1), (e,e1), (f,f1), (g,g1), (h,h1), (s,s1)])
+#    print("r0:",r0)
 #sys.exit(0)
 
-# construct the equation over Qijklm:
-# and find the set of Q's:
-our_Qs = OrderedDict()
+
+# construct the equations over Qijklm:
 eqn1 = 0
 eqn2 = 0
 eqn3 = 0
@@ -223,90 +192,65 @@ for i,j,k,l,m in itertools.product(range(5), repeat=5):
   indices = (i,j,k,l,m)
 
   Qijklm = "Q{0}{1}{2}{3}{4}".format(*sorted(indices))
-#  our_Qs[Qijklm] = 1                                      # this is the elegant way to do it, but slows things down.
-  Q = symbols(Qijklm)
+  Q = Symbol(Qijklm)
 
   eqn1 += Q * R[i,0] * R[j,0] * R[k,0] * R[l,0] * R[m,0]
   eqn2 += Q * R[i,1] * R[j,1] * R[k,1] * R[l,1] * R[m,1]
   eqn3 += Q * R[i,2] * R[j,2] * R[k,2] * R[l,2] * R[m,2]
-  eqn4 += Q * R[i,3] * R[j,3] * R[k,3] * R[l,3] * R[m,3]       # these last two equations make it unsolvable. Didn't predict that!
-  eqn5 += Q * R[i,4] * R[j,4] * R[k,4] * R[l,4] * R[m,4]       # doesn't make sense to me at the moment.
+  eqn4 += Q * R[i,3] * R[j,3] * R[k,3] * R[l,3] * R[m,3]
+  eqn5 += Q * R[i,4] * R[j,4] * R[k,4] * R[l,4] * R[m,4]
 
 
 # expand the equations:
-#eqn1 = expand(eqn1)
+#eqn1 = expand(eqn1)            # I don't think we need this any more.
 #eqn2 = expand(eqn2)
-print(eqn1)
-print(eqn1)
+#eqn3 = expand(eqn3)
+print(eqn1)        
+print(eqn2)
+print(eqn3)
+print(eqn4)
+print(eqn5)
 print("-----------------------")
 print(R_det)
 print("-------------------------------------")
 #sys.exit(0)
 
-# check our J5_3 integer solutions against det(R):
-for x,y,z,r in our_integer_J5_3_solutions:
-  print("%s %s %s: %s" % (x,y,z,r))
-#  value = J3(x,y,z)/r**3
-#  print("value:%s r:%s" %(value,r))
-  r0 = R_det.subs([(a,x), (b,y), (c,z), (q,r)])              # woot! Code works. These all give det(R) = 1 at these integer values.
-  print("r0:",r0)
-#sys.exit(0)
-
 # find a system of equations:
 # use actual values to create a system of equations over Q. Try and solve that way.
-# this time using a,b,c such that J3(a,b,c) = 1. This way we can completely ignore det(R).
+# this time using a,b,c such that J3(a,b,c) = 1, and J5(d,e,f,g,h) = 1. This way we can completely ignore det(R).
 system_of_eqns = []
-max = 10
+max = 40                # hopefully 40*5 = 200 equations is enough to solve 94 terms.
 count = 0
-for x,y,z,r in our_integer_J5_3_solutions:
-  
-#  r0 = eqn.subs([(a,x), (b,y), (c,z)])                # this version works.
-#  print("r0:",r0)
-#  this_eqn = simplify(r0 - r**3)
+for a1,b1,c1,q1 in our_integer_J5_3_solutions:
+  for d1,e1,f1,g1,h1,s1 in our_integer_J5_5_solutions:
+    r1 = eqn1.subs([(a,a1), (b,b1), (c,c1), (q,q1), (d,d1), (e,e1), (f,f1), (g,g1), (h,h1), (s,s1)])
+    r2 = eqn2.subs([(a,a1), (b,b1), (c,c1), (q,q1), (d,d1), (e,e1), (f,f1), (g,g1), (h,h1), (s,s1)])
+    r3 = eqn3.subs([(a,a1), (b,b1), (c,c1), (q,q1), (d,d1), (e,e1), (f,f1), (g,g1), (h,h1), (s,s1)])
+    r4 = eqn4.subs([(a,a1), (b,b1), (c,c1), (q,q1), (d,d1), (e,e1), (f,f1), (g,g1), (h,h1), (s,s1)])
+    r5 = eqn5.subs([(a,a1), (b,b1), (c,c1), (q,q1), (d,d1), (e,e1), (f,f1), (g,g1), (h,h1), (s,s1)])
 
-#  r_3 = r**3                                           # this version does not. Cursed by floats. Not sure how to fix. I'm thinking LCM again, over our set of r's.
-#  r1 = r**3 * eqn.subs([(a,x/r), (b,y/r), (c,z/r)])            # because for the "R = R2 * R1" case we can't expect r0 == r**3.
-#  print("r1:",r1)                                      # but we can expect J3()/r**3 == 1 and J5()/s**5 == 1
-#  this_eqn = simplify(r1 - 1)
-#  this_eqn = r1 - r**3
+    this_eqn1 = r1 - 1        # the assumption is that Q00000 = Q11111 = Q22222 = Q33333 = Q44444 = 1
+    this_eqn2 = r2 - 1
+    this_eqn3 = r3 - 1
+    this_eqn4 = r4 - Symbol("Q33333")
+    this_eqn5 = r5 - Symbol("Q44444")
 
-  r2 = eqn1.subs([(a,x), (b,y), (c,z), (q,r)])           # solved my float problem. Woot!!! It works!!
-  r3 = eqn2.subs([(a,x), (b,y), (c,z), (q,r)])
-  r4 = eqn3.subs([(a,x), (b,y), (c,z), (q,r)])
-  r5 = eqn4.subs([(a,x), (b,y), (c,z), (q,r)])          
-  r6 = eqn5.subs([(a,x), (b,y), (c,z), (q,r)])
+    system_of_eqns.append(this_eqn1)
+    system_of_eqns.append(this_eqn2)
+    system_of_eqns.append(this_eqn3)
+    system_of_eqns.append(this_eqn4)
+    system_of_eqns.append(this_eqn5)
 
-
-#  print("r2:",r2)
-  this_eqn1 = r2 - 1
-  this_eqn2 = r3 - 1
-  this_eqn3 = r4 - 1
-#  this_eqn4 = r5                                     # seems these two are wrong?? Implies Q is not fully symmetric?? Doesn't make sense.
-#  this_eqn5 = r6 
-  this_eqn4 = r5 - Symbol("Q33333")
-  this_eqn5 = r6 - Symbol("Q44444")
-
-
-#  this_eqn1 = r2 - symbols('Q00000')                     # this version gives a messier output, but looks to work.
-#  this_eqn2 = r3 - symbols('Q11111')
-
-  system_of_eqns.append(this_eqn1)
-  system_of_eqns.append(this_eqn2)
-  system_of_eqns.append(this_eqn3)
-  system_of_eqns.append(this_eqn4)
-  system_of_eqns.append(this_eqn5)
-
-#  count += 1
-#  if count >= max:
-#    break
+    count += 1
+    if count >= max:
+      break
 
 # print out our system of equations:
 for an_eqn in system_of_eqns:
   print("eqn:",an_eqn)
 
-# need a more elegant way to find our_Qs than this!
-#our_Qs = OrderedDict()
-eqn = simplify((eqn1 + eqn2 + eqn3 + eqn4 + eqn5).subs([(a,1), (b,1), (c,1), (q,1)]))       # this idea looks good!
+our_Qs = OrderedDict()
+eqn = simplify((eqn1 + eqn2 + eqn3 + eqn4 + eqn5).subs([(a,1), (b,1), (c,1), (q,1), (d,1), (e,1), (f,1), (g,1), (h,1), (s,1)]))
 print("----------------")
 print(eqn)
 for term in eqn.args:
@@ -317,36 +261,6 @@ for term in eqn.args:
   else:
     coeff,Q = str_term.split('*',1)
   our_Qs[Q] = 1
-
-variables = symbols(" ".join(list(our_Qs)))                # assumes our_Qs is an ordered dictionary, not a standard one.
-print(variables)
-
-result = linsolve(system_of_eqns,variables)
-print("result:",result)
-
-Q_values = OrderedDict()
-for k,Q in enumerate(our_Qs):
-  value = list(result)[0][k]
-  print("%s: %s" % (Q,value))
-  Q_values[Q] = value
-
-
-sys.exit(0)
-for term in eqn.args:
-  str_term = str(term)
-  print("term:",str_term)
-  if str_term[0] == 'Q':
-    coeff = '1'
-    Q,rest = str_term.split('*',1)
-  else:
-    coeff,Q,rest = str_term.split('*',2)
-  if Q not in our_Qs:
-    our_Qs[Q] = [coeff + "*" + rest]
-  else:
-    our_Qs[Q].append(coeff + "*" + rest)
-#
-for key,value in our_Qs.items():
-  print("%s: %s" % (key,value))
 
 variables = symbols(" ".join(list(our_Qs)))                # assumes our_Qs is an ordered dictionary, not a standard one.
 print(variables)

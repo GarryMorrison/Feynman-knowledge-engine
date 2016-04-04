@@ -24436,3 +24436,32 @@
   factor |number: 90>
   q
 
+2016-04-03
+  is-a |Jane> => |mother>
+  is-a |mother> => |female>
+  is-a |mother> => |female> + |has children>
+  exp-max[is-a] |Jane>
+  save history
+
+2016-04-04
+  is-a |Jane> => |mother>
+  is-a |mother> => |female>
+  is-a |mother> => |female> + |has children>
+  exp-max[is-a] |Jane>
+  save history
+  q
+
+2016-04-04
+  load fred-sam-friends.sw
+  dump
+  find-inverse[friends]
+  dump
+  all-friends |*> #=> friends |_self> + inverse-friends |_self>
+  dump
+  exp-max[all-friends] |Fred>
+  dump
+  clean exp-max[all-friends] |Sam>
+  clean exp-max[all-friends] |Rober>
+  clean exp-max[all-friends] |Emma>
+  q
+
