@@ -958,8 +958,9 @@ def load_sw(c,file):
         if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
           return
         parse_rule_line(c,line)             # this is broken! bug found when loading fragment-document.sw fragments
-  except:
+  except Exception as e:
     print("failed to load:",file)
+    print("reason:",e)
 
 # and its brother:
 # save current context:

@@ -1,0 +1,69 @@
+# map idx format to csv's:
+
+# map 100 mnist image-data to images:
+$ ./mnist-data-to-images.py 100
+
+# map images to 10*10-image-ngrams sw file:
+$ ./create-image-sw.py 10 work-on-handwritten-digits/images/mnist-image-*.bmp
+
+# rename sw file:
+$ mv image-ngram-superpositions-10.sw mnist-100--image-ngram-superpositions-10.sw
+
+# average categorize it:
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.8,phi,layer-1]
+  rescale-op |*> #=> rescale[255] layer-1 |_self>
+  map[rescale-op,rescaled-layer-1] rel-kets[layer-1]
+  save mnist-100--save-average-categorize--0_8--rescaled-layer-1.sw
+
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.8,phi,layer-1]
+  save mnist-100--save-average-categorize--0_8.sw
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+
+$ ./create-sw-images.py
+
+--------------------------------------------
+
+$ ./create-image-sw.py 10 small-lenna--edge-enhanced-40.png
+$ mv image-ngram-superpositions-10.sw small-lenna-edge-40--image-ngram-superpositions-10.sw
+load small-lenna-edge-40--image-ngram-superpositions-10.sw
+average-categorize[layer-0,0.7,phi,layer-1]
+
+
+------------------------------------------
+load mnist-100--image-ngram-superpositions-10.sw
+average-categorize[layer-0,0.5,phi,layer-1]
+save mnist-100--save-average-categorize--0_5.sw
+./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-100--average-categorize-0_5.jpg
+
+------------------------------------------
+load mnist-100--image-ngram-superpositions-10.sw
+average-categorize[layer-0,0.6,phi,layer-1]
+save mnist-100--save-average-categorize--0_6.sw
+./create-sw-images.py
+$ ls -1tr mnist-100--average-categorize-images--threshold-0_6/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-100--average-categorize-0_6.jpg
+
+------------------------------------------
+load mnist-100--image-ngram-superpositions-10.sw
+average-categorize[layer-0,0.7,phi,layer-1]
+save mnist-100--save-average-categorize--0_7.sw
+./create-sw-images.py
+$ cd work-on-handwritten-digits/
+$ ls -1tr mnist-100--average-categorize-images--threshold-0_7/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-100--average-categorize-0_7.jpg
+
+------------------------------------------
+load mnist-100--image-ngram-superpositions-10.sw
+average-categorize[layer-0,0.65,phi,layer-1]
+save mnist-100--save-average-categorize--0_65.sw
+./create-sw-images.py
+$ cd work-on-handwritten-digits/
+$ mv average-categorize-images mnist-100--average-categorize-images--threshold-0_65
+$ ls -1tr mnist-100--average-categorize-images--threshold-0_65/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-100--average-categorize-0_65.jpg
+

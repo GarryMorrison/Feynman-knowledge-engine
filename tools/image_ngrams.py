@@ -39,7 +39,8 @@ except:
   print("couldn't open image file:",filename)
   sys.exit(1)
 
-destination = "image-ngrams/"
+#destination = "image-ngrams/"
+destination = "work-on-handwritten-digits/image-ngrams/"
 # check if destination directory exists:
 if not os.path.exists(destination):
   print("Creating " + destination + " directory.")
@@ -48,7 +49,8 @@ if not os.path.exists(destination):
 
 
 def image_ngrams(name,image,k):
-  filehead,ext = name.rsplit('.',1)
+  base = os.path.basename(name)
+  filehead,ext = base.rsplit('.',1)
   width,height = image.size
   for h in range(0,height-k):
     for w in range(0,width-k):

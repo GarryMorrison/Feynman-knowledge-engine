@@ -24465,3 +24465,118 @@
   clean exp-max[all-friends] |Emma>
   q
 
+2016-04-08
+  ket-simm(letter-ngrams[1,2,3] |thank you for not smoking>,letter-ngrams[1,2,3] |thank you for smoking>)
+  q
+
+2016-04-08
+  non-Abelian-algebra(|A> + |B> + |C>,|^>,|3>)
+  q
+
+2016-04-08
+  load mnist-train-images.sw
+  load mnist-test-images.sw
+  simm-op |*> #=> select[1,20] similar[layer-0] |_self>
+  q
+
+2016-04-10
+  load mnist-1--image-ngram-superpositions-10.sw
+  dump
+  average-categorize[layer-0,0.9,phi,layer-1]
+  dump
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+  save history
+
+2016-04-10
+  load mnist-1--image-ngram-superpositions-10.sw
+  dump
+  average-categorize[layer-0,0.9,phi,layer-1]
+  dump
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+  save history
+  history
+  save mnist-1--save-average-categorize--0_9.sw
+  dump
+  rescale[255] layer-1 |phi: 140>
+  debug on
+  rescale[255] layer-1 |phi: 140>
+  rescale-op |*> #=> rescale[255] layer-1 |_self>
+  map[rescale-op,rescaled-layer-1] rel-kets[layer-1]
+  dump
+  history
+  rel-kets[rescaled-layer-1]
+  history
+  save mnist-1--save-average-categorize--0_9--rescaled-layer-1.sw
+  dump
+  q
+
+2016-04-10
+  load mnist-1--image-ngram-superpositions-10.sw
+  dump
+  average-categorize[layer-0,0.8,phi,layer-1]
+  dump
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+  rescale-op |*> #=> rescale[255] layer-1 |_self>
+  map[rescale-op,rescaled-layer-1] rel-kets[layer-1]
+  dump
+  save mnist-1--save-average-categorize--0_8--rescaled-layer-1.sw
+  q
+
+2016-04-12
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.8,phi,layer-1]
+  save mnist-100--save-average-categorize--0_8.sw
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+  history
+  q
+
+2016-04-12
+  load mnist-100--save-average-categorize--0_8.sw
+  how-many rel-kets[layer-1]
+  how-many-pixels |*> #=> how-many layer-1 |_self>
+  table[node,how-many-pixels] reverse sort-by[how-many-pixels] rel-kets[layer-1]
+  q
+
+2016-04-12
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.5,phi,layer-1]
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+  q
+
+2016-04-12
+  
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.5,phi,layer-1]
+  history
+  save mnist-100--save-average-categorize--0_5.sw
+  q
+
+2016-04-12
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.6,phi,layer-1]
+  how-many rel-kets[layer-1]
+  save mnist-100--save-average-categorize--0_6.sw
+  q
+
+2016-04-13
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.7,phi,layer-1]
+  history
+  save mnist-100--save-average-categorize--0_7.sw
+  how-many rel-kets[layer-1]
+  history
+  q
+
+2016-04-13
+  load mnist-100--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.65,phi,layer-1]
+  history
+  save mnist-100--save-average-categorize--0_65.sw
+  how-many rel-kets[layer-1]
+  q
+
