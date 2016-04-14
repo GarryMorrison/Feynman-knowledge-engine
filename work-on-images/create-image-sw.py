@@ -16,13 +16,14 @@
 
 import os
 import sys
+import glob
 from PIL import Image
 
 from the_semantic_db_code import *
 from the_semantic_db_functions import *
 from the_semantic_db_processor import *
 
-context = context_list("images to ngram superpositions")
+context = new_context("images to ngram superpositions")
 
 
 if len(sys.argv) < 3:
@@ -35,7 +36,9 @@ try:
 except:
   ngram_size = 10
 
-list_of_files = sys.argv[2:]
+#list_of_files = sys.argv[2:]                   # too many command line arguments, use directory instead:
+file_dir = sys.argv[2]
+
 #print("files:",list_of_files)
 #sys.exit(0)
 
@@ -85,10 +88,20 @@ def image_to_ngrams(context,name,k):
     print("reason:",e)
     return
 
-for filename in list_of_files:
-  image_to_ngrams(context,filename,ngram_size)
+#for filename in list_of_files:
+#  image_to_ngrams(context,filename,ngram_size)
 
-context.print_universe()
-context.save("sw-examples/image-ngram-superpositions-%s.sw" % str(ngram_size))
+# if given a directory:
+if os.path.isdir(file_dir):
+  for name in glob.glob(file_dir + "/*"):
+    try:
+      image_to_ngrams(context,name,ngram_size)
+#      context.append_save("sw-examples/image-ngram-superpositions-%s.sw" % str(ngram_size))
+#      context = new_context("images to ngram superpositions")
+    except:
+      print("couldn't open image file:",name)
+
+#context.print_universe()
+#context.save("sw-examples/image-ngram-superpositions-%s.sw" % str(ngram_size))
 
 

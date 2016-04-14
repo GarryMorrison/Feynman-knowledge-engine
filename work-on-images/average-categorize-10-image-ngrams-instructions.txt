@@ -1,4 +1,5 @@
 # map idx format to csv's:
+$ ./process_mnist.py
 
 # map 100 mnist image-data to images:
 $ ./mnist-data-to-images.py 100
@@ -66,4 +67,60 @@ $ cd work-on-handwritten-digits/
 $ mv average-categorize-images mnist-100--average-categorize-images--threshold-0_65
 $ ls -1tr mnist-100--average-categorize-images--threshold-0_65/* > image-list.txt
 $ montage -geometry +2+2 @image-list.txt mnist-100--average-categorize-0_65.jpg
+
+=======================================================================
+
+-- create 100 test images:
+$ ./mnist-data-to-images.py 100
+$ ./create-image-sw.py 10 work-on-handwritten-digits/test-images/mnist-image-4.bmp
+$ cd sw-examples/
+$ mv image-ngram-superpositions-10.sw mnist-test-1--image-ngram-superpositions-10.sw
+$ grep "^layer-1 " mnist-100--save-average-categorize--0_5.sw > mnist-100--layer-1--0_5.sw
+
+  load mnist-test-1--image-ngram-superpositions-10.sw
+  load mnist-100--layer-1--0_5.sw
+  simm-op |*> #=> select[1,25] similar[layer-0,layer-1] |_self>
+  map[simm-op,similarity] rel-kets[layer-0] |>
+
+  rel-kets[layer-0]
+  similarity |mnist-image-4: 10: 8: 7>
+  save mnist-test-1--0_5-similarity.sw
+
+x.apply_op(context,"similarity").select_range(1,1)
+
+sa: select[1,1] similar-input[layer-1] layer-0 |mnist-image-4: 10: 0: 16>
+x.apply_op(context,"layer-0").similar_input(context,"layer-1").select_range(1,1)
+
+sa: layer-1 |phi: 2>
+x.apply_op(context,"layer-1")
+
+$ cd work-on-handwritten-digits
+$ ls -1tr tmp-images/*.bmp > image-list.txt
+$ convert -evaluate-sequence mean @image-list.txt average-image.jpg
+
+----------------------------
+$ ./phi-transform.py 10 work-on-handwritten-digits/test-images/mnist-image-85.bmp
+$ cd work-on-handwritten-digits/
+$ ls -1tr tmp-images/*.bmp > image-list.txt
+$ convert -evaluate-sequence mean @image-list.txt average-image.jpg
+
+--------------------------------------------
+$ ./mnist-data-to-images.py 100
+$ cd sw-examples/
+$ grep "^layer-1 " mnist-100--save-average-categorize--0_5.sw > mnist-100--layer-1--0_5.sw
+$ cd ..
+$ ./phi-transform.py 10 work-on-handwritten-digits/test-images/*.bmp
+time: 62 min
+
+$ cd work-on-handwritten-digits/
+$ ls -1tr test-images/*.bmp > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-test-100.jpg
+$ ls -1tr phi-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-test-100--phi-transform-mnist-100-0_5.jpg
+
+------------------------------------------------------------
+$ ./mnist-data-to-images.py 1000
+$ ./create-image-sw.py 10 work-on-handwritten-digits/train-images/
+$ cd sw-examples
+$ mv image-ngram-superpositions-10.sw mnist-1000--image-ngram-superpositions-10.sw
 
