@@ -24580,3 +24580,52 @@
   how-many rel-kets[layer-1]
   q
 
+2016-04-14
+  load mnist-test-1--image-ngram-superpositions-10.sw
+  mnist-100--layer-1--0_5.sw
+  load mnist-100--layer-1--0_5.sw
+  dump
+  simm-op |*> #=> select[1,25] similar[layer-0,layer-1] |_self>
+  save history
+
+2016-04-14
+  load mnist-test-1--image-ngram-superpositions-10.sw
+  mnist-100--layer-1--0_5.sw
+  load mnist-100--layer-1--0_5.sw
+  dump
+  simm-op |*> #=> select[1,25] similar[layer-0,layer-1] |_self>
+  save history
+  map[simm-op,similarity] rel-kets[layer-0] |>
+  rel-kets[layer-0]
+  similarity |mnist-image-4: 10: 8: 7>
+  history
+  select[1,1][
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  history
+  debug on
+  history
+  select[1,1] similarity |mnist-image-4: 10: 8: 7>
+  save mnist-test-1--0_5-similarity.sw
+  history
+  q
+
+2016-04-14
+  load mnist-test-1--0_5-similarity.sw
+  debug on
+  select[1,1] similar-input[layer-1] layer-0 |mnist-image-4: 10: 0: 16>
+  layer-1 |phi: 2>
+  q
+
+2016-04-14
+  debug on
+  subtraction-invert[255] 3.7 subtraction-invert[255] 3|x>
+  q
+

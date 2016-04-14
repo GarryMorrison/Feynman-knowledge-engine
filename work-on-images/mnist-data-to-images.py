@@ -32,7 +32,10 @@ except:
 
 # for now, assume they exist, without testing it:
 source = "work-on-handwritten-digits/mnist_train_images.csv"
-destination = "work-on-handwritten-digits/images/"
+destination = "work-on-handwritten-digits/train-images/"
+#source = "work-on-handwritten-digits/mnist_test_images.csv"
+#destination = "work-on-handwritten-digits/test-images/"
+
 
 count = 0
 with open(source,'r') as f:
@@ -47,5 +50,5 @@ with open(source,'r') as f:
     size = (28,28)     # standard MNIST data-set size
     im = Image.new('L',size)
     im.putdata(data)
-    im.save(destination + "mnist-image-%s.bmp" % count)
-
+#    im.save(destination + "mnist-test-image-%s.bmp" % count)
+    im.save(destination + "mnist-train-image-%s.bmp" % count)
