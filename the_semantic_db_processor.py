@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/3/2016
+# Update: 28/4/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -371,7 +371,9 @@ compound_table = {
   "round"                 : ".apply_fn(round_numbers,{0})",
 
 # 22/2/2015:
-  "such-that"             : ".apply_fn(such_that,context,\"{0}\")",
+#  "such-that"             : ".apply_fn(such_that,context,\"{0}\")",
+# 28/4/2016: changed from ket -> ket to sp -> sp, hopefully better big-O
+  "such-that"             : ".apply_sp_fn(sp_such_that,context,\"{0}\")",
   
 # 24/2/2015:
   "discrim-drop"          : ".discrimination_drop({0})",

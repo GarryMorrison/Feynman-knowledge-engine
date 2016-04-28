@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/3/2016
+# Update: 28/4/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3264,7 +3264,7 @@ def sort_by(one,context,op):
 #
 # what happens if we have 0.3|yes>? ie, if coeff < 0.5 I think we want that ket ignored.  
 #
-def such_that(one,context,ops):     # what happens if coeff != 1, eg 0?
+def ket_such_that(one,context,ops):     # what happens if coeff != 1, eg 0?
   for op in ops.split(','):
 #    label = one.apply_op(context,op).the_label().lower()
     e = one.apply_op(context,op).ket()
@@ -3274,8 +3274,22 @@ def such_that(one,context,ops):     # what happens if coeff != 1, eg 0?
       return ket("",0)
     if value < 0.5:                # need to test this bit.
       return ket("",0)
-  return one    
+  return one
 
+# 28/4/2016:
+# tweak such-that[op] so it is a sp -> sp function, instead of a ket -> ket function. Should be an optimization, with a better big-O.  
+def sp_such_that(one,context,ops):
+  def valid_ket(one,context,ops):
+    for op in ops.split(','):
+      e = one.apply_op(context,op).ket()
+      if e.label not in ["true","yes"]:
+        return False
+      if e.value < 0.5:                # need to test this bit.
+        return False
+    return True       
+  result = superposition()
+  result.data = [ x for x in one if valid_ket(x,context,ops) ]
+  return result
       
 # 2/2/2015:
 # int-coeffs-to-sentence (3|apple> + 2|pear> + |orange> + 7|lemon>)

@@ -24629,3 +24629,55 @@
   subtraction-invert[255] 3.7 subtraction-invert[255] 3|x>
   q
 
+2016-04-21
+  load small-lenna-edge-40--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.7,phi,layer-1]
+  history
+  save small-lenna-edge-40--save-average-categorize--0_7.sw
+  save history
+
+2016-04-22
+  load small-lenna-edge-40--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.7,phi,layer-1]
+  history
+  save small-lenna-edge-40--save-average-categorize--0_7.sw
+  save history
+  history
+  how-many rel-kets[layer-0]
+  how-many rel-kets[layer-1]
+  reset
+  load small-lenna-edge-40--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.4,phi,layer-1]
+  history
+  save small-lenna-edge-40--save-average-categorize--0_4.sw
+  how-many rel-kets[layer-1]
+  history
+  q
+
+2016-04-27
+  load diary-index--full-k5.sw
+  q
+
+2016-04-28
+  is-diary |*> => |no>
+  is-dairy |diary: *> => |yes>
+  is-comment |*> => |no>
+  is-comment |comment: *> => |yes>
+  dump
+  is-diary |x>
+  is-diary |diary: x>
+  is-diary |diary: fish>
+  q
+
+2016-04-28
+  the |list> => |a: fish> + |a: cat> + |b: rat> + |a: dog> + |b: horse> + |c: house>
+  the |list>
+  is-a |*> => |no>
+  is-a |a: *> => |yes>
+  is-b |*> => |no>
+  is-b |b: *> => |yes>
+  dump
+  such-that[is-a] the |list>
+  such-that[is-b] the |list>
+  q
+
