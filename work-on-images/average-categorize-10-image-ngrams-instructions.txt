@@ -28,11 +28,34 @@ $ ./create-sw-images.py
 --------------------------------------------
 
 $ ./create-image-sw.py 10 small-lenna--edge-enhanced-40.png
+$ cd sw-examples
 $ mv image-ngram-superpositions-10.sw small-lenna-edge-40--image-ngram-superpositions-10.sw
-load small-lenna-edge-40--image-ngram-superpositions-10.sw
-average-categorize[layer-0,0.7,phi,layer-1]
+$ cd ..
+  load small-lenna-edge-40--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.7,phi,layer-1]
+Time taken: 1 week, 1 day, 11 hours, 47 minutes, 40 seconds, 433 milliseconds
 
-
+  save small-lenna-edge-40--save-average-categorize--0_7.sw
+$ cd sw-examples
+$ grep "^layer-1 " small-lenna-edge-40--save-average-categorize--0_7.sw > small-lenna-edge-40--layer-1--0_7.sw
+$ cd ..
+$ ./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt small-lenna-edge-40--average-categorize-0_7.jpg
+--------------------------------------------------------------------------------
+  load small-lenna-edge-40--image-ngram-superpositions-10.sw
+  average-categorize[layer-0,0.4,phi,layer-1]
+Time taken: 8 hours, 17 minutes, 21 seconds, 463 milliseconds
+  save small-lenna-edge-40--save-average-categorize--0_4.sw
+$ cd sw-examples
+$ grep "^layer-1 " small-lenna-edge-40--save-average-categorize--0_4.sw > small-lenna-edge-40--layer-1--0_4.sw
+$ cd ..
+$ ./create-sw-images.py
+$ cd work-on-handwritten-digits/
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt small-lenna-edge-40--average-categorize-0_4.jpg
+$ time ./phi-transform.py 10 small-lenna--edge-enhanced-40.png
+real    691m43.752s
 ------------------------------------------
 load mnist-100--image-ngram-superpositions-10.sw
 average-categorize[layer-0,0.5,phi,layer-1]
@@ -123,4 +146,20 @@ $ ./mnist-data-to-images.py 1000
 $ ./create-image-sw.py 10 work-on-handwritten-digits/train-images/
 $ cd sw-examples
 $ mv image-ngram-superpositions-10.sw mnist-1000--image-ngram-superpositions-10.sw
+$ cd ..
+$ ./the_semantic_db_console.py
+sa: load mnist-1000--image-ngram-superpositions-10.sw       time: 8 minutes   (network speed killed me!!!)
+sa: average-categorize[layer-0,0.5,phi,layer-1]             (time: 15 hours, 31 min)
+sa: save mnist-1000--save-average-categorize--0_5.sw
+$ cd sw-examples
+$ grep "^layer-1 " mnist-1000--save-average-categorize--0_5.sw > mnist-1000--layer-1--0_5.sw
+$ cd ..
+$ mkdir work-on-handwritten-digits/average-categorize-images
+$ ./create-sw-images.py
+$ cd work-on-handwritten-digits/
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--average-categorize-0_5.jpg
+$ mkdir work-on-handwritten-digits/phi-images
 
+
+$ ./phi-transform.py 10 work-on-handwritten-digits/test-images/*

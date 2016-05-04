@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-04-14
-# Update:
+# Update: 2016-5-3
 # Copyright: GPLv3
 #
 # Usage: ./create-image-sw.py ngram-size image.{png,jpg} [image2 image3 ... ]
@@ -25,7 +25,10 @@ from the_semantic_db_functions import *
 from the_semantic_db_processor import *
 
 context = context_list("images to ngram superpositions")
-context.load("sw-examples/mnist-test-1--0_5-similarity.sw")
+#context.load("sw-examples/mnist-test-1--0_5-similarity.sw")
+#context.load("sw-examples/mnist-1000--layer-1--0_5.sw")
+#context.load("sw-examples/small-lenna-edge-40--layer-1--0_7.sw")
+context.load("sw-examples/small-lenna-edge-40--layer-1--0_4.sw")
 #sys.exit(0)
 
 if len(sys.argv) < 3:
@@ -77,7 +80,8 @@ def image_to_sp(image):
 def sp_to_image(sp):                        # assumes the sp is rescaled to 255 (so range is [0,255] )
   d = 10                                    # hard wire in d = 10. This fixed the bug.
   if len(sp) != 100:                        # loaded into console, shows all have len 100.
-    print("len sp:",len(sp))
+    print("wrong length! len sp:",len(sp))
+    sys.exit(1)
   size = (d,d)
   data = [ int(x.value) for x in sp ]
   im = Image.new('L',size)                  # assume this, rather than RGB. Will work for now.
@@ -85,6 +89,16 @@ def sp_to_image(sp):                        # assumes the sp is rescaled to 255 
 #  im.save(destination + "mnist-test-1--phi-image-%s.bmp" % count)
   return im
 
+def sp_to_rgb_image(sp):                    # assumes the sp is rescaled to 255 (so range is [0,255] )
+  d = 10                                    # hard wire in d = 10. This fixed the bug.
+  if len(sp) != 300:
+    print("wrong length! len sp:",len(sp))
+  size = (d,d)
+  data = [ int(x.value) for x in sp ]
+  im_data = [ (data[i],data[i+1],data[i+2]) for i in range(0,len(data),3) ]
+  im = Image.new('RGB',size)
+  im.putdata(im_data)
+  return im
 
 def image_to_ngrams(context,name,k):
   try:
@@ -99,7 +113,7 @@ def image_to_ngrams(context,name,k):
         r = image_to_sp(im2)
         context.learn("layer-0",ket_name,r)
   except Exception as e:
-    print("reason:",e)
+    print("image_to_ngrams reason:",e)
     return
 
 # some of the numpy code is from here:
@@ -110,7 +124,8 @@ def phi_transform_image(context,name,k):
     filehead,ext = base.rsplit('.',1)
     im = Image.open(name)
     width,height = im.size
-    arr = numpy.zeros((height,width),numpy.float)
+#    arr = numpy.zeros((height,width),numpy.float)
+    arr = numpy.zeros((height,width,3),numpy.float)
     count = 0
     for h in range(0,height-k):
       for w in range(0,width-k):
@@ -121,15 +136,24 @@ def phi_transform_image(context,name,k):
         phi_similarity = phi.value
         phi_sp = phi.apply_op(context,"layer-1").rescale(255)
         tweaked_phi_sp = phi_sp.apply_sigmoid(subtraction_invert,255).multiply(phi_similarity).apply_sigmoid(subtraction_invert,255)
-        phi_im = sp_to_image(tweaked_phi_sp)
+#        phi_im = sp_to_image(tweaked_phi_sp)                          # tidy this later!
+        phi_im = sp_to_rgb_image(tweaked_phi_sp)
         print("phi:",phi)
         print("phi sp:",phi_sp)
-        im3 = Image.new('L',(width,height),255)
+#        im3 = Image.new('L',(width,height),255)
+        im3 = Image.new('RGB',(width,height),"white")                      # tidy this later too!
         im3.paste(phi_im,(w,h))
 #        im3.save(destination + "mnist-test-1--phi-image-%s-%s.bmp" % (w,h))
         image_array = numpy.array(im3,dtype=numpy.float)
 #        arr += image_array * phi_similarity
         arr += image_array
+
+        # see what we have:
+#        phi_im.show()
+#        im3.show()
+#        if count > 1000:
+#          sys.exit(0)
+#          break
     arr = arr/count            # average the final array
 
     # normalize to range [0,255]:
@@ -143,12 +167,13 @@ def phi_transform_image(context,name,k):
     arr=numpy.array(numpy.round(arr),dtype=numpy.uint8)
 
     # Generate, save and preview final image
-    out=Image.fromarray(arr,mode="L")
+#    out=Image.fromarray(arr,mode="L")
+    out=Image.fromarray(arr,mode="RGB")
 #    out.save("Average.png")
     out.save("%s%s.png" % (destination,filehead))
 #    out.show()
   except Exception as e:
-    print("reason:",e)
+    print("phi_transform_image reason:",e)
     return
 
 
