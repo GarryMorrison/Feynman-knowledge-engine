@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/4/2016
+# Update: 10/5/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -663,19 +663,19 @@ def list_simm(w,f,g):
 #
 def rescaled_list_simm(w,f,g):
   the_len = min(len(f),len(g))
-  print("the_len:",the_len)
-  print("w:",w)
-  print("f:",f)
-  print("g:",g)
-  print()
+#  print("the_len:",the_len)
+#  print("w:",w)
+#  print("f:",f)
+#  print("g:",g)
+#  print()
 # normalize lengths of our lists:
 #  w += [0] * (the_len - len(w))            # from here: http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
   w += [1] * (the_len - len(w))          
   f = f[:the_len]
   g = g[:the_len]
-  print("w:",w)
-  print("f:",f)
-  print("g:",g)
+#  print("w:",w)
+#  print("f:",f)
+#  print("g:",g)
 
 # rescale step, first find size:
   s1 = sum(abs(w[k]*f[k]) for k in range(the_len))
@@ -690,23 +690,25 @@ def rescaled_list_simm(w,f,g):
   g = [g[k]/s2 for k in range(the_len)]  
   
 # proceed with algo:
-  wf = sum(abs(w[k]*f[k]) for k in range(the_len))
-  wg = sum(abs(w[k]*g[k]) for k in range(the_len))
+# if rescaled correctly, wf and wg should == 1.
+#  wf = sum(abs(w[k]*f[k]) for k in range(the_len))
+#  wg = sum(abs(w[k]*g[k]) for k in range(the_len))
   wfg = sum(abs(w[k]*f[k] - w[k]*g[k]) for k in range(the_len))
   
-  print("wf:",wf)
-  print("wg:",wg)
-  print("wfg:",wfg)
+#  print("wf:",wf)
+#  print("wg:",wg)
+#  print("wfg:",wfg)
 
-  
-  if wf == 0 and wg == 0:
+# we should never have wf or wg == 0 in the rescaled case:  
+#  if wf == 0 and wg == 0:
 #    return 0
-    result = 0
-  else:
+#    result = 0
+#  else:
     #return (wf + wg - wfg)/(2*max(wf,wg))
-    result = (wf + wg - wfg)/(2*max(wf,wg))
-  print("result:",result)
-  return result
+#    result = (wf + wg - wfg)/(2*max(wf,wg))
+  return (2 - wfg)/2
+#  print("result:",result)
+#  return result
 
 
 # still can't use this in the console, since the context needs to be passed in too.
@@ -3948,6 +3950,163 @@ def unique_categorize(context,parameters):
   return ket("average categorize")
 
 
+# 5/5/2016:
+# New idea, a tweak to average-categorize, so now it has a suppress element to it.
+# I don't know if this will work or not, but I will test soon.  
+def average_categorize_suppress(context,parameters):
+  try:
+    op,t,phi,ave = parameters.split(',')
+    t = float(t)
+  except:
+    return ket("",0)
+    
+  w = 1                                            # w = 0 should reproduce standard version. w = 1 hopefully makes final sp's more "orthogonal"
+  one = context.relevant_kets(op)
+  print("one:",one)
+  out_list = []
+  for x in one:
+    print("x:",x)
+    r = x.apply_op(context,op)
+    print("r:",r)
+    best_k = -1
+    best_simm = 0
+    for k,sp in enumerate(out_list):
+      similarity = silent_simm(r,sp)
+      if similarity > best_simm:
+        best_k = k
+        best_simm = similarity
+    print("best k:",best_k)
+    print("best simm:",best_simm)
+
+    if best_k == -1 or best_simm < t:
+      out_list.append(r)
+    else:
+      for k in range(len(out_list)):
+        if k == best_k:
+          out_list[k] += r.multiply(best_simm)  # reweight based on result of simm.
+        else:
+          if w != 0:
+            similarity = silent_simm(r,out_list[k])
+            out_list[k] += r.multiply(-w*similarity)   # suppress r from this pattern, w chooses how much. Alternatively, put a .drop() in here.
+  for k,sp in enumerate(out_list):
+    print("sp:",sp)
+    context.learn(ave,phi + ": " + str(k+1),sp.drop())
+  return ket("average categorize")
+
+# 6/5/2016:
+# a list-average-categorize-suppress(). Hopefully converting sp's to lists, the simm will be faster, and also handle negative values if needed.
+#
+# 7/5/2016: in testing so far, w != 0 doesn't work so great.
+#
+#import numpy as np                      # yeah, another dependence. 
+def list_average_categorize_suppress(context,parameters):
+  try:
+    op,t,phi,ave = parameters.split(',')
+    t = float(t)
+  except:
+    return ket("",0)
+
+  def simple_sp_to_list(sp):              # need to test these two, but I think they are correct.
+    r = np.array([x.value for x in sp])
+    return r
+  def list_to_simple_sp(data):
+    r = superposition()
+    r.data = [ ket(str(k),x) for k,x in enumerate(data) ]
+    return r
+  def rescale(arr):
+    arr = arr - arr.min()
+    if arr.max() == 0:
+      return arr
+    arr = arr*255/arr.max()                            # maybe try rescale to [0,255] later. Bug, what about max == 0?
+    return arr
+    
+  #w = 0.01                                            # w = 0 should reproduce standard version. w = 1 hopefully makes final sp's more "orthogonal"
+  w = 0                                                # switch it off for now
+  one = context.relevant_kets(op)
+  print("one:",one)
+  out_list = []
+  for x in one:
+    print("x:",x)
+    r0 = x.apply_op(context,op)
+    r = simple_sp_to_list(r0)
+    print("r:",r)
+    best_k = -1
+    best_simm = 0
+    for k,sp in enumerate(out_list):
+#      similarity = silent_simm(r,sp)
+      similarity = rescaled_list_simm([1],r,sp)
+      if similarity > best_simm:
+        best_k = k
+        best_simm = similarity
+    print("best k:",best_k)
+    print("best simm:",best_simm)
+
+    if best_k == -1 or best_simm < t:
+      out_list.append(r)
+    else:
+      for k in range(len(out_list)):
+        if k == best_k:
+#          out_list[k] += r*best_simm  # reweight based on result of simm.  # bug! a + b for lists is append, not add in place.
+          out_list[k] = out_list[k] + r*best_simm                   # bug! a*b for a list, b scalar does not work as expected either! numpy to the rescue!
+#          out_list[k] = rescale(out_list[k] + r*best_simm)           # trying another idea. Rescale each time.
+        else:
+          if w != 0:
+            similarity = rescaled_list_simm([1],r,out_list[k])
+            out_list[k] = out_list[k] - r*w*similarity              # suppress r from this pattern, w chooses how much. Alternatively, put a .drop() in here.
+  for k,sp in enumerate(out_list):
+    print("sp:",sp)
+#    context.learn(ave,phi + ": " + str(k+1),sp.drop())             # NB: we can't use drop, as that will break our sp to image code
+#    context.learn(ave,phi + ": " + str(k+1),list_to_simple_sp(sp).apply_sigmoid(pos))
+    context.learn(ave,phi + ": " + str(k+1),list_to_simple_sp(rescale(sp))) # final rescale didn't seem to make much difference
+    context.learn(ave,phi + ": " + str(k+1),list_to_simple_sp(sp)) 
+  return ket("average categorize")
+
+
+# 6/5/2016:
+# average-categorize-suppress has 2 issues: 
+# 1) I'm not sure it is designed to work with sp's with negative coeffs. ie, silent_simm() is the problem. So maybe a more general version?
+# 2) it is slow! Maybe swap in a sp to list step, and use scaled-list-simm() in place of silent_simm()?
+def bah__average_categorize_suppress(context,parameters):
+  try:
+    op,t,phi,ave = parameters.split(',')
+    t = float(t)
+  except:
+    return ket("",0)
+    
+  w = 1                                            # w = 0 should reproduce standard version. w = 1 hopefully makes final sp's more "orthogonal"
+  one = context.relevant_kets(op)
+  print("one:",one)
+  out_list = []
+  for x in one:
+    print("x:",x)
+    r = x.apply_op(context,op)
+    print("r:",r)
+    best_k = -1
+    best_simm = 0
+    for k,sp in enumerate(out_list):
+      similarity = silent_simm(r,sp)
+      if similarity > best_simm:
+        best_k = k
+        best_simm = similarity
+    print("best k:",best_k)
+    print("best simm:",best_simm)
+
+    if best_k == -1 or best_simm < t:
+      out_list.append(r)
+    else:
+      for k in range(len(out_list)):
+        if k == best_k:
+          out_list[k] += r.multiply(best_simm)  # reweight based on result of simm.
+        else:
+          if w != 0:
+            similarity = silent_simm(r,out_list[k])
+            out_list[k] += r.multiply(-w*similarity)   # suppress r from this pattern, w chooses how much
+  for k,sp in enumerate(out_list):
+    print("sp:",sp)
+    context.learn(ave,phi + ": " + str(k+1),sp.drop())
+  return ket("average categorize")
+  
+
 # 5/8/2015:
 # split-chars |abcde> == |a> + |b> + |c> + |d> + |e>
 #
@@ -4232,4 +4391,29 @@ def path_op(one,context,op):
     return r      
   except Exception as e:
     print("reason:",e)  
-    return ket("",0)                                 
+    return ket("",0)
+    
+# 10/5/2016:
+# implement my idea for simm-add[op,p]
+# where:
+# R0 = r0
+# R_k = R_k-1 + r_k * [simm(R_k-1,r_k)]^p
+#
+# how on Earth do we test this thing??
+# Hrmm... result seems essentially identical, to say 1% or less, with just adding them! At least for p = 1,2. I tried p = 100, and still not much difference. 
+#
+def simm_add(one,context,parameters):
+  try:
+    op,p = parameters.split(',')
+    p = int(p)                     # maybe try float(p) later
+  except:
+    return ket("",0)
+
+  head, *tail = one
+  Rk = head.apply_op(context,op)
+  for x in tail:
+    rk = x.apply_op(context,op)
+    similarity = silent_simm(Rk,rk)**p
+    Rk = Rk + rk.multiply(similarity)
+  return Rk
+                                          

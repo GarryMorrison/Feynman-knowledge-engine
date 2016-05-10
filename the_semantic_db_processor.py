@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/4/2016
+# Update: 10/5/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -267,7 +267,10 @@ compound_table = {
 # newly added 8/5/2014:
   "common"             : ".apply_sp_fn(common,context,\"{0}\")",
 # newly added 24/9/2015:
-  "union"             : ".apply_sp_fn(operator_union,context,\"{0}\")",
+  "union"              : ".apply_sp_fn(operator_union,context,\"{0}\")",
+
+# newly added 10/5/2016:
+  "simm-add"           : ".apply_sp_fn(simm_add,context,\"{0}\")",
 
      
 # newly added 12/5/2014:
@@ -441,6 +444,12 @@ compound_table = {
 
 # 12/5/2015:
   "average-categorize"     : ".apply_naked_fn(average_categorize,context,\"{0}\")",
+  
+# 5/5/2016:
+#  "average-categorize-suppress" : ".apply_naked_fn(average_categorize_suppress,context,\"{0}\")",
+# 6/5/2016:
+  "average-categorize-suppress" : ".apply_naked_fn(list_average_categorize_suppress,context,\"{0}\")",
+
   
 # 5/8/2015:
   "select-chars"           : ".apply_fn(select_chars,\"{0}\")",
