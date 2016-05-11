@@ -153,9 +153,9 @@ if os.path.isdir(file_dir):
       result += image_to_ngrams(name,ngram_size)
     except:
       print("couldn't open image file:",name)
-  out_list = list_average_categorize_suppress(context,result,0.5,"phi","layer-1")
+  out_list = list_average_categorize_suppress(context,result,0.4,"phi","layer-1")
 context.print_universe()
-context.save("sw-examples/mnist-10000-train--k_5--t_0_5--layer-1.sw")
+context.save("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
 
 # now spit out the average images:
 op = "layer-1"

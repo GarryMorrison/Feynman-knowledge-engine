@@ -163,3 +163,156 @@ $ mkdir work-on-handwritten-digits/phi-images
 
 
 $ ./phi-transform.py 10 work-on-handwritten-digits/test-images/*
+--------------------------------------------------------------------------
+$ ./create-image-sw.py 4 work-on-handwritten-digits/train-images/
+real    5m56.122s
+$ cd sw-examples
+$ mv image-ngram-superpositions-4.sw mnist-1000--image-ngram-superpositions-4.sw
+$ cd ..
+$ ./the_semantic_db_console.py
+  load mnist-1000--image-ngram-superpositions-4.sw
+  average-categorize[layer-0,0.5,phi,layer-1]
+Time taken: 10 hours, 20 minutes, 34 seconds, 453 milliseconds
+  save mnist-1000--k_4--save-average-categorize--0_5.sw
+$ cd sw-examples
+$ grep "^layer-1 " mnist-1000--k_4--save-average-categorize--0_5.sw > mnist-1000--k_4--layer-1--0_5.sw
+$ cd ..
+$ ./create-sw-images.py
+$ cd work-on-handwritten-digits/
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--k_4--average-categorize-0_5.jpg
+------------------------------------------------------------------------------------
+$ ./the_semantic_db_console.py
+  load mnist-1000--image-ngram-superpositions-4.sw
+  average-categorize[layer-0,0.4,phi,layer-1]
+Time taken: 6 hours, 14 minutes, 59 seconds, 714 milliseconds
+  save mnist-1000--k_4--save-average-categorize--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-1000--k_4--save-average-categorize--0_4.sw > mnist-1000--k_4--layer-1--0_4.sw
+$ cd ..
+$ ./create-sw-images.py
+$ cd work-on-handwritten-digits/
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--k_4--average-categorize-0_4.jpg
+--------------------------------------------------------
+$ ./the_semantic_db_console.py
+  load mnist-1000--image-ngram-superpositions-4.sw
+  average-categorize-suppress[layer-0,0.4,phi,layer-1]
+
+--------------------------------------
+load mnist-100--image-ngram-superpositions-10.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+save mnist-100--k_10--ave-cat-suppress--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-100--k_10--ave-cat-suppress--0_4.sw > mnist-100--suppress--k_10--layer-1--0_4.sw
+$ cd ..
+$ ./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-100--k_10--ave-cat-suppress-0_4--w_0_01.jpg
+
+
+--------------------------------------
+load mnist-1000--image-ngram-superpositions-4.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+Time taken: 9 hours, 1 minute, 55 seconds, 308 milliseconds
+save mnist-1000--k_4--ave-cat-suppress--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-1000--k_4--ave-cat-suppress--0_4.sw > mnist-1000--suppress--k_4--layer-1--0_4.sw
+$ cd ..
+$ ./create-sw-images.py
+------------------------------------------------------------------------
+Now try with rescale switched on:
+load mnist-100--image-ngram-superpositions-10.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+Time taken: 2 minutes, 11 seconds, 324 milliseconds
+save mnist-100--k_10--ave-cat-rescale--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-100--k_10--ave-cat-rescale--0_4.sw > mnist-100--rescale--k_10--layer-1--0_4.sw
+$ cd ..
+$ ./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-100--k_10--ave-cat-rescale-0_4--w_0.jpg
+--------------------------------------------------------------
+load mnist-1000--image-ngram-superpositions-4.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+Time taken: 33 minutes, 4 seconds, 704 milliseconds
+save mnist-1000--k_4--ave-cat-rescale--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-1000--k_4--ave-cat-rescale--0_4.sw > mnist-1000--rescale--k_4--layer-1--0_4.sw
+$ cd ..
+$ ./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--k_10--ave-cat-rescale-0_4--w_0.jpg
+----------------------------------------------------
+Now try with rescale to [0,255]:
+load mnist-1000--image-ngram-superpositions-4.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+Time taken: 42 minutes, 36 seconds, 315 milliseconds
+save mnist-1000--k_4--ave-cat-full-rescale--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-1000--k_4--ave-cat-full-rescale--0_4.sw > mnist-1000--full-rescale--k_4--layer-1--0_4.sw
+$ grep -v "nan" mnist-1000--full-rescale--k_4--layer-1--0_4.sw > tmp
+$ mv tmp mnist-1000--full-rescale--k_4--layer-1--0_4.sw
+
+$ cd ..
+$ ./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--k_10--ave-cat-full-rescale-0_4--w_0.jpg
+
+---------------------------------------------------
+Now try with rescale to [0,255] only for the final superpositions
+load mnist-1000--image-ngram-superpositions-4.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+Time taken: 27 minutes, 37 seconds, 10 milliseconds
+save mnist-1000--k_4--ave-cat-final-rescale--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-1000--k_4--ave-cat-final-rescale--0_4.sw > mnist-1000--final-rescale--k_4--layer-1--0_4.sw
+
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--k_4--ave-cat-final-rescale-0_4--w_0.jpg
+Nope. No major difference from non-final rescale
+----------------------------------------------------------
+Now try with k = 5, though final-rescale is still on:
+$ ./create-image-sw.py 5 work-on-handwritten-digits/train-images/
+$ mv image-ngram-superpositions-5.sw mnist-1000--image-ngram-superpositions-5.sw
+load mnist-1000--image-ngram-superpositions-5.sw
+average-categorize-suppress[layer-0,0.4,phi,layer-1]
+Time taken: 34 minutes, 10 seconds, 243 milliseconds
+save mnist-1000--k_5--ave-cat-final-rescale--0_4.sw
+$ cd sw-examples
+grep "^layer-1 " mnist-1000--k_5--ave-cat-final-rescale--0_4.sw > mnist-1000--final-rescale--k_5--layer-1--0_4.sw
+$ cd .. 
+$ ./create-sw-images.py
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-1000--k_5--ave-cat-final-rescale-0_4--w_0.jpg
+--------------------------------------------------------------------------
+let's ramp it up to 60,000 training images:
+$ time ./mnist-data-to-images.py 60000
+real    2m31.817s
+Nope! Too much RAM!! Maybe need to avoid sp step, and just images to list, and then average-categorize.
+----
+$ ./mnist-data-to-images.py 10000
+$ time ./create-average-images.py 5 work-on-handwritten-digits/train-images/
+real    726m41.907s
+k = 5, t = 0.5
+
+$ ls -1tr average-categorize-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-10000-train--ave-cat--k_5--t_0_5.jpg
+-----------------------------------------------------------
+$ ./mnist-data-to-images.py 10000
+$ time ./create-average-images.py 5 work-on-handwritten-digits/train-images/
+real    437m15.555s
+
+k = 5, t = 0.4
+ls -1tr average-categorize-images/* > image-list.txt
+montage -geometry +2+2 @image-list.txt mnist-10000-train--ave-cat--k_5--t_0_4.jpg
+----------------------------------
+$ ./mnist-data-to-images.py 60000
+
+=======================================================================================
+simm-1 |*> #=> 100 ket-simm(layer-1 |phi: 1>,layer-1 |_self>)
+simm-2 |*> #=> 100 ket-simm(layer-1 |phi: 2>,layer-1 |_self>)
+simm-3 |*> #=> 100 ket-simm(layer-1 |phi: 3>,layer-1 |_self>)
+simm-4 |*> #=> 100 ket-simm(layer-1 |phi: 4>,layer-1 |_self>)
+simm-5 |*> #=> 100 ket-simm(layer-1 |phi: 5>,layer-1 |_self>)
+simm-6 |*> #=> 100 ket-simm(layer-1 |phi: 6>,layer-1 |_self>)
