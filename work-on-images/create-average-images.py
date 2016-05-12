@@ -155,7 +155,7 @@ if os.path.isdir(file_dir):
       print("couldn't open image file:",name)
   out_list = list_average_categorize_suppress(context,result,0.4,"phi","layer-1")
 context.print_universe()
-context.save("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
+context.save("sw-examples/mnist-60000-train--k_5--t_0_4--layer-1.sw")
 
 # now spit out the average images:
 op = "layer-1"
@@ -172,7 +172,7 @@ def sp_to_image(sp,count,d):                  # assumes the sp is rescaled to 25
   data = [ int(x.value) for x in sp ]
   im = Image.new('L',size)                  # assume this, rather than RGB. Will work for now.
   im.putdata(data)
-  im.save(destination + "mnist-10000--k_%s--average-image-%s.bmp" % (d,count))
+  im.save(destination + "mnist-60000--k_%s--average-image-%s.bmp" % (d,count))
 
 
 def sp_to_rgb_image(sp,count,d):                  # assumes the sp is rescaled to 255 (so range is [0,255] )

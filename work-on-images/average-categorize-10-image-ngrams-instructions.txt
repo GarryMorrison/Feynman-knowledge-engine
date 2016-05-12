@@ -309,6 +309,9 @@ montage -geometry +2+2 @image-list.txt mnist-10000-train--ave-cat--k_5--t_0_4.jp
 ----------------------------------
 $ ./mnist-data-to-images.py 60000
 
+---------------------------------------------
+test-label |image: mnist-test-image-1> =>
+image-phi-superpositions-5.sw
 =======================================================================================
 simm-1 |*> #=> 100 ket-simm(layer-1 |phi: 1>,layer-1 |_self>)
 simm-2 |*> #=> 100 ket-simm(layer-1 |phi: 2>,layer-1 |_self>)

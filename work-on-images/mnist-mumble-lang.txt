@@ -1,0 +1,81 @@
+match-1 |*> #=> select[1,1] log-similarity |_self>
+match-2 |*> #=> select[2,2] log-similarity |_self>
+match-3 |*> #=> select[3,3] log-similarity |_self>
+match-4 |*> #=> select[4,4] log-similarity |_self>
+match-5 |*> #=> select[5,5] log-similarity |_self>
+
+table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+
+
+log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+
+
+  log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+
+  match-1 |*> #=> select[1,1] log-similarity |_self>
+  match-2 |*> #=> select[2,2] log-similarity |_self>
+  match-3 |*> #=> select[3,3] log-similarity |_self>
+  match-4 |*> #=> select[4,4] log-similarity |_self>
+  match-5 |*> #=> select[5,5] log-similarity |_self>
+
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+
+  
+
+  load image-phi-superpositions-5.sw
+  log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+
+  load mnist-test-labels.sw
+  match-0 |*> #=> test-label |_self>
+  match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+  match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+  match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+  match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  match-5 |*> #=> test-label select[5,5] log-similarity |_self>
+
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+
+
+equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+is-equal? |*> #=> if(is-greater-equal-than[0.5] push-float equal? |_self>,equal? |_self>,|False>)
+table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
+
+
+equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
+
+
+-------------------
+load raw-mnist-test-100-superpositions.sw
+simm-op |*> #=> 100 similar[pixels] |_self>
+map[simm-op,similarity] rel-kets[pixels]
+Time taken: 7 minutes, 32 seconds, 838 milliseconds
+
+  match-1 |*> #=> select[1,1] similarity |_self>
+  match-2 |*> #=> select[2,2] similarity |_self>
+  match-3 |*> #=> select[3,3] similarity |_self>
+  match-4 |*> #=> select[4,4] similarity |_self>
+  match-5 |*> #=> select[5,5] similarity |_self>
+
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[similarity]
+
+
+  load mnist-test-labels.sw
+  match-0 |*> #=> test-label |_self>
+  match-1 |*> #=> test-label select[1,1] similarity |_self>
+  match-2 |*> #=> test-label select[2,2] similarity |_self>
+  match-3 |*> #=> test-label select[3,3] similarity |_self>
+  match-4 |*> #=> test-label select[4,4] similarity |_self>
+  match-5 |*> #=> test-label select[5,5] similarity |_self>
+
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[similarity]
+
+
+equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+

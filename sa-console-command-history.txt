@@ -25492,3 +25492,196 @@
   log plus[1] phi-sp |image: mnist-test-image-33>
   q
 
+2016-05-12
+  load image-phi-superpositions-5.sw
+  dump
+  rel-kets[phi-sp]
+  select[1,10] rel-kets[phi-sp]
+  simm-op |*> #=> 100 self-similar[phi-sp] |_self>
+  simm-op |image: mnist-test-image-1>
+  map[simm-op,similarity] select[1,10] rel-kets[phi-sp]
+  matrix[similarity]
+  history
+  rel-kets[log-phi-sp]
+  save history
+
+2016-05-12
+  load image-phi-superpositions-5.sw
+  dump
+  rel-kets[phi-sp]
+  select[1,10] rel-kets[phi-sp]
+  simm-op |*> #=> 100 self-similar[phi-sp] |_self>
+  simm-op |image: mnist-test-image-1>
+  map[simm-op,similarity] select[1,10] rel-kets[phi-sp]
+  matrix[similarity]
+  history
+  rel-kets[log-phi-sp]
+  save history
+  log-simm-op |*> #=> 100 self-similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] select[1,10] rel-kets[log-phi-sp]
+  matrix[log-similarity]
+  save history
+
+2016-05-12
+  load image-phi-superpositions-5.sw
+  dump
+  rel-kets[phi-sp]
+  select[1,10] rel-kets[phi-sp]
+  simm-op |*> #=> 100 self-similar[phi-sp] |_self>
+  simm-op |image: mnist-test-image-1>
+  map[simm-op,similarity] select[1,10] rel-kets[phi-sp]
+  matrix[similarity]
+  history
+  rel-kets[log-phi-sp]
+  save history
+  log-simm-op |*> #=> 100 self-similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] select[1,10] rel-kets[log-phi-sp]
+  matrix[log-similarity]
+  save history
+  history
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  history
+  match-1 |*> #=> select[1,1] log-similarity |_self>
+  match-2 |*> #=> select[2,2] log-similarity |_self>
+  match-3 |*> #=> select[3,3] log-similarity |_self>
+  match-4 |*> #=> select[4,4] log-similarity |_self>
+  match-5 |*> #=> select[5,5] log-similarity |_self>
+  
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  history
+  log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+
+2016-05-12
+  load image-phi-superpositions-5.sw
+  dump
+  rel-kets[phi-sp]
+  select[1,10] rel-kets[phi-sp]
+  simm-op |*> #=> 100 self-similar[phi-sp] |_self>
+  simm-op |image: mnist-test-image-1>
+  map[simm-op,similarity] select[1,10] rel-kets[phi-sp]
+  matrix[similarity]
+  history
+  rel-kets[log-phi-sp]
+  save history
+  log-simm-op |*> #=> 100 self-similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] select[1,10] rel-kets[log-phi-sp]
+  matrix[log-similarity]
+  save history
+  history
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  history
+  match-1 |*> #=> select[1,1] log-similarity |_self>
+  match-2 |*> #=> select[2,2] log-similarity |_self>
+  match-3 |*> #=> select[3,3] log-similarity |_self>
+  match-4 |*> #=> select[4,4] log-similarity |_self>
+  match-5 |*> #=> select[5,5] log-similarity |_self>
+  
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  history
+  log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+  history
+  load mnist-test-labels.sw
+  dump
+  test-label |image: mnist-test-image-1>
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  table[image,match-0,match-1,match-2,match-3,match-4] rel-kets[log-similarity]
+  
+  context
+  icontext
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4] rel-kets[log-similarity]
+    match-5 |*> #=> test-label select[5,5] log-similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+
+2016-05-12
+  load image-phi-superpositions-5.sw
+  dump
+  rel-kets[phi-sp]
+  select[1,10] rel-kets[phi-sp]
+  simm-op |*> #=> 100 self-similar[phi-sp] |_self>
+  simm-op |image: mnist-test-image-1>
+  map[simm-op,similarity] select[1,10] rel-kets[phi-sp]
+  matrix[similarity]
+  history
+  rel-kets[log-phi-sp]
+  save history
+  log-simm-op |*> #=> 100 self-similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] select[1,10] rel-kets[log-phi-sp]
+  matrix[log-similarity]
+  save history
+  history
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  history
+  match-1 |*> #=> select[1,1] log-similarity |_self>
+  match-2 |*> #=> select[2,2] log-similarity |_self>
+  match-3 |*> #=> select[3,3] log-similarity |_self>
+  match-4 |*> #=> select[4,4] log-similarity |_self>
+  match-5 |*> #=> select[5,5] log-similarity |_self>
+  
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  history
+  log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+  history
+  load mnist-test-labels.sw
+  dump
+  test-label |image: mnist-test-image-1>
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  table[image,match-0,match-1,match-2,match-3,match-4] rel-kets[log-similarity]
+  
+  context
+  icontext
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4] rel-kets[log-similarity]
+    match-5 |*> #=> test-label select[5,5] log-similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+  history
+  history 1000
+  
+  equal(|a>,|a> + |b>)
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  equal? |image: mnist-test-image-1>
+  table[image,match-0,match-1,match-2,match-3,match-4,equal?] rel-kets[log-similarity]
+  
+  is-equal? |*> #=> if(is-greater-equal-than[0.5] push-float equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
+  save history
+

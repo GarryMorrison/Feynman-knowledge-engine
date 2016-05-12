@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-04-14
-# Update: 2016-5-11
+# Update: 2016-5-12
 # Copyright: GPLv3
 #
 # Usage: ./create-image-sw.py ngram-size image.{png,jpg} [image2 image3 ... ]
@@ -17,6 +17,7 @@
 
 import os
 import sys
+import glob
 from PIL import Image
 import numpy
 
@@ -30,7 +31,8 @@ context2 = context_list("images to phi superpositions")
 #context.load("sw-examples/mnist-1000--layer-1--0_5.sw")
 #context.load("sw-examples/small-lenna-edge-40--layer-1--0_7.sw")
 #context.load("sw-examples/small-lenna-edge-40--layer-1--0_4.sw")
-context.load("sw-examples/mnist-10000-train--k_5--t_0_5--layer-1.sw")
+#context.load("sw-examples/mnist-10000-train--k_5--t_0_5--layer-1.sw")
+context.load("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
 #sys.exit(0)
 
 if len(sys.argv) < 3:
@@ -43,7 +45,8 @@ try:
 except:
   ngram_size = 10
 
-list_of_files = sys.argv[2:]
+#list_of_files = sys.argv[2:]
+file_dir = sys.argv[2]
 #print("files:",list_of_files)
 #sys.exit(0)
 
@@ -195,7 +198,11 @@ def phi_transform_image(context,name,k):
     return superposition()
 
 
-for filename in list_of_files:
+#for filename in list_of_files:
+# if given a directory:
+#if os.path.isdir(file_dir):         # assume it exists, so I don't need to change indent.
+for filename in glob.glob(file_dir + "/*"):
+
 #  image_to_ngrams(context,filename,ngram_size)
   image_phi_sp = phi_transform_image(context,filename,ngram_size)
   base = os.path.basename(filename)
@@ -212,7 +219,7 @@ for filename in list_of_files:
 #  phi_image.show()  
   phi_image.save("%s%s.png" % (destination_phi_images,filehead))
 
-context2.save("sw-examples/image-phi-superpositions-%s.sw" % str(ngram_size))
+context2.save("sw-examples/image-phi-superpositions-test-1000--%s--t_0_4.sw" % str(ngram_size))
 
 
 #context.print_universe()
