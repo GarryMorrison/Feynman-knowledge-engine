@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/3/2016
+# Update: 17/5/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1442,6 +1442,15 @@ def log(x,t=None):
   if t == None:
     return math.log(x)       # default is base e, ie natural logarithm
   return math.log(x,t)       # choose another base
+
+# 17/5/2016:                 # log(1 + x)
+def log_1(x,t=None):
+  if x <= 0:                 # maybe tweak this, given that it is log(1 + x), not log(x)
+    return 0
+  if t == None:
+    return math.log(1+x)       # default is base e, ie natural logarithm
+  return math.log(1+x,t)       # choose another base
+
   
 # 14/1/2016:
 def square(x):

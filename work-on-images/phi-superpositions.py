@@ -1,16 +1,15 @@
 #!c:/Python34/python.exe
 
 #######################################################################
-# Convert an image to superposition, find similar layer-1, then map back to an image
-# Calling this a phi-transform. More details later.
+# convert an image to phi-superpositions
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
-# Date: 2016-04-14
-# Update: 2016-5-12
+# Date: 2016-05-17
+# Update: 
 # Copyright: GPLv3
 #
-# Usage: ./phi-transform.py ngram-size image-directory
+# Usage: ./phi-superpositions.py ngram-size image-directory
 #
 #######################################################################
 
@@ -37,7 +36,7 @@ context.load("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
 
 if len(sys.argv) < 3:
   print("\nUsage:")
-  print("  ./phi-transform.py ngram-size image-directory")
+  print("  ./phi-superpositions.py ngram-size image-directory")
   sys.exit(1)
 
 try:
@@ -198,31 +197,105 @@ def phi_transform_image(context,name,k):
     return superposition()
 
 
-#for filename in list_of_files:
-# if given a directory:
-#if os.path.isdir(file_dir):         # assume it exists, so I don't need to change indent.
+# some of the numpy code is from here:
+# http://stackoverflow.com/questions/17291455/how-to-get-an-average-picture-from-100-pictures-using-pil
+def make_phi_superpositions(context,name,k):
+  try:
+    base = os.path.basename(name)
+    filehead,ext = base.rsplit('.',1)
+    im = Image.open(name)
+    width,height = im.size
+#    if image_mode == "L":
+#      arr = numpy.zeros((height,width),numpy.float)
+#    elif image_mode == "RGB":
+#      arr = numpy.zeros((height,width,3),numpy.float)
+#    count = 0
+    image_phi_sp = fast_superposition()
+    for h in range(0,height-k):                                   # this is the section we need to speed up!
+      for w in range(0,width-k):
+#        count += 1
+        im2 = im.crop((w,h,w + k,h + k))
+        our_sp = image_to_sp(im2)
+        phi = our_sp.similar_input(context,"layer-1").select_range(1,1).ket()
+        if phi.label == "":
+          continue
+#        phi_similarity = phi.value
+        image_phi_sp += phi                                   # map image to phi sp
+#        phi_sp = phi.apply_op(context,"layer-1").rescale(255)
+#        tweaked_phi_sp = phi_sp.apply_sigmoid(subtraction_invert,255).multiply(phi_similarity).apply_sigmoid(subtraction_invert,255)
+#        if image_mode == "L":
+#          phi_im = sp_to_image(tweaked_phi_sp)                          # tidy this later!
+#          im3 = Image.new('L',(width,height),"white")
+#        elif image_mode == "RGB":
+#          phi_im = sp_to_rgb_image(tweaked_phi_sp)
+#          im3 = Image.new('RGB',(width,height),"white")
+#        print("phi:",phi)
+#        print("phi sp:",phi_sp)
+#        im3.paste(phi_im,(w,h))
+#        im3.save(destination + "mnist-test-1--phi-image-%s-%s.bmp" % (w,h))
+#        image_array = numpy.array(im3,dtype=numpy.float)
+#        arr += image_array * phi_similarity
+#        arr += image_array
+
+        # see what we have:
+#        phi_im.show()
+#        im3.show()
+#        if count > 1000:
+#          sys.exit(0)
+#          break
+#    arr = arr/count            # average the final array
+
+    # normalize to range [0,255]:
+#    image_min = numpy.amin(arr)
+#    print("image min:",image_min)
+#    arr -= image_min
+#    new_max = numpy.amax(arr)
+#    arr *= 255/new_max
+
+    # Round values in array and cast as 8-bit integer
+#    arr=numpy.array(numpy.round(arr),dtype=numpy.uint8)
+
+    # Generate, save and preview final image
+#    if image_mode == "L":
+#      out=Image.fromarray(arr,mode="L")
+#    elif image_mode == "RGB":
+#      out=Image.fromarray(arr,mode="RGB")
+#    out.save("Average.png")
+#    out.save("%s%s.png" % (destination_phi_transform,filehead))
+#    out.show()
+    return image_phi_sp.superposition()
+  except Exception as e:
+    print("phi_transform_image reason:",e)
+    return superposition()
+
+
+# given a directory:
+# assume it exists:
+count = 0
 for filename in glob.glob(file_dir + "/*"):
 
 #  image_to_ngrams(context,filename,ngram_size)
-  image_phi_sp = phi_transform_image(context,filename,ngram_size)
+#  image_phi_sp = phi_transform_image(context,filename,ngram_size)
+  image_phi_sp = make_phi_superpositions(context,filename,ngram_size)
   base = os.path.basename(filename)
   filehead,ext = base.rsplit('.',1)
   context2.learn("phi-sp","image: " + filehead,image_phi_sp)  
 
   # convert image_phi_sp to an actual image:
 #  empty = show_range(ket("phi: 1"),ket("phi: 289")).multiply(0)           # hard code in 289 just for now!
-  empty = show_range(ket("phi: 1"),ket("phi: 289"))           # don't mult by 0, so coeffs are in [1,... instead of [0,...
-  sp = (image_phi_sp + empty).ket_sort().apply_sigmoid(log).rescale(255)
+#  empty = show_range(ket("phi: 1"),ket("phi: 289"))           # don't mult by 0, so coeffs are in [1,... instead of [0,...
+#  sp = (image_phi_sp + empty).ket_sort().apply_sigmoid(log).rescale(255)   # between the add empty and the log sigmoid this is effectively log(1 + x)
+  sp = image_phi_sp.apply_sigmoid(log_1)                       # let's do log(1+x) more directly. Hopefully it is faster. Bah! No change in speed! 
+  count += 1                                                   # and since we are not converting back to images, we don't need ket-sort, or rescale(255) either.
+  print("count:",count)
   print("phi-sp:",sp)
   context2.learn("log-phi-sp","image: " + filehead,sp.drop())
-  phi_image = sp_to_image(sp,17)
+#  phi_image = sp_to_image(sp,17)
 #  phi_image.show()  
-  phi_image.save("%s%s.png" % (destination_phi_images,filehead))
+#  phi_image.save("%s%s.png" % (destination_phi_images,filehead))
 
-context2.save("sw-examples/image-phi-superpositions-test-1000--%s--t_0_4.sw" % str(ngram_size))
+context2.save("sw-examples/image-phi-superpositions-test-1000--%s--t_0_4--v2.sw" % str(ngram_size))
 
 
-#context.print_universe()
-#context.save("sw-examples/image-ngram-superpositions-%s.sw" % str(ngram_size))
 
 

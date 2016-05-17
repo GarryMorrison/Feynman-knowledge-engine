@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 10/5/2016
+# Update: 17/5/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -114,7 +114,11 @@ sigmoid_table = {
   "XF"                 : "xor_filter",
 
 # 15/12/2015:
-  "log"                : "log",
+  "log"                : "log",              # log(x)
+  
+# 17/5/2016:
+  "log+1"              : "log_1",            # log(1 + x)
+  
   
 # 14/1/2016:
   "square"             : "square",           # for now these two are sigmoids. Maybe wan't to change that later?
@@ -468,6 +472,9 @@ compound_table = {
   
 # 15/12/2015:
   "log"                    : ".apply_sigmoid(log,{0})",
+# 17/5/2016:
+  "log+1"                  : ".apply_sigmoid(log_1,{0})",
+  
   
 # 17/12/2015:
   "delete"                 : ".apply_fn(edit_delete,\"{0}\")",
@@ -479,7 +486,10 @@ compound_table = {
   "guess-operator"         : ".apply_naked_fn(guess_operator,context,\"{0}\")",
   
 # 20/3/2016:
-  "path-op"                : ".apply_fn(path_op,context,\"{0}\")",    
+  "path-op"                : ".apply_fn(path_op,context,\"{0}\")",
+  
+# 15/5/2016:
+  "learn-ket-norms"        : ".apply_naked_fn(learn_ket_normalizations,context,\"{0}\")",     
 }
 
 

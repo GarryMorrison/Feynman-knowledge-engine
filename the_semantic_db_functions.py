@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 10/5/2016
+# Update: 15/5/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4416,4 +4416,54 @@ def simm_add(one,context,parameters):
     similarity = silent_simm(Rk,rk)**p
     Rk = Rk + rk.multiply(similarity)
   return Rk
-                                          
+
+# now, in our digit recognition task, it is clear that some features are far more common than others. eg white space
+# so the question is, how best to normalize this a bit. 
+# Currently I'm using log(1 + x) which maps the test case of 1000 test images from 70.9% to 72.1%
+# Recall best algo's give 98%, so I have a lot of work to do yet!!
+# Next idea is ket normalization. ie, reweight kets so that on average, each ket "fires" at the same rate
+# Hopefully it will encode the idea that frequently firing kets are less interesting than rarely firing ones.
+# In BKO, this:
+# -- these are our starting superpositions:
+#    the |sp1> => a1|A> + b1|B> + c1|C>
+#    the |sp2> => a2|A> + b2|B> + c2|C>
+#    the |sp3> => a3|A> + b3|B> + c3|C>
+#    the |sp4> => a4|A> + b4|B> + c4|C>
+#
+# -- the sum of our superpositions:
+#    the-sum |sp> => the (|sp1> + |sp2> + |sp3> + |sp4)
+#
+# -- these are what we want our code to learn:
+#    norm-ket |A> => 1/(a1 + a2 + a3 + a4) |A>
+#    norm-ket |B> => 1/(b1 + b2 + b3 + b4) |B>
+#    norm-ket |C> => 1/(c1 + c2 + c3 + c4) |C>
+#
+# -- this is intended usage once we have them (probably implemented with map)
+#    the-normed |sp1> => norm-ket the |sp1>
+#    the-normed |sp2> => norm-ket the |sp2>
+#    the-normed |sp3> => norm-ket the |sp3>
+#    the-normed |sp4> => norm-ket the |sp4>
+#
+# -- test our code works:
+#    norm-ket the-sum |sp> == |A> + |B> + |C>
+# 
+# 
+def learn_ket_normalizations(context,parameters):
+  try:
+    op1,op2,t = parameters.split(',')
+    t = float(t)
+  except:
+    return ket("",0)
+
+  the_kets = context.relevant_kets(op1)
+  the_sum = superposition()
+  for x in the_kets:
+    the_sum += x.apply_op(context,op1)
+  for x in the_sum:
+    if x.value <= 0:
+      continue
+    y = ket(x.label)
+    context.learn(op2,y,y.multiply(t/x.value))
+  return ket("ket-norms")
+      
+                                                    

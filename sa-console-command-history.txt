@@ -25685,3 +25685,1499 @@
   table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
   save history
 
+2016-05-12
+  load raw-mnist-test-100-superpositions.sw
+  simm-op |*> #=> 100 similar[pixels] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  map[simm-op,similarity] rel-kets[pixels]
+    match-1 |*> #=> select[1,1] similarity |_self>
+    match-2 |*> #=> select[2,2] similarity |_self>
+    match-3 |*> #=> select[3,3] similarity |_self>
+    match-4 |*> #=> select[4,4] similarity |_self>
+    match-5 |*> #=> select[5,5] similarity |_self>
+  
+    table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[similarity]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[similarity]
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  save history
+
+2016-05-12
+  load image-phi-superpositions-5--t_0_4.sw
+  history
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  save history
+
+2016-05-14
+  load image-phi-superpositions-5--t_0_4.sw
+  history
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  save history
+  factor |number: 313>
+  q
+
+2016-05-14
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  history
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  history
+  save history
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  history
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  history
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  history
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+  table[image,match-0] rel-kets[log-phi-sp]
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  phi-sp |image: mnist-test-image-999>
+  phi-simm-op |*> #=> 100 similar[phi-sp] |_self>
+  map[phi-simm-op,phi-similarity] rel-kets[phi-sp]
+  dump |*>
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[phi-similarity]
+  save history
+
+2016-05-15
+  load image-phi-superpositions-5.sw
+  dump
+  rel-kets[phi-sp]
+  select[1,10] rel-kets[phi-sp]
+  simm-op |*> #=> 100 self-similar[phi-sp] |_self>
+  simm-op |image: mnist-test-image-1>
+  map[simm-op,similarity] select[1,10] rel-kets[phi-sp]
+  matrix[similarity]
+  history
+  rel-kets[log-phi-sp]
+  save history
+  log-simm-op |*> #=> 100 self-similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] select[1,10] rel-kets[log-phi-sp]
+  matrix[log-similarity]
+  save history
+  history
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  history
+  match-1 |*> #=> select[1,1] log-similarity |_self>
+  match-2 |*> #=> select[2,2] log-similarity |_self>
+  match-3 |*> #=> select[3,3] log-similarity |_self>
+  match-4 |*> #=> select[4,4] log-similarity |_self>
+  match-5 |*> #=> select[5,5] log-similarity |_self>
+  
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  history
+  log-simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[log-simm-op,log-similarity] rel-kets[log-phi-sp]
+  table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+  history
+  load mnist-test-labels.sw
+  dump
+  test-label |image: mnist-test-image-1>
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  table[image,match-0,match-1,match-2,match-3,match-4] rel-kets[log-similarity]
+  
+  context
+  icontext
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] log-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] log-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] log-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] log-similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4] rel-kets[log-similarity]
+    match-5 |*> #=> test-label select[5,5] log-similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[log-similarity]
+  save history
+  history
+  history 1000
+  
+  equal(|a>,|a> + |b>)
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  equal? |image: mnist-test-image-1>
+  table[image,match-0,match-1,match-2,match-3,match-4,equal?] rel-kets[log-similarity]
+  
+  is-equal? |*> #=> if(is-greater-equal-than[0.5] push-float equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[log-similarity]
+  save history
+  history
+  q
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  history
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  history
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  history
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+  table[image,match-0] rel-kets[log-phi-sp]
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  phi-sp |image: mnist-test-image-999>
+  phi-simm-op |*> #=> 100 similar[phi-sp] |_self>
+  map[phi-simm-op,phi-similarity] rel-kets[phi-sp]
+  dump |*>
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[phi-similarity]
+  save history
+  debug on
+  clean |x>
+  debug off
+  q
+
+2016-05-15
+  load fred-sam-friends.sw
+  dump
+  learn-ket-norms[friends,norm-ket,1]
+  dump
+  friends split |Fred Sam>
+  norm-ket friends split |Fred Sam>
+  history
+  learn-ket-norms[friends,norm-ket,10]
+  dump
+  norm-ket friends split |Fred Sam>
+  history
+  save history
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+
+2016-05-15
+  load fred-sam-friends.sw
+  dump
+  learn-ket-norms[friends,norm-ket,1]
+  dump
+  friends split |Fred Sam>
+  norm-ket friends split |Fred Sam>
+  history
+  learn-ket-norms[friends,norm-ket,10]
+  dump
+  norm-ket friends split |Fred Sam>
+  history
+  save history
+  q
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+
+2016-05-15
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  average-categorize[log-phi-sp,0.7,rho,layer-2]
+  history
+  dump
+  save history
+
+2016-05-16
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  history
+  h |*> #=> normalize[100] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,match-1,h,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+
+2016-05-16
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  history
+  h |*> #=> normalize[100] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,match-1,h,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  save history
+
+2016-05-16
+  coeff-sort rank split |a b c d>
+  quit
+
+2016-05-16
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  history
+  h |*> #=> normalize[100] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,match-1,h,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  save history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  .
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  test-label |image: mnist-test-image-999>
+  norm |1> => .007936507936507|_self>
+  norm |2> => .008620689655172|_self>
+  norm |3> => .009345794392523|_self>
+  norm |4> => .009090909090909|_self>
+  norm |5> => .011494252873563|_self>
+  norm |6> => .011494252873563|_self>
+  norm |7> => .010101010101010|_self>
+  norm |8> => .011235955056179|_self>
+  norm |9> => .010638297872340|_self>
+  norm |0> => .011764705882352|_self>
+  
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,10] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  save history
+
+2016-05-16
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  history
+  h |*> #=> normalize[100] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,match-1,h,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  save history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  .
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  test-label |image: mnist-test-image-999>
+  norm |1> => .007936507936507|_self>
+  norm |2> => .008620689655172|_self>
+  norm |3> => .009345794392523|_self>
+  norm |4> => .009090909090909|_self>
+  norm |5> => .011494252873563|_self>
+  norm |6> => .011494252873563|_self>
+  norm |7> => .010101010101010|_self>
+  norm |8> => .011235955056179|_self>
+  norm |9> => .010638297872340|_self>
+  norm |0> => .011764705882352|_self>
+  
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,10] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  save history
+  history
+  is-equal? rel-kets[similarity]
+  save history
+
+2016-05-16
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  history
+  h |*> #=> normalize[100] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,match-1,h,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  save history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  .
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  test-label |image: mnist-test-image-999>
+  norm |1> => .007936507936507|_self>
+  norm |2> => .008620689655172|_self>
+  norm |3> => .009345794392523|_self>
+  norm |4> => .009090909090909|_self>
+  norm |5> => .011494252873563|_self>
+  norm |6> => .011494252873563|_self>
+  norm |7> => .010101010101010|_self>
+  norm |8> => .011235955056179|_self>
+  norm |9> => .010638297872340|_self>
+  norm |0> => .011764705882352|_self>
+  
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,10] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  save history
+  history
+  is-equal? rel-kets[similarity]
+  save history
+  history
+  test-label rel-kets[similarity]
+  ket-sort test-labels rel-kets[similarity]
+  history
+  ket-sort test-label rel-kets[similarity]
+  save history
+
+2016-05-16
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[phi-sp,norm-ket,100]
+  history
+  dump
+  
+  norm-sp-op |*> #=> norm-ket phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[phi-sp]
+  dump
+  
+  load mnist-test-labels.sw
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  
+  select[1,10] normed-phi-simm-op |image: mnist-test-image-1000>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  normed-phi-similarity |image: mnist-test-image-1>
+  save history
+  history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  load mnist-test-labels.sw
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  dump |phi: 156>
+  
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  learn-ket-norms[log-phi-sp,norm-ket,100]
+  dump
+  norm-sp-op |*> #=> norm-ket log-phi-sp |_self>
+  map[norm-sp-op,normed-phi-sp] rel-kets[log-phi-sp]
+  dump
+  
+  normed-phi-simm-op |*> #=> 100 similar[normed-phi-sp] |_self>
+  map[normed-phi-simm-op,normed-phi-similarity] rel-kets[normed-phi-sp]
+  save history
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] normed-phi-similarity |_self>
+    match-2 |*> #=> test-label select[2,2] normed-phi-similarity |_self>
+    match-3 |*> #=> test-label select[3,3] normed-phi-similarity |_self>
+    match-4 |*> #=> test-label select[4,4] normed-phi-similarity |_self>
+    match-5 |*> #=> test-label select[5,5] normed-phi-similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  load mnist-test-labels.sw
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  history
+  h |*> #=> normalize[100] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,match-1,h,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] normed-phi-similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,is-equal?] rel-kets[normed-phi-similarity]
+  save history
+  reset
+  load image-phi-superpositions-test-1000--5--t_0_4.sw
+  dump
+  simm-op |*> #=> 100 similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  equal? |*> #=> equal(100 match-0 |_self>,h |_self>)
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  save history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  .
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  history
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  test-label |image: mnist-test-image-999>
+  norm |1> => .007936507936507|_self>
+  norm |2> => .008620689655172|_self>
+  norm |3> => .009345794392523|_self>
+  norm |4> => .009090909090909|_self>
+  norm |5> => .011494252873563|_self>
+  norm |6> => .011494252873563|_self>
+  norm |7> => .010101010101010|_self>
+  norm |8> => .011235955056179|_self>
+  norm |9> => .010638297872340|_self>
+  norm |0> => .011764705882352|_self>
+  
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,12] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,10] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,13] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort norm test-label select[1,14] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  save history
+  history
+  is-equal? rel-kets[similarity]
+  save history
+  history
+  test-label rel-kets[similarity]
+  ket-sort test-labels rel-kets[similarity]
+  history
+  ket-sort test-label rel-kets[similarity]
+  save history
+  history
+  is-equal? rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] drop-below[60] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] drop-below[70] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  ---------------------------------------------------------------
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] drop-below[65] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] drop-below[65] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] drop-below[60] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] drop-below[70] similarity |_self>
+  table[image,match-0,h,match-1,match-2,match-3,match-4,match-5,is-equal?] rel-kets[similarity]
+  save history
+
+2016-05-17
+  load raw-mnist-test-100-superpositions.sw
+  simm-op |*> #=> 100 similar[pixels] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  map[simm-op,similarity] rel-kets[pixels]
+    match-1 |*> #=> select[1,1] similarity |_self>
+    match-2 |*> #=> select[2,2] similarity |_self>
+    match-3 |*> #=> select[3,3] similarity |_self>
+    match-4 |*> #=> select[4,4] similarity |_self>
+    match-5 |*> #=> select[5,5] similarity |_self>
+  
+    table[image,match-1,match-2,match-3,match-4,match-5] rel-kets[similarity]
+  load mnist-test-labels.sw
+    match-0 |*> #=> test-label |_self>
+    match-1 |*> #=> test-label select[1,1] similarity |_self>
+    match-2 |*> #=> test-label select[2,2] similarity |_self>
+    match-3 |*> #=> test-label select[3,3] similarity |_self>
+    match-4 |*> #=> test-label select[4,4] similarity |_self>
+    match-5 |*> #=> test-label select[5,5] similarity |_self>
+  
+  table[image,match-0,match-1,match-2,match-3,match-4,match-5] rel-kets[similarity]
+  equal? |*> #=> equal(100 match-0 |_self>,match-1 |_self>)
+  is-equal? |*> #=> if(is-coeff-greater-than[0.5] equal? |_self>,equal? |_self>,|False>)
+  table[image,match-0,match-1,match-2,match-3,match-4,is-equal?] rel-kets[similarity]
+  save history
+  history
+  q
+
+2016-05-17
+  log+1 split |a b c d>
+  log+1 9 split |a b c d>
+  log+1[10] 9 split |a b c d>
+  q
+
+2016-05-17
+  log_1[10] 9 |x>
+  debug on
+  log_1[10] 9 |x>
+  q
+
+2016-05-17
+  log+1[10] |x>
+  log+1 |x>
+  log+1 0|x>
+  log+1 2|x>
+  q
+
+2016-05-17
+  log+1[10] 9|x>
+  log+1[10] 99|x>
+  q
+
