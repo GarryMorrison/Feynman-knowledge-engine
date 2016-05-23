@@ -58,6 +58,8 @@ with open(source,'r') as f:
     digit_counts[int(digit_label)] += 1
 
     count += 1
+#    if count >= 100:
+#      break
 
 # have a quick look at what we have:
 print("digit counts:",digit_counts)

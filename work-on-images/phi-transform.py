@@ -32,7 +32,8 @@ context2 = context_list("images to phi superpositions")
 #context.load("sw-examples/small-lenna-edge-40--layer-1--0_7.sw")
 #context.load("sw-examples/small-lenna-edge-40--layer-1--0_4.sw")
 #context.load("sw-examples/mnist-10000-train--k_5--t_0_5--layer-1.sw")
-context.load("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
+#context.load("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
+context.load("sw-examples/mnist-60000-train-label-averaged--k_5--t_0_8--layer-1.sw")
 #sys.exit(0)
 
 if len(sys.argv) < 3:
@@ -50,6 +51,7 @@ file_dir = sys.argv[2]
 #print("files:",list_of_files)
 #sys.exit(0)
 
+# assume these exist. ie, don't test first.
 destination_phi_transform = "work-on-handwritten-digits/phi-transformed-images/"
 destination_phi_images = "work-on-handwritten-digits/phi-images/"
 #image_mode = "RGB"
@@ -219,7 +221,7 @@ for filename in glob.glob(file_dir + "/*"):
 #  phi_image.show()  
   phi_image.save("%s%s.png" % (destination_phi_images,filehead))
 
-context2.save("sw-examples/image-phi-superpositions-test-1000--%s--t_0_4.sw" % str(ngram_size))
+context2.save("sw-examples/image-phi-superpositions--label-average--test-2000--%s--t_0_8.sw" % str(ngram_size))
 
 
 #context.print_universe()
