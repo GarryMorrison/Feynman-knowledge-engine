@@ -32,7 +32,8 @@ context2 = context_list("images to phi superpositions")
 #context.load("sw-examples/small-lenna-edge-40--layer-1--0_4.sw")
 #context.load("sw-examples/mnist-10000-train--k_5--t_0_5--layer-1.sw")
 #context.load("sw-examples/mnist-10000-train--k_5--t_0_4--layer-1.sw")
-context.load("sw-examples/mnist-60000-train-label-averaged--k_5--t_0_8--layer-1.sw")
+#context.load("sw-examples/mnist-60000-train-label-averaged--k_5--t_0_8--layer-1.sw")
+context.load("sw-examples/mnist-test-2000--edge-enhanced--k_5--t_0_4--layer-1.sw")
 #sys.exit(0)
 
 if len(sys.argv) < 3:
@@ -220,7 +221,8 @@ def make_phi_superpositions(context,name,k):
         our_sp = image_to_sp(im2)
         phi = our_sp.similar_input(context,"layer-1").select_range(1,1).ket()
         if phi.label == "":
-          continue
+#          continue
+          phi = ket("phi: 0")                                 # may as well use this as a data point too. Now testing time.
 #        phi_similarity = phi.value
         image_phi_sp += phi                                   # map image to phi sp
 #        phi_sp = phi.apply_op(context,"layer-1").rescale(255)
@@ -297,7 +299,7 @@ for filename in glob.glob(file_dir + "/*"):
 #  phi_image.save("%s%s.png" % (destination_phi_images,filehead))
 
 #context2.save("sw-examples/image-phi-superpositions-test-1000--%s--t_0_4--v2.sw" % str(ngram_size))
-context2.save("sw-examples/image-phi-superpositions--test-2000--phi-transformed-using-average-labels--k_5--t_0_8.sw")
+context2.save("sw-examples/image-phi-superpositions--test-2000--using-edge-enhanced-features--k_5--t_0_4--phi0.sw")
 
 
 

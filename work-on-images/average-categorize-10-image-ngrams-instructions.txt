@@ -312,6 +312,10 @@ $ ./mnist-data-to-images.py 60000
 ---------------------------------------------
 test-label |image: mnist-test-image-1> =>
 image-phi-superpositions-5.sw
+
+------------------------------------------------------------------
+$ time ./phi-transform.py 5 work-on-handwritten-digits/test-images/*
+
 =======================================================================================
 simm-1 |*> #=> 100 ket-simm(layer-1 |phi: 1>,layer-1 |_self>)
 simm-2 |*> #=> 100 ket-simm(layer-1 |phi: 2>,layer-1 |_self>)
@@ -319,3 +323,48 @@ simm-3 |*> #=> 100 ket-simm(layer-1 |phi: 3>,layer-1 |_self>)
 simm-4 |*> #=> 100 ket-simm(layer-1 |phi: 4>,layer-1 |_self>)
 simm-5 |*> #=> 100 ket-simm(layer-1 |phi: 5>,layer-1 |_self>)
 simm-6 |*> #=> 100 ket-simm(layer-1 |phi: 6>,layer-1 |_self>)
+================================================================================================
+$ ./mnist-data-to-average-images.py
+$ ./create-average-images.py 5 work-on-handwritten-digits/label-average-images/
+$ ./phi-superpositions.py 5 work-on-handwritten-digits/test-images/
+real    782m27.272s
+
+
+---------------------------
+$ time ./phi-transform.py 5 work-on-handwritten-digits/test-images/
+real    852m27.770s
+
+--------------------------------------------------------------------------------
+$ time ./image_directory_edge_enhance.py 20 work-on-handwritten-digits/mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8
+
+real    1m17.383s
+
+$ ls -1tr test-images/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-test-2000.jpg
+
+$ ls -1tr mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-test-2000--phi-transformed-using-label-average-features--k_5--t_0_8.jpg
+
+$ ls -1tr mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8--edge-enhanced-20/* > image-list.txt
+$ montage -geometry +2+2 @image-list.txt mnist-test-2000--phi-transformed-using-label-average-features--k_5--t_0_8--edge-enhanced-20.jpg
+
+
+$ time ./create-average-images.py 10 work-on-handwritten-digits/mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8
+real    2177m43.621s
+$ ls -1tr average-categorize-images--k_10-t_0_7--mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8--edge-enhanced-20/* > image-list.txt
+
+
+$ time ./create-average-images.py 7 work-on-handwritten-digits/mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8--edge-enhanced-20
+real    1351m22.038s
+
+
+$ time ./create-average-images.py 5 work-on-handwritten-digits/mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8--edge-enhanced-20
+t = 0.4
+real    82m30.134s
+
+$ time ./phi-superpositions.py 5 work-on-handwritten-digits/mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8--edge-enhanced-20/
+real    3223m56.830s
+
+
+$ time ./phi-superpositions.py 5 work-on-handwritten-digits/mnist-2000-test-images--phi-transformed-images--using-label-average-features--k_5--t_0_8--edge-enhanced-20/
+real    3205m54.632s
