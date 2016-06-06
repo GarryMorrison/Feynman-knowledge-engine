@@ -1,0 +1,883 @@
+A Framework for Knowledge Representation
+
+In this informal paper I will explore (present?) an alternative approach to knowledge representation. Variously called the BKO scheme (bra-ket-operator), mumble lang, or the Feynman Knowledge Engine.
+
+The minimalist description of what I'm trying to do is to develop notation that can represent most knowledge using just three objects.
+These are called kets, superpositions and operators, where kets are just string, float pairs, superpositions are linear combinations of kets, and operators are objects that map superpositions to superpositions.
+Along with some other (related?) machinery, this framework should be sufficient to represent many knowledge systems of interest.
+We can then formally define learning as the process of defining new operators. In our case these are literal operators, function operators and sigmoids.
+
+Being semi-universal, our superpositions, operators and the framework can be identified with existing object names.
+superpositions, can variously represent:
+list of integers
+list of strings
+vectors
+sparse labeled vectors
+spare distributed representations (SDR's from Hawkin's work)
+current network state, ie which nodes are active, and by how much
+current system state
+
+operators:
+lambda calculus?, tools (cf a hammer), movement (cf the grid example), time-evolution, matrix multiplication, "neural modules"
+movement + edit-distance => operator sequences are a type of distance
+number of operators in a sequence is a kind of distance, probably not formally a metric though.
+eg, concrete is the operator in the grid example
+more abstract in the edit-distance example
+completely abstract in say getting from one thought to another
+framework:
+groups, category theory 
+
+Start by a semi-formal definition of the framework:
+- define F to be the set of python floats.
+- define KS (ket-strings) to be the set of arbitrary strings that do not contain '<', '|', '>' and newline characters, unless they are escaped.
+- define KET to be the set of objects of form |S> or c|S> where S is in KS and c is in F
+-- if c is not specified then c = 1
+-- most of the time c >= 0
+-- we have a convention for ket-strings that we can separate hierarchy using ': '
+-- eg: |category: value>, |category: subcategory: value>, |category: subcategory: subsubcategory: value>, and so on.
+-- eg, more concretley: |plant: tree: elm>
+- define the empty ket (or empty superposition) to be |>. ie a ket with an empty ket-string
+- define the self kets to be: |_self>, |_self1>, |_self2>, |_self3>, |_self4>. Their use will be explained later.
+- define SP to be the set of linear combinations of elements in KET
+-- eg: c1|S1> + c2|S2> + ... + cn|Sn>
+- define CSP (clean superpositions) to be the set of superpositions with all coefficients equal to 1 or 0.
+- define a negative superposition to be the set of superpositions with at least one coefficient less than 0.
+-- Indeed, we can represent a lot of things just using clean superpositions. Lists and sets being prime examples. And usefully they are especially easy to parse.
+- define the currency of a superposition to be the sum of the coefficients of the kets in that superposition.
+-- for a clean superposition, the currency is equal to the number of kets in the superposition that have coefficient equal to 1 (ie, ignore those kets with coefficient 0)
+- define OS (operator-strings) to be the set of python strings that satisfy:
+def valid_op(op):
+  if not op[0].isalpha() and not op[0] == '!':
+    return False
+  return all(c in ascii_letters + '0123456789-+!?.' for c in op)
+- define the set of OP (operators) to be objects labelled with operator-strings.
+-- every operator foo in OP has a corresponding ket representation: |op: foo>
+- define the set of SIG (sigmoids) to be operators that only change the coefficients of kets, not the ket-string
+-- sigmoids have this signature:
+SIG KET => KET
+-- sigmoids are partially linear:
+-- ie, sig (|a> + 3.2|b> + 0.71|c>) == sig|a> + sig (3.2 |b>) + sig (0.71 |c>)
+- define the set of FOP (function-operators) to be small units of python code
+-- some function operators have parameters, and some don't. eg, "op" vs "op[a]" and "op[a,b,c]", etc.
+- define the set of LOP (literal-operators) to be operators defined by way of learn rules
+- define the KETREP (ket representation) of operators to be the set of kets |op: O> where O is in LOP (ie, a literal operator). 
+- function and literal operators can have any of these signatures:
+OP KET => KET
+OP KET => SP
+OP SP => SP
+OP (SP) => SP                   -- are these guys really operators? or functions??
+OP (SP,SP) => SP
+OP (SP,SP,SP) => SP
+OP (SP,SP,SP,SP) => SP
+-- literal and functional operators that have signature: "OP KET => KET" or "OP KET => SP" are (almost always) linear:
+-- ie, op (|a> + 3.2|b> + 0.71|c>) == op|a> + 3.2 op|b> + 0.71 op|c>
+- floats are a special type of operator. They are python floats that multiply every ket in a superposition by its value.
+-- some float examples: 7 (ie, integer), 3.14159 (ie, float), 5/7 (ie, standard rational), 5.2/7.3 (ie, float rational) 
+-- NB: they do not have a corresponding ket representation
+-- floats and sigmoids usually don't commute.
+-- floats and literal operators usually do commute.
+- the underline symbol merges the labels of kets. So |S1> _ |S2> == |S1S2> for any ket strings S1 and S2. What happens to the coefficients of these kets is currently undefined, and taken to be 1.
+- define OPS to be a sequence of zero or more operators (any one of SIG, FOP, LOP and floats) seperated by the space character. eg: "op4 op3 op2 op1"
+-- an op sequence is a composition of operators, one operator applied to the SP after another. Since each operator is SP -> SP, each operator sequence is also SP -> SP.  
+#-- ie, we have an operator composition property. A very powerful one in fact. Since each operator is SP -> SP, each operator sequence is also SP -> SP.
+-- note that in general operators in an operator sequence do not commute.
+-- we have a shortcut for repeated operators: "op op op op op" can be written "op^5". And in general, "op^k", where op is any one of SIG, FOP, LOP and float, and k is a positive integer. 
+- define the set LR (learn rules) to be: '=>' '+=>' '#=>' '!=>'
+-- for convenience we will just use '=>', with the knowledge that I actually mean any one of the four.
+- every ket has a special literal-operator 'supported-ops' that is a clean superposition of literal operators, in ket representation, supported by that ket.
+-- NB: we never define this manually. The code constructs this itself, as it learns new operator definitions.  
+- define context to be a collection of learn rules
+-- importantly, rules in different context's are completely independent.
+- define context-list to be a collection of context's
+- define a sw file to be a context or context-list saved to a file. You can load them on demand into the console using: "load some-file.sw", and save with "save some-file.sw"
+- define ECS (extract compound superposition) to be a function that maps strings to superpositions.
+-- it is the key component of the parser!
+
+Some properties of these objects:
+- kets with the same ket-string add. eg: 3.2|x> + 7.1|x> = 10.3|x>
+- the addition of two or more kets, with different ket-strings is a superposition
+-- hence the addition of two or more superpositions is also a superposition
+- kets in superposition commute: c1|a> + c2|b> = c2|b> + c1|a>
+-- hence superpositions commute
+- addition of kets is naturally associative: (c1|a> + c2|b>) + c3|c> = c1|a> + (c2|b> + c3|c>)
+- there is a special ket |> variously called the empty ket or empty superposition, the superposition identity element and the "I don't know symbol"
+-- as the superposition identity element it has the property: sp + |> = |> + sp = sp, for any sp in SP
+-- for any computation where the result is an empty superposition, or the code doesn't know how to answer, or there is an error, |> is returned. Hence the name the "I don't know symbol"
+-- we have a special operator called "do-you-know". "do-you-know |>" returns "|no>", otherwise "do-you-know c|x>" for any float c, and x a non-empty ket-string returns "|yes>"
+- Indeed, if we define g(a,b) = drop (a + b), a,b in SP then g is an Abelian group with identity, inverse, closure, associativity and commutation. 
+-- where drop is a function operator that removes all kets from a superposition that have coefficient <= 0. If no elements are > 0 it returns |>.
+-- g(a,|>) = g(|>,a) = a
+-- g(a,-a) = g(-a,a) = drop (a + -a) = drop 0 a = |>
+-- sp1 + sp2 is in SP for all sp1, and sp2 in SP
+-- (sp1 + sp2) + sp3 = sp1 + (sp2 + sp3), for all sp1,sp2,sp3 in SP
+-- g(a,b) = g(b,a)  
+- for a theoretical function meaning(sp) that returns the "meaning" of sp, we have a few properties:
+-- meaning(shuffle sp1) = meaning(sp1 + 0 sp2) = meaning(drop sp1) = meaning(sp1), for any sp1 and sp2 in SP.
+-- where shuffle is a function operator that randomly shuffles the order of kets in a superposition
+-- and where sp1 + 0 sp2 adds an arbitrary superposition sp2 to sp1, but with all coefficients of sp2 equal to 0.
+-- Interestingly, since meaning(drop sp) = meaning(sp) superpositions can be used for sparse representation. We don't need to waste space for kets with coefficient <= 0. For many cases this is a big win!
+
+- we have a couple of related function operators: how-many and measure-currency.
+-- "how-many sp" returns the number of kets in sp
+-- "measure-currency sp" returns the currency of sp
+-- note that if all the coefficients in sp are 1, then "how-many sp" == "measure-currency sp"
+-- indeed, we have a sigmoid "clean" that maps all coefficients > 0 to 1, and 0 otherwise. And then we have the property: "measure-currency drop clean sp" == "how-many drop sp" for any sp in SP.
+-- we say an operator "op" "conserves currency" if "measure-currency op sp" == "measure-currency sp"
+-- an alternative definition is, if in the matrix representation of "op", the sum of each column is exactly 1.
+  
+
+-- BAH!! Just a redefinition of category theory isn't it??? 
+Define operator groups: -- define these first, and then the full BKO scheme??
+an operator group consists of two sets and a composition rule:
+1) a set of objects G
+2) a set of operators OP
+3) the composition rule applies an operator to an object and returns an object
+
+Operator groups have these properties:
+1) closure: for every x in G, and every op in OP, op x is in G
+2) the operator group has identity if for every x in G, there exists op in OP such that op x == x.
+Note that there are two types of identity operators:
+A universal identity operator ID has the property that ID x == x for all x in G
+A specific identity operator ID_x has the property that ID_x x == x, where ID_x != ID_y if x != y
+3) the operator group is Abelian if op2 op1 x == op1 op2 x, for any op1,op2 in OP, and x in G.
+4) we call the application of more than one operator an operator sequence. Eg "op2 op1", "op5 op4 op3 op2 op1", and so on.
+5) the operator op is cyclic if there exists k such that op^k x == x
+6) if all operators in OP are cyclic, then the operator group is cyclic
+7) some operator groups have a "don't know" symbol, which is returned when "op x" is not defined.
+
+Notes:
+1) closure has the consequence that every operator sequence applied to an object is also an object in G.
+2) in the BKO scheme we would define the universal identity operator using:
+ID |*> #=> |_self>
+and we would define specific identity operators using:
+ID_a |a> => |a>
+ID_b |b> => |b>
+...
+3) the BKO scheme is not Abelian.
+4) in the BKO scheme we abbreviate op op op op op as op^5, for any op. Similarly for other length operator sequences.
+5) in the BKO scheme, the don't know symbol is |>
+6) identity operators and symmetries of an object are pretty much the same thing.
+
+Now, a simple example:
+First define OP to have a single element:
+op |*> #=> mod[5] plus[1] |_self>
+And define G using exp-max:
+  context simple operator group
+  op |*> #=> mod[5] plus[1] |_self>
+  set |G> => clean exp-max[op] |1>
+  dump
+----------------------------------------
+|context> => |context: simple operator group>
+
+op |*> #=> mod[5] plus[1] |_self>
+set |G> => |1> + |2> + |3> + |4> + |0>
+----------------------------------------
+And note, using the fact that op is cyclic, we can implement a universal identity operator, simply:
+ID |*> #=> op^5 |_self>
+though it is shorter to just use:
+ID |*> #=> |_self>
+
+
+Now, how do we do anything with all of this?
+It is all quite theoretical so far. But! I have a pre-alpha python implementation of this framework, available open source on github. 
+As part of that, the standard way to interact with the framework is through what I call the console. From now on, any line starting with "sa: " is taken to be inside the console. 
+
+Next it is time to describe how we use our 4 learn rules: '=>' '+=>' '#=>' '!=>'
+We start with the standard learn rule '=>' which associates a superposition with respect to an OP KET pair. I guess you could call it a type of associative memory.
+OP KET => SP
+
+An example in the console will help demonstrate:
+-- learn an example rule, which is equivalent to defining a literal operator, in this case "op":
+sa: op |a> => |x> + |y> + |z>
+Then to recall the superposition, which is somewhat like named pointer dereferencing, simply specify the op ket pair:
+sa: op |a>
+|x> + |y> + |z>
+
+If you dereference an undefined op ket pair, the empty ket is returned:
+sa: op2 |a>
+|>
+sa: op |b>
+|>
+
+Also, you can't directly learn an empty ket (though you can do so using stored rules):
+sa: op |b> => |>
+leaves the system unchanged. If "op |b>" was previously defined, it is left intact. This may sound a little weird, but is useful in practice. Besides, if "op |b>" is not defined it returns |> by default anyway.
+
+And that is it, at least for a starting point. 
+Indeed, we can already represent many types of static knowledge. Here is a fictional George:
+
+age |person: George> => |age: 29>
+dob |person: George> => |date: 1984-05-23>
+hair-colour |person: George> => |hair-colour: brown>
+eye-colour |person: George> => |eye-colour: blue>
+gender |person: George> => |gender: male>
+height |person: George> => |height: cm: 176>
+wife |person: George> => |person: Beth>
+occupation |person: George> => |occupation: car salesman>
+friends |person: George> => |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+mother |person: George> => |person: Sarah>
+father |person: George> => |person: David>
+sisters |person: George> => |person: Emily>
+brothers |person: George> => |person: Frank> + |person: Tim> + |person: Sam>
+email |person: George> => |email: george.douglas@gmail.com>
+education |person: George> => |education: high-school> 
+
+First note that it is uniform. All of our knowledge is in form: OP KET => SP, noting of course that KET is a subset of SP. 
+And representing a list of objects, as the third element in the triple, (eg, in this case George's friends or brothers) is no harder than having a single ket as the third element in the triple. RDF??
+Noting in this example we decided to specify the categories/data-types: "person", "age", "date", "hair-colour" and so on.
+Depending on what you are doing it can be visually cleaner, or useful, to leave them out. But it is possible to add them in, or change them, later. example??
+
+Once this knowledge is loaded into the console (either by pasting it in, or "load george.sw"), we can ask simple questions in an obvious way:
+-- what is the age of George?
+sa: age |person: George>
+|age: 29>
+
+-- what is George's occupation?
+sa: occupation |person: George>
+|occupation: car salesman>
+
+-- who are George's friends?
+sa: friends |person: George>
+|person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew>
+
+Something very briefly mentioned above is the special literal operator "supported-ops". This keeps a record of all literal operators supported by a given ket, stored in ket representation. 
+In the current example:
+sa: supported-ops |person: George>
+|op: age> + |op: dob> + |op: hair-colour> + |op: eye-colour> + |op: gender> + |op: height> + |op: wife> + |op: occupation> + |op: friends> + |op: mother> + |op: father> + |op: sisters> + |op: brothers> + |op: email> + |op: education>
+
+And the framework is essentially schema free. We can define, or redefine, literal operators at any time. And the supported-ops list of operators will be correspondingly updated. 
+Specify a learn rule, and you are done. No further manual housekeeping needed.
+
+This is pretty much enough to represent most of the semantic web. We can just pass around sw files that contain collections of these types of learn rules. And they are trivial to parse.
+Later we will describe an alternative to the semantic web's SPARQL query language, composed of a collection of function operators.
+But we shan't stop there. We have a lot more power to add to our framework yet.   
+
+It is now useful to define a very important superposition function that makes use of the ket representation of operators:
+Define our function apply: SP*SP -> SP
+where each operator in ket representation in the first superposition is applied to each ket in the second superposition and added together.
+any kets in the first superposition that are not operators in a ket representation are ignored. If there are none at all, then apply() returns the empty ket |>.
+
+A quick demonstration in the console:
+-- find George's age, date-of-birth, and height:
+sa: apply(|op: age> + |op: dob> + |op: height>,|person: George>)
+|age: 29> + |date: 1984-05-23> + |height: cm: 176>
+
+-- apply kets that are not operators, and get the expected empty ket:
+sa: apply(|cat> + |dog>,|person: George>)
+|>
+
+The usefulness of the apply() function is that we can't pass around literal operators, but we can pass around superpositions of literal operators in ket representation.
+
+The next type of learn rule is the add-learn rule: '+=>'
+OP KET +=> SP
+this is sort of a short-cut in that we could live without it, but it would be inconvenient (annoying to have)?? to do it long hand all the time.
+So:
+op ket +=> sp
+is essentially identical to:
+op ket => op ket + sp
+
+A brief example in the console:
+-- learn something:
+sa: op |a> => |x> + |y> + |z>
+
+-- recall it:
+sa: op |a>
+|x> + |y> + |z>
+
+-- make use of add-learn:
+sa: op |a> +=> |x> + |z> + |u> + |w>
+
+-- now see what we recall:
+sa: op |a>
+2|x> + |y> + 2|z> + |u> + |w>
+
+I guess that is about it for add-learn. Just a little thing that is useful every now and then, especially when learning frequencies of objects.
+
+Now on to stored-rules: '#=>'. These guys are super useful. We could say that standard learn rule stores the result of a computation for later, and that stored rules stores the computation for later.
+They have the property that the SP is calculated at recall time, not learn time as is done for standard learn rules.
+Again, a console example should help:
+-- learn a couple of rules:
+sa: op |a> => |start value>
+sa: value |r1> => op |a>
+sa: value |r2> #=> op |a>
+
+-- see what we recall:
+sa: value |r1>
+|start value>
+
+sa: value |r2>
+|start value>
+
+So, they look the same for now, but if we redefine op |a>:
+sa: op |a> => |second value>
+
+-- now see what we recall:
+sa: value |r1>
+|start value>
+
+sa: value |r2>
+|second value>
+
+This time we see the difference! r1 made use of the original definition of op|a> while r2 returns the recall time definition of op|a>.
+This example is all pretty simple, but later when we add in all sorts of operator sequences stored rules become very useful indeed.
+
+Our final learn rule is the memoizing rule: '!=>'. They are essentially identical to stored rules, but with one big difference. Once you ask their value, its value replaces the rule. 
+Essentially you can ask its value only once, and after that it will always give the same answer. Interestingly enough, they have some similarity to measuring a quantum system.
+
+To give a clear example I will first need to introduce a couple of things. First is the dump operator in the console. It returns a display of the current context, ie, all known learn rules.
+The second is the weighted-pick-elt operator. Given a superposition, it returns a single ket in that superposition with probability of the coefficient of that ket (even if the coefficients haven't been normalized to 1).
+If all coefficients in the superposition are the same, then they are returned with equal probability. It has a brother called pick-elt that ignores the coefficients and returns kets with equal probability.
+
+-- now learn our simple quantum system:
+sa: is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+
+-- now dump the current context:
+sa: dump
+----------------------------------------
+|context> => |context: sw console>
+
+is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+----------------------------------------
+
+-- now ask is the poor cat alive or dead?
+sa: is-alive |Schrodinger's cat>
+|yes>
+
+-- and once again, dump the current context:
+sa: dump
+----------------------------------------
+|context> => |context: sw console>
+
+is-alive |Schrodinger's cat> => |yes>
+----------------------------------------
+The thing to note is the rule has been replaced with a definite answer. If the rule had been defined using stored rules '#=>' we could ask over and over, the rule would never be overwritten, and we would get a different answer each time we ask.
+Frequently you can replace #=> with !=> as a time optimization, at the cost of some space. For Fibonacci, which we will give later, this gives a massive speed-up.
+And this example goes some way to justifying calling our objects superpositions.
+
+mention QM example, with probabilities??
+the measure once property is somewhat annoying if you are trying to probe the details of a system! ??
+have to reset the system to measure again. After very many measurements you can reconstruct the probabilities.
+
+Since I mentioned "some similarity to measuring a quantum system", let's give another example in that direction.
+
+-- define our context:
+sa: context simple QM measurement system
+
+-- define a normalized superposition of 5 states:
+sa: normalized |superposition> => normalize absolute-noise[100] 0 (|state 1> + |state 2> + |state 3> + |state 4> + |state 5>)
+
+-- define our measurment operator:
+sa: measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+
+See what we have:
+sa: dump
+----------------------------------------
+|context> => |context: simple QM measurement system>
+
+normalized |superposition> => 0.232|state 1> + 0.259|state 2> + 0.071|state 3> + 0.069|state 4> + 0.369|state 5>
+measure |quantum system> !=> normalize weighted-pick-elt normalized |superposition>
+----------------------------------------
+
+Now, measure our system:
+sa: measure |quantum system>
+|state 5>
+
+-- see how the context has been updated:
+sa: dump
+----------------------------------------
+|context> => |context: simple QM measurement system>
+
+normalized |superposition> => 0.232|state 1> + 0.259|state 2> + 0.071|state 3> + 0.069|state 4> + 0.369|state 5>
+measure |quantum system> => |state 5>
+----------------------------------------
+
+Noting that our quantum system is now in a definite state |state 5>. If we wanted to re-run the experiment we would have to apply the !=> rule again.
+And if we wanted to reconstruct the probabilities of each state from measurement alone, we would have to run this very many times.
+
+I do need to explain a few pieces though:
+1) 0 (|state 1> + |state 2> + ...) multiplies that superposition by 0. ie, effectively setting all the coefficients to zero. The "0" here is an example of a float operator which are briefly mentioned in the definition section.
+2) absolute-noise[100] adds random noise to the applied superposition, in this case up to 100. Note it is additive only. So the combination "absolute-noise[100] 0" creates a superposition with coefficients in range [0,100].
+3) normalize is a function operator that normalizes the superposition so the currency (sum of coefficents) of that superposition is 1. Distinct from standard QM normalization where normalization means <x||x> = 1.
+4) weighted-pick-elt returns each ket in the given superposition with probability of the coefficient of that ket, though it leaves the coefficient intact. Hence why we need the combination "normalize weighted-pick-elt".
+
+knowledge rep of QM calculations, not QM itself??
+
+So that is a brief outline of our 4 learn rules. With more examples to follow, hopefully they will get clearer. 
+For convenience from now on I will usually just use '=>' with it implicit that it could be any one of the four.
+
+Now to back-track a little. It is time to introduce label descent and the self ket.
+Recall, we associate a superposition with an op ket pair:
+OP KET => SP
+But with a little more notation, we can write rules that associate a superposition with a whole family of kets.
+
+First, define the label-descent function.
+An abstract example. Say you give it the label 'a: b: c: d: e' then it returns this list of labels: 
+a: b: c: d: e
+a: b: c: d: *
+a: b: c: *
+a: b: *
+a: *
+*
+
+Then if you ask the value of: "op |a: b: c: d: e>" it tries those labels in turn, stopping at the first matching known rule. If none are matched, just return the empty ket |> as usual.
+This has some similarity to pattern matching in some other languages.
+First, it checks if: "op |a: b: c: d: e>" has been defined.
+Then: "op |a: b: c: d: *>"
+Then: "op |a: b: c: *>"
+...
+Finally "op |*>"
+where the * essentially means "match family of kets". (, and "op |*>" means match all kets with the literal operator "op" defined.)??
+
+A nice simple example in the console:
+-- learn that plants are living organisms:
+sa: is-a-living-organism |plant> => |yes>
+
+-- learn that all plant types are living organisms:
+sa: is-a-living-organism |plant: *> => |yes>
+
+-- now ask, if various trees are living organisms?
+sa: is-a-living-organism |plant: tree>
+|yes>
+
+sa: is-a-living-organism |plant: tree: elm>
+|yes>
+
+sa: is-a-living-organism |plant: tree: oak: the one next to my house>
+|yes>
+
+-- now ask, is a shrub a living organism?
+sa: is-a-living-organism |plant: shrub>
+|yes>
+
+Indeed, this corresponds to a more general scheme.
+The maths statement "for all x in X, x has-some-property" is easily encoded as:
+has-some-property |X: *> => |yes>
+
+And we can encode exceptions. eg, the maths statement "for all x in X except y and z, x has-some-property" is encoded as (thanks to the magic of label descent):
+has-some-property |X: *> => |yes>
+has-some-property |X: y> => |no>
+has-some-property |X: z> => |no>
+
+How to implement "there exists x in X such that x has-some property" is less clear.
+
+So there we have it. Associating superpositions with a whole family of kets, and an example of the usefulness of specifying categories/data-types.
+
+Now the self ket |_self>. This thing is used very frequently with stored and memoizing rules, and is passed in as a parameter to extract-compound-superposition.
+Essentially, the ket in the op ket pair is substituded into |_self> in the superposition on the right hand side of the learn rule.
+-- here is the simplest possible example, the identity operator:
+sa: id |*> #=> |_self>
+
+-- now apply our new identity operator to a couple of example kets:
+sa: id |x>
+|x>
+sa: id |foo: bah>
+|foo: bah>
+
+We now have enough to define our everything-you-know-about operator:
+sa: everything-you-know-about |*> #=> apply(supported-ops |_self>,|_self>)
+
+-- now apply it to our George example:
+sa: everything-you-know-about |person: George>
+|age: 29> + |date: 1984-05-23> + |hair-colour: brown> + |eye-colour: blue> + |gender: male> + |height: cm: 176> + |person: Beth> + |occupation: car salesman> + |person: Fred> + |person: Jane> + |person: Liz> + |person: Andrew> + |person: Sarah> + |person: David> + |person: Emily> + |person: Frank> + |person: Tim> + |person: Sam> + |email: george.douglas@gmail.com> + |education: high-school>
+
+And if we want to restrict to a smaller list of interesting operators, that is easy enough too:
+-- learn what operators we think are interesting: age, date-of-birth, height, gender, occupation 
+sa: the-list-of-interesting-operators |*> => |op: age> + |op: dob> + |op: height> + |op: gender> + |op: occupation>
+-- here defined for everybody since we used *, but we could define rules specific for individuals too
+-- eg, say Robert is a special case, and we only care about his parents names.
+-- this rule will override the general rule only when we ask about Robert:
+sa: the-list-of-interesting-operators |Robert> => |op: mother> + |op: father>
+
+-- define the interesting-things-you-know-about operator:
+sa: interesting-things-you-know-about |*> #=> apply(the-list-of-interesting-operators |_self>,|_self>)
+
+-- apply it to George:
+sa: interesting-things-you-know-about |person: George>
+|age: 29> + |date: 1984-05-23> + |height: cm: 176> + |gender: male> + |occupation: car salesman>
+
+-- apply it to Robert:
+sa: interesting-things-you-know-about |Robert>
+|Emma> + |Richard>
+
+
+A quick aside. We can easily define alias's for operators (at a small run-time cost).
+-- learn an alias:
+improved-operator-name |*> #=> old-operator-name |_self>
+
+There is a technicality in that this operator definition is linear. This causes weird bugs every now and then if you don't want linearity and you aren't careful.
+A safer definition is to define a superposition learn rule (we will describe these later):
+improved-operator-name (*) #=> old-operator-name |_self>             is there a case where this is not as good as |*>???
+
+Now on to an example that was one of the original motivators of using label descent to implement general rules.
+Rules that describe family relations:
+
+siblings |person: *> #=> brothers |_self> + sisters |_self>
+children |person: *> #=> sons |_self> + daughters |_self>
+parents |person: *> #=> mother |_self> + father |_self>
+uncles |person: *> #=> brothers parents |_self>
+aunts |person: *> #=> sisters parents |_self>
+aunts-and-uncles |person: *> #=> siblings parents |_self>
+cousins |person: *> #=> children siblings parents |_self>
+grand-fathers |person: *> #=> father parents |_self>
+grand-mothers |person: *> #=> mother parents |_self>
+grand-parents |person: *> #=> parents parents |_self>
+grand-children |person: *> #=> children children |_self>
+great-grand-parents |person: *> #=> parents parents parents |_self>
+great-grand-children |person: *> #=> children children children |_self>
+
+So with a minimal set of operators (brothers, sisters, sons, daughters, mother, father), we can generate the entire family structure. 
+
+
+Next, we can use label descent, stored rules, and the self ket to implement category/data-type filters.
+Consider this list:
+the |list> => |number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>
+
+Define some filters:
+-- the general rule is we want our filters to return the empty ket, also known as the superposition identity element:
+number-filter |*> #=> |>
+furniture-filter |*> #=> |>
+animal-filter |*> #=> |>
+animal-number-filter |*> #=> |>
+
+-- now define specific exceptions to our general rules:
+number-filter |number: *> #=> |_self>
+animal-number-filter |number: *> #=> |_self>
+furniture-filter |furniture: *> #=> |_self>
+animal-filter |animal: *> #=> |_self>
+animal-number-filter |animal: *> #=> |_self>
+
+-- try out our filters:
+sa: number-filter the |list>
+|number: 137> + |number: 5573>
+
+sa: furniture-filter the |list>
+|furniture: chair> + |furniture: table>
+
+sa: animal-filter the |list>
+|animal: frog>
+
+sa: animal-number-filter the |list>
+|number: 137> + |animal: frog> + |number: 5573>
+
+
+The above probably doesn't make much sense without understanding the linearity of our operators and the superposition identity element. 
+Recall sp + |> == |> + sp == sp, for any sp in SP.
+
+So, using that, let's work through the number-filter example:
+number-filter the |list
+== number-filter (|number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>)
+== number-filter |number: 137> + number-filter |furniture: chair> + number-filter |animal: frog> + number-filter |furniture: table> + number-filter |number: 5573>
+== |number: 137> + |> + |> + |> + |number: 5573>
+== |number: 137> + |number: 5573>
+
+Let's work through the slightly more complex animal-number-filter example:
+animal-number-filter the |list>
+== animal-number-filter (|number: 137> + |furniture: chair> + |animal: frog> + |furniture: table> + |number: 5573>)
+== animal-number-filter |number: 137> + animal-number-filter |furniture: chair> + animal-number-filter |animal: frog> + animal-number-filter |furniture: table> + animal-number-filter |number: 5573>
+== |number: 137> + |> + |animal: frog> + |> + |number: 5573>
+== |number: 137> + |animal: frog> + |number: 5573>
+
+
+While we have this data, we can also simply enough count the number of numbers or animals in our list:
+-- first define our general and specific (to a data-type) rules:
+sa: is-a-number |*> => |no>
+sa: is-a-number |number: *> => |yes>
+sa: is-an-animal |*> => |no>
+sa: is-an-animal |animal: *> => |yes>
+
+-- see what they can tell us:
+sa: is-a-number the |list>
+2|yes> + 3|no>
+
+sa: is-an-animal the |list>
+4|no> + |yes>
+
+-- once more, this time using our filters:
+sa: is-a-number number-filter the |list>
+2|yes>
+
+sa: is-an-animal animal-filter the |list>
+|yes>
+
+Alternatively we can count using the how-many operator, a built in function operator that returns the number of kets in a superposition:
+-- like this:
+sa: how-many number-filter the |list>
+|number: 2>
+
+sa: how-many animal-filter the |list>
+|number: 1>
+
+sa: how-many animal-number-filter the |list>
+|number: 3>
+
+And we are already starting to see a couple of things here. The power of operator composition, and our notation approaching natural language. I take that as a big hint we are on the right track here!
+Note that standard semantic web URI's do not have a composition property (they sort of do in SPARQL though), and they most certainly don't read like natural langauge.
+
+So now it is time to look into operators more deeply (thoroughly)??.
+Let's start with the simplest, the sigmoids (named after the sigmoid function). All they do is change the coefficients of kets, not the ket-strings themselves.
+And they are partially linear, as briefly mentioned in the definition section:
+For any sig in SIG, and for any superposition: 
+sig (c1|S1> + c2|S2> + ... + cn|Sn>)
+== sig c1|S1> + sig c2|S2> + ... + sig cn|Sn>   
+
+There are two types, those that do not take parameters, and those that do. Sigmoids are really very simple, so I will only give a couple of examples.
+Most of the rest are defined here: http://write-up.semantic-db.org/48-introducing-sigmoids.html
+
+First, the clean sigmoid:
+clean sp
+set all coefficients in sp above 0 to 1, else 0.
+It maps any superposition to a clean superposition.
+Here is the python:
+def clean(x):
+  if x <= 0:
+    return 0
+  else:
+    return 1
+
+Next, the threshold filter, similar to our built-in function operator drop-below[t]
+threshold-filter[t] sp
+set all coefficients in sp below t to 0, else x
+Here is the python:
+def threshold_filter(x,t):
+  if x < t:
+    return 0
+  else:
+    return x
+
+The rest of the sigmoids follow in an obvious way. (And their python is short enough that we don't mind adding new ones if a new need arrives.)?? 
+A couple of sigmoid examples will be instructive:
+sa: clean (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+|a> + |b> + 0|c> + |d> + 0|e> + |f>
+
+sa: threshold-filter[2] (3|a> + |b> + -2.7|c> + 38762|d> + -5.55|e> + |f>)
+3|a> + 0|b> + 0|c> + 38762|d> + 0|e> + 0|f>
+
+Let's expand on my drop-below[t] point. Sigmoids only change the coefficients, so they can't remove elements from a superposition. The function operators drop, drop-below[] and drop-above[] can.
+drop removes all kets from the superposition with coefficients <= 0.
+drop-below[t] removes all kets from the superposition with coefficients < t.
+drop-above[t] removes all kets from the superposition with coefficients > t.
+
+So for example, "drop threshold-filter[t]" == "drop-below[t]"
+
+This is a nice segue?? into function operators. In the code we have two types, those that are fundamental enough that they are built in to the ket and superposition classes, and those that are in our functions code file.
+Though in practice the distinction is not all that important.
+... list ...
+  def count(self):
+  def count_sum(self):
+  def number_count(self):
+  def number_count_sum(self):
+  def product(self):                          # need to put these in ket now.
+  def number_product(self):
+  def drop(self):
+  def drop_below(self,t):
+  def drop_above(self,t):
+  def select_elt(self,k):
+  def select_range(self,a,b):
+  def top(self,k):
+  def inhibition(self,t):
+  def delete_elt(self,k):
+  def index_split(self,k):                      # OK. Now need to test it.
+  def pick_elt(self):
+  def weighted_pick_elt(self):                    # quick test in the console, looks to be roughly right.
+  def find_index(self,one):
+  def find_value(self,one):
+  def normalize(self,t=1):
+  def softmax(self):
+  def rescale(self,t=1):
+  def multiply(self,t):
+  def add(self,t):
+  def abs(self):                                     # probably rare use given coeffs are meant to be >= 0
+  def absolute_noise(self,t):
+  def relative_noise(self,t):
+  def reverse(self):
+  def shuffle(self):
+  def coeff_sort(self):
+  def ket_sort(self):
+  def find_max_elt(self):
+  def find_min_elt(self):
+  def find_max(self):
+  def find_min(self):
+  def find_max_coeff(self):
+  def find_min_coeff(self):
+  def number_find_max_coeff(self):
+  def number_find_min_coeff(self):
+  def find_topic(self,context,op):
+  def similar_input(self,context,op):
+  def is_not_empty(self):
+
+
+
+range, arithmetic (is a level above kets, hence need special function, unlike other programming languages), intersection, union, subset, mbr?, exclude? Sherlock example! songs just heard example, need memory system for it to work
+map, if,
+in console map[op1,op2] is fine
+is sw file need:
+|null> => map[op1,op2] |>     (must be valid learn rule, else parser ignores it)
+is op ket => SP a memory system? ie, the hippocampus??
+
+function operators, two types, those built in to the ket and superposition classes, and those implemented in the functions file (link to them??)
+more formally define operator composition
+applying operators has some similarity to time evolution (in this case time evolution of the input superposition)
+define more as needed, examples
+clean + drop, threshold-filter + drop-below
+
+And we are now starting to see the use and power of operator composition!
+
+slightly ugly definition, clean application??
+nicely shows linearity??
+is-a-number example??
+first example of operator composition?? explain op composition??
+English/NLP like?? We are already starting to see examples where our operator ket notation is approaching natural language. I take that as a big hint we are on the right track here!
+
+
+Next phase: context.
+As very briefly mentioned in our definition section, a context is what we call a collection of learn rules. Learn rules in different context are completely independent. They can be arbitrarily contradictory with no problems at all.
+They share some similarity with micro-theories in the CYC project. A context-list is a collection of context's. Frequently we want to have knowledge stored in separate contexts simultaneously. Context-list makes this possible.
+
+In the console we have a short cut to define context:
+sa: context the name of this context
+
+In sw files (which are just big collections of learn rules), we use:
+|context> => |context: the name of this context>
+
+But at this point I want to mention a little of the back-end python:
+Define a context:
+context = new_context("some context")
+
+Define a context-list:
+context = context_list("some context")
+
+Here are some of the python methods for new_context() and context_list(). Note that for practical reasons the new_context() and context_list() interfaces are virtually identical. explain??
+context.set("new context name")
+Set the context name to "new context name". In new_context() this overwrites the old context. In context_list() it switches to this context if already defined, or creates it if not.
+This corresponds to this learn rule: |context> => |context: new context name>, which the parser treats seperately from other learn rules.
+
+
+Put this in appendix??
+context.load("file.sw")
+Load a sw file into memory.
+This correponds to "load file.sw" in the console.
+
+context.save("file.sw")
+Save the current context to a sw file.
+This corresponds to "save file.sw" in the console.
+
+context.multi_save("file.sw")
+Save the current context-list to a sw file.
+This corresponds to "save multi file.sw" in the console.
+
+context.learn(op,label,rule)
+Learn a rule, eg: a |b> => |c>
+where:
+- op is a string
+- label is a string or a ket
+- rule is either a string, a list of strings, a ket, a superposition, a stored rule or a memoizing rule.
+
+Some simple examples, giving the console version, and then the python:
+age |Fred> => |35>
+context.learn("age","Fred","35")
+
+friends |Fred> => |Jack> + |Jim> + |Eric> + |Sam>
+context.learn("friends","Fred",["Jack","Jim","Eric","Sam"])
+
+a |b> => |c>
+context.learn("a",ket("b"),ket("c"))  
+-- yeah, the long version. We could have more cleanly written just: context.learn("a","b","c"), but I needed a ket example!
+
+op |a> => 3|x> + 7.2|y> + 7.12572|z> + |omega>
+context.learn("op","a",ket("x",3) + ket("y",7.2) + ket("z",7.12572) + ket("omega"))
+-- NB: the ket object has two invoke types: ket("string") and ket("string",value), where if not specified value is 1, otherwise it is the given float.
+
+id |*> #=> |_self>
+context.learn("id","*",stored_rule("|_self>"))
+
+is-alive |Schrodinger's cat> !=> weighted-pick-elt (|yes> + |no>)
+context.learn("is-alive","Schrodinger's cat",memoizing_rule("weighted-pick-elt (|yes> + |no>)"))
+
+
+context.add_learn(op,label,rule)
+Learn a rule, eg: a |b> +=> |c>
+
+context.recall(op,label)
+Recall a rule, eg: a |b>
+where:
+- op is a string
+- label is a string or a ket
+and it returns the rule from: context.learn(op,label,rule)
+
+Eg:
+age |Fred>
+context.recall("age","Fred")
+
+
+context.sp_learn(op,"*",c)
+Learn a sp rule: op (*) => |c>
+ 
+context.sp_add_learn()
+??
+
+context.sp_recall()
+??
+
+context.relevant_kets("op")
+Returns a clean superposition of all kets in the current context that have "op" defined for them.
+This corresponds to the "relevant-kets[op]" operator.
+
+context.supported_operators()
+Returns a clean superposition of all known operators in the current context.
+
+context.print_universe()
+Print the current context. This corresponds to "dump" in the console.
+
+context.print_multiverse()
+Print the current context list. This corresponds to "dump multi" in the console.
+ 
+
+like generalization?? 
+
+
+pattern-matching in other languages
+
+number filter example?
+
+star, everything, everything-you-know-about??
+ 
+
+apply)
+supported-ops? schema?
+ket-represention -- everything in the framework is either a ket or an operator
+
+
+
+
+whole project is about learning and recalling superpositions.
+(variously called the BKO scheme and the Feynman Knowledge Engine)
+The power of this scheme is that superpositions, and later operators, can be used to represent almost anything.
+#Indeed, if we note that it is sometimes useful to define cagtegories, also called data-types, in our ket strings, we can already represent many types of static knowledge.
+
+Friends example?
++=> friends example?
+
+
+The standard learn rule is already sufficient to encode much of the semantic web. Indeed, a little more so, since lists are also easy to define.
+And we have some operators that, when combined, provide something of an alternative to SPARQL:
+table[], select[], sort-by[], reverse, such-that[], starts-with, rel-kets[], to-comma-number, round[]
+
+
+context interface:
+context = new_context("...")
+context.learn(a,b,c)
+context.add_learn(a,b,c)
+context.learn(a,b,stored_rule("..."))
+context.learn(a,b,memoizing_rule("..."))
+context.recall()
+
+context.sp_learn(...)
+context.sp_recall(...)
+
+context.load()
+context.save()
+context.print_universe()
+
+context.relevant_kets()
+context.supported_operators()
+     

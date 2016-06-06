@@ -1,0 +1,668 @@
+A Framework for Knowledge Representation
+
+In this informal paper I would like to present a fresh approach to knowledge representation.
+
+
+Let's start by trying for a formal definition of my idea, and then move on to some examples.
+
+operators, kets and superpositions
+the set of superpositions SP are linear combinations of kets
+
+ket: |S> where S is any string, including the empty string, excluding the '<', '|', '>' and newline characters (though if we wish to include them, then escape them.
+
+S can be anything, with the convention that you separate heirarchical categories with ": ", and if you include '<', '|', '>' or newline characters they must be escaped. Call S a ket-string.
+
+3|S>
+5.2127|S>
+
+KET is set of all objects |S> or c|S> where S is ... and c is a float, usually positive.
+SP is the set of linear combinations of kets. eg: c1|S1> + c2|S2> + c3|S3> + ... + cn|Sn>
+
+SP: set of all linear combinations of kets
+
+SP's represent current state.
+context/sw represent current stored state.
+
+are kets related to qualia?
+should I mention Liebniz universal calculus? Probably!
+
+|> is variously called the empty ket, the superposition identity element and the "I don't know" symbol.
+for any sp in SP, sp + |> = |> + sp = sp
+for any sp1 and sp2 in SP, meaning(sp1 + 0 sp2) = meaning(sp1) = meaning(shuffle sp1)
+meaning(drop sp) = meaning(sp) => sp's can be used for sparse representation
+
+
+do-you-know |> returns |no>
+how-many, count-sum, ...
+
+kets and superpositions add:
+|a> + 3.7|a> + 9|a> = 13.7|a>
+
+(|a> + |b> + 1.7|c> + |d>) + (2.6|c> + 0.2|b>) = |a> + 1.2|b> + ...
+
+kets in superpositions commute
+
+if OS is an op-string, then the ket representation of that is simply: |op: OS>
+
+network interpretation of SP's
+
+
+function operators can be considered summaries of neural circuits.
+One idea being that python is more efficient to encode this than faithfully copying a similar neural network.
+
+It would be nice to have minimal, but sufficient set, but I don't think that is likely, hence the word "framework".
+
+literal-operators, 2 types:
+OP KET => SP
+-- has label descent (has some similarity to pattern matching in other languages)
+-- has linear application
+
+OP (SP) => SP
+OP (SP,SP) => SP
+-- label descent isn't really useful concept
+
+function operators (essentially summaries of neural circuits)
+FOP KET => SP
+FOP SP => SP
+FOP (SP) => SP
+FOP (SP,SP) => SP
+FOP (SP,SP,SP) => SP
+FOP (SP,SP,SP,SP) => SP
+
+most FOP's don't have side effects.
+Most FOP's are only a few lines of python, but they get their power from the composability of operators, since everything is a superposition.
+
+SP's and operator pathways are near universal.
+
+sigmoids map c1|S> to c2|S> for any ket-string S, where c1 and c2 are floats.
+ECS maps strings to literal sp's.
+
+simm is a universal similarity operator (just over literal sp's?)
+returns 0 for when its inputs are completely disjoint (ie, their intersection returns |>).
+returns 1 when the inputs are identical (independent of the order of the kets).
+returns values in between otherwise.
+Really is very well behaved!
+What is the big-O for simm?
+
+FOP's try to be as independent of SP's as possible, making algo's more universal.
+OP's have clean composobility. Most FOP's are functionally clean, with no side effects (context.learn()) the exception.
+
+applying ops is somewhat related to stepping through time.
+
+
+learn rules:
+=>
++=>
+#=>
+!=> (this one related to QM) Indeed, some similarity to taking a quantum mearsurement. 
+Note since BKO is over the real floats, not complex, only represent the final QM probabilites, not the wave-fn state.
+Quantum measuremnt, typically takes the form:
+OP KET !=> weighted-pick-elt SP
+maybe not surprising, since QM is a mathematical way to find what we can know about the universe.
+ie, a tie in to knowledge representation.
+
+Note that it can be anyone of '=>', '+=>', '#=>', '!=>'
+for simplicity sake I will stick to '=>', but just know that I really mean any one of the foor.
+
+context.learn(a,b,c)
+context.add_learn(a,b,c)
+context.learn(a,b,stored_rule("..."))
+context.learn(a,b,memoizing_rule("..."))
+context.recall()
+
+context.sp_learn(...)
+context.sp_recall(...)
+
+context.load()
+context.save()
+context.print_universe()
+etc.
+
+|_self> ket
+
+op^k
+
+We have only three types: KET, SP and OP
+
+No intention to be a full programming language. Domain is strictly knowledge representation.
+We have ket representations of operators: |op: some-op>
+
+if-then machines should be easy to implement in parallel
+
+SP, the brain's data structure (explain why more general than SDR's?)
+one interpretation is the nodes in a network that are active simultaneously, with intensity given by the kets coeffs.
+|S> is abbreviation for 1|S>
+
+This is the starting point, not the end point. The goal is to get others to help encode the worlds knowledge using this scheme!
+
+literal operators are defined in terms of what we already have
+functions operators are, in our case, python that can be interpretated as summaries of neural circuits.
+operators are cleanly composible.
+
+context is like microtheories in cyc
+
+In a maths sense it would be nice to have a minimal, yet complete, set of function operators, and superposition functions, but I don't think that is realistic, or desirable.
+Also, for some things python is far more efficient than the same thing encoded in neural like circuits.
+Indeed, there are things that are essentially impossible with neural like circuits that are easy in python. 
+Simplest example being multiplication of very large numbers. Or factorisation of very large numbers.
+
+Even if we could find a maths minimal set, I'm not so sure that is desirable (except being theoretically pretty).
+I prefer for common things to have very short operator pathways.
+I'm not a mathematical purist!
+In my opinion less work (usually in terms of typing) is always more desirable than repeating some structure over and over again.
+And even if we could encode something with a long pathway, using this minimal set, I think python would still be preferable, because of the speed win we get from that.
+
+Mention link to category theory? Though category is so abstract it matches many, many things.
+
+Definitely mention if-then machines!
+And the second BKO claim, and the intelligence definition.
+Need some pretty diagrams, and probably grid cells too.
+
+range() and arithmetic() are the two most important SP functions.
+apply() too!
+
+SP near universality gives operator composition a lot of power.
+
+The claim is that all knowledge can be represented in this framework.
+So?? Can't the same be said of standard computers! Yes!!!
+So why is my work interesting then?
+
+literal superposition is just a linear combination of kets, it contains no operators
+a clean superposition is a literal superposition with all coeffs equal 1.
+a compound superposition is almost arbitrary combinations of kets and operators
+
+operators define pathways from one state, represented by a superpositoin, to another state, again, a superposition.
+
+a literal op is a compound object made from kets and function operators
+
+ECS: string -> literal SP
+
+Definition of intelligence.
+
+Defintion of if-then machine: (prediction machine? Brain is giant prediction machine. This output follows this input)
+pattern |node: k: 1> => sp1-1
+pattern |node: k: 2> => sp1-2
+pattern |node: k: 3> => sp1-3
+...
+pattern |node: k: n> => sp1-n
+then |node: k: *> => sp2
+next (*) #=> then drop-below[t] similar-input[pattern] |_self>
+
+if-then machines are proposed mathematical approximation to a single neuron.
+machinery for self-learning if-then machines is hard
+
+pooling (at this level spatial and temporal pooling are the same thing), learning a sequence (eg, days of the week).
+
+definitely the weekday if-then machine, and learning a sequence
+
+hrmm... standard if-then machine => supervised learning
+average-categorize + if-then machine => unsupervised learning (sort of)
+
+BTW, mention 77.1% example
+
+simm is universal (over set of SP) similarity metric.
+
+dimensionality reduction, is not really relevant to simm. So mention simm works fine no matter how big the SP.
+
+LOP KET => SP
+is like pointer definition. LOP KET is pointer dereference and returns SP.
+
+LOP CS KET => SP
+
+context.relevant_kets('*')
+context.relevant_kets(LOP)
+context.supported_operators()
+
+
+c2 c1|S> = c2*c1 |S>
+LOP |S> is almost a multiplicaiton. Indeed, when LOP is a constant, it is multiplication.
+
+
+OP is the union of LOP and FOP
+
+which diagrams?
+I think edit-distance for sure.
+
+compare and contrast SP's and SDR's.
+compare and contrast with semantic web, or triple stores.
+
+math proof diagram as pathway?
+
+Is there anything interesting not covered by this framework?
+
+measure currency.
+currency conserving operators:
+measure-currency OP SP == measure-currency SP (for all SP?)
+eg, LOP KET => normalize LOP KET
+ie, store "normalize LOP KET" in the (LOP,KET) slot.
+
+n known operators, then out to k steps we have: (1 + n + n^2 + ... + n^k)*M as upper-bound on number of daughter states.
+M known superpositions
+find closed expression for: 1 + n + n^2 + ... + n^k
+(1 + n + n^2 + ... + n^k)*M
+Total = M (1 - n^k+1)/(1-n)
+choose very small numbers: k = 5, n = 10: M*111,111
+count how many operators I have.
+Also, likely daughter states will be << Total
+Mention commuting operators produce less daughter states than noncommuting operators.
+
+define brain-space?
+compare with Feynman path integral??
+
+walking grid example.
+And current |location> and near current |location>
+
+
+Future: better, faster code (certain parts should be easy to parallelize)
+translators from English to BKO, and BKO to English (the second may have some similarity to PHP mapping back-end data to HTML)
+
+no multiline constructs. Why is that good??
+
+
+greeting example (using _ instead of merge-label)
+
+
+
+represent knowledge claim
+operator to superposition pattern recognition claim
+
+
+proof pathways, each dot a superposition
+
+visualizations: matrix, bar-charts, DOT diagrams, etc.
+
+WP similar[inverse-links-to] results?
+category theory basics. analogies/metaphores are approximately functors
+
+-- reproduce standard programming:
+fact/fib/fizzbuzz
+
+plurals
+greetings
+edit distance
+fission
+shopping
+grid walk
+learn if-then sequence
+days of the week
+
+definition of intelligence
+
+The big question though, is how to scale it up?
+We have shown we can represent many types of knowledge, now the question is where to get that from.
+Cyc shows that doing that by hand is possible, but a vast amount of work!
+I'm not sure we can fully solve automating this without solving AGI first.
+So my contribution is a framework to approach AGI. AGI itself remains hard.
+
+
+
+
+---------------------------------------------------------
+A Framework for Knowledge Representation
+
+In this informal paper I will present a fresh approach to knowledge representation.
+
+Framework is not intended to be a general programming language, though some features could be extracted from the framework and applied in other languages (eg, the clean composition rule of specifying functions in sequence, without needing closing brackets at the far right of the sequence. Small difference, but I think it would have a big influence on program design.).
+Say we use ':' as the function separater, so instead of:
+fn2(fn(bah(foo(x))))
+something more like
+fn2:fn:bah:foo:(x)
+which I believe would encourage programmers to write more compositional functions.
+
+The framework is designed to make knowledge representation universal and easy.
+Turing says all computation is the same, but that doesn't mean a specific language is hard or easy to code in.
+hrmm... something about amount of typing
+
+
+Now, let's jump into a semi-formal definition of the framework:
+Define KS (ket-strings) the set of arbitrary strings that do not contain the '<', '|', '>' and newline characters, unless they are escaped.
+Define F to be the set of python floats.
+Then the set KET (kets) is the set of objects of form |S> or c|S> where S is in KS and c is in F (though most of the time c >= 0).
+(note that if c is not given then it is taken to be 1)
+Then the set SP (superpositions) is the set of linear combinations of elements in KET
+eg: c1|S1> + c2|S2> + ... cn|Sn>
+
+I claim superpositions are a natural candidate to be the brains data-structure. An extension of Jeff Hawkin's claim that SDR's are the brains data-structure.
+
+mention |category: value>, |category: subcategory: value>, |category: subcategory: subsubcategory: value> ...
+
+context is the set of known rules
+
+Define two operators:
+how-many and measure-currency.
+'how-many sp' returns the number of kets in sp.
+"measure-currency sp' returns the sum of the coeffs in sp.
+Note that if all coeffs in sp are 1, then how-many sp == measure-currency sp
+We call this a clean superposition, after the clean sigmoid that maps all coeffs > 0 to 1.
+NB: clean superpositions are especially easy to parse, though the framework as a whole is also not difficult to parse.
+We say op conserves currency if measure-currency op sp == measure-currency sp (for all sp?? clarify)
+Also, matrix version of conserves currency
+Given an operator we can always convert that into a currency conserving one using the "normalize" operator
+Turns out, a lot of things we can represent just using clean superpositions. Lists and sets being the prime example.
+
+The set OP of operators is the set of strings that satisfy this python (we may tweak this later for UTF):
+Are these operators or just operator strings?
+Need to tidy up my definition of operators!!
+
+
+Try again: operator strings are the set of python strings that satisfy this python:
+def valid_op(op):
+  if not op[0].isalpha() and not op[0] == '!':
+    return False
+  return all(c in ascii_letters + '0123456789-+!?.' for c in op)
+
+Operators are functional units labeled with operator strings.
+There are three types of operators:
+sigmoids, function-operators and literal-operators.
+sigmoids are restricted to changing only the coeffs, not the ket-string, of kets.
+function-operators are small units (packets?) of python code.
+literal-operators are defined by way of learn rules.
+# For now, only sigmoids and function-operators may have parameters.
+# It would probably be useful for literal-operators to have parameters too, but that is not yet implemented.
+Some operators have parameters, though for literal-operators this is unimplemented.
+
+
+And every foo in OP has a corresponding ket representation: |op: foo>
+The set OPS of operator sequences is any string of zero or more operators separated by space.
+eg: "op3 op2 op1"
+Note that in general operators in a op-sequences do not commute.
+And we have a short cut if an operator is repeated.
+eg: "op1 op1 op1 op1" is identical to "op1^4"
+If an op is repeated only a small number of times this is only a small win.
+But for large k, op^k makes otherwise, essentially impossible things, possible.
+Any operator can be exponentiated in this form, though for some it doesn't make much sense.
+Mention exp[op] ket?
+Floats are a special type of operator (that can only be used on the right hand side of a learn rule), and multiply the sp by their value.
+A concrete example: 3.7 (2|a> + 0.3|b> + |c> + 11.1|d>) == 7.4|a> + 1.11|b> + 3.7|c> + 41.07|d>
+
+
+operator composition inherits great power from all operators being:
+op: SP -> SP
+So any sequence of operators is also SP -> SP.
+n known operators, then out to k steps we have: (1 + n + n^2 + ... + n^k)*M as upper-bound on number of daughter states.
+M known superpositions
+Though in practice the actual number of daughter states will be very much less than this.
+
+Mention category theory here??
+
+Most FOP's do not have side effects.
+operators are (deeply?) analogus to "tools", things we can apply to our current state to help achieve a future state.
+
+there is a special operator called: "supported-ops".
+Apply supported-ops to any ket, and it will return the list of operators (in the ket representation) for that ket.
+Note that the framework is dynamic in the sense that you can define new operators, with respect to a ket, at any time.
+And of course, redefine the meaning of an operator. ie, the framework is an open world.
+This contrasts with databases where you have to define the schema first before you can load the data.
+Indeed, we can load any sw file, with no prior knowledge of what kets and operators are defined in that sw file.
+
+There is a special element in KET written |>
+This is variously called the empty ket, the superposition identity element and the "I don't know symbol".
+As the SP identity element it has the property:
+sp + |> = |> + sp = sp, for any sp in SP
+Any computation where there is either an error or the code doesn't know how to answer returns |>, hence the name the "I don't know" symbol.
+
+kets in SP's commute, and they add
+For a theoretical function Meaning(sp) that returns the "meaning" of sp:
+then for any sp1 and sp2 in SP, meaning(sp1 + 0 sp2) = meaning(sp1) = meaning(shuffle sp1)
+meaning(drop sp) = meaning(sp) => sp's can be used for sparse representation
+
+A couple more special elements in KET:
+|_self>, |_self1>, |_self2>, |_self3>
+
+projections: SP -> SP
+bras: SP -> F
+though unimplemented, they can be approximated with functions: SP*SP -> SP
+
+We have three types of operators:
+sigmoids: map c1|S> -> c2|S>, c1,c2 in F, S in KS (ie, they change the coeff of kets, but not the ket-string)
+literal operators, defined with respect to a learn rule: foo k => sp, where foo is in OP, k is in KET, sp is in SP
+function operators, small python programs that perform some computation
+
+operators have these signatures:
+OP KET => KET
+OP KET => SP
+OP SP => SP
+OP (SP) => SP
+OP (SP,SP) => SP
+OP (SP,SP,SP) => SP
+OP (SP,SP,SP,SP) => SP
+
+-- first two have label descent (some similarity with idea of pattern-matching in other languages)
+label descent can be used to give different properties to different data-types and different levels in hieararchies, and something similar to pattern-matching in other languages.
+-- what about: OP ECS => SP ??
+
+The (current) set of learn rules:
+=> (standard learn rule)  (stores the result of a computation for later)
++=> (add rule) (often used to learn frequencies of objects)
+#=> (stored rule) (measures a system) (stores a computation for later)
+!=> (memoizing rule -- powerful optimization, and trivial to apply, if you don't mind the storage space) (measures a system then stores the result)
+for convenience, from now we just use =>, but knowing we can swap in any of the others.
+
+OP KET => SP is like named pointers, with the name op.
+
+context interface:
+context = new_context("...")
+context.learn(a,b,c)
+context.add_learn(a,b,c)
+context.learn(a,b,stored_rule("..."))
+context.learn(a,b,memoizing_rule("..."))
+context.recall()
+
+context.sp_learn(...)
+context.sp_recall(...)
+
+context.load()
+context.save()
+context.print_universe()
+
+context.relevant_kets()
+context.supported_operators()
+etc.
+
+we started as a notation for the semantic web, and indeed we can do that.
+And we have an alternative to SPARQL, helped by this collection of operators:
+table[], select[], sort-by[], reverse, such-that[], starts-with, rel-kets[]
+
+simm, the similarity metric, is a function:
+simm: SP*SP -> F
+where 0 <= simm(sp1,sp2) <= 1 for all sp1 and sp2 in SP (what about coeffs < 0??)
+0 when sp1 and sp2 are disjoint. ie, intersection(sp1,sp2) == |>
+1 when sp1 and sp2 are identical, independent of the sort order of those superpositions
+values in between otherwise. And it really is a rather well behaved, and useful, function.
+Note that it is usually useful for simm() to be invariant of the currency of the superpositions.
+ie: simm(c1 sp1,c2 sp2) == simm(sp1,sp2) for any positive floats c1 and c2.
+
+NB: lists are a subset of superpositions, so we can use simm to compare ordinary lists too!
+that simm works with any superpositions, gives it great power.
+if want to measure different types of similarity for a given object, then need to find different object -> sp mappings.
+
+In theory we could extend arbitrarily, eg to d = 3:
+simm: SP*SP*SP -> F
+where 0 <= simm(sp1,sp2,sp3) <= 1 for all sp1, sp2 and sp3 in SP (what about coeffs < 0??)
+0 when sp1, sp2 and sp3 are disjoint. ie, intersection(sp1,sp2,sp3) == |>
+1 when sp1, sp2 and sp3 are identical, independent of the sort order of those superpositions
+values in between otherwise.
+But I haven't implemented that (though it would be easy to do so), nor found a use for it.
+Implement it!!
+
+create inverse
+find-inverse[op]
+find-unique[op]
+
+knowledge rep claim
+simm, similar[op], similar-input[op]
+WP inverse-links-to results
+supervised pattern recognition claim (including W modification)
+simple logic example?
+wage prediction example? (my supervised pat rec -- not super intelligent, but gets 77.1% with very little effort. Mention no-free-lunch theorem)
+do another example!!
+pattern recognition claim (well behaved, deterministic, distinctive -- wage example fails distinctive, but still got 77.1%
+one-shot learning is theoretically possible if you have the right object -> sp (feature?) mapping.
+the initial goal should be to find very little effort mappings. eg, string fragmentation, and image histograms
+eg, webpages example, and presumably other document types.
+there is some hope that we need to train the visual cortex equivalent only once.
+then it would become rather rapid to learn higher/more abstract features
+math proof pathways
+
+The definition of the if-then machine (though parts of it can be tweaked from this):
+pattern |node: k: 1> => sp1-1
+pattern |node: k: 2> => sp1-2
+pattern |node: k: 3> => sp1-3
+...
+pattern |node: k: n> => sp1-n
+then |node: k: *> => sp2
+next (*) #=> then drop-below[t] similar-input[pattern] |_self>
+
+NB: we can dynamically add more patterns, or more "implications" as needed.
+if-then machine naturally implements pooling (though at this level spatial and temporal pooling are the same thing. Indeed, in this model the only difference between spatial and temporal pooling is where the sp's come from).
+if-then machines can easily encode sequences (sequences of arbitrary superpositions!)
+if-then machines encode logic for t near 1. eg t = 0.98
+
+need to fix average-categorize + if-then machine
+layers and layers of if-then machines
+I need multi-layers example!
+presumably if-then machines scale up to multi-layers. Need some argument towards that though!
+
+if we see a consequence, as given by if-then machines, can we find the cause??
+
+guess-cliche
+
+Propose that if-then machines are mathematical approximations to biological neurons.
+With that interpretation, function operators can be considered python summaries of neuronal circuits.
+literal ops similar?
+
+logic
+guess-cliche
+lyrics pooling?
+sequence learn
+days of the week example
+
+intelligence definition
+At this point we can propose a definition of intelligence, with respect to our framework:
+...
+How to convert this into something quantitive, I don't know!
+Defn of intellgience, or intelligent agent?
+
+outsource computation? How pay for it?
+
+The big question though, is how to scale it up?
+We have shown we can represent many types of knowledge, now the question is where to get that from.
+from existing DB's, XML and RDF? (static knowledge)
+We have made a little progress on the first of these:
+http://write-up.semantic-db.org/43-some-bigger-sw-examples.html
+Cyc shows that doing that by hand is possible, but a vast amount of work!
+I'm not sure we can fully solve automating this without solving AGI first.
+Note that an intelligent agent can learn rules itself.
+The inverse is not true. Just because an agent can learn some rules by itself, is not sufficient to imply it is intelligent.
+So my contribution is a framework to approach AGI. AGI itself remains hard.
+
+The brain is massively complex. So if we have any hope at all of describing that using mathematics or code, then we need compact and powerful tools. My hope is for this framework to take a step in that direction.
+
+We have a pre-alork here: github
+
+thoughts are superpositions!
+everything is composed of kets and operators
+the framework is not perfect! It has rough edges!
+superposition is wire with many tentacles
+the octopuss superposition is: 
+|leg: 1> + |leg: 2> + ... + |leg: 8>
+
+it should be clear I am not a mathematical purist aiming for a minimal system!
+I think that is the wrong approach. I don't want vastly long operator sequences.
+I want as short as possible.
+
+Incidentally this isn't the only similarity with quantum mechanics.
+QM is about knowledge of the universe, the framework is about knowledge in general.
+
+The tie in to QM is interesting, but I'm not sure how deep it goes.
+Though the path integral correspondence is curious.
+
+I propose that you can't do general pattern recognition with Boolean logic, the world is just too noisy.
+But I do propose that you can almost certainly do it using if-then machines, with t < 0.9.
+
+at a deep level, thinking is searching (thalamus, hippocampus)
+
+what would a complete set of function operators look like?
+So that we could contstruct any literal operator we like??
+
+Our patt rec has the advantage that we don't need to iteratively tweak matrix values.
+Define the superposition, run simm, and done!
+
+movement has higher currency in the visual system.
+
+attention is some unspecified machine that directs currency
+
+the-dissolution-date-for the-party-of the-third |US President>
+
+
+do superpositions make linear operations trivial to run in paralllel?
+
+with probabilities, we can encode qm systems !=> and weighted-pick-elt
+
+
+cortext => cpu
+hippocampus => ram (especially the grid example)
+thalamus => IP
+
+debug info to find how map to back-end python
+
+the network interpretation of superpositions, and standard learn rules
+
+asking questions in a neural model is in some sense similar to asking questions in a quantum model
+why???
+
+non-linear resonance example??
+
+if-then machines are general prediction machines
+
+what is the machinery needed to auto program if-then machines??
+
+find-topic[names]
+get more data?? eg, name to country??
+
+building a plane, not a bird
+
+schema free -- impossible to know ahead of time the set of all desirable literal operators
+
+matrix[op]
+
+specific exemptions by being higher up the label descent
+
+at the point of exploring BKO, test and idea and see what is returned
+
+this framework is enough to represent almost anything?
+
+superpositions can be considered sparse representations of vectors, or labelled sparse vectors.
+what can you do with superpositions that would be hard with matrices?
+eg, matricies don't label their elements + bunch of other stuff.
+
+So we have a framework for knowledge representation. How far can that take us in the quest for AGI??
+I think we need the equivalent of a thalamus, some machine to help decide what to focus on next.
+
+attention is a system for directing currency
+
+a very small step towards AGI
+
+if-then machines naturally encode causation
+
+I want all the world's knowledge in a uniform representation!!!
+
+operator sequence proof, and Hamiltonian path:
+Scott Aaronson 'On the Nature of Proof'
+33:04
+
+literal operators can also be called relations
+
+AGI complexity class
+the set of problems only practically solvable by full AGI.
+
+matrix[op]
+framework is related to graph theory, but we have a different goal
+
+implement BKO on a quantum computer?
+especially op^k |node> ??
+
+if-then machines encode causality
+
+independent reasercher just working on ideas that seem interesting to me.
+lol, probably not include that.
