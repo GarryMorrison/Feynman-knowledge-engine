@@ -29065,3 +29065,150 @@
   history
   q
 
+2016-06-06
+  grades |Mary> => |math: A> + |bio: B> + |chem: A> + |english: C>
+  grades |Mary>
+  extract-value grades |Mary>
+  extract-category grades |Mary>
+  takes-which-subjects |*> #=> extract-category grades |_self>
+  takes-which-subjects |Mary>
+  sp-to-list split |a b c>
+  sp-as-list split |a b c>
+  list-to-words split |a b c>
+  takes-which-subjects |*> #=> list-to-words extract-category grades |_self>
+  grades-summary |*> #=> list-to-words extract-value grades |_self>
+  grades-summary |Mary>
+  takes-which-subjects |Mary>
+  extract-value grades |Mary>
+  int-coeffs-to-word extract-value grades |Mary>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  plural |A> => |A's>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word extract-value grades |_self>
+  grades-summary |Mary>
+  dump |*>
+  takes-which-subjects |Mary>
+  grades-summary |Mary>
+  save history
+
+2016-06-06
+  grades |Mary> => |math: A> + |bio: B> + |chem: A> + |english: C>
+  grades |Mary>
+  extract-value grades |Mary>
+  extract-category grades |Mary>
+  takes-which-subjects |*> #=> extract-category grades |_self>
+  takes-which-subjects |Mary>
+  sp-to-list split |a b c>
+  sp-as-list split |a b c>
+  list-to-words split |a b c>
+  takes-which-subjects |*> #=> list-to-words extract-category grades |_self>
+  grades-summary |*> #=> list-to-words extract-value grades |_self>
+  grades-summary |Mary>
+  takes-which-subjects |Mary>
+  extract-value grades |Mary>
+  int-coeffs-to-word extract-value grades |Mary>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  plural |A> => |A's>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word extract-value grades |_self>
+  grades-summary |Mary>
+  dump |*>
+  takes-which-subjects |Mary>
+  grades-summary |Mary>
+  save history
+  dump
+  plural |B> => |B's>
+  plural |C> => |C's>
+  plural |D> => |D's>
+  plural |F> => |F's>
+  dump
+  table[person,takes-which-subjects,grades-summary] |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word ket-sort extract-value grades |_self>
+  table[person,takes-which-subjects,grades-summary] |Mary>
+  save history
+
+2016-06-06
+  pattern |node: 1> => |Fred is whistling>
+  then |node: 1> => |Fred is happy>
+  pattern |node: 2> => |Sam is whistling>
+  then |node: 2> => |Sam is busy>
+  dump
+  implies |*> #=> then similar-input[pattern] |_self>
+  implies |Fred is whistling>
+  implies |Sam is whistling>
+  dump
+  save fred-sam-whistling.sw
+  save history
+
+2016-06-06
+  grades |Mary> => |math: A> + |bio: B> + |chem: A> + |english: C>
+  grades |Mary>
+  extract-value grades |Mary>
+  extract-category grades |Mary>
+  takes-which-subjects |*> #=> extract-category grades |_self>
+  takes-which-subjects |Mary>
+  sp-to-list split |a b c>
+  sp-as-list split |a b c>
+  list-to-words split |a b c>
+  takes-which-subjects |*> #=> list-to-words extract-category grades |_self>
+  grades-summary |*> #=> list-to-words extract-value grades |_self>
+  grades-summary |Mary>
+  takes-which-subjects |Mary>
+  extract-value grades |Mary>
+  int-coeffs-to-word extract-value grades |Mary>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  plural |A> => |A's>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word extract-value grades |_self>
+  grades-summary |Mary>
+  dump |*>
+  takes-which-subjects |Mary>
+  grades-summary |Mary>
+  save history
+  dump
+  plural |B> => |B's>
+  plural |C> => |C's>
+  plural |D> => |D's>
+  plural |F> => |F's>
+  dump
+  table[person,takes-which-subjects,grades-summary] |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word ket-sort extract-value grades |_self>
+  table[person,takes-which-subjects,grades-summary] |Mary>
+  save history
+  dump
+  grades |Rob> => |math: D> + |bio: C> + |chem: C> + |english: B>
+  history
+  table[person,takes-which-subjects,grades-summary] rel-kets[grades] |>
+  dump
+  grades |Liz> => |english: A> + |economics: A> + |physics: B>
+  table[person,takes-which-subjects,grades-summary] rel-kets[grades] |>
+  T |*> #=> table[person,takes-which-subjects,grades-summary] rel-kets[grades] |>
+  T
+  save mary-rob-liz-grades.sw
+  dump
+  T
+  history
+  save history
+
+2016-06-08
+  pattern |node: 1> => |Fred is whistling>
+  then |node: 1> => |Fred is happy>
+  pattern |node: 2> => |Sam is whistling>
+  then |node: 2> => |Sam is busy>
+  dump
+  implies |*> #=> then similar-input[pattern] |_self>
+  implies |Fred is whistling>
+  implies |Sam is whistling>
+  dump
+  save fred-sam-whistling.sw
+  save history
+  
+  implies |Fred is whistling>
+  implies |Sam is whistling>
+  dump
+  implies? |*> #=> then similar-input[pattern] |_self>
+  dump
+  implies? |Fred is whistling>
+  implies? |Sam is whistling>
+  q
+

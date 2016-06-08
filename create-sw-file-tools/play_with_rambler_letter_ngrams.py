@@ -5,7 +5,7 @@
 #
 # Author: Garry Morrison
 # Date: 2015-7-19
-# Update: 2015-8-2
+# Update: 2016-6-8
 # Copyright: GPLv3
 #
 # Usage:
@@ -62,7 +62,8 @@ def create_ngram_letter_pairs(s):
 #filename = "text/all.txt"  # used too much RAM. Not sure how much in total it would need. test later.
 #filename = "text/ebook-moby-shakespeare.txt"
 #filename = "text/ebook-Gone-with-the-wind--0200161.txt"
-filename = "text/ebook-Sherlock-Holmes.txt"
+#filename = "text/ebook-Sherlock-Holmes.txt"
+filename = "text/tidy-procrasti.txt"
 
 
 # learn ngram pairs:
@@ -91,8 +92,9 @@ def learn_ngram_letter_pairs(context,filename):
       except:
         continue
     
-learn_ngram_letter_pairs(C,filename)
+#learn_ngram_letter_pairs(C,filename)
+learn_ngram_pairs(C,filename)
 
-dest = "sw-examples/ngram-letter-pairs--sherlock-holmes.sw"
-save_sw(C,dest)
+dest = "sw-examples/ngram-word-pairs--procrasti.sw"
+C.save(dest)
 
