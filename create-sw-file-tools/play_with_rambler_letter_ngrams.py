@@ -8,11 +8,16 @@
 # Update: 2016-6-8
 # Copyright: GPLv3
 #
-# Usage:
+# letter ramble usage:
 #  sa: load ngram-letter-pairs--sherlock-holmes--add-learn.sw
 #  sa: letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
 #  sa: letter-ramble^1000 |The>
 #  sa: letter-ramble^500 |Here >
+#
+# word ramble usage:
+# sa: load ngram-word-pairs--rusty.sw
+# sa: ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+# sa: ramble^1000 |Hi, oops I>
 # 
 # Sample data here:
 # http://semantic-db.org/sw-examples/ngram-letter-pairs--sherlock-holmes--add-learn.sw
@@ -63,7 +68,8 @@ def create_ngram_letter_pairs(s):
 #filename = "text/ebook-moby-shakespeare.txt"
 #filename = "text/ebook-Gone-with-the-wind--0200161.txt"
 #filename = "text/ebook-Sherlock-Holmes.txt"
-filename = "text/tidy-procrasti.txt"
+#filename = "text/tidy-procrasti.txt"
+filename = "text/tidy-rusty.txt"
 
 
 # learn ngram pairs:
@@ -95,6 +101,6 @@ def learn_ngram_letter_pairs(context,filename):
 #learn_ngram_letter_pairs(C,filename)
 learn_ngram_pairs(C,filename)
 
-dest = "sw-examples/ngram-word-pairs--procrasti.sw"
+dest = "sw-examples/ngram-word-pairs--rusty.sw"
 C.save(dest)
 

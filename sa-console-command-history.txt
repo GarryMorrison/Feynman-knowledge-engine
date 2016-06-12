@@ -29212,3 +29212,183 @@
   implies? |Sam is whistling>
   q
 
+2016-06-08
+  load ngram-word-pairs--procrasti.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble |Hi>
+  ramble^20 |Hi>
+  ramble |Procrasti>
+  ramble^50 |Procrasti>
+  ramble^50 |The>
+  dump
+  ramble^50 |because people with>
+  history
+  ramble^1000 |because people with>
+  q
+
+2016-06-08
+  grades |Mary> => |math: A> + |bio: B> + |chem: A> + |english: C>
+  grades |Mary>
+  extract-value grades |Mary>
+  extract-category grades |Mary>
+  takes-which-subjects |*> #=> extract-category grades |_self>
+  takes-which-subjects |Mary>
+  sp-to-list split |a b c>
+  sp-as-list split |a b c>
+  list-to-words split |a b c>
+  takes-which-subjects |*> #=> list-to-words extract-category grades |_self>
+  grades-summary |*> #=> list-to-words extract-value grades |_self>
+  grades-summary |Mary>
+  takes-which-subjects |Mary>
+  extract-value grades |Mary>
+  int-coeffs-to-word extract-value grades |Mary>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  plural |A> => |A's>
+  list-to-words int-coeffs-to-word extract-value grades |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word extract-value grades |_self>
+  grades-summary |Mary>
+  dump |*>
+  takes-which-subjects |Mary>
+  grades-summary |Mary>
+  save history
+  dump
+  plural |B> => |B's>
+  plural |C> => |C's>
+  plural |D> => |D's>
+  plural |F> => |F's>
+  dump
+  table[person,takes-which-subjects,grades-summary] |Mary>
+  grades-summary |*> #=> list-to-words int-coeffs-to-word ket-sort extract-value grades |_self>
+  table[person,takes-which-subjects,grades-summary] |Mary>
+  save history
+  dump
+  grades |Rob> => |math: D> + |bio: C> + |chem: C> + |english: B>
+  history
+  table[person,takes-which-subjects,grades-summary] rel-kets[grades] |>
+  dump
+  grades |Liz> => |english: A> + |economics: A> + |physics: B>
+  table[person,takes-which-subjects,grades-summary] rel-kets[grades] |>
+  T |*> #=> table[person,takes-which-subjects,grades-summary] rel-kets[grades] |>
+  T
+  save mary-rob-liz-grades.sw
+  dump
+  T
+  history
+  save history
+  T
+  dump
+  grades |Eric> => |math: A> + |bio: C> + |english: C> + |chem: B> + |economics: B>
+  table[person,grades] rel-kets[grades]
+  dump
+  takes-which-subjects |Liz>
+  grades-summary |Liz>
+  T
+  save mary-rob-liz-grades.sw
+  dump
+  grades-as-list |*> #=> list-to-words grades |_self>
+  grades-as-list |Mary>
+  table[person,grades-as-list] rel-kets[grades]
+  history
+  grades-as-list |*> #=> merge-labels(|grades: > + list-to-words grades |_self>)
+  grades-as-list |Mary>
+  table[person,grades-as-list] rel-kets[grades]
+  history
+  save mary-rob-liz-grades.sw
+  dump
+  q
+
+2016-06-08
+  load ngram-word-pairs--procrasti.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |people with your>
+  .
+  ramble^1000 |Now my username>
+  .
+  history
+  reset
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  load ngram-word-pairs--rusty.sw
+  ramble^1000 |Hi, oops I>
+  history
+  ramble^1000 |Hi, oops I>
+  history
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |Hi, oops I>
+  history
+  reset
+  load ngram-word-pairs--rusty.sw
+  history
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |Hi, oops I>
+  history
+  save history
+
+2016-06-08
+  load ngram-word-pairs--procrasti.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |people with your>
+  .
+  ramble^1000 |Now my username>
+  .
+  history
+  reset
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  load ngram-word-pairs--rusty.sw
+  ramble^1000 |Hi, oops I>
+  history
+  ramble^1000 |Hi, oops I>
+  history
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |Hi, oops I>
+  history
+  reset
+  load ngram-word-pairs--rusty.sw
+  history
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |Hi, oops I>
+  history
+  save history
+  q
+
+2016-06-09
+  load ngram-word-pairs--procrasti.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^100 |He would gather>
+  q
+
+2016-06-09
+  load ngram-word-pairs--tdillo.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 |desire to post>
+  ramble^1000 |Actually there is>
+  q
+
+2016-06-10
+  load ngram-word-pairs--tdillo.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  pick-elt rel-kets[next-2]
+  ramble^200 pick-elt rel-kets[next-2]
+  history
+  q
+
+2016-06-10
+  load ngram-word-pairs--trane.sw
+  ramble |*> #=> merge-labels(|_self> + | > + pick-elt next-2 extract-3-tail |_self>)
+  ramble^1000 pick-elt rel-kets[next-2]
+  q
+
+2016-06-10
+  load ngram-letter-pairs--trane.sw
+  letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
+  letter-ramble^1000 |The>
+  history
+  letter-ramble^1000 |The>
+  reset
+  history
+  load ngram-letter-pairs--rusty.sw
+  history
+  letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
+  letter-ramble^1000 pick-elt rel-kets[next-2-letters]
+  history
+  save history
+
