@@ -24,16 +24,17 @@ import sys
 import re
 import random
 
+valid_params = False
 # try to load parameters from the command line:
 if len(sys.argv) == 4:
   filename = sys.argv[1]
   ramble_type = sys.argv[2].lower()
   ramble_len = sys.argv[3]
 
-# verify them:
-valid_params = True
-if not os.path.isfile(filename) or ramble_type not in ['w','l'] or not ramble_len.isdigit():
-  valid_params = False
+  # verify them:
+  if os.path.isfile(filename) and ramble_type in ['w','l'] and ramble_len.isdigit():
+    valid_params = True
+
 
 if not valid_params:
   # find file to load:
