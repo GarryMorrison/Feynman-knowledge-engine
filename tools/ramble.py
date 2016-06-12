@@ -24,46 +24,9 @@ import sys
 import re
 import random
 
-valid_params = False
-# try to load parameters from the command line:
-if len(sys.argv) == 4:
-  filename = sys.argv[1]
-  ramble_type = sys.argv[2].lower()
-  ramble_len = sys.argv[3]
-
-  # verify them:
-  if os.path.isfile(filename) and ramble_type in ['w','l'] and ramble_len.isdigit():
-    valid_params = True
-
-
-if not valid_params:
-  # find file to load:
-  filename = input("Enter source text file: ")
-  while not os.path.isfile(filename):
-    filename = input(filename + " not found. Enter source text file: ")
-
-  # choose ramble type, word or letter:
-  ramble_type = input("(w)ord or (l)etter ramble: ").lower()
-  while ramble_type not in ['w','l']:
-    ramble_type = input("(w)ord or (l)etter ramble: ").lower()
-
-  # find number of word/letters to ramble:
-  if ramble_type == 'l':
-    question_text = "how many letters to ramble: "
-  else:
-    question_text = "how many words to ramble: "
-  ramble_len = input(question_text)
-  while not ramble_len.isdigit():
-    ramble_len = input(question_text)
-
-ramble_len = int(ramble_len) // 2                # since each step of the ramble generates 2 new elements
-print("working ... \n")
-
-
 # choose verbose ramble mode:
-verbose = True
+verbose = False
 #verbose = False
-
 
 # define our bare-bones superposition class:
 class superposition(object):
@@ -112,13 +75,10 @@ def extract_3_word_tail(one):
 def extract_3_letter_tail(one):
   return one[-3:]
 
-
 # learn word ngram pairs:
 # should probably merge the learn_ngram_word and learn_ngram_letter code!
-def learn_ngram_word_pairs(filename):
-  ngram_dict = {}
-  with open(filename,'r') as f:
-    text = f.read()
+def learn_ngram_word_pairs(text):
+    ngram_dict = {}
     words = re.sub('[<|>=\r\n]',' ',text)
     for ngram_pairs in create_ngram_pairs(words.split()):
       try:
@@ -128,13 +88,11 @@ def learn_ngram_word_pairs(filename):
         ngram_dict[head].add(tail)
       except:
         continue
-  return ngram_dict
+    return ngram_dict
 
 # learn ngram letter pairs:
-def learn_ngram_letter_pairs(filename):
-  ngram_dict = {}
-  with open(filename,'r') as f:
-    text = f.read()
+def learn_ngram_letter_pairs(text):
+    ngram_dict = {}
     clean_text = re.sub('[<|>=\r\n]',' ',text)
     for ngram_pairs in create_ngram_letter_pairs(clean_text):
       try:
@@ -144,72 +102,132 @@ def learn_ngram_letter_pairs(filename):
         ngram_dict[head].add(tail)
       except:
         continue
-  return ngram_dict
+    return ngram_dict
 
 # format word ramble into fake paragraphs:
 # big readability improvement!
-def print_fake_paragraphs(str):
-  paragraph_lengths = [1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,5]
-  dot_found = False
-  dot_count = 0
+def format_fake_paragraphs(text):
+    paragraph_lengths = [1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,5]
+    dot_found = False
+    dot_count = 0
+    
+    last_complete = ''
 
-  for c in str:
-    if c == ".":
-      dot_found = True
-      print(c,end='')
-    elif c == " " and dot_found:
-      dot_found = False
-      dot_count += 1
-      if dot_count == random.choice(paragraph_lengths) or dot_count == max(paragraph_lengths):
-        print("\n")
-        dot_count = 0
-      else:
-        print(c,end='')
-    else:
-      dot_found = False
-      print(c,end='')
+    result = ""
+    for c in text:
+        if c == ".":
+          dot_found = True
+          result += c
+          last_complete = result
+        elif c == " " and dot_found:
+            dot_found = False
+            dot_count += 1
+            if dot_count == random.choice(paragraph_lengths) or dot_count == max(paragraph_lengths):
+                result+="\n"
+                dot_count = 0
+            else:
+                result+=c
+        else:
+            dot_found = False
+            result+=c
+    return last_complete
+
+# format word ramble into fake paragraphs:
+def print_fake_paragraphs(str):
+  print(format_fake_paragraphs(str))
+  return
 
 # format letter ramble:
 # I don't know what to put here yet!
 def print_fake_poem(str):
   print(str)
 
+def generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_word_pairs, extract_3_tail = extract_3_word_tail, gram_space_char = " "):
+    ngrams = learn_ngram_pairs(text)
+    ramble_len = int(ramble_len) // 2    # since each step of the ramble generates 2 new elements, what?
+    for key in ngrams:
+      result = key
+      break
+    if verbose:
+      print("seed:",result)
 
-# learn our ngrams:
-if ramble_type == 'w':
-  ngrams = learn_ngram_word_pairs(filename)
-  extract_3_tail = extract_3_word_tail
-  gram_space_char = " "
-  print_out_string = print_fake_paragraphs
-else:
-  ngrams = learn_ngram_letter_pairs(filename)
-  extract_3_tail = extract_3_letter_tail
-  gram_space_char = ""
-  print_out_string = print_fake_poem
+    # now generate the ramble:
+    for _ in range(ramble_len):
+      try:
+        tail = extract_3_tail(result)
+        # next = ngrams[tail].pick_elt()           # for word ramble, not much difference. For letter ramble a big difference!
+        next = ngrams[tail].weighted_pick_elt()
+      except:
+        break
+
+      if verbose:
+        print("tail:",tail)
+        print("next:",next)
+      result += gram_space_char + next
+    return result
+
+def word_ramble(text, ramble_len):
+    result = generate_ramble(text, ramble_len)
+    result  = format_fake_paragraphs(result)
+    return result
+    
+def letter_ramble(text, ramble_len):
+    result = generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_letter_pairs, extract_3_tail = extract_3_letter_tail, gram_space_char = "")
+    return result
+    
+if False and     __name__=="__main__":
+    filename = "brother.txt"
+    ramble_len = 200
+    text = ''
+    with open(filename,'r') as f:
+        text = f.read()
+    print(word_ramble(text, ramble_len))
+
+if __name__=="__main__":
+    valid_params = False
+    # try to load parameters from the command line:
+    if len(sys.argv) == 4:
+      filename = sys.argv[1]
+      ramble_type = sys.argv[2].lower()
+      ramble_len = sys.argv[3]
+
+      # verify them:
+      if os.path.isfile(filename) and ramble_type in ['w','l'] and ramble_len.isdigit():
+        valid_params = True
 
 
-# seed our string with a random key:
-for key in ngrams:
-  str = key
-  break
-if verbose:
-  print("seed:",str)
+    if not valid_params:
+      # find file to load:
+      filename = input("Enter source text file: ")
+      while not os.path.isfile(filename):
+        filename = input(filename + " not found. Enter source text file: ")
 
+      # choose ramble type, word or letter:
+      ramble_type = input("(w)ord or (l)etter ramble: ").lower()
+      while ramble_type not in ['w','l']:
+        ramble_type = input("(w)ord or (l)etter ramble: ").lower()
 
-# now generate the ramble:
-for _ in range(ramble_len):
-  try:
-    tail = extract_3_tail(str)
-#    next = ngrams[tail].pick_elt()           # for word ramble, not much difference. For letter ramble a big difference!
-    next = ngrams[tail].weighted_pick_elt()
-  except:
-    break
+      # find number of word/letters to ramble:
+      if ramble_type == 'l':
+        question_text = "how many letters to ramble: "
+      else:
+        question_text = "how many words to ramble: "
+      ramble_len = input(question_text)
+      while not ramble_len.isdigit():
+        ramble_len = input(question_text)
 
-  if verbose:
-    print("tail:",tail)
-    print("next:",next)
-  str += gram_space_char + next
+    if verbose:
+        print("working ... \n")
 
-print("\n------------------------------")    
-# now create fake paragraphs:
-print_out_string(str)
+    # learn our ngrams:
+    with open(filename,'r') as f:
+        text = f.read()
+        if ramble_type == 'w':
+          result = word_ramble(text, ramble_len)
+        else:
+          result = letter_ramble(text, ramble_len)
+
+    if verbose:
+        print("\n------------------------------")    
+    # now create fake paragraphs:
+    print(result)
