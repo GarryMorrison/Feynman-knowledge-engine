@@ -229,9 +229,9 @@ if __name__=="__main__":
         question_text = "how many letters to ramble: "
       else:
         question_text = "how many words to ramble: "
-      ramble_len = input(question_text)
-      while not ramble_len.isdigit():
-        ramble_len = input(question_text)
+      ramble_len = input(question_text)                  # this leaves ramble_len a string, not an int.
+      while not ramble_len.isdigit():                    # currently the code to convert to int is in generate_ramble.
+        ramble_len = input(question_text)                # hrmm....
 
     if verbose:
         print("working ... \n")
