@@ -182,6 +182,15 @@ def word_ramble(text, ramble_len):
 def letter_ramble(text, ramble_len):
     result = generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_letter_pairs, extract_3_tail = extract_3_letter_tail, gram_space_char = "")
     return result
+
+def ramble(text, ramble_len, ramble_type = 'w'):
+    if ramble_type == 'w':
+        return word_ramble(text, ramble_len)
+    elif ramble_type == 'l':
+        return letter_ramble(text, ramble_len)
+    else:
+        print("huh?\n")                            # maybe an assert here instead? Also room for other ramble types.
+
     
 if False and     __name__=="__main__":
     filename = "brother.txt"                           # I wonder what procrasti has in his sample text file? 
@@ -227,15 +236,13 @@ if __name__=="__main__":
     if verbose:
         print("working ... \n")
 
-    # learn our ngrams:
+    # load text, and generate ramble:
     with open(filename,'r') as f:
         text = f.read()
-        if ramble_type == 'w':
-          result = word_ramble(text, ramble_len)
-        else:
-          result = letter_ramble(text, ramble_len)
+        result = ramble(text, ramble_len, ramble_type)
 
     if verbose:
         print("\n------------------------------")    
+
     # now print it all out:
     print(result)
