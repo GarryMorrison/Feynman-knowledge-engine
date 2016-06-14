@@ -3,10 +3,10 @@
 #######################################################################
 # ramble using a given text file
 #
-# Author: Garry Morrison
+# Author: Garry Morrison & procrasti
 # email: garry -at- semantic-db.org
 # Date: 2016-06-12
-# Update:
+# Update: 2016-6-14
 # Copyright: GPLv3
 #
 # Usage: ./ramble.py [source-text ramble-type ramble-len]
@@ -17,6 +17,13 @@
 # http://write-up.semantic-db.org/153-some-letter-rambler-examples.html
 # http://write-up.semantic-db.org/167-revisiting-the-letter-rambler.html
 #
+# some sample source text:
+# http://k5.semantic-db.org/extracted-kuron-text/tidy-rusty.txt
+# http://k5.semantic-db.org/extracted-kuron-text/tidy-procrasti.txt
+# http://k5.semantic-db.org/extracted-kuron-text/tdillo.txt
+# http://k5.semantic-db.org/extracted-kuron-text/Cable4096.txt
+# http://k5.semantic-db.org/extracted-kuron-text/complete-k5-posts.zip
+#
 #######################################################################
 
 import os
@@ -25,8 +32,8 @@ import re
 import random
 
 # choose verbose ramble mode:
-verbose = False
 #verbose = False
+verbose = True
 
 # define our bare-bones superposition class:
 class superposition(object):
@@ -40,10 +47,12 @@ class superposition(object):
       self.dict[str] = 1
 
   def pick_elt(self):
-    return random.choice(list(self.dict.keys()))       # improve this!!
+    return random.choice(list(self.dict.keys()))       # improve this!! Is there a more efficient way? Does it matter?
 
   # tweaked from here: http://stackoverflow.com/questions/3679694/a-weighted-version-of-random-choice
   # need to test it! Seems to work better than pick_elt(), so must be right :)
+  #
+  # picks a string from the dictionary with probability of the value of that dictionary key
   def weighted_pick_elt(self):
     if len(self.dict) == 0:
       return ""
@@ -57,7 +66,7 @@ class superposition(object):
 
 
 # create 3/2 word ngrams:
-def create_ngram_pairs(s):
+def create_ngram_word_pairs(s):
   return [[" ".join(s[i:i+3])," ".join(s[i+3:i+5])] for i in range(len(s) - 4)]
 
 # create 3/2 letter ngrams:
@@ -77,12 +86,12 @@ def extract_3_letter_tail(one):
 
 # learn word ngram pairs:
 # should probably merge the learn_ngram_word and learn_ngram_letter code!
+# since only 1 line of code difference.
 def learn_ngram_word_pairs(text):
     ngram_dict = {}
-    words = re.sub('[<|>=\r\n]',' ',text)
-    for ngram_pairs in create_ngram_pairs(words.split()):
+    clean_text = re.sub('[<|>=\r\n]',' ',text)
+    for head,tail in create_ngram_word_pairs(clean_text.split()):
       try:
-        head,tail = ngram_pairs
         if head not in ngram_dict:
           ngram_dict[head] = superposition()
         ngram_dict[head].add(tail)
@@ -94,9 +103,8 @@ def learn_ngram_word_pairs(text):
 def learn_ngram_letter_pairs(text):
     ngram_dict = {}
     clean_text = re.sub('[<|>=\r\n]',' ',text)
-    for ngram_pairs in create_ngram_letter_pairs(clean_text):
+    for head,tail in create_ngram_letter_pairs(clean_text):
       try:
-        head,tail = ngram_pairs
         if head not in ngram_dict:
           ngram_dict[head] = superposition()
         ngram_dict[head].add(tail)
@@ -106,6 +114,7 @@ def learn_ngram_letter_pairs(text):
 
 # format word ramble into fake paragraphs:
 # big readability improvement!
+# is it just me, or has this stopped working?
 def format_fake_paragraphs(text):
     paragraph_lengths = [1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,5]
     dot_found = False
@@ -122,7 +131,7 @@ def format_fake_paragraphs(text):
         elif c == " " and dot_found:
             dot_found = False
             dot_count += 1
-            if dot_count == random.choice(paragraph_lengths) or dot_count == max(paragraph_lengths):
+            if dot_count == random.choice(paragraph_lengths) or dot_count >= max(paragraph_lengths):
                 result+="\n"
                 dot_count = 0
             else:
@@ -145,26 +154,25 @@ def print_fake_poem(str):
 def generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_word_pairs, extract_3_tail = extract_3_word_tail, gram_space_char = " "):
     ngrams = learn_ngram_pairs(text)
     ramble_len = int(ramble_len) // 2    # since each step of the ramble generates 2 new elements, what?
-    for key in ngrams:
-      result = key
-      break
+    ramble = random.choice(list(ngrams.keys()))       # optimize this?
     if verbose:
-      print("seed:",result)
+      print("seed:",ramble)
 
     # now generate the ramble:
     for _ in range(ramble_len):
       try:
-        tail = extract_3_tail(result)
-        # next = ngrams[tail].pick_elt()           # for word ramble, not much difference. For letter ramble a big difference!
-        next = ngrams[tail].weighted_pick_elt()
-      except:
+        tail = extract_3_tail(ramble)
+        # next_gram = ngrams[tail].pick_elt()           # for word ramble, not much difference. For letter ramble a big difference!
+        next_gram = ngrams[tail].weighted_pick_elt()
+      except Exception as e:
+        print("Excepion reason:",e)
         break
 
       if verbose:
         print("tail:",tail)
-        print("next:",next)
-      result += gram_space_char + next
-    return result
+        print("next:",next_gram)
+      ramble += gram_space_char + next_gram
+    return ramble
 
 def word_ramble(text, ramble_len):
     result = generate_ramble(text, ramble_len)
@@ -176,7 +184,7 @@ def letter_ramble(text, ramble_len):
     return result
     
 if False and     __name__=="__main__":
-    filename = "brother.txt"
+    filename = "brother.txt"                           # I wonder what procrasti has in his sample text file? 
     ramble_len = 200
     text = ''
     with open(filename,'r') as f:
@@ -229,5 +237,5 @@ if __name__=="__main__":
 
     if verbose:
         print("\n------------------------------")    
-    # now create fake paragraphs:
+    # now print it all out:
     print(result)
