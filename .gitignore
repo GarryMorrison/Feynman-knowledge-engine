@@ -1,3 +1,4 @@
 *.pyc
 *.sw-
 tools/sw-examples/improved-imdb.sw
+tools/tdillo.txt

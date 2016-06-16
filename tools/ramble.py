@@ -9,7 +9,7 @@
 # Update: 2016-6-16
 # Copyright: GPLv3
 #
-# Usage: ./ramble.py [source-text ramble-type ramble-len]
+# Usage: ./ramble.py [source-text ramble-type ramble-len [p q] ]
 #
 # References:
 # http://write-up.semantic-db.org/151-introducing-the-ngram-stitch.html
@@ -69,11 +69,22 @@ class superposition(object):
 
 # create p/q word ngrams:
 def create_ngram_word_pairs(s,p,q):
-  return [[" ".join(s[i:i+p])," ".join(s[i+p:i+q])] for i in range(len(s) - 1 - p)]
+  return [[" ".join(s[i:i+p])," ".join(s[i+p:i+q])] for i in range(len(s) + 1 - q)]
 
 # create p/q letter ngrams:
 def create_ngram_letter_pairs(s,p,q):
-  return [[s[i:i+p],s[i+p:i+q]] for i in range(len(s) - 1 - p)]
+  return [[s[i:i+p],s[i+p:i+q]] for i in range(len(s) + 1 - q)]
+
+# generate p/q word ngrams:
+def generate_ngram_word_pairs(s,p,q):
+  for i in range(len(s) - q + 1):
+    yield " ".join(s[i:i+p]), " ".join(s[i+p:i+q])
+
+# generate p/q letter ngrams:
+def generate_ngram_letter_pairs(s,p,q):
+  for i in range(len(s) - q + 1):
+    yield s[i:i+p], s[i+p:i+q]
+
 
 # extract the last p words from a string:
 def extract_word_tail(one):
@@ -92,7 +103,8 @@ def extract_letter_tail(one):
 def learn_ngram_word_pairs(text,p,q):
     ngram_dict = {}
     clean_text = re.sub('[<|>=\r\n]',' ',text)
-    for head,tail in create_ngram_word_pairs(clean_text.split(),p,q):
+#    for head,tail in create_ngram_word_pairs(clean_text.split(),p,q):
+    for head,tail in generate_ngram_word_pairs(clean_text.split(),p,q):
       try:
         if head not in ngram_dict:
           ngram_dict[head] = superposition()
@@ -105,7 +117,8 @@ def learn_ngram_word_pairs(text,p,q):
 def learn_ngram_letter_pairs(text,p,q):
     ngram_dict = {}
     clean_text = re.sub('[<|>=\r\n]',' ',text)
-    for head,tail in create_ngram_letter_pairs(clean_text,p,q):
+#    for head,tail in create_ngram_letter_pairs(clean_text,p,q):
+    for head,tail in generate_ngram_letter_pairs(clean_text,p,q):
       try:
         if head not in ngram_dict:
           ngram_dict[head] = superposition()
@@ -179,6 +192,7 @@ def word_ramble(text, ramble_len, p = 3, q = 5):
     
 def letter_ramble(text, ramble_len, p = 3, q = 5):
     result = generate_ramble(text, ramble_len, p, q, learn_ngram_pairs = learn_ngram_letter_pairs, extract_tail = extract_letter_tail, gram_space_char = "")
+#    result = format_fake_poem(text)
     return result
 
 def ramble(text, ramble_len, ramble_type = 'w', p = 3, q = 5):
