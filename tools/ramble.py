@@ -6,7 +6,7 @@
 # Author: Garry Morrison & procrasti
 # email: garry -at- semantic-db.org
 # Date: 2016-06-12
-# Update: 2016-6-14
+# Update: 2016-6-16
 # Copyright: GPLv3
 #
 # Usage: ./ramble.py [source-text ramble-type ramble-len]
@@ -23,6 +23,8 @@
 # http://k5.semantic-db.org/extracted-kuron-text/tdillo.txt
 # http://k5.semantic-db.org/extracted-kuron-text/Cable4096.txt
 # http://k5.semantic-db.org/extracted-kuron-text/complete-k5-posts.zip
+#
+# some worked examples (eg on kr5ddit?):
 #
 #######################################################################
 
@@ -65,32 +67,32 @@ class superposition(object):
       upto += value
 
 
-# create 3/2 word ngrams:
-def create_ngram_word_pairs(s):
-  return [[" ".join(s[i:i+3])," ".join(s[i+3:i+5])] for i in range(len(s) - 4)]
+# create p/q word ngrams:
+def create_ngram_word_pairs(s,p,q):
+  return [[" ".join(s[i:i+p])," ".join(s[i+p:i+q])] for i in range(len(s) - 1 - p)]
 
-# create 3/2 letter ngrams:
-def create_ngram_letter_pairs(s):
-  return [[s[i:i+3],s[i+3:i+5]] for i in range(len(s) - 4)]
+# create p/q letter ngrams:
+def create_ngram_letter_pairs(s,p,q):
+  return [[s[i:i+p],s[i+p:i+q]] for i in range(len(s) - 1 - p)]
 
-# extract the last 3 words from a string:
-def extract_3_word_tail(one):
-  split_str = one.rsplit(' ',3)
-  if len(split_str) < 4:
+# extract the last p words from a string:
+def extract_word_tail(one):
+  split_str = one.rsplit(' ',p)
+  if len(split_str) <= p:
     return one
   return " ".join(split_str[1:])
 
-# extract the last 3 letters from a string:
-def extract_3_letter_tail(one):
-  return one[-3:]
+# extract the last p letters from a string:
+def extract_letter_tail(one):
+  return one[-p:]
 
 # learn word ngram pairs:
 # should probably merge the learn_ngram_word and learn_ngram_letter code!
 # since only 1 line of code difference.
-def learn_ngram_word_pairs(text):
+def learn_ngram_word_pairs(text,p,q):
     ngram_dict = {}
     clean_text = re.sub('[<|>=\r\n]',' ',text)
-    for head,tail in create_ngram_word_pairs(clean_text.split()):
+    for head,tail in create_ngram_word_pairs(clean_text.split(),p,q):
       try:
         if head not in ngram_dict:
           ngram_dict[head] = superposition()
@@ -100,10 +102,10 @@ def learn_ngram_word_pairs(text):
     return ngram_dict
 
 # learn ngram letter pairs:
-def learn_ngram_letter_pairs(text):
+def learn_ngram_letter_pairs(text,p,q):
     ngram_dict = {}
     clean_text = re.sub('[<|>=\r\n]',' ',text)
-    for head,tail in create_ngram_letter_pairs(clean_text):
+    for head,tail in create_ngram_letter_pairs(clean_text,p,q):
       try:
         if head not in ngram_dict:
           ngram_dict[head] = superposition()
@@ -141,19 +143,15 @@ def format_fake_paragraphs(text):
             result+=c
     return last_complete
 
-# format word ramble into fake paragraphs:
-def print_fake_paragraphs(str):
-  print(format_fake_paragraphs(str))
-  return
-
 # format letter ramble:
 # I don't know what to put here yet!
-def print_fake_poem(str):
-  print(str)
+def format_fake_poem(text):
+  return text
 
-def generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_word_pairs, extract_3_tail = extract_3_word_tail, gram_space_char = " "):
-    ngrams = learn_ngram_pairs(text)
-    ramble_len = int(ramble_len) // 2    # since each step of the ramble generates 2 new elements, what?
+
+def generate_ramble(text, ramble_len, p = 3, q = 5, learn_ngram_pairs = learn_ngram_word_pairs, extract_tail = extract_word_tail, gram_space_char = " "):
+    ngrams = learn_ngram_pairs(text, p, q)
+    ramble_len = int(ramble_len) // (q - p)           # since each step of the ramble generates q - p new elements, what?
     ramble = random.choice(list(ngrams.keys()))       # optimize this?
     if verbose:
       print("seed:",ramble)
@@ -161,7 +159,7 @@ def generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_word_pairs
     # now generate the ramble:
     for _ in range(ramble_len):
       try:
-        tail = extract_3_tail(ramble)
+        tail = extract_tail(ramble)
         # next_gram = ngrams[tail].pick_elt()           # for word ramble, not much difference. For letter ramble a big difference!
         next_gram = ngrams[tail].weighted_pick_elt()
       except Exception as e:
@@ -174,42 +172,43 @@ def generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_word_pairs
       ramble += gram_space_char + next_gram
     return ramble
 
-def word_ramble(text, ramble_len):
-    result = generate_ramble(text, ramble_len)
+def word_ramble(text, ramble_len, p = 3, q = 5):
+    result = generate_ramble(text, ramble_len, p, q)
     result  = format_fake_paragraphs(result)
     return result
     
-def letter_ramble(text, ramble_len):
-    result = generate_ramble(text, ramble_len, learn_ngram_pairs = learn_ngram_letter_pairs, extract_3_tail = extract_3_letter_tail, gram_space_char = "")
+def letter_ramble(text, ramble_len, p = 3, q = 5):
+    result = generate_ramble(text, ramble_len, p, q, learn_ngram_pairs = learn_ngram_letter_pairs, extract_tail = extract_letter_tail, gram_space_char = "")
     return result
 
-def ramble(text, ramble_len, ramble_type = 'w'):
+def ramble(text, ramble_len, ramble_type = 'w', p = 3, q = 5):
     if ramble_type == 'w':
-        return word_ramble(text, ramble_len)
+        return word_ramble(text, ramble_len, p, q)
     elif ramble_type == 'l':
-        return letter_ramble(text, ramble_len)
+        return letter_ramble(text, ramble_len, p, q)
     else:
         print("huh?\n")                            # maybe an assert here instead? Also room for other ramble types.
 
     
-if False and     __name__=="__main__":
-    filename = "brother.txt"                           # I wonder what procrasti has in his sample text file? 
-    ramble_len = 200
-    text = ''
-    with open(filename,'r') as f:
-        text = f.read()
-    print(word_ramble(text, ramble_len))
-
 if __name__=="__main__":
+    # set default p,q values:  3/5 seems to work well.
+    p = '3'
+    q = '5'
+
     valid_params = False
+
     # try to load parameters from the command line:
-    if len(sys.argv) == 4:
+    if len(sys.argv) >= 4:
       filename = sys.argv[1]
       ramble_type = sys.argv[2].lower()
       ramble_len = sys.argv[3]
 
+      if len(sys.argv) == 6:
+        p = sys.argv[4]
+        q = sys.argv[5]
+
       # verify them:
-      if os.path.isfile(filename) and ramble_type in ['w','l'] and ramble_len.isdigit():
+      if os.path.isfile(filename) and ramble_type in ['w','l'] and ramble_len.isdigit() and p.isdigit() and q.isdigit():
         valid_params = True
 
 
@@ -229,9 +228,18 @@ if __name__=="__main__":
         question_text = "how many letters to ramble: "
       else:
         question_text = "how many words to ramble: "
-      ramble_len = input(question_text)                  # this leaves ramble_len a string, not an int.
-      while not ramble_len.isdigit():                    # currently the code to convert to int is in generate_ramble.
-        ramble_len = input(question_text)                # hrmm....
+      ramble_len = input(question_text)
+      while not ramble_len.isdigit():  
+        ramble_len = input(question_text)
+
+      # find p and q:                                  # do we want to find p and q interactively, or leave to default values?
+      # p = input("Enter p value. Default is 3: ")
+  
+
+    # cast strings to integers:
+    ramble_len = int(ramble_len)
+    p = int(p)
+    q = int(q)
 
     if verbose:
         print("working ... \n")
@@ -239,7 +247,7 @@ if __name__=="__main__":
     # load text, and generate ramble:
     with open(filename,'r') as f:
         text = f.read()
-        result = ramble(text, ramble_len, ramble_type)
+        result = ramble(text, ramble_len, ramble_type, p, q)
 
     if verbose:
         print("\n------------------------------")    
