@@ -586,6 +586,64 @@ def ket_weighted_simm(w,A,B):
   return ket("simm",result)
     
 
+# 18/6/2016:
+# implement a faster simm.
+# simm is often a time sink, so we need to find ways to speed it up.
+# note eventually we might be able to implement a parallel version.
+# if not simm, then pattern_recognition function in new_context().
+#
+# OK. In testing in the console it seems to work.
+# Not sure if we can make it faster, but I think we are O(n) now. 
+def fast_simm(A,B):
+#  logger.debug("inside fast_simm")
+  if A.count() <= 1 and B.count() <= 1:
+    a = A.ket()
+    b = B.ket()
+    if a.label != b.label:                    # put a.label == '' test in here too?
+      return 0
+    a = max(a.value,0)                        # just making sure they are >= 0.
+    b = max(b.value,0)
+    if a == 0 and b == 0:                     # prevent div by zero.
+      return 0
+    return min(a,b)/max(a,b)
+#  return intersection(A.normalize(),B.normalize()).count_sum()
+
+  # now calculate the superposition version of simm, while trying to be as fast as possible:
+#  logger.debug("made it here in fast_simm")
+  try:
+    merged = {}
+    one_sum = 0
+    one = {}
+    for elt in A:
+      one[elt.label] = elt.value               # what about empty kets? How does this code handle them?
+      one_sum += elt.value                     # assume all values in A are >= 0
+      merged[elt.label] = True                 # potentially we could use abs(elt.value)
+
+    two_sum = 0
+    two = {}
+    for elt in B:
+      two[elt.label] = elt.value
+      two_sum += elt.value                     # assume all values in B are >= 0
+      merged[elt.label] = True
+
+    # prevent div by zero:
+    if one_sum == 0 or two_sum == 0:
+      return 0
+
+    merged_sum = 0
+    for key in merged:
+      v1 = 0
+      if key in one:
+        v1 = one[key]/one_sum
+      v2 = 0
+      if key in two:
+        v2 = two[key]/two_sum
+      merged_sum += min(v1,v2)
+    return merged_sum
+  except Exception as e:
+    logger.debug("fast_simm exception reason: %s" % e)
+
+
 # 27/3/2014: time to implement the landscape function.
 # Hrm... how do I plan on testing it?
 #
@@ -4224,6 +4282,7 @@ def filter_down_to(one,two):
   return intersection_fn(filter_fn,one,two).drop()
 
 # respond-to-pattern(current-sp,pattern,consequence)
+# heh. I forgot what this even does! 
 #
 # one, two and three are superpositions
 def respond_to_pattern(one,two,three):

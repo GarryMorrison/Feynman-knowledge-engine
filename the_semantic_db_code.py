@@ -838,7 +838,7 @@ class superposition(object):
         r = fn(x,t1)
       else:
         r = fn(x,t1,t2)
-      for elt in r:
+      for elt in r:                      # why not just do: "result += r" ?
         result += elt                    
     return result.superposition()
 
@@ -1838,63 +1838,6 @@ class projection_superposition(object):  # hrmm... Broken in a way. |x><x| is ea
       return "|><|"
     return " + ".join(x.display(exact) for x in self) 
 
-
-# 18/6/2016:
-# implement a fast_sp based simm.
-# simm is often a time sink, so we need to find ways to speed it up.
-# note eventually we might be able to implement a parallel version.
-# if not simm, then pattern_recognition function in new_context().
-#
-# OK. In testing in the console it seems to work.
-# Not sure if we can make it faster, but I think we are O(n) now. 
-def fast_simm(A,B):
-#  logger.debug("inside fast_simm")
-  if A.count() <= 1 and B.count() <= 1:
-    a = A.ket()
-    b = B.ket()
-    if a.label != b.label:                    # put a.label == '' test in here too?
-      return 0
-    a = max(a.value,0)                        # just making sure they are >= 0.
-    b = max(b.value,0)
-    if a == 0 and b == 0:                     # prevent div by zero.
-      return 0
-    return min(a,b)/max(a,b)
-#  return intersection(A.normalize(),B.normalize()).count_sum()
-
-  # now calculate the superposition version of simm, while trying to be as fast as possible:
-#  logger.debug("made it here in fast_simm")
-  try:
-    merged = {}
-    one_sum = 0
-    one = {}
-    for elt in A:
-      one[elt.label] = elt.value               # what about empty kets? How does this code handle them?
-      one_sum += elt.value                     # assume all values in A are >= 0
-      merged[elt.label] = True
-
-    two_sum = 0
-    two = {}
-    for elt in B:
-      two[elt.label] = elt.value
-      two_sum += elt.value                     # assume all values in B are >= 0
-      merged[elt.label] = True
-
-    # prevent div by zero:
-    if one_sum == 0 or two_sum == 0:
-      return 0
-
-    merged_sum = 0
-    for key in merged:
-      v1 = 0
-      if key in one:
-        v1 = one[key]/one_sum
-      v2 = 0
-      if key in two:
-        v2 = two[key]/two_sum
-      merged_sum += min(v1,v2)
-    return merged_sum
-  except Exception as e:
-    logger.debug("fast_simm exception reason: %s" % e)
     
 
 # we need this for stored_rule class.

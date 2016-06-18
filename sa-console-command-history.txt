@@ -29461,3 +29461,10 @@
   simm(|>,0.7|>) |x>
   q
 
+2016-06-18
+  debug on
+  load simple-shopping-basket.sw
+  dump
+  100 similar-input[basket] basket |f>
+  q
+
