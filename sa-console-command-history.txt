@@ -29392,3 +29392,72 @@
   history
   save history
 
+2016-06-13
+  load ngram-letter-pairs--trane.sw
+  letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
+  letter-ramble^1000 |The>
+  history
+  letter-ramble^1000 |The>
+  reset
+  history
+  load ngram-letter-pairs--rusty.sw
+  history
+  letter-ramble |*> #=> merge-labels(|_self> + weighted-pick-elt next-2-letters extract-3-tail-chars |_self>)
+  letter-ramble^1000 pick-elt rel-kets[next-2-letters]
+  history
+  save history
+  letter-ramble^1000 pick-elt rel-kets[next-2-letters]
+  q
+
+2016-06-18
+  load fred-sam-friends.sw
+  dump
+  find-inverse[friends]
+  dump
+  q
+
+2016-06-18
+  simm(|a>,split|a b>) |x>
+  fast-simm(|a>,split|a b>) |x>
+  q
+
+2016-06-18
+  debug on
+  fast-simm(|a>,split|a b>) |x>
+  q
+
+2016-06-18
+  fast-simm(|a>,split|a b>) |x>
+  q
+
+2016-06-18
+  fast-simm(|a>,split|a b>) |x>
+  q
+
+2016-06-18
+  fast-simm(|a>,split|a b>) |x>
+  fast-simm(|a>,|b>) |X>
+  fast-simm(|a>,0.7|a>) |x>
+  fast-simm(|a>,0|a>) |x>
+  fast-simm(|A>,|A> + |B> + |C>) |x>
+  q
+
+2016-06-18
+  load simple-shopping-basket.sw
+  dump
+  100 similar[basket] |f>
+  100 similar-input[basket] basket |f>
+  history
+  q
+
+2016-06-18
+    load simple-shopping-basket.sw
+  load simple-shopping-basket.sw
+  100 similar-input[basket] basket |f>
+  q
+
+2016-06-18
+  fast-simm(|>,0.7|>) |x>
+  simm(|>,0.7|>) |x>
+  q
+

@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/5/2016
+# Update: 18/6/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1150,6 +1150,10 @@ whitelist_table_2 = {
   "simm"                : "simm",
   "silent-simm"         : "silent_simm",
   "weighted-simm"       : "weighted_simm",          # hrmm... I thought this took 3 parameters, not 2!
+
+# 18/6/2016:
+  "fast-simm"           : "fast_simm",              # will this work even though it is defined in code file, and not functions?
+
   "nfc"                 : "normed_frequency_class",  # pretty unlikely this will be used at command line since needs freq lists.
   "ket-nfc"             : "ket_normed_frequency_class",
 #  "apply"               : "apply",                  # 10/11/2014: What is this function?? Commented out!
