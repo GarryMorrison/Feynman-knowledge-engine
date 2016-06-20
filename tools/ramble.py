@@ -195,6 +195,7 @@ def word_ramble(text, ramble_len, p = 3, q = 5):
     
 def letter_ramble(text, ramble_len, p = 3, q = 5):
     result = generate_ramble(text, ramble_len, p, q, learn_ngram_pairs = learn_ngram_letter_pairs, extract_tail = extract_letter_tail, gram_space_char = "")
+    result = result.split(' ',1)[1]
 #    result = format_fake_poem(text)
     return result
 
