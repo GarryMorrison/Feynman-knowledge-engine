@@ -187,6 +187,9 @@ def generate_ramble(text, ramble_len, p = 3, q = 5, learn_ngram_pairs = learn_ng
 
 def word_ramble(text, ramble_len, p = 3, q = 5):
     result = generate_ramble(text, ramble_len, p, q)
+    result = result.split('. ',1)[1]
+#    result = result.rsplit('.',1)[0]
+#    result = result.strip()
     result  = format_fake_paragraphs(result)
     return result
     
