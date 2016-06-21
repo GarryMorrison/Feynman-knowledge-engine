@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/5/2016
+# Update: 21/6/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -631,14 +631,19 @@ def fast_simm(A,B):
       return 0
 
     merged_sum = 0
+#    for key in merged:
+#      v1 = 0
+#      if key in one:
+#        v1 = one[key]/one_sum
+#      v2 = 0
+#      if key in two:
+#        v2 = two[key]/two_sum
+#      merged_sum += min(v1,v2)
     for key in merged:
-      v1 = 0
-      if key in one:
+      if key in one and key in two:
         v1 = one[key]/one_sum
-      v2 = 0
-      if key in two:
         v2 = two[key]/two_sum
-      merged_sum += min(v1,v2)
+        merged_sum += min(v1,v2)
     return merged_sum
   except Exception as e:
     logger.debug("fast_simm exception reason: %s" % e)
@@ -4219,6 +4224,19 @@ def ket_hash(one,size):
     return ket("",0)
   our_hash = hashlib.md5(one.label.encode('utf-8')).hexdigest()[-size:]
   return ket(our_hash,one.value)
+
+import zlib
+# 19/6/2016:
+# hash-compress (|a> + |b> + |c> + |d>)
+#
+# sa: hash-compress split |a b c d>
+# |620062> + |630063> + |640064> + |650065>
+#
+# one is a ket
+def hash_compress(one):
+  our_hash = zlib.adler32(one.label.encode('utf-8'))
+  return ket("%0.2X" % our_hash,one.value) 
+  
   
 # 24/8/2015:
 # hash-data[size] SP
@@ -4355,6 +4373,8 @@ def edit_substitute(one,parameters):
 # guess-ket[3] |Sam>        -- return the best 3 matching known kets, providing simm > 0
 # guess-ket[*] |robbie>     -- return all matching known kets, providing simm > 0
 #
+# could do with some optimization!
+#
 # one is a ket
 def guess_ket(one,context,t='1'):
   def process_string(s):
@@ -4364,12 +4384,14 @@ def guess_ket(one,context,t='1'):
     guess = process_string(one.label)
     r = superposition()
     for x in context.relevant_kets("*"):                            # what about kets that are only on the right hand side of a learn rule? This misses them. One way is run "create inverse", but is there a better way?
-      similarity = silent_simm(guess,process_string(x.label))
-      r.data.append(x.multiply(similarity))                         # later swap in r += x.multiply(similarity)
+#      similarity = silent_simm(guess,process_string(x.label))
+      similarity = fast_simm(guess,process_string(x.label))
+      if similarity > 0:
+        r.data.append(x.multiply(similarity))                         # later swap in r += x.multiply(similarity)
     if t == '*':
-      return r.drop().coeff_sort()
+      return r.coeff_sort()
     else:
-      return r.drop().coeff_sort().select_range(1,int(t))    
+      return r.coeff_sort().select_range(1,int(t))    
   except:
     return ket("",0)
 

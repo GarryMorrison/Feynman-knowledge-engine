@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/6/2016
+# Update: 19/6/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -208,6 +208,9 @@ fn_table = {
 
 # 5/8/2015:
   "split-chars"        : "split_chars",  
+
+# 19/6/2016:
+  "hash-compress"      : "hash_compress",
 }
 
 

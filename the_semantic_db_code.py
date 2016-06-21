@@ -838,8 +838,9 @@ class superposition(object):
         r = fn(x,t1)
       else:
         r = fn(x,t1,t2)
-      for elt in r:                      # why not just do: "result += r" ?
-        result += elt                    
+#      for elt in r:                      # why not just do: "result += r" ?
+#        result += elt
+      result += r                         # in a test run, essentially no time difference.
     return result.superposition()
 
 

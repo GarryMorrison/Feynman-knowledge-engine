@@ -29468,3 +29468,215 @@
   100 similar-input[basket] basket |f>
   q
 
+2016-06-19
+  load 30k--wikipedia-links.sw
+  find-inverse[links-to]
+  inverse-links-to |WP: France>
+  hash[4] inverse-links-to |WP: France>
+  how-many inverse-links-to |WP: France>
+  how-many hash[4] inverse-links-to |WP: France>
+  hash[4] inverse-links-to |WP: France>
+  how-many inverse-links-to |WP: France>
+  how-many hash[4] inverse-links-to |WP: France>
+  hash-op |*> #=> hash[4] inverse-links-to |_self>
+  map[hash-op,wikivec] rel-kets[inverse-links-to]
+  T |*> #=> table[page,coeff] select[1,200] 100 self-similar[wikivec] merge-labels(|WP: > + |_self>)
+  T |France>
+  history
+  q
+
+2016-06-19
+  load 30k--wikipedia-links.sw
+  find-inverse[links-to]
+  hash-compress inverse-links-to |WP: France>
+  ket-length |fish>
+  ket-length (|frog> + |fish>)
+  pop-float ket-length (|frog> + |fish>)
+  pop-float ket-length inverse-links-to |WP: France>
+  pop-float ket-length hash-compress inverse-links-to |WP: France>
+  pop-float ket-length hash[4] inverse-links-to |WP: France>
+  hash-op |*> #=> hash[4] inverse-links-to |_self>
+  map[hash-op,wikivec] rel-kets[inverse-links-to]
+  how-many rel-kets[links-to]
+  how-many rel-kets[inverse-links-to]
+  T |*> #=> table[page,coeff] select[1,200] 100 self-similar[wikivec] merge-labels(|WP: > + |_self>)
+  T |France>
+  history
+  T |Encyclopdia_Britannica>
+  T |Charles_Darwin>
+  history
+  links-to |WP: France>
+  links-to |WP: France>
+  links-to |WP: Germany>
+  select[1,20] links-to |WP: Germany>
+  select[1,20] links-to |WP: Berlin>
+  sa: T |France>
+ 
+  what-is-semantically-similar-to |Charles_Darwin>
+  history
+  
+  what-is-semantically-similar-to |*> #=> table[page,coeff] select[1,200] 100 self-similar[wikivec] merge-labels(|WP: > + |_self>)
+  what-is-semantically-similar-to |Charles_Darwin>
+  what-is-semantically-similar-to |Berlin>
+  
+  wikivec |WP: Basic_income>
+  what-is-semantically-similar-to |Basic_income>
+  what-is-semantically-similar-to |Bitcoin>
+  
+  what-is-semantically-similar-to |Procrastination>
+  
+  wikivec |WP: Procrastination>
+  wikivec |WP: Kuro5hin>
+  what-is-semantically-similar-to |Kuro5hin>
+  what-is-semantically-similar-to |Richard_Feynman>
+  
+  select[1,20] inverse-links-to |WP: Germany>
+  select[1,20] inverse-links-to |WP: Berlin>
+  save history
+
+2016-06-19
+  split |a b c d>
+  hash-compress split |a b c d>
+  hash[4] split |a b c d>
+  hash-compress |fish>
+  hash[4] split |a b c d e f g h i j k>
+  hash-compress split |a b c d e f g h i j k>
+  q
+
+2016-06-19
+  load fred-sam	
+  load fred-sam-friends.sw
+  dump
+  guess-ket |freddie>
+  q
+
+2016-06-19
+  load fred-sam-friends.sw
+  dump
+  guess-ket |freddie>
+  guess-ket[*] |freddie>
+  q
+
+2016-06-20
+  load fred-sam-friends.sw
+  guess-ket[*] |freddie>
+  q
+
+2016-06-20
+  load 30k--wikipedia-links.sw
+  find-inverse[links-to]
+  guess-ket |adelaide university>
+  q
+
+2016-06-21
+  load fred-sam-friends.sw
+  dump
+  find-inverse[friends]
+  q
+
+2016-06-21
+  load 30k--wikipedia-links.sw
+  find-inverse[links-to]
+  hash-op |*> #=> hash[4] inverse-links-to |_self>
+  map[hash-op,wikivec] rel-kets[inverse-links-to]
+  history
+  T |*> #=> table[page,coeff] 100 select[1,200] self-similar[wikivec] |_self>
+  T |*> #=> table[page,coeff] select[1,200] 100 self-similar[wikivec] merge-labels(|WP: > + |_self>)
+  T |Sloth>
+  T |Adelaide_University>
+  .
+  
+  q
+
+2016-06-21
+  load fred-sam-friends.sw
+  dump
+  find-inverse[friends]
+  dump
+  q
+
+2016-06-21
+  load fred-sam-friends-inverse-hash.sw
+  dump
+  q
+
+2016-06-21
+  load 300k--wikipedia-links--inverse-hash.sw
+  history
+  T |*> #=> table[page,coeff] 100 select[1,200] self-similar[inverse-hash-links-to] merge-labels(|WP: > + |_self>)
+  T |Adelaide_University>
+  
+  inverse-hash-links-to |WP: Adelaide_University>
+  inverse-hash-links-to |WP: electron>
+  inverse-hash-links-to |WP: France>
+  q
+
+2016-06-21
+  fast-simm(|a>,|a> + |b>) |x>
+  fast-simm(|a>,0.3|a>) |x>
+  fast-simm(|a>,split |b c>) |x>
+  fast-simm(split |a c>,split |b c e>) |x>
+  ket-simm(split |a c>,split |b c e>)
+  q
+
+2016-06-21
+  load 30k--wikipedia-links--inverse-hash.sw
+  inverse-hash-links-to |WP: France>
+  inverse-hash-links-to |WP: Adelaide>
+  inverse-hash-links-to |WP: Adelaide_University>
+  inverse-hash-links-to |WP: electron>
+  T |*> #=> table[page,coeff] 100 select[1,200] self-similar[inverse-hash-links-to] merge-labels(|WP: > + |_self>)
+  T |France>
+  load 30k--wikipedia-links--inverse-hash.sw
+  T |France>
+  T |electron>
+  T |helium>
+  
+  T |chemical_element>
+  T |Marie_Curie>
+  
+  T |spontaneous_fission>
+  
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to (|WP: hydrogen> + |WP: helium> + |WP: lithium> + |WP: boron>)
+  list-of |elements> => |WP: hydrogen> + |WP: helium> + |WP: lithium> + |WP: iron> + |WP: silicon> + |WP: silver> + |WP: gold> + |WP: lead>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to select[1,20] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  
+  history
+  save history
+
+2016-06-21
+  load 30k--wikipedia-links--inverse-hash.sw
+  inverse-hash-links-to |WP: France>
+  inverse-hash-links-to |WP: Adelaide>
+  inverse-hash-links-to |WP: Adelaide_University>
+  inverse-hash-links-to |WP: electron>
+  T |*> #=> table[page,coeff] 100 select[1,200] self-similar[inverse-hash-links-to] merge-labels(|WP: > + |_self>)
+  T |France>
+  load 30k--wikipedia-links--inverse-hash.sw
+  T |France>
+  T |electron>
+  T |helium>
+  
+  T |chemical_element>
+  T |Marie_Curie>
+  
+  T |spontaneous_fission>
+  
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to (|WP: hydrogen> + |WP: helium> + |WP: lithium> + |WP: boron>)
+  list-of |elements> => |WP: hydrogen> + |WP: helium> + |WP: lithium> + |WP: iron> + |WP: silicon> + |WP: silver> + |WP: gold> + |WP: lead>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to select[1,20] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  
+  history
+  save history
+  
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to clean select[1,20] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  save history
+
