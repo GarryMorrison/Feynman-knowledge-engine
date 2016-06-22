@@ -25,22 +25,16 @@ if len(sys.argv) < 2:
   sys.exit(1)
 
 if len(sys.argv) >= 2:
-  wikipage = "WP: " + sys.argv[1]              # maybe wikivec should leave out the "WP: " prefix? Done.
+#  wikipage = "WP: " + sys.argv[1]              # maybe wikivec should leave out the "WP: " prefix? Done.
   wikipage = sys.argv[1]
 
 number_of_results = 30
 if len(sys.argv) == 3:
   number_of_results = int(sys.argv[2])
 
-
-# maybe op and destination should be passed in at the command line?
-#op = "friends"
-#op = "inverse-hash-links-to"
-#destination = "sw-examples/fred-sam-friends-inverse-hash.sw"
-#source = "sw-examples/30k--wikipedia-links--inverse-hash.sw"
-
 op = "wikivec"
 source = "sw-examples/30k--wikivec.sw"
+
 
 
 # define our bare-bones superposition class:
@@ -82,27 +76,18 @@ def load_simple_sw_into_dict(filename,op):
     for line in f:
       line = line.strip()
       if line.startswith(op_head):
-#        print("line:",line)
         try:
           head,tail = line.split('> => ',1)
           label = head.split(' |',1)[1]
           sw_dict[label] = superposition()
-#          print("head:",head)
-#          print("tail:",tail)
-#          print("label:",label)
           for piece in tail[:-1].split('> + '):
             tidy_piece = piece.split('|')[1]
-#            if tidy_piece == "WP: =":                    # hack to fix a bug in the wikipedia links sw file: a term: |WP: =>
-#              continue
             sw_dict[label].add(tidy_piece)
-#          print("sp:",sw_dict[label])
         except Exception as e:
           print("Exception reason: %s" % e)
           continue
   return sw_dict        
 
-sw_dict = load_simple_sw_into_dict(source,op)
-print("----------------")
 
 def print_sw_dict(dict):
   for label,sp in dict.items():
@@ -113,9 +98,9 @@ def save_sw_dict(dict,filename,op):
     for label,sp in dict.items():
       f.write("%s |%s> => %s\n" % (op,label,sp))
 
-#print_sw_dict(sw_dict)
-
-# probably can optimize this more yet.
+# probably can optimize this more yet. 
+# Yup! See faster_simm(). Though it assumes clean superpositions.
+#
 def fast_simm(A,B):
 #  logger.debug("inside fast_simm")
   if len(A) <= 1 and len(B) <= 1:
@@ -162,7 +147,8 @@ def fast_simm(A,B):
   except Exception as e:
     print("fast_simm exception reason: %s" % e)
 
-# probably can optimize this more yet.
+# seems maybe 50% faster if I recall.
+# maybe I should test that number?
 def faster_simm(A,B):
 #  logger.debug("inside fast_simm")
   if len(A) <= 1 and len(B) <= 1:
@@ -180,7 +166,7 @@ def faster_simm(A,B):
   # now calculate the superposition version of simm, while trying to be as fast as possible:
 #  logger.debug("made it here in fast_simm")
   try:
-    one_sum = len(A)                       # we can only do this since we are working with clean superpositions
+    one_sum = len(A)                       # we can only do this since we are working with clean superpositions, otherwise need to use fast_simm()
     two_sum = len(B)                       # ie, all coeffs = 1, hence A.count_sum() == A.count() == len(A)
     merged_sum = 0                         # makes the normalization step much cheaper.
 
@@ -196,91 +182,64 @@ def faster_simm(A,B):
   except Exception as e:
     print("faster_simm exception reason: %s" % e)
 
-
-def pattern_recognition(dict,pattern,t=0):
-  result = []
-  for label,sp in dict.items():
-    value = fast_simm(pattern,sp)
-    if value > t:
-      result.append((label,value))
-  return result
-
-# pretty print the result:
+# pretty print a float:
 def float_to_int(x,t=2):
   if float(x).is_integer():
     return str(int(x))
   return str(round(x,t))
+
+def pattern_recognition(dict,pattern,t=0):
+  result = []
+  for label,sp in dict.items():
+    value = fast_simm(pattern,sp)       # if a clean superposition, then swap in faster_simm()
+    if value > t:
+      result.append((label,value))
+  return result
 
 def massaged_pattern_recognition(dict,pattern,t=0):
   result = []
   for label,sp in dict.items():
     value = faster_simm(pattern,sp)
     if value > t:
-      result.append((label,float_to_int(100*value)))     # float to int returns a string, which messes with sorting, so be aware!!
+#      result.append((label,float_to_int(100*value)))     # float to int returns a string, which messes with sorting, so be aware!!
+      result.append((label,value))
   return result
 
 
-pattern = sw_dict[wikipage]
-print("wikipage:",wikipage)
-print("pattern:",pattern)
-#result = pattern_recognition(sw_dict,pattern)
-result = massaged_pattern_recognition(sw_dict,pattern)
-#print("result:",result)
+def find_wikivec_similarity(sw_dict,wikipage,number_of_results):
+  # convert wikipage to wikivec pattern:
+  print("----------------")
+  pattern = sw_dict[wikipage]            # currently bugs out if wikipage is not in the dictionary.
+  print("wikipage:",wikipage)
+  print("pattern:",pattern)
+  print("pattern length:",len(pattern))
+  print("----------------")
 
-# sort the results:
-sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:number_of_results]
-#sorted_result = sorted(result, key = lambda x: x[1], reverse = True)
+  # find matching patterns:
+  #result = pattern_recognition(sw_dict,pattern)
+  result = massaged_pattern_recognition(sw_dict,pattern)
 
-# print the results:
-#for label,value in sorted_result:
-#  print("%s\t\t\t\t%s" % (label,value))
+  # sort the results:
+  sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:number_of_results]
 
+  # format the results a little:
+  # formating here, instead of in massaged_pattern_recognition doesn't seem to affect run-time speed,
+  # even though by doing that we avoid thousands of calls to float_to_int()
+  return [(str(k+1),label,float_to_int(100*value)) for k,(label,value) in enumerate(sorted_result) ]
 
-# table print, from here: http://stackoverflow.com/questions/25403249/print-a-list-of-tuples-as-table
-max_length_column = []
-tuple_len = 2
-
-print("len results:",len(sorted_result))
-#sys.exit(0)
-for i in range(tuple_len):
-    max_length_column.append(max(len(e[i])+2 for e in sorted_result))    
-
-#sys.exit(0)
-for e in sorted_result:
+# pretty print a table:
+# table print tweaked from here: http://stackoverflow.com/questions/25403249/print-a-list-of-tuples-as-table
+def print_table(table):
+  max_length_column = []
+  tuple_len = len(table[0])     # assume entire table has the same shape as the first row
+  for i in range(tuple_len):
+    max_length_column.append(max(len(e[i])+2 for e in table))    
+  for e in table:
     for i in range(tuple_len):
-        print(e[i].ljust(max_length_column[i]), end='')
+      print(e[i].ljust(max_length_column[i]), end='')
     print()
 
-sys.exit(0)
-
-def find_inverse_of_sw_dict(dict):
-  inverse_dict = {}
-  for label,sp in dict.items():
-    for key,value in sp:
-      if key not in inverse_dict:
-        inverse_dict[key] = superposition()  
-      inverse_dict[key].add(label)
-  return inverse_dict
-
-print("----")
-#inverse_dict = find_inverse_of_sw_dict(sw_dict)
-#print_sw_dict(inverse_dict)
-
-def our_hash(s):
-  size = 6                                                     # length of the final hash
-  return hashlib.md5(s.encode('utf-8')).hexdigest()[-size:]    # seems no speed difference between md5 and adler32. 
-#  return "%0.2X" % zlib.adler32(s.encode('utf-8'))
-
-def find_inverse_hash_of_sw_dict(dict):
-  inverse_dict = {}
-  for label,sp in dict.items():
-    for key,value in sp:
-      if key not in inverse_dict:
-        inverse_dict[key] = superposition()
-      inverse_dict[key].add(our_hash(label))
-  return inverse_dict
-
-inverse_dict = find_inverse_hash_of_sw_dict(sw_dict)
-print_sw_dict(inverse_dict)
-#save_sw_dict(inverse_dict,destination,"inverse-hash-" + op)
-save_sw_dict(inverse_dict,destination,"wikivec")
+# invoke it:
+sw_dict = load_simple_sw_into_dict(source,op)
+result = find_wikivec_similarity(sw_dict,wikipage,number_of_results)
+print_table(result)
