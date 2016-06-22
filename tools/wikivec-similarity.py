@@ -13,6 +13,12 @@
 #
 # data source:
 #
+# Note: command line is old tech. An interactive html version would be a little more fun.
+# Though it would need to be at least 30 times faster, so finishes in 1 sec, instead of 30+ sec.
+# Worst case speed I have seen is with "France" at about 5 minutes.
+#
+# TODO: I wonder if I could implement a fast version of guess-ket?
+#
 #######################################################################
 
 
@@ -34,7 +40,8 @@ if len(sys.argv) == 3:
 
 op = "wikivec"
 source = "sw-examples/30k--wikivec.sw"
-
+interactive = True
+#interactive = False
 
 
 # define our bare-bones superposition class:
@@ -207,6 +214,11 @@ def massaged_pattern_recognition(dict,pattern,t=0):
 
 
 def find_wikivec_similarity(sw_dict,wikipage,number_of_results):
+  # test wikipage is in sw_dict:
+  if wikipage not in sw_dict:
+    print("%s not in dictionary" % wikipage)
+    return [()]
+
   # convert wikipage to wikivec pattern:
   print("----------------")
   pattern = sw_dict[wikipage]            # currently bugs out if wikipage is not in the dictionary.
@@ -225,7 +237,7 @@ def find_wikivec_similarity(sw_dict,wikipage,number_of_results):
   # format the results a little:
   # formating here, instead of in massaged_pattern_recognition doesn't seem to affect run-time speed,
   # even though by doing that we avoid thousands of calls to float_to_int()
-  return [(str(k+1),label,float_to_int(100*value)) for k,(label,value) in enumerate(sorted_result) ]
+  return [(str(k+1),label.replace('&colon;',':'),float_to_int(100*value)) for k,(label,value) in enumerate(sorted_result) ]
 
 # pretty print a table:
 # table print tweaked from here: http://stackoverflow.com/questions/25403249/print-a-list-of-tuples-as-table
@@ -243,3 +255,27 @@ def print_table(table):
 sw_dict = load_simple_sw_into_dict(source,op)
 result = find_wikivec_similarity(sw_dict,wikipage,number_of_results)
 print_table(result)
+print()
+
+# interactive wiki similarity:
+if interactive:
+  while True:
+    line = input("Enter table row number, or wikipage: ")
+    line = line.strip()
+    if len(line) == 0:
+      continue
+
+  # exit the agent:
+    if line in ['q','quit','exit']:
+      break
+
+    try:
+      line = int(line)
+      wikipage = result[line-1][1]
+    except:
+      wikipage = line
+
+    result = find_wikivec_similarity(sw_dict,wikipage,number_of_results)
+    print_table(result)
+    print()
+  
