@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-06-21
-# Update: 2016-6-22
+# Update:
 # Copyright: GPLv3
 #
 # Usage: ./create-wikivec.py 300k--wikipedia-links.sw
@@ -25,7 +25,7 @@ import zlib
 op = "links-to"
 #destination = "sw-examples/fred-sam-friends-inverse-hash.sw"
 #destination = "sw-examples/30k--wikipedia-links--inverse-hash.sw"
-destination = "sw-examples/30k--wikivec.sw"
+destination = "sw-examples/300k--wikivec.sw"
 
 
 # define our bare-bones superposition class:
@@ -119,7 +119,6 @@ def find_inverse_hash_of_sw_dict(dict):
   inverse_dict = {}
   for label,sp in dict.items():
     for key,value in sp:
-      key = key[4:]                                            # let's strip the "WP: " prefix here.
       if key not in inverse_dict:
         inverse_dict[key] = superposition()
       inverse_dict[key].add(our_hash(label))
