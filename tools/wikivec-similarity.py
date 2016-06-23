@@ -6,18 +6,22 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-06-22
-# Update:
+# Update: 2016-6-23
 # Copyright: GPLv3
 #
 # Usage: ./wikivec-similarity.py wikipage-title [number-of-results-to-show]
 #
-# data source:
+# data source: http://semantic-db.org/sw-examples/30k--wikivec.sw
 #
 # Note: command line is old tech. An interactive html version would be a little more fun.
 # Though it would need to be at least 30 times faster, so finishes in 1 sec, instead of 30+ sec.
 # Worst case speed I have seen is with "France" at about 5 minutes.
 #
 # TODO: I wonder if I could implement a fast version of guess-ket?
+# Done. Though takes maybe 1 1/2 minutes to run. I haven't timed it exactly.
+# Standard edit-distance spell-check algo would be faster, but this code is all about superposition similarity.
+# We have string similarity with the guess-ket code, 
+# and semantic similarity with the wikivec similarity.
 #
 #######################################################################
 
@@ -42,6 +46,7 @@ op = "wikivec"
 source = "sw-examples/30k--wikivec.sw"
 interactive = True
 #interactive = False
+use_guess_ket = True
 
 
 # define our bare-bones superposition class:
@@ -72,6 +77,10 @@ class superposition(object):
     else:
       self.dict[str] = value
 
+  def pair(self):                               # if the dict is longer than 1 elt, this returns a random pair
+    for key,value in self.dict.items():
+      return key, value
+
 
 # load a simple sw file, ie they are all literal superpositions, into a dictionary.
 # the parsing is a hack though, hence the need for well formed literal superpositions!
@@ -95,6 +104,21 @@ def load_simple_sw_into_dict(filename,op):
           continue
   return sw_dict        
 
+def process_string(s):
+  def create_letter_n_grams(s,N):
+    for i in range(len(s)-N+1):
+      yield s[i:i+N]
+  r = superposition()
+  for k in [1,2,3]:               # hard-wire in the letter ngram sizes
+    for w in create_letter_n_grams(s.lower(),k):      # inline the create_letter_ngrams fn?
+      r.add(w)
+  return r
+
+def load_sw_dict_into_guess_dict(sw_dict):
+  dict = {}
+  for key in sw_dict:
+    dict[key] = process_string(key)
+  return dict      
 
 def print_sw_dict(dict):
   for label,sp in dict.items():
@@ -109,21 +133,22 @@ def save_sw_dict(dict,filename,op):
 # Yup! See faster_simm(). Though it assumes clean superpositions.
 #
 def fast_simm(A,B):
-#  logger.debug("inside fast_simm")
-  if len(A) <= 1 and len(B) <= 1:
-    a = A.ket()                               # x.ket() broken for now.
-    b = B.ket()
-    if a.label != b.label:                    # put a.label == '' test in here too?
+  if len(A) == 0 or len(B) == 0:
+    return 0
+  if len(A) == 1 and len(B) == 1:
+    a_label, a_value = A.pair()
+    b_label, b_value = B.pair()
+    
+    if a_label != b_label:                    # put a.label == '' test in here too?
       return 0
-    a = max(a.value,0)                        # just making sure they are >= 0.
-    b = max(b.value,0)
+    a = max(a_value,0)                        # just making sure they are >= 0.
+    b = max(b_value,0)
     if a == 0 and b == 0:                     # prevent div by zero.
       return 0
     return min(a,b)/max(a,b)
-#  return intersection(A.normalize(),B.normalize()).count_sum()
+#  return intersection(A.normalize(),B.normalize()).count_sum()     # very slow version!
 
   # now calculate the superposition version of simm, while trying to be as fast as possible:
-#  logger.debug("made it here in fast_simm")
   try:
     merged = {}
     one_sum = 0
@@ -157,21 +182,22 @@ def fast_simm(A,B):
 # seems maybe 50% faster if I recall.
 # maybe I should test that number?
 def faster_simm(A,B):
-#  logger.debug("inside fast_simm")
-  if len(A) <= 1 and len(B) <= 1:
-    a = A.ket()                               # x.ket() broken for now.
-    b = B.ket()
-    if a.label != b.label:                    # put a.label == '' test in here too?
+  if len(A) == 0 or len(B) == 0:
+    return 0
+  if len(A) == 1 and len(B) == 1:
+    a_label, a_value = A.pair()
+    b_label, b_value = B.pair()
+
+    if a_label != b_label:                    # put a.label == '' test in here too?
       return 0
-    a = max(a.value,0)                        # just making sure they are >= 0.
-    b = max(b.value,0)
+    a = max(a_value,0)                        # just making sure they are >= 0.
+    b = max(b_value,0)
     if a == 0 and b == 0:                     # prevent div by zero.
       return 0
     return min(a,b)/max(a,b)
-#  return intersection(A.normalize(),B.normalize()).count_sum()
+#  return intersection(A.normalize(),B.normalize()).count_sum()   # very slow version!
 
   # now calculate the superposition version of simm, while trying to be as fast as possible:
-#  logger.debug("made it here in fast_simm")
   try:
     one_sum = len(A)                       # we can only do this since we are working with clean superpositions, otherwise need to use fast_simm()
     two_sum = len(B)                       # ie, all coeffs = 1, hence A.count_sum() == A.count() == len(A)
@@ -195,6 +221,7 @@ def float_to_int(x,t=2):
     return str(int(x))
   return str(round(x,t))
 
+# standard superposition version:
 def pattern_recognition(dict,pattern,t=0):
   result = []
   for label,sp in dict.items():
@@ -203,21 +230,36 @@ def pattern_recognition(dict,pattern,t=0):
       result.append((label,value))
   return result
 
-def massaged_pattern_recognition(dict,pattern,t=0):
+# clean superposition version:
+def faster_pattern_recognition(dict,pattern,t=0):
   result = []
   for label,sp in dict.items():
     value = faster_simm(pattern,sp)
     if value > t:
-#      result.append((label,float_to_int(100*value)))     # float to int returns a string, which messes with sorting, so be aware!!
       result.append((label,value))
   return result
 
+# find the key in the dictionary that is closest to s:
+# would standard spell-check edit-distance be faster? Probably!
+def guess_ket(guess_dict,s):
+  pattern = process_string(s)
+  result = ''
+  best_simm = 0
+  for label,sp in guess_dict.items():
+    similarity = fast_simm(pattern,sp)       # can't use faster_simm, since some coeffs are not equal 1
+    if similarity > best_simm:
+      result = label
+      best_simm = similarity
+  return result
 
-def find_wikivec_similarity(sw_dict,wikipage,number_of_results):
+def find_wikivec_similarity(sw_dict,guess_dict,wikipage,number_of_results):
   # test wikipage is in sw_dict:
   if wikipage not in sw_dict:
-    print("%s not in dictionary" % wikipage)
-    return [()]
+    if use_guess_ket:                       # we need to be able to switch it off, since it is slow!
+      wikipage = guess_ket(guess_dict,wikipage)
+    else:
+      print("%s not in dictionary" % wikipage)
+      return [()]
 
   # convert wikipage to wikivec pattern:
   print("----------------")
@@ -228,15 +270,12 @@ def find_wikivec_similarity(sw_dict,wikipage,number_of_results):
   print("----------------")
 
   # find matching patterns:
-  #result = pattern_recognition(sw_dict,pattern)
-  result = massaged_pattern_recognition(sw_dict,pattern)
+  result = faster_pattern_recognition(sw_dict,pattern)
 
   # sort the results:
   sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:number_of_results]
 
   # format the results a little:
-  # formating here, instead of in massaged_pattern_recognition doesn't seem to affect run-time speed,
-  # even though by doing that we avoid thousands of calls to float_to_int()
   return [(str(k+1),label.replace('&colon;',':'),float_to_int(100*value)) for k,(label,value) in enumerate(sorted_result) ]
 
 # pretty print a table:
@@ -253,7 +292,16 @@ def print_table(table):
 
 # invoke it:
 sw_dict = load_simple_sw_into_dict(source,op)
-result = find_wikivec_similarity(sw_dict,wikipage,number_of_results)
+guess_dict = {}
+if use_guess_ket:                    # this is slow, so only want to use it when we want to.
+  guess_dict = load_sw_dict_into_guess_dict(sw_dict)
+
+# test the guess_dict:
+#print_sw_dict(guess_dict)
+#print(guess_ket(guess_dict,"adelaide university"))
+#sys.exit(0)
+
+result = find_wikivec_similarity(sw_dict,guess_dict,wikipage,number_of_results)
 print_table(result)
 print()
 
@@ -275,7 +323,7 @@ if interactive:
     except:
       wikipage = line
 
-    result = find_wikivec_similarity(sw_dict,wikipage,number_of_results)
+    result = find_wikivec_similarity(sw_dict,guess_dict,wikipage,number_of_results)
     print_table(result)
     print()
   
