@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 21/6/2016
+# Update: 28/6/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4547,4 +4547,36 @@ def learn_ket_normalizations(context,parameters):
     context.learn(op2,y,y.multiply(t/x.value))
   return ket("ket-norms")
       
-                                                    
+
+# append-column[n] SP
+# for use in Hierarchical Temporal Memory sequence learning
+# append-column[5] |X> == |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>
+# Cool! In testing it works just fine.
+#
+# one is a ket, N is a positive integer
+def append_column(one,N):
+  try:
+    N = int(N) 
+  except:
+    return ket("",0)
+
+  r = superposition()
+  for k in range(N):
+    r += ket("%s: %s" % (one.label,k),one.value)
+  return r
+
+import random
+# random-column[n] SP
+# for use in Hierarchical Temporal Memory sequence learning
+# random-column[5] |X> == pick-elt( |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>)
+#
+# one is a ket, N is a positive integer
+def random_column(one,N):
+  try:
+    N = int(N) 
+  except:
+    return ket("",0)
+
+  random_integer = random.randint(0,N-1)
+  return ket("%s: %s" % (one.label,random_integer),one.value)
+                                                        

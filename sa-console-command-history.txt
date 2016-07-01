@@ -29680,3 +29680,575 @@
   table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to clean select[1,20] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
   save history
 
+2016-06-23
+  load 30k--wikipedia-links--inverse-hash.sw
+  inverse-hash-links-to |WP: France>
+  inverse-hash-links-to |WP: Adelaide>
+  inverse-hash-links-to |WP: Adelaide_University>
+  inverse-hash-links-to |WP: electron>
+  T |*> #=> table[page,coeff] 100 select[1,200] self-similar[inverse-hash-links-to] merge-labels(|WP: > + |_self>)
+  T |France>
+  load 30k--wikipedia-links--inverse-hash.sw
+  T |France>
+  T |electron>
+  T |helium>
+  
+  T |chemical_element>
+  T |Marie_Curie>
+  
+  T |spontaneous_fission>
+  
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to (|WP: hydrogen> + |WP: helium> + |WP: lithium> + |WP: boron>)
+  list-of |elements> => |WP: hydrogen> + |WP: helium> + |WP: lithium> + |WP: iron> + |WP: silicon> + |WP: silver> + |WP: gold> + |WP: lead>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to select[1,20] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  
+  history
+  save history
+  
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to clean select[1,20] similar-input[inverse-hash-links-to] inverse-hash-links-to list-of |elements>
+  save history
+  T |photosynthesis>
+  T |eukaryote>
+  T |HIV>
+  T |Black_Death>
+  T |Christopher_Columbus>
+  T |Semantic_Web>
+  
+  T |Ted_Nelson>
+  T |Gopher_(protocol)>
+  
+  T |Steve_Jobs>
+  exclude(|b>,split|a b c>)
+  history
+  sample |vector> => exclude(inverse-hash-links-to |France>,inverse-hash-links-to|Paris>)
+  sample |vector>
+  sample |vector> => exclude(inverse-hash-links-to |WP: France>,inverse-hash-links-to|WP: Paris>)
+  sample |vector>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] sample |vector>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] inverse-hash-links-to |WP: Paris>
+  
+  history
+  merged |vector> => sample |vector> + inverse-hash-links-to |WP: Italy>
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] merged |vector>
+  
+  history
+  next |vector> => exclude(inverse-hash-links-to |WP: France>,inverse-hash-links-to|WP: Paris> + inverse-hash-links-to|WP: Italy>)
+  history
+  table[page,coeff] 100 select[1,200] similar-input[inverse-hash-links-to] next |vector>
+  
+  how-many letter-ngrams[1,2,3] |adelaide university>
+  letter-ngrams[1,2,3] |adelaide university>
+  q
+
+2016-06-23
+  the |pattern> => absolute-noise[10] 0 range(|1>,|20>)
+  the |pattern>
+      noise |sample 1> => absolute-noise[7] the |pattern>
+      noise |sample 2> => absolute-noise[7] the |pattern>
+      noise |sample 3> => absolute-noise[7] the |pattern>
+      noise |sample 4> => absolute-noise[7] the |pattern>
+      noise |sample 5> => absolute-noise[7] the |pattern>
+      noise |sample 6> => absolute-noise[7] the |pattern>
+      noise |sample 7> => absolute-noise[7] the |pattern>
+      noise |sample 8> => absolute-noise[7] the |pattern>
+      noise |sample 9> => absolute-noise[7] the |pattern>
+      noise |sample 10> => absolute-noise[7] the |pattern>
+      noise |sample 11> => absolute-noise[7] the |pattern>
+      noise |sample 12> => absolute-noise[7] the |pattern>
+      noise |sample 13> => absolute-noise[7] the |pattern>
+      noise |sample 14> => absolute-noise[7] the |pattern>
+      noise |sample 15> => absolute-noise[7] the |pattern>
+      noise |sample 16> => absolute-noise[7] the |pattern>
+      noise |sample 17> => absolute-noise[7] the |pattern>
+      noise |sample 18> => absolute-noise[7] the |pattern>
+      noise |sample 19> => absolute-noise[7] the |pattern>
+      noise |sample 20> => absolute-noise[7] the |pattern>
+  
+      noise |sample 21> => absolute-noise[7] the |pattern>
+      noise |sample 22> => absolute-noise[7] the |pattern>
+      noise |sample 23> => absolute-noise[7] the |pattern>
+      noise |sample 24> => absolute-noise[7] the |pattern>
+      noise |sample 25> => absolute-noise[7] the |pattern>
+      noise |sample 26> => absolute-noise[7] the |pattern>
+      noise |sample 27> => absolute-noise[7] the |pattern>
+      noise |sample 28> => absolute-noise[7] the |pattern>
+      noise |sample 29> => absolute-noise[7] the |pattern>
+      noise |sample 30> => absolute-noise[7] the |pattern>
+      noise |sample 31> => absolute-noise[7] the |pattern>
+      noise |sample 32> => absolute-noise[7] the |pattern>
+      noise |sample 33> => absolute-noise[7] the |pattern>
+      noise |sample 34> => absolute-noise[7] the |pattern>
+      noise |sample 35> => absolute-noise[7] the |pattern>
+      noise |sample 36> => absolute-noise[7] the |pattern>
+      noise |sample 37> => absolute-noise[7] the |pattern>
+      noise |sample 38> => absolute-noise[7] the |pattern>
+      noise |sample 39> => absolute-noise[7] the |pattern>
+      noise |sample 40> => absolute-noise[7] the |pattern>
+  
+  dump
+  similarity |*> #=> push-float 100 ket-simm(the |pattern>,noise |_self>)
+  table[node,similarity] rel-kets[noise]
+  history
+  similarity |*> #=> round[3] push-float 100 ket-simm(the |pattern>,noise |_self>)
+  table[node,similarity] rel-kets[noise]
+      noise |sample 1> => absolute-noise[7] the |pattern>
+      noise |sample 2> => absolute-noise[7] the |pattern>
+      noise |sample 3> => absolute-noise[7] the |pattern>
+      noise |sample 4> => absolute-noise[7] the |pattern>
+      noise |sample 5> => absolute-noise[7] the |pattern>
+      noise |sample 6> => absolute-noise[7] the |pattern>
+      noise |sample 7> => absolute-noise[7] the |pattern>
+      noise |sample 8> => absolute-noise[7] the |pattern>
+      noise |sample 9> => absolute-noise[7] the |pattern>
+      noise |sample 10> => absolute-noise[7] the |pattern>
+      noise |sample 11> => absolute-noise[7] the |pattern>
+      noise |sample 12> => absolute-noise[7] the |pattern>
+      noise |sample 13> => absolute-noise[7] the |pattern>
+      noise |sample 14> => absolute-noise[7] the |pattern>
+      noise |sample 15> => absolute-noise[7] the |pattern>
+      noise |sample 16> => absolute-noise[7] the |pattern>
+      noise |sample 17> => absolute-noise[7] the |pattern>
+      noise |sample 18> => absolute-noise[7] the |pattern>
+      noise |sample 19> => absolute-noise[7] the |pattern>
+      noise |sample 20> => absolute-noise[7] the |pattern>
+  
+      noise |sample 21> => absolute-noise[7] the |pattern>
+      noise |sample 22> => absolute-noise[7] the |pattern>
+      noise |sample 23> => absolute-noise[7] the |pattern>
+      noise |sample 24> => absolute-noise[7] the |pattern>
+      noise |sample 25> => absolute-noise[7] the |pattern>
+      noise |sample 26> => absolute-noise[7] the |pattern>
+      noise |sample 27> => absolute-noise[7] the |pattern>
+      noise |sample 28> => absolute-noise[7] the |pattern>
+      noise |sample 29> => absolute-noise[7] the |pattern>
+      noise |sample 30> => absolute-noise[7] the |pattern>
+      noise |sample 31> => absolute-noise[7] the |pattern>
+      noise |sample 32> => absolute-noise[7] the |pattern>
+      noise |sample 33> => absolute-noise[7] the |pattern>
+      noise |sample 34> => absolute-noise[7] the |pattern>
+      noise |sample 35> => absolute-noise[7] the |pattern>
+      noise |sample 36> => absolute-noise[7] the |pattern>
+      noise |sample 37> => absolute-noise[7] the |pattern>
+      noise |sample 38> => absolute-noise[7] the |pattern>
+      noise |sample 39> => absolute-noise[7] the |pattern>
+      noise |sample 40> => absolute-noise[7] the |pattern>
+  
+  table[node,similarity] rel-kets[noise]
+      noise |sample 1> => absolute-noise[7] the |pattern>
+      noise |sample 2> => absolute-noise[7] the |pattern>
+      noise |sample 3> => absolute-noise[7] the |pattern>
+      noise |sample 4> => absolute-noise[7] the |pattern>
+      noise |sample 5> => absolute-noise[7] the |pattern>
+      noise |sample 6> => absolute-noise[7] the |pattern>
+      noise |sample 7> => absolute-noise[7] the |pattern>
+      noise |sample 8> => absolute-noise[7] the |pattern>
+      noise |sample 9> => absolute-noise[7] the |pattern>
+      noise |sample 10> => absolute-noise[7] the |pattern>
+      noise |sample 11> => absolute-noise[7] the |pattern>
+      noise |sample 12> => absolute-noise[7] the |pattern>
+      noise |sample 13> => absolute-noise[7] the |pattern>
+      noise |sample 14> => absolute-noise[7] the |pattern>
+      noise |sample 15> => absolute-noise[7] the |pattern>
+      noise |sample 16> => absolute-noise[7] the |pattern>
+      noise |sample 17> => absolute-noise[7] the |pattern>
+      noise |sample 18> => absolute-noise[7] the |pattern>
+      noise |sample 19> => absolute-noise[7] the |pattern>
+      noise |sample 20> => absolute-noise[7] the |pattern>
+  
+      noise |sample 21> => absolute-noise[7] the |pattern>
+      noise |sample 22> => absolute-noise[7] the |pattern>
+      noise |sample 23> => absolute-noise[7] the |pattern>
+      noise |sample 24> => absolute-noise[7] the |pattern>
+      noise |sample 25> => absolute-noise[7] the |pattern>
+      noise |sample 26> => absolute-noise[7] the |pattern>
+      noise |sample 27> => absolute-noise[7] the |pattern>
+      noise |sample 28> => absolute-noise[7] the |pattern>
+      noise |sample 29> => absolute-noise[7] the |pattern>
+      noise |sample 30> => absolute-noise[7] the |pattern>
+      noise |sample 31> => absolute-noise[7] the |pattern>
+      noise |sample 32> => absolute-noise[7] the |pattern>
+      noise |sample 33> => absolute-noise[7] the |pattern>
+      noise |sample 34> => absolute-noise[7] the |pattern>
+      noise |sample 35> => absolute-noise[7] the |pattern>
+      noise |sample 36> => absolute-noise[7] the |pattern>
+      noise |sample 37> => absolute-noise[7] the |pattern>
+      noise |sample 38> => absolute-noise[7] the |pattern>
+      noise |sample 39> => absolute-noise[7] the |pattern>
+      noise |sample 40> => absolute-noise[7] the |pattern>
+  
+  table[node,similarity] rel-kets[noise]
+    ave |result 1> => noise select[1,1] rel-kets[noise] |>
+    ave |result 2> => noise select[1,2] rel-kets[noise] |>
+    ave |result 3> => noise select[1,3] rel-kets[noise] |>
+    ave |result 4> => noise select[1,4] rel-kets[noise] |>
+    ave |result 5> => noise select[1,5] rel-kets[noise] |>
+    ave |result 6> => noise select[1,6] rel-kets[noise] |>
+    ave |result 7> => noise select[1,7] rel-kets[noise] |>
+    ave |result 8> => noise select[1,8] rel-kets[noise] |>
+    ave |result 9> => noise select[1,9] rel-kets[noise] |>
+    ave |result 10> => noise select[1,10] rel-kets[noise] |>
+    ave |result 11> => noise select[1,11] rel-kets[noise] |>
+    ave |result 12> => noise select[1,12] rel-kets[noise] |>
+    ave |result 13> => noise select[1,13] rel-kets[noise] |>
+    ave |result 14> => noise select[1,14] rel-kets[noise] |>
+    ave |result 15> => noise select[1,15] rel-kets[noise] |>
+    ave |result 16> => noise select[1,16] rel-kets[noise] |>
+    ave |result 17> => noise select[1,17] rel-kets[noise] |>
+    ave |result 18> => noise select[1,18] rel-kets[noise] |>
+    ave |result 19> => noise select[1,19] rel-kets[noise] |>
+    ave |result 20> => noise select[1,20] rel-kets[noise] |>
+  
+    ave |result 21> => noise select[1,21] rel-kets[noise] |>
+    ave |result 22> => noise select[1,22] rel-kets[noise] |>
+    ave |result 23> => noise select[1,23] rel-kets[noise] |>
+    ave |result 24> => noise select[1,24] rel-kets[noise] |>
+    ave |result 25> => noise select[1,25] rel-kets[noise] |>
+    ave |result 26> => noise select[1,26] rel-kets[noise] |>
+    ave |result 27> => noise select[1,27] rel-kets[noise] |>
+    ave |result 28> => noise select[1,28] rel-kets[noise] |>
+    ave |result 29> => noise select[1,29] rel-kets[noise] |>
+    ave |result 30> => noise select[1,30] rel-kets[noise] |>
+    ave |result 31> => noise select[1,31] rel-kets[noise] |>
+    ave |result 32> => noise select[1,32] rel-kets[noise] |>
+    ave |result 33> => noise select[1,33] rel-kets[noise] |>
+    ave |result 34> => noise select[1,34] rel-kets[noise] |>
+    ave |result 35> => noise select[1,35] rel-kets[noise] |>
+    ave |result 36> => noise select[1,36] rel-kets[noise] |>
+    ave |result 37> => noise select[1,37] rel-kets[noise] |>
+    ave |result 38> => noise select[1,38] rel-kets[noise] |>
+    ave |result 39> => noise select[1,39] rel-kets[noise] |>
+    ave |result 40> => noise select[1,40] rel-kets[noise] |>
+  
+  averaged-similarity |*> #=> round[3] push-float 100 ket-simm(the |pattern>,ave |_self>)
+  table[node,averaged-similarity] rel-kets[ave]
+    intersection |result 1> => intn[noise] select[1,1] rel-kets[noise] |>
+    intersection |result 2> => intn[noise] select[1,2] rel-kets[noise] |>
+    intersection |result 3> => intn[noise] select[1,3] rel-kets[noise] |>
+    intersection |result 4> => intn[noise] select[1,4] rel-kets[noise] |>
+    intersection |result 5> => intn[noise] select[1,5] rel-kets[noise] |>
+    intersection |result 6> => intn[noise] select[1,6] rel-kets[noise] |>
+    intersection |result 7> => intn[noise] select[1,7] rel-kets[noise] |>
+    intersection |result 8> => intn[noise] select[1,8] rel-kets[noise] |>
+    intersection |result 9> => intn[noise] select[1,9] rel-kets[noise] |>
+    intersection |result 10> => intn[noise] select[1,10] rel-kets[noise] |>
+    intersection |result 11> => intn[noise] select[1,11] rel-kets[noise] |>
+    intersection |result 12> => intn[noise] select[1,12] rel-kets[noise] |>
+    intersection |result 13> => intn[noise] select[1,13] rel-kets[noise] |>
+    intersection |result 14> => intn[noise] select[1,14] rel-kets[noise] |>
+    intersection |result 15> => intn[noise] select[1,15] rel-kets[noise] |>
+    intersection |result 16> => intn[noise] select[1,16] rel-kets[noise] |>
+    intersection |result 17> => intn[noise] select[1,17] rel-kets[noise] |>
+    intersection |result 18> => intn[noise] select[1,18] rel-kets[noise] |>
+    intersection |result 19> => intn[noise] select[1,19] rel-kets[noise] |>
+    intersection |result 20> => intn[noise] select[1,20] rel-kets[noise] |>
+    intersection |result 21> => intn[noise] select[1,21] rel-kets[noise] |>
+    intersection |result 22> => intn[noise] select[1,22] rel-kets[noise] |>
+    intersection |result 23> => intn[noise] select[1,23] rel-kets[noise] |>
+    intersection |result 24> => intn[noise] select[1,24] rel-kets[noise] |>
+    intersection |result 25> => intn[noise] select[1,25] rel-kets[noise] |>
+    intersection |result 26> => intn[noise] select[1,26] rel-kets[noise] |>
+    intersection |result 27> => intn[noise] select[1,27] rel-kets[noise] |>
+    intersection |result 28> => intn[noise] select[1,28] rel-kets[noise] |>
+    intersection |result 29> => intn[noise] select[1,29] rel-kets[noise] |>
+    intersection |result 30> => intn[noise] select[1,30] rel-kets[noise] |>
+    intersection |result 31> => intn[noise] select[1,31] rel-kets[noise] |>
+    intersection |result 32> => intn[noise] select[1,32] rel-kets[noise] |>
+    intersection |result 33> => intn[noise] select[1,33] rel-kets[noise] |>
+    intersection |result 34> => intn[noise] select[1,34] rel-kets[noise] |>
+    intersection |result 35> => intn[noise] select[1,35] rel-kets[noise] |>
+    intersection |result 36> => intn[noise] select[1,36] rel-kets[noise] |>
+    intersection |result 37> => intn[noise] select[1,37] rel-kets[noise] |>
+    intersection |result 38> => intn[noise] select[1,38] rel-kets[noise] |>
+    intersection |result 39> => intn[noise] select[1,39] rel-kets[noise] |>
+    intersection |result 40> => intn[noise] select[1,40] rel-kets[noise] |>
+  
+    union |result 1> => union[noise] select[1,1] rel-kets[noise] |>
+    union |result 2> => union[noise] select[1,2] rel-kets[noise] |>
+    union |result 3> => union[noise] select[1,3] rel-kets[noise] |>
+    union |result 4> => union[noise] select[1,4] rel-kets[noise] |>
+    union |result 5> => union[noise] select[1,5] rel-kets[noise] |>
+    union |result 6> => union[noise] select[1,6] rel-kets[noise] |>
+    union |result 7> => union[noise] select[1,7] rel-kets[noise] |>
+    union |result 8> => union[noise] select[1,8] rel-kets[noise] |>
+    union |result 9> => union[noise] select[1,9] rel-kets[noise] |>
+    union |result 10> => union[noise] select[1,10] rel-kets[noise] |>
+    union |result 11> => union[noise] select[1,11] rel-kets[noise] |>
+    union |result 12> => union[noise] select[1,12] rel-kets[noise] |>
+    union |result 13> => union[noise] select[1,13] rel-kets[noise] |>
+    union |result 14> => union[noise] select[1,14] rel-kets[noise] |>
+    union |result 15> => union[noise] select[1,15] rel-kets[noise] |>
+    union |result 16> => union[noise] select[1,16] rel-kets[noise] |>
+    union |result 17> => union[noise] select[1,17] rel-kets[noise] |>
+    union |result 18> => union[noise] select[1,18] rel-kets[noise] |>
+    union |result 19> => union[noise] select[1,19] rel-kets[noise] |>
+    union |result 20> => union[noise] select[1,20] rel-kets[noise] |>
+    union |result 21> => union[noise] select[1,21] rel-kets[noise] |>
+    union |result 22> => union[noise] select[1,22] rel-kets[noise] |>
+    union |result 23> => union[noise] select[1,23] rel-kets[noise] |>
+    union |result 24> => union[noise] select[1,24] rel-kets[noise] |>
+    union |result 25> => union[noise] select[1,25] rel-kets[noise] |>
+    union |result 26> => union[noise] select[1,26] rel-kets[noise] |>
+    union |result 27> => union[noise] select[1,27] rel-kets[noise] |>
+    union |result 28> => union[noise] select[1,28] rel-kets[noise] |>
+    union |result 29> => union[noise] select[1,29] rel-kets[noise] |>
+    union |result 30> => union[noise] select[1,30] rel-kets[noise] |>
+    union |result 31> => union[noise] select[1,31] rel-kets[noise] |>
+    union |result 32> => union[noise] select[1,32] rel-kets[noise] |>
+    union |result 33> => union[noise] select[1,33] rel-kets[noise] |>
+    union |result 34> => union[noise] select[1,34] rel-kets[noise] |>
+    union |result 35> => union[noise] select[1,35] rel-kets[noise] |>
+    union |result 36> => union[noise] select[1,36] rel-kets[noise] |>
+    union |result 37> => union[noise] select[1,37] rel-kets[noise] |>
+    union |result 38> => union[noise] select[1,38] rel-kets[noise] |>
+    union |result 39> => union[noise] select[1,39] rel-kets[noise] |>
+    union |result 40> => union[noise] select[1,40] rel-kets[noise] |>
+  
+  intersection-similarity |*> #=> round[3] push-float 100 ket-simm(the |pattern>,intersection |_self>)
+  union-similarity |*> #=> round[3] push-float 100 ket-simm(the |pattern>,union |_self>)
+    intersection |result 1> => common[noise] select[1,1] rel-kets[noise] |>
+    intersection |result 2> => common[noise] select[1,2] rel-kets[noise] |>
+    intersection |result 3> => common[noise] select[1,3] rel-kets[noise] |>
+    intersection |result 4> => common[noise] select[1,4] rel-kets[noise] |>
+    intersection |result 5> => common[noise] select[1,5] rel-kets[noise] |>
+    intersection |result 6> => common[noise] select[1,6] rel-kets[noise] |>
+    intersection |result 7> => common[noise] select[1,7] rel-kets[noise] |>
+    intersection |result 8> => common[noise] select[1,8] rel-kets[noise] |>
+    intersection |result 9> => common[noise] select[1,9] rel-kets[noise] |>
+    intersection |result 10> => common[noise] select[1,10] rel-kets[noise] |>
+    intersection |result 11> => common[noise] select[1,11] rel-kets[noise] |>
+    intersection |result 12> => common[noise] select[1,12] rel-kets[noise] |>
+    intersection |result 13> => common[noise] select[1,13] rel-kets[noise] |>
+    intersection |result 14> => common[noise] select[1,14] rel-kets[noise] |>
+    intersection |result 15> => common[noise] select[1,15] rel-kets[noise] |>
+    intersection |result 16> => common[noise] select[1,16] rel-kets[noise] |>
+    intersection |result 17> => common[noise] select[1,17] rel-kets[noise] |>
+    intersection |result 18> => common[noise] select[1,18] rel-kets[noise] |>
+    intersection |result 19> => common[noise] select[1,19] rel-kets[noise] |>
+    intersection |result 20> => common[noise] select[1,20] rel-kets[noise] |>
+    intersection |result 21> => common[noise] select[1,21] rel-kets[noise] |>
+    intersection |result 22> => common[noise] select[1,22] rel-kets[noise] |>
+    intersection |result 23> => common[noise] select[1,23] rel-kets[noise] |>
+    intersection |result 24> => common[noise] select[1,24] rel-kets[noise] |>
+    intersection |result 25> => common[noise] select[1,25] rel-kets[noise] |>
+    intersection |result 26> => common[noise] select[1,26] rel-kets[noise] |>
+    intersection |result 27> => common[noise] select[1,27] rel-kets[noise] |>
+    intersection |result 28> => common[noise] select[1,28] rel-kets[noise] |>
+    intersection |result 29> => common[noise] select[1,29] rel-kets[noise] |>
+    intersection |result 30> => common[noise] select[1,30] rel-kets[noise] |>
+    intersection |result 31> => common[noise] select[1,31] rel-kets[noise] |>
+    intersection |result 32> => common[noise] select[1,32] rel-kets[noise] |>
+    intersection |result 33> => common[noise] select[1,33] rel-kets[noise] |>
+    intersection |result 34> => common[noise] select[1,34] rel-kets[noise] |>
+    intersection |result 35> => common[noise] select[1,35] rel-kets[noise] |>
+    intersection |result 36> => common[noise] select[1,36] rel-kets[noise] |>
+    intersection |result 37> => common[noise] select[1,37] rel-kets[noise] |>
+    intersection |result 38> => common[noise] select[1,38] rel-kets[noise] |>
+    intersection |result 39> => common[noise] select[1,39] rel-kets[noise] |>
+    intersection |result 40> => common[noise] select[1,40] rel-kets[noise] |>
+  
+  table[node,averaged-similarity,union-similarity,intersection-similarity] rel-kets[ave]
+    sadd |result 1> => simm-add[noise,1] select[1,1] rel-kets[noise] |>
+    sadd |result 2> => simm-add[noise,1] select[1,2] rel-kets[noise] |>
+    sadd |result 3> => simm-add[noise,1] select[1,3] rel-kets[noise] |>
+    sadd |result 4> => simm-add[noise,1] select[1,4] rel-kets[noise] |>
+    sadd |result 5> => simm-add[noise,1] select[1,5] rel-kets[noise] |>
+    sadd |result 6> => simm-add[noise,1] select[1,6] rel-kets[noise] |>
+    sadd |result 7> => simm-add[noise,1] select[1,7] rel-kets[noise] |>
+    sadd |result 8> => simm-add[noise,1] select[1,8] rel-kets[noise] |>
+    sadd |result 9> => simm-add[noise,1] select[1,9] rel-kets[noise] |>
+    sadd |result 10> => simm-add[noise,1] select[1,10] rel-kets[noise] |>
+    sadd |result 11> => simm-add[noise,1] select[1,11] rel-kets[noise] |>
+    sadd |result 12> => simm-add[noise,1] select[1,12] rel-kets[noise] |>
+    sadd |result 13> => simm-add[noise,1] select[1,13] rel-kets[noise] |>
+    sadd |result 14> => simm-add[noise,1] select[1,14] rel-kets[noise] |>
+    sadd |result 15> => simm-add[noise,1] select[1,15] rel-kets[noise] |>
+    sadd |result 16> => simm-add[noise,1] select[1,16] rel-kets[noise] |>
+    sadd |result 17> => simm-add[noise,1] select[1,17] rel-kets[noise] |>
+    sadd |result 18> => simm-add[noise,1] select[1,18] rel-kets[noise] |>
+    sadd |result 19> => simm-add[noise,1] select[1,19] rel-kets[noise] |>
+    sadd |result 20> => simm-add[noise,1] select[1,20] rel-kets[noise] |>
+    sadd |result 21> => simm-add[noise,1] select[1,21] rel-kets[noise] |>
+    sadd |result 22> => simm-add[noise,1] select[1,22] rel-kets[noise] |>
+    sadd |result 23> => simm-add[noise,1] select[1,23] rel-kets[noise] |>
+    sadd |result 24> => simm-add[noise,1] select[1,24] rel-kets[noise] |>
+    sadd |result 25> => simm-add[noise,1] select[1,25] rel-kets[noise] |>
+    sadd |result 26> => simm-add[noise,1] select[1,26] rel-kets[noise] |>
+    sadd |result 27> => simm-add[noise,1] select[1,27] rel-kets[noise] |>
+    sadd |result 28> => simm-add[noise,1] select[1,28] rel-kets[noise] |>
+    sadd |result 29> => simm-add[noise,1] select[1,29] rel-kets[noise] |>
+    sadd |result 30> => simm-add[noise,1] select[1,30] rel-kets[noise] |>
+    sadd |result 31> => simm-add[noise,1] select[1,31] rel-kets[noise] |>
+    sadd |result 32> => simm-add[noise,1] select[1,32] rel-kets[noise] |>
+    sadd |result 33> => simm-add[noise,1] select[1,33] rel-kets[noise] |>
+    sadd |result 34> => simm-add[noise,1] select[1,34] rel-kets[noise] |>
+    sadd |result 35> => simm-add[noise,1] select[1,35] rel-kets[noise] |>
+    sadd |result 36> => simm-add[noise,1] select[1,36] rel-kets[noise] |>
+    sadd |result 37> => simm-add[noise,1] select[1,37] rel-kets[noise] |>
+    sadd |result 38> => simm-add[noise,1] select[1,38] rel-kets[noise] |>
+    sadd |result 39> => simm-add[noise,1] select[1,39] rel-kets[noise] |>
+    sadd |result 40> => simm-add[noise,1] select[1,40] rel-kets[noise] |>
+  
+  sadd-similarity |*> #=> round[3] push-float 100 ket-simm(the |pattern>,sadd |_self>)
+  table[node,averaged-similarity,sadd-similarity] rel-kets[sadd]
+  history
+  save averaging-out-noise-example.sw
+  dump
+  measure-currency the |pattern>
+  measure-currency ave |result 39>
+  measure-currency noise |sample 1>
+  currency |*> #=> measure-currency noise |_self>
+  table[sample,currency] rel-kets[noise]
+  history
+  measure-currency the |pattern>
+  table[sample,currency] rel-kets[noise]
+  dump
+  ave-currency |*> #=> measure-currency ave |_self>
+  intersection-currency |*> #=> measure-currency intersection |_self>
+  union-currency |*> #=> measure-currency union |_self>
+  sadd-currency |*> #=> measure-currency sadd |_self>
+  history
+  table[result,ave-currency,intersection-currency,union-currency,sadd-currency] rel-kets[ave]
+  save averaging-out-noise-example.sw
+  q
+
+2016-06-26
+  load improved-moby-thesaurus.sw
+  dump
+  table[page,coeff] 100 select[1,200] self-similar[synonym] |word: hungry>
+  
+  history
+  T1 |*> #=> table[page,coeff] 100 select[1,200] self-similar[synonym] merge-labels(|word: > + |_self>)
+  T1 |tired>
+  
+  history
+  find-inverse[synonym]
+  T2 |*> #=> table[page,coeff] 100 select[1,200] self-similar[inverse-synonym] merge-labels(|word: > + |_self>)
+  synonym |tired>
+  synonym |word: tired>
+  T2 |tired>
+  
+  T2 |hungry>
+  
+  T2 |orgasm>
+  
+  T1 |orgasm>
+  
+  T2 |sloth>
+  
+  T2 |knowledge>
+  
+  T2 |atom bomb>
+  T2 |atomic bomb>
+  
+  T2 |thermonuclear warhead>
+  
+  T2 |city>
+  
+  T2 |water>
+  T2 |cat>
+  
+  T2 |one>
+  
+  T2 |light>
+  T2 |home>
+  T2 |life to come>
+  T2|karma>
+  
+  T2 |evil>
+  
+  T2|happy>
+  
+  inverse-synonym |word: hungry>
+  history
+  save history
+
+2016-06-28
+  load methanol.sw
+  dump
+  matrix[bonds-to]
+  q
+
+2016-06-28
+  random-column[5] |fish>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  append-column[10] |fish>
+  context learn simple sequence if then machines
+  raw-encode |A> => pick[40] range(|1>,|2048>)
+  raw-encode |B> => pick[40] range(|1>,|2048>)
+  raw-encode |C> => pick[40] range(|1>,|2048>)
+  raw-encode |D> => pick[40] range(|1>,|2048>)
+  raw-encode |X> => pick[40] range(|1>,|2048>)
+  raw-encode |Y> => pick[40] range(|1>,|2048>)
+  dump
+  extract-category append-column[10] |X>
+  extract-category random-column[10] |X>
+  pattern |node 1> => append-column[10] raw-encode |A>
+  then |node 1> => random-column[10] raw-encode |B>
+  
+  pattern |node 2> => then |node 1>
+  then |node 2> => random-column[10] raw-encode |C>
+  
+  pattern |node 3> => then |node 2>
+  then |node 3> => random-column[10] raw-encode |D>
+  
+  
+  pattern |node 4> => append-column[10] raw-encode |X>
+  then |node 4> => random-column[10] raw-encode |B>
+  
+  pattern |node 5> => then |node 4>
+  then |node 5> => random-column[10] raw-encode |C>
+  
+  pattern |node 6> => then |node 5>
+  then |node 6> => random-column[10] raw-encode |Y>
+  
+  dump
+  similar-input[raw-encode] extract-value then |node 6>
+  then |node 6>
+  extract-value then |node 6>
+  extract-category then |node 6>
+  similar-input[raw-encode] extract-category then |node 6>
+  name-pattern |*> #=> similar-input[raw-encode] extract-category pattern |_self>
+  name-then |*> #=> similar-input[raw-encode] extract-category then |_self>
+  name-pattern |node 1>
+  name-pattern |node 2>
+  name-pattern |node 3>
+  name-pattern |node 4>
+  name-pattern |node 5>
+  name-pattern |node 6>
+  next |*> #=> then select[1,1] similar-input[pattern] pattern |_self>
+  next |node 1>
+  similar-input[raw-encode] extract-category next |node 1>
+  name-next |*> #=> similar-input[raw-encode] extract-category next |_self>
+  name-next |node 1>
+  name-next |node 2>
+  name-next |node 3>
+  name-next |node 4>
+  name-next |node 5>
+  name-next |node 6>
+  save history
+
+2016-06-28
+  letter-ngrams[1,2,3,4,5] |the frog>
+  letter-ngrams[1,2,3,4,5,6,7] |the frog sat on the mat next to the table el frog>
+  coeff-sort letter-ngrams[1,2,3,4,5,6,7] |the frog sat on the mat next to the table el frog>
+  coeff-sort letter-ngrams[4] |the frog sat on the mat next to the table el frog>
+  coeff-sort letter-ngrams[3] |the frog sat on the mat next to the table el frog>
+  debug on
+  coeff-sort letter-ngrams[1,2,3,4,5,6,7] |the frog sat on the mat next to the table el frog>
+  q
+

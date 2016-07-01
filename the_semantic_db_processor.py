@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 19/6/2016
+# Update: 28/6/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -493,6 +493,10 @@ compound_table = {
   
 # 15/5/2016:
   "learn-ket-norms"        : ".apply_naked_fn(learn_ket_normalizations,context,\"{0}\")",     
+
+# 28/6/2016:
+  "append-column"          : ".apply_fn(append_column,\"{0}\")",
+  "random-column"          : ".apply_fn(random_column,\"{0}\")",
 }
 
 
