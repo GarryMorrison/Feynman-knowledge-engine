@@ -21,7 +21,7 @@ bits = 40
 total_bits = 65536
 
 # column size:
-column_size = 11
+column_size = 10
 
 # destination file:
 destination = "sw-examples/high-order-sequences.sw"
@@ -30,14 +30,15 @@ destination = "sw-examples/high-order-sequences.sw"
 # use 0 for off
 #t = 0.01
 #t = 0.1
-#t = 0.05
-t = 0.3
+t = 0.05
+#t = 0.3
+#t = 0.5
 
 # data:
 # maybe later load from file?
 # NB: sequence elements don't have to be single letters. Anything separated by space will work fine.
 #data = ["a b c d e", "A B C D E F G", "X B C Y Z x y z","one two three four five six seven"]
-data = ["count one two three four five six seven","fib one one two three five eight thirteen","fact one two six twenty-four one-hundred-twenty"]
+data = ["count one two three four five six seven","Fibonacci one one two three five eight thirteen","factorial one two six twenty-four one-hundred-twenty"]
 
 elements_dictionary = {}
 max_len_sequence = 0
