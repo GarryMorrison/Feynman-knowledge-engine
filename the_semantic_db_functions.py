@@ -4552,6 +4552,8 @@ def learn_ket_normalizations(context,parameters):
 # for use in Hierarchical Temporal Memory sequence learning
 # append-column[5] |X> == |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>
 # Cool! In testing it works just fine.
+# and has the property:
+# extract-category append-column[10] |X> == 10 |X>
 #
 # one is a ket, N is a positive integer
 def append_column(one,N):
@@ -4569,6 +4571,8 @@ import random
 # random-column[n] SP
 # for use in Hierarchical Temporal Memory sequence learning
 # random-column[5] |X> == pick-elt( |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>)
+# and has the property:
+# extract-category random-column[10] |X> == |X>
 #
 # one is a ket, N is a positive integer
 def random_column(one,N):
