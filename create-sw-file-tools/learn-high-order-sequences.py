@@ -21,18 +21,21 @@ bits = 40
 total_bits = 65536
 
 # column size:
-column_size = 10
+column_size = 50
 
 # destination file:
 destination = "sw-examples/high-order-sequences.sw"
 
 # drop below threshold:
 # use 0 for off
-#t = 0.01
+#t = 0
+t = 0.01
 #t = 0.1
-t = 0.05
+#t = 0.05
 #t = 0.3
 #t = 0.5
+
+t2 = 0.05
 
 # data:
 # maybe later load from file?
@@ -60,7 +63,8 @@ with open(destination,'w') as f:
     elements = sequence.strip().split(' ')
     for k,element in enumerate(elements):
       if first_element:
-        f.write("pattern |node %s: %s> => append-column[%s] encode |%s>\n" % (node,k,column_size,elements[k]))
+#        f.write("pattern |node %s: %s> => append-column[%s] encode |%s>\n" % (node,k,column_size,elements[k]))
+        f.write("pattern |node %s: %s> => random-column[%s] encode |%s>\n" % (node,k,column_size,elements[k]))
         f.write("then |node %s: %s> => random-column[%s] encode |%s>\n\n" % (node,k,column_size,elements[k+1]))
         first_element = False
       else:
@@ -77,7 +81,7 @@ with open(destination,'w') as f:
   f.write("\ninput-encode |*> #=> append-column[%s] encode |_self>\n\n" % column_size)
 
   # the step-k operators:
-  name = "similar-input[encode] extract-category "
+  name = "drop-below[%s] similar-input[encode] extract-category " % str(t2)
   next = "then drop-below[%s] similar-input[pattern] " % str(t)
   middle = name + next
   step_list = []
