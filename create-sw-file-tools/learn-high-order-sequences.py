@@ -15,16 +15,20 @@
 
 
 # number of on bits:
-bits = 40
+#bits = 40
+bits = 10
 
 # total number of bits:
 total_bits = 65536
+#total_bits = 2048
 
 # column size:
-column_size = 50
+#column_size = 50
+column_size = 10
+#column_size = 5
 
 # destination file:
-destination = "sw-examples/high-order-sequences.sw"
+destination = "sw-examples/two-alphabet-joined-high-order-sequences.sw"
 
 # drop below threshold:
 # use 0 for off
@@ -41,7 +45,12 @@ t2 = 0.05
 # maybe later load from file?
 # NB: sequence elements don't have to be single letters. Anything separated by space will work fine.
 #data = ["a b c d e", "A B C D E F G", "X B C Y Z x y z","one two three four five six seven"]
-data = ["count one two three four five six seven","Fibonacci one one two three five eight thirteen","factorial one two six twenty-four one-hundred-twenty"]
+#data = ["count one two three four five six seven","Fibonacci one one two three five eight thirteen","factorial one two six twenty-four one-hundred-twenty"]
+#data = ["A B C","X B Y"]
+#data = ["a b c d e f g h i j k l m n o p q r s t u v w x y z"]
+#data = ["a b c d e f g h i j k l phi m n o p q r s t u v w x y z", "A B C D E F G H I J K L phi M N O P Q R S T U V W X Y Z"]
+data = ["a b c d e f g h i j k l phi-0 m n o p q r s t u v w x y z", "A B C D E F G H I J K L phi-5 M N O P Q R S T U V W X Y Z","phi-0 phi-1 phi-2 phi-3 phi-4 phi-5"]
+
 
 elements_dictionary = {}
 max_len_sequence = 0
@@ -63,6 +72,7 @@ with open(destination,'w') as f:
     elements = sequence.strip().split(' ')
     for k,element in enumerate(elements):
       if first_element:
+        f.write("sequence-number |node %s: *> => |sequence-%s>\n" % (node,node))
 #        f.write("pattern |node %s: %s> => append-column[%s] encode |%s>\n" % (node,k,column_size,elements[k]))
         f.write("pattern |node %s: %s> => random-column[%s] encode |%s>\n" % (node,k,column_size,elements[k]))
         f.write("then |node %s: %s> => random-column[%s] encode |%s>\n\n" % (node,k,column_size,elements[k+1]))
@@ -94,4 +104,9 @@ with open(destination,'w') as f:
   # the table operator:
   f.write("\nthe-table |*> #=> table[ket,%s] rel-kets[encode] |>\n" % ",".join(step_list))
 
+  # the which-sequence operator:
+  f.write("\nwhich-sequence |*> #=> sequence-number drop-below[0.5] %s similar-input[pattern] input-encode |_self>\n" % column_size)
+
+  # the which-sequence table operator:
+  f.write("\nsequence-table |*> #=> table[ket,which-sequence] rel-kets[encode] |>\n")
 

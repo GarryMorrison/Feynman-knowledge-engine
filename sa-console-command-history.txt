@@ -31706,3 +31706,581 @@
   the-table
   q
 
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-07
+  load high-order-sequences.sw
+  the-table
+  dump |*>
+  table[ket,step-1,step-2,step-3] rel-kets[encode]
+  q
+
+2016-07-07
+  load 4-high-order-sequence-learn.sw
+  
+  table[ket,step-1,step-2,step-3,step-4] rel-kets[encode]
+  .
+  step-5 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-6 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-7 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  
+  history
+  table[ket,step-1,step-2,step-3,step-4,step-5,step-6,step-7] rel-kets[encode]
+  .
+  step-1 |Z>
+  similar-input[pattern] input-encode |Z>
+  then |node 15>
+  then |node 25>
+  then |node 15> => random-column[10] encode |U>
+  
+  pattern |node 16> => then |node 15>
+  then |node 15>
+  then |node 15> => random-column[10] encode |U>
+  then |node 15>
+  encode |U>
+  dump
+  
+  reset
+  history
+  load 4-high-order-sequence-learn.sw
+  table[ket,step-1,step-2,step-3,step-4,step-5,step-6,step-7] rel-kets[encode]
+  debug on
+  do-you-know encode |A>
+  
+  q
+
+2016-07-08
+  load high-order-sequences.sw
+  the-table
+  .
+  q
+
+2016-07-09
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-09
+  load high-order-sequences.sw
+  the-table
+  1/100 |x>
+  q
+
+2016-07-09
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-10
+  append-column[6] |X>
+  random-column[6] |X>
+  append-column[3] (|X> + |Y> + |Z>)
+  random-column[3] (|X> + |Y> + |Z>)
+  .
+  extract-category append-column[20] (|X> + |Y> + |Z>)
+  extract-category random-column[20] (|X> + |Y> + |Z>)
+  context
+  context working htm sequence learn
+  full |range> => range(|1>,|65536>)
+  encode |A> => pick[100] full |range>
+  encode |B> => pick[100] full |range>
+  encode |C> => pick[100] full |range>
+  encode |D> => pick[100] full |range>
+  encode |E> => pick[100] full |range>
+  
+  encode |X> => pick[100] full |range>
+  encode |Y> => pick[100] full |range>
+  encode |Z> => pick[100] full |range>
+  dump
+  encode |A> => pick[40] full |range>
+  encode |B> => pick[40] full |range>
+  encode |C> => pick[40] full |range>
+  encode |D> => pick[40] full |range>
+  encode |E> => pick[40] full |range>
+  encode |X> => pick[40] full |range>
+  encode |Y> => pick[40] full |range>
+  encode |Z> => pick[40] full |range>
+  dump
+  pattern |node 1> => append-column[10] encode |A>
+  then |node 1> => random-column[10] encode |B>
+  
+  pattern |node 2> => then |node 1>
+  then |node 2> => random-column[10] encode |C>
+  
+  pattern |node 3> => then |node 2>
+  then |node 3> => random-column[10] encode |D>
+  
+  pattern |node 4> => then |node 3>
+  then |node 4> => random-column[10] encode |E>
+  
+  
+  pattern |node 11> => append-column[10] encode |X>
+  then |node 11> => random-column[10] encode |B>
+  
+  pattern |node 12> => then |node 11>
+  then |node 12> => random-column[10] encode |C>
+  
+  pattern |node 13> => then |node 12>
+  then |node 13> => random-column[10] encode |Y>
+  
+  pattern |node 14> => then |node 13>
+  then |node 14> => random-column[10] encode |Z>
+  
+  dump
+  
+  
+  input-encode |*> #=> append-column[10] encode |_self>
+  step-1 |*> #=> similar-input[encode] extract-category then similar-input[pattern] input-encode |_self>
+  step-2 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-3 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-4 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  
+  dump |*>
+  step-1 |A>
+  step-2 |A>
+  step-3 |A>
+  step-4 |A>
+  step-1 |B>
+  step-2 |B>
+  step-3 |B>
+  step-4 |B>
+  step-1 |C>
+  step-2 |C>
+  step-3 |C>
+  step-4 |C>
+  step-1 |X>
+  step-2 |X>
+  step-3 |X>
+  step-4 |x>
+  step-4 |X>
+  table[ket,step-1,step-2,step-3,step-4] rel-kets[encode]
+  save history
+  history
+  q
+
+2016-07-11
+  load high-order-sequences.sw
+  fib |*> !=> arithmetic(fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+  fib |0> => |0>
+  fib |1> => |1>
+  
+  the-table
+  fib |9>
+  
+  q
+
+2016-07-12
+  random-column[10] |a: b: c: d>
+  random-column[10] random-column[50] |a: b: c: d: e>
+  .
+  context play classifier
+  pattern |node 1: 1> => |sunny> + |low> + |yes>
+  pattern |node 1: 2> => |overcast> + |low> + |yes>
+  pattern |node 1: 3> => |overcast> + |high> + |no>
+  pattern |node 1: 4> => |overcast> + |low> + |no>
+  pattern |node 1: 5> => |rainy> + |low> + |no>
+  dump
+  then |node 1: *> => |play>
+  pattern |node 2: 1> => |sunny> + |high> + |yes>
+  pattern |node 2: 2> => |sunny> + |high> + |no>
+  pattern |node 2: 2> => |rainy> + |low> + |no>
+  dump
+  pattern |node 2: 2> => |sunny> + |high> + |no>
+  pattern |node 2: 3> => |rainy> + |low> + |no>
+  dump
+  then |node 2: *> => |no play>
+  dump
+  pattern |node 2: 3> => |rainy> + |low> + |yes>
+  dump
+  similar-input[pattern] split |sunny low no>
+  then similar-input[pattern] split |sunny low no>
+  save history
+
+2016-07-14
+  random-column[10] |a: b: c: d>
+  random-column[10] random-column[50] |a: b: c: d: e>
+  .
+  context play classifier
+  pattern |node 1: 1> => |sunny> + |low> + |yes>
+  pattern |node 1: 2> => |overcast> + |low> + |yes>
+  pattern |node 1: 3> => |overcast> + |high> + |no>
+  pattern |node 1: 4> => |overcast> + |low> + |no>
+  pattern |node 1: 5> => |rainy> + |low> + |no>
+  dump
+  then |node 1: *> => |play>
+  pattern |node 2: 1> => |sunny> + |high> + |yes>
+  pattern |node 2: 2> => |sunny> + |high> + |no>
+  pattern |node 2: 2> => |rainy> + |low> + |no>
+  dump
+  pattern |node 2: 2> => |sunny> + |high> + |no>
+  pattern |node 2: 3> => |rainy> + |low> + |no>
+  dump
+  then |node 2: *> => |no play>
+  dump
+  pattern |node 2: 3> => |rainy> + |low> + |yes>
+  dump
+  similar-input[pattern] split |sunny low no>
+  then similar-input[pattern] split |sunny low no>
+  save history
+  norm |node 1: *> => 1/5 |_self>
+  norm |node 2: *> #=> 1/3 |_self>
+  norm |node 1: *> #=> 1/5 |_self>
+  dump
+  history
+  similar-input[pattern] split |sunny low no>
+  norm |node 1: 3>
+  then norm similar-input[pattern] split |sunny low no>
+  dump
+  save play-classifier.sw
+  dump
+  then |node 2: *> => |not play>
+  dump
+  history
+  save play-classifier.sw
+  dump
+  then similar-input[pattern] split |sunny low no>
+  then norm similar-input[pattern] split |sunny low no>
+  dump
+  ket-simm(letter-ngrams[1,2,3] |interface>,letter-ngrams[1,2,3] |intersection>)
+  ket-simm(letter-ngrams[1,2,3,4] |interface>,letter-ngrams[1,2,3,4] |intersection>)
+  ket-simm(letter-ngrams[1,2,3] |management>,letter-ngrams[1,2,3] |measurement>)
+  dump
+  history
+  then similar-input[pattern] split |sunny low no>
+  dump
+  history
+  then norm similar-input[pattern] split |sunny low no>
+  q
+
+2016-07-14
+  encode |A> => pick[40] range(|1>,|65536>)
+  encode |B> => pick[40] range(|1>,|65536>)
+  encode |C> => pick[40] range(|1>,|65536>)
+  encode |D> => pick[40] range(|1>,|65536>)
+  encode |X> => pick[40] range(|1>,|65536>)
+  encode |Y> => pick[40] range(|1>,|65536>)pattern |node 1> => append-column[10] encode |A>
+  then |node 1> => random-column[10] encode |B>
+  
+  pattern |node 2> => then |node 1>
+  then |node 2> => random-column[10] encode |C>
+  
+  pattern |node 3> => then |node 2>
+  then |node 3> => random-column[10] encode |D>
+  
+  
+  pattern |node 4> => append-column[10] encode |X>
+  then |node 4> => random-column[10] encode |B>
+  
+  pattern |node 5> => then |node 4>
+  then |node 5> => random-column[10] encode |C>
+  
+  pattern |node 6> => then |node 5>
+  then |node 6> => random-column[10] encode |Y>
+  dump
+  similar-input[pattern] append-column[10] encode |A>
+  append-column[10] encode |A>
+  similar-input[pattern] append-column[10] encode |A>
+  similar-input[pattern] append-column[10] encode |B>
+  pattern |node 1>
+  then |node 1>
+  pattern |node 1> => append-column[10] encode |A>
+  similar-input[pattern] append-column[10] encode |A>
+  encode |Y> => pick[40] range(|1>,|2048>)
+  history
+  similar-input[pattern] append-column[10] encode |C>
+  then similar-input[pattern] append-column[10] encode |C>
+  similar-input[encode] extract-category then similar-input[pattern] append-column[10] encode |C>
+  .
+  .
+  then |node 6>
+  pattern |node 1> => append-column[10] encode |A>
+  then |node 1> => random-column[10] encode |B>
+  
+  pattern |node 2> => then |node 1>
+  then |node 2> => random-column[10] encode |C>
+  
+  pattern |node 3> => then |node 2>
+  then |node 3> => random-column[10] encode |D>
+  
+  
+  pattern |node 4> => append-column[10] encode |X>
+  then |node 4> => random-column[10] encode |B>
+  
+  pattern |node 5> => then |node 4>
+  then |node 5> => random-column[10] encode |C>
+  
+  pattern |node 6> => then |node 5>
+  then |node 6> => random-column[10] encode |Y>
+  history
+  similar-input[pattern] append-column[10] encode |C>
+  then similar-input[pattern] append-column[10] encode |C>
+  similar-input[encode] extract-category then similar-input[pattern] append-column[10] encode |C>
+  -- it works!!! BTW, 2048 was too small! 65536 seems fine though
+  save history
+  similar-input[encode] extract-category then similar-input[pattern] append-column[10] encode |X>
+  similar-input[encode] extract-category then similar-input[pattern] append-column[10] encode |A>
+  similar-input[encode] extract-category then similar-input[pattern] append-column[10] encode |B>
+  similar-input[encode] extract-category then similar-input[pattern] append-column[10] encode |C>
+  save history
+  input-encode |*> #=> append-column[10] encode |_self>
+  similar-input[encode] extract-category then similar-input[pattern] input-encode |A>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] input-encode |A>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] input-encode |B>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] input-encode |C>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] input-encode |X>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |A>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |B>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |C>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |X>
+  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |A>
+  similar-input[pattern] input-encode |A>
+  similar-input[pattern] then similar-input[pattern] input-encode |A>
+  ket-simm(pattern |node 2>,pattern |node 5>)
+  common[pattern] (|node 2> + |node 5>)
+  context
+  dump
+  save history
+  history
+  similar-input[encode] extract-category input-encode |A>
+  ket-simm(then |node 2>,then |node 5>)
+  common[pattern] (|node 3> + |node 6>)
+  ket-simm(pattern |node 3>,pattern |node 6>)
+  save history
+  context bigger htm sequence learn
+  full |range> => range(|1>,|100000>)
+  
+  encode |A> => pick[100] full |range>
+  encode |B> => pick[100] full |range>
+  encode |C> => pick[100] full |range>
+  encode |D> => pick[100] full |range>
+  encode |E> => pick[100] full |range>
+  encode |F> => pick[100] full |range>
+  encode |X> => pick[100] full |range>
+  encode |Y> => pick[100] full |range>
+  encode |Z> => pick[100] full |range>
+  
+  
+  pattern |node 1> => random-column[10] encode |A>
+  then |node 1> => random-column[10] encode |B>
+  
+  pattern |node 2> => then |node 1>
+  then |node 2> => random-column[10] encode |C>
+  
+  pattern |node 3> => then |node 2>
+  then |node 3> => random-column[10] encode |D>
+  
+  pattern |node 4> => then |node 3>
+  then |node 4> => random-column[10] encode |E>
+  
+  pattern |node 5> => then |node 4>
+  then |node 5> => random-column[10] encode |F>
+  
+  
+  pattern |node 6> => random-column[10] encode |X>
+  then |node 6> => random-column[10] encode |B>
+  
+  pattern |node 7> => then |node 6>
+  then |node 7> => random-column[10] encode |C>
+  
+  pattern |node 8> => then |node 7>
+  then |node 8> => random-column[10] encode |Y>
+  
+  pattern |node 9> => then |node 8>
+  then |node 9> => random-column[10] encode |Z>
+  input-encode |*> #=> append-column[10] encode |_self>
+  similar-input[encode] extract-category pattern |node 1>
+  step-1 |*> #=> similar-input[encode] extract-category then similar-input[pattern] input-encode |_self>
+  step-1 |A>
+  step-1 |X>
+  step-2 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-3 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-3 |A>
+  step-3 |X>
+  step-4 |*> #=>  similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  step-4 |A>
+  step-4 |X>
+  dump |*>
+  step-5 |*> #=> similar-input[encode] extract-category then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] then similar-input[pattern] input-encode |_self>
+  dump |*>
+  step-5 |A>
+  step-5 |X>
+  step-4 |X>
+  step-3 |B>
+  step-2 |C>
+  step-3 |C>
+  save history
+  step-2 |D>
+  step-1 |Y>
+  step-4 |A>
+  step-4 |X>
+  step-5 A[
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  step-5 |A>
+  step-2 |B>
+  step-5 |B>
+  step-5 |E>
+  step-2 |E>
+  step-1 |E>
+  step-2 |D>
+  similar-input[pattern] input-encode |A>
+  similar-input[pattern] input-encode |B>
+  similar-input[pattern] input-encode |D>
+  then similar-input[pattern] input-encode |A>
+  step-3 |A>
+  step-4 |A>
+  step-4 |X>
+  step-5 |X>
+  table[ket,step-1,step-2,step-3,step-4,step-5] rel-kets[encode]
+  dump |*>
+  step-1-percent |*> #=> 100 step-1 |_self>
+  step-2-percent |*> #=> 100 step-2 |_self>
+  step-3-percent |*> #=> 100 step-3 |_self>
+  step-4-percent |*> #=> 100 step-4 |_self>
+  step-5-percent |*> #=> 100 step-5 |_self>
+  history
+  table[ket,step-1-percent,step-2-percent,step-3-percent,step-4-percent,step-5-percent] rel-kets[encode]
+  save history
+  q
+
+2016-07-15
+  load high-order-sequences.sw
+  the-table
+  dump
+  sequence-number similar-input[pattern] input-encode |A>
+  which-sequence |*> #=> sequence-number similar-input[pattern] input-encode |_self>
+  which-sequence |X>
+  which-sequence |B>
+  history
+  which-sequence |C>
+  history
+  save history
+
+2016-07-15
+  load high-order-sequences.sw
+  the-table
+  dump
+  sequence-number similar-input[pattern] input-encode |A>
+  which-sequence |*> #=> sequence-number similar-input[pattern] input-encode |_self>
+  which-sequence |X>
+  which-sequence |B>
+  history
+  which-sequence |C>
+  history
+  save history
+  which-sequence |B>
+  dump
+  which-sequence |B>
+  which-sequence |A>
+  table[ket,which-sequence] rel-kets[encode]
+  
+  q
+
+2016-07-15
+  load high-order-sequences.sw
+  dump
+  sequence-table
+  q
+
+2016-07-15
+  load high-order-sequences.sw
+  dump
+  sequence-table
+  q
+
+2016-07-15
+  load high-order-sequences.sw
+  sequence-table
+  q
+
+2016-07-17
+  load improved-high-order-sequences.sw
+  history
+  save improved-high-order-sequences--saved.sw
+  q
+
+2016-07-17
+  load improved-high-order-sequences.sw
+  history
+  save high-tmp.sw
+  q
+
+2016-07-17
+  load improved-high-order-sequences.sw
+  history
+  save tmp-fishy.sw
+  q
+
+2016-07-17
+  load improved-high-order-sequences.sw
+  save high-tmp.sw
+  q
+
+2016-07-17
+  load improved-high-order-sequences.sw
+  save high-tmp.sw
+  q
+
+2016-07-17
+  load improved-high-order-sequences.sw
+  save high-tmp.sw
+  q
+
+2016-07-17
+  load alphabet-high-order-sequence.sw
+  history
+  save alphabet-high-order-sequence--saved.sw
+  q
+
+2016-07-17
+  load two-alphabet-high-order-sequences.sw
+  history
+  save two-alphabet-high-order-sequences--saved.sw
+  q
+
+2016-07-17
+  load two-alphabet-joined-high-order-sequences.sw
+  history
+  save two-alphabet-joined-high-order-sequences--saved.sw
+  q
+
