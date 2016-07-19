@@ -32284,3 +32284,20 @@
   save two-alphabet-joined-high-order-sequences--saved.sw
   q
 
+2016-07-17
+  load double-alphabet-high-order-sequences.sw
+  history
+  save double-alphabet-high-order-sequences--saved.sw
+  q
+
+2016-07-17
+  load 
+  load double-alphabet-high-order-sequences--40.sw
+  save double-alphabet-high-order-sequences--40--saved.sw
+  q
+
+2016-07-17
+  load two-alphabet-joined-high-order-sequences--40.sw
+  save two-alphabet-joined-high-order-sequences--40--saved.sw
+  q
+

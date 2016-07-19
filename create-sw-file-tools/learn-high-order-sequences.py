@@ -6,17 +6,21 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-07-07
-# Update:
+# Update: 2016-7-19
 # Copyright: GPLv3
 #
 # Usage: ./learn-high-order-sequences.py
 #
 #######################################################################
 
+from the_semantic_db_code import *
+from the_semantic_db_functions import *
+from the_semantic_db_processor import *
+context = new_context("high order sequences")
 
 # number of on bits:
-#bits = 40
-bits = 10
+bits = 40
+#bits = 10
 
 # total number of bits:
 total_bits = 65536
@@ -28,7 +32,9 @@ column_size = 10
 #column_size = 5
 
 # destination file:
-destination = "sw-examples/two-alphabet-joined-high-order-sequences.sw"
+#destination = "sw-examples/double-alphabet-high-order-sequences--40.sw"
+destination = "sw-examples/four-alphabet-high-order-sequences--40.sw"
+saved_destination = "sw-examples/four-alphabet-high-order-sequences--40--saved.sw"
 
 # drop below threshold:
 # use 0 for off
@@ -49,8 +55,9 @@ t2 = 0.05
 #data = ["A B C","X B Y"]
 #data = ["a b c d e f g h i j k l m n o p q r s t u v w x y z"]
 #data = ["a b c d e f g h i j k l phi m n o p q r s t u v w x y z", "A B C D E F G H I J K L phi M N O P Q R S T U V W X Y Z"]
-data = ["a b c d e f g h i j k l phi-0 m n o p q r s t u v w x y z", "A B C D E F G H I J K L phi-5 M N O P Q R S T U V W X Y Z","phi-0 phi-1 phi-2 phi-3 phi-4 phi-5"]
-
+#data = ["a b c d e f g h i j k l phi-0 m n o p q r s t u v w x y z", "A B C D E F G H I J K L phi-5 M N O P Q R S T U V W X Y Z","phi-0 phi-1 phi-2 phi-3 phi-4 phi-5"]
+#data = ["a b c d e f g h i j k l m n o p q r s t u v w x y z", "a b c d e f g h i j k l m n o p q r s t u v w x y z"]
+data = ["a b c d e f g h i j k l m n o p q r s t u v w x y z", "a b c d e f g h i j k l m n o p q r s t u v w x y z", "a b c d e f g h i j k l m n o p q r s t u v w x y z", "a b c d e f g h i j k l m n o p q r s t u v w x y z"]
 
 elements_dictionary = {}
 max_len_sequence = 0
@@ -110,3 +117,5 @@ with open(destination,'w') as f:
   # the which-sequence table operator:
   f.write("\nsequence-table |*> #=> table[ket,which-sequence] rel-kets[encode] |>\n")
 
+context.load(destination)
+context.save(saved_destination,False)
