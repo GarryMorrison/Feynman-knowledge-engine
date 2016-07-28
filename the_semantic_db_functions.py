@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/6/2016
+# Update: 28/7/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4583,4 +4583,23 @@ def random_column(one,N):
 
   random_integer = random.randint(0,N-1)
   return ket("%s: %s" % (one.label,random_integer),one.value)
-                                                        
+
+# 28/7/16:
+# usage:
+# have-in-common (|Fred> + |Sam> + |Jack>)
+# 0.7 |op: friends> + |op: age> + 0.5|op: parents>
+#
+def have_in_common(one,context):
+  logger.debug("have-in-common one: %s" % str(one))
+  
+  if len(one) == 0:
+    return ket("",0)
+  for sp in one:
+    supported_ops = sp.apply_op(context,"supported-ops")
+    break
+  for sp in one:
+    tmp = sp.apply_op(context,"supported-ops")
+    supported_ops = intersection(supported_ops,tmp)
+  if len(supported_ops) == 0:
+    return ket("",0)                 
+                                                         

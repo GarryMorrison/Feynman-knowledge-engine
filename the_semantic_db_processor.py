@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/6/2016
+# Update: 28/7/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -497,6 +497,9 @@ compound_table = {
 # 28/6/2016:
   "append-column"          : ".apply_fn(append_column,\"{0}\")",
   "random-column"          : ".apply_fn(random_column,\"{0}\")",
+  
+# 28/7/2016:
+#  "have-in-common"         : ".apply_sp_fn(have_in_common,context)",   # have-in-common has no parameters, so wont work here!  
 }
 
 
@@ -537,6 +540,13 @@ ket_context_table = {
   "guess-ket"          : "guess_ket",     
 }
 
+# 28/7/2016: new addition, functions that map sp -> sp but needs context info.
+# I tried putting it in the compound op table, but that failed since it has no parameters.
+#
+sp_context_table = {
+#28/7/2016:
+  "have-in-common"    : "have_in_common",
+} 
 
 def sanitize_op(op):
   if not op[0].isalpha():
@@ -554,6 +564,9 @@ def valid_op(op):
 
 # converts a single operator into python
 # this takes quite a bit of work, because there are such a variety of different operator types, and they all need to be handled separately.
+#
+# At some stage I want to rearchitect this beast. Instead of a million separate tables, I just want one. But that is for later.    
+#
 def process_single_op(op):
   logger.debug("op: " + str(op)) 
 
@@ -585,6 +598,9 @@ def process_single_op(op):
   elif op in ket_context_table:
     logger.debug("op in ket context table")
     python_code = ".apply_fn({0},context)".format(ket_context_table[op])
+  elif op in sp_context_table:
+    logger.debug("op in sp context table")
+    python_code = ".apply_sp_fn({0},context)".format(sp_context_table[op])
   else:
     if op == "\"\"":
       python_code = ".apply_op(context,\"\")"

@@ -32301,3 +32301,18 @@
   save two-alphabet-joined-high-order-sequences--40--saved.sw
   q
 
+2016-07-28
+  have-in-common split |a b c d>
+  debug on
+  have-in-common split |a b c d>
+  q
+
+2016-07-28
+  debug on
+  have-in-common split |a b c d>
+  common[friends] |Fred>
+  load fred-sam-friends.sw
+  dump
+  common[supported-ops] split |Fred Sam>
+  q
+
