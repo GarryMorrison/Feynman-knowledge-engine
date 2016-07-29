@@ -153,18 +153,19 @@ if os.path.isdir(file_dir):
       result += image_to_ngrams(name,ngram_size)
     except:
       print("couldn't open image file:",name)
-  out_list = list_average_categorize_suppress(context,result,0.4,"phi","layer-1")
+  out_list = list_average_categorize_suppress(context,result,0.8,"phi","layer-1")
 context.print_universe()
 #context.save("sw-examples/mnist-60000-train--k_5--t_0_4--layer-1.sw")
-#context.save("sw-examples/mnist-60000-train-label-averaged--k_5--t_0_8--layer-1.sw")
+context.save("sw-examples/mnist-60000-train-label-averaged--k_5--t_0_8--layer-1--v2.sw")
 #context.save("sw-examples/mnist-test-2000--edge-enhanced--k_10--t_0_7--layer-1.sw")
 #context.save("sw-examples/mnist-test-2000--edge-enhanced--k_7--t_0_7--layer-1.sw")
-context.save("sw-examples/mnist-test-2000--edge-enhanced--k_5--t_0_4--layer-1.sw")
+#context.save("sw-examples/mnist-test-2000--edge-enhanced--k_5--t_0_4--layer-1.sw")
 
 
 # now spit out the average images:
 op = "layer-1"
-destination = "work-on-handwritten-digits/average-categorize-images/"      # don't test for existance. Maybe later.
+#destination = "work-on-handwritten-digits/average-categorize-images/"      # don't test for existance. Maybe later.
+destination = "work-on-handwritten-digits/mnist-60k-label-ave--ave-cat--k_5--t_8/"
 d = ngram_size
 
 def sp_to_image(sp,count,d):                  # assumes the sp is rescaled to 255 (so range is [0,255] )
@@ -177,7 +178,8 @@ def sp_to_image(sp,count,d):                  # assumes the sp is rescaled to 25
   data = [ int(x.value) for x in sp ]
   im = Image.new('L',size)                  # assume this, rather than RGB. Will work for now.
   im.putdata(data)
-  im.save(destination + "mnist-test-2000--edge-enhanced--k_%s--average-image-%s.bmp" % (d,count))
+#  im.save(destination + "mnist-test-2000--edge-enhanced--k_%s--average-image-%s.bmp" % (d,count))
+  im.save(destination + "mnist-test-2000--k_%s--average-image-%s.bmp" % (d,count))
 
 
 def sp_to_rgb_image(sp,count,d):                  # assumes the sp is rescaled to 255 (so range is [0,255] )

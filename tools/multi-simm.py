@@ -2,6 +2,8 @@
 
 #######################################################################
 # Implement my new idea of simm over p patterns, instead of just 2.
+# Note, I decided not to implement the weigthed version, at least for now.
+# Should be pretty easy to swap that in if I need though.
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
@@ -23,9 +25,9 @@ import itertools
 def jpk(p,k):
   return cmath.exp(1j*2*math.pi*k/p)
 
-print("j31:",jpk(3,0))
-print("j32:",jpk(3,1))
-print("j33:",jpk(3,2))
+print("j30:",jpk(3,0))
+print("j31:",jpk(3,1))
+print("j32:",jpk(3,2))
 
 def test_identity(vect):
   p = len(vect)
@@ -124,10 +126,12 @@ def rescaled_multi_simm(vects):
 
 
 # our test patterns:
-list_of_vects = [[2,3,4,5,6], [6,5,4,3,2], [2,4,3,5,6], [2,4,5,3,6]]
+#list_of_vects = [[2,3,4,5,6], [6,5,4,3,2], [2,4,3,5,6], [2,4,5,3,6]]
 #list_of_vects = [[2,3,4,5,6], [2,3,4,5,6], [2,3,4,5,6]]
 #list_of_vects = [[2,3,4,5,6], [4,6,8,10,12], [6,9,12,15,18]]
 #list_of_vects = [[5,0,0,0], [0,-5,0,0], [0,0,-5,0], [0,0,0,5]]
+#list_of_vects = [[2,3,4,5,6], [4,6,8,10,12]]
+list_of_vects = [[5,0,0], [0,3,0], [0,0,9]]
 
 print("wfp: %s" % wfp(list_of_vects))
 print("multi-simm: %s" % multi_simm(list_of_vects))
