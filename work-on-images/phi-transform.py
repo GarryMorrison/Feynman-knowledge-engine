@@ -221,7 +221,7 @@ for filename in glob.glob(file_dir + "/*"):
 #  phi_image.show()  
   phi_image.save("%s%s.png" % (destination_phi_images,filehead))
 
-context2.save("sw-examples/image-phi-superpositions--label-average--test-2000--%s--t_0_8.sw" % str(ngram_size))
+#context2.save("sw-examples/image-phi-superpositions--label-average--test-2000--%s--t_0_8.sw" % str(ngram_size))
 
 
 #context.print_universe()

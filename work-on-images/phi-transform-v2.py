@@ -43,6 +43,10 @@ file_dir = sys.argv[2]
 #print("files:",list_of_files)
 #sys.exit(0)
 
+# switch verbose printing on and off:
+verbose = False
+#verbose = True
+
 # assume these exist. ie, don't test first.
 destination_phi_transform = "work-on-handwritten-digits/phi-transformed-images-v2/"
 destination_phi_images = "work-on-handwritten-digits/phi-images-v2/"
@@ -84,11 +88,12 @@ class superposition(object):
   def rescale(self,t=1):
     if len(self.dict) == 0:
       return superposition()
-    result = copy.deepcopy(self)
+#    result = copy.deepcopy(self)
     the_max = max(value for key,value in self.dict.items())
+    result = superposition()
     if the_max > 0:
-      for key,value in result:
-        result.dict[key] = t*result.dict[key]/the_max
+      for key,value in self:
+        result.dict[key] = t*self.dict[key]/the_max
     return result
 
 
@@ -196,7 +201,7 @@ def image_to_sp(image):
     for k,value in enumerate(data):
       r.add(str(k),value)
     return r
-  if mode in ["RGB","RGBA"]:                   # fix later! We don't need it yet.
+  if mode in ["RGB","RGBA"]:                   # fix later! We don't need it for mnist digits.
     k = 0
     for value in data:
       R,G,B = value[:3]
@@ -212,13 +217,17 @@ def sp_to_image(sp,d=5):                        # assumes the sp is rescaled to 
     sys.exit(1)
   size = (d,d)
 #  data = [ int(x.value) for x in sp ]
-  unsorted_data = []
-  for key,value in sp:                      # NB: these sp's are unsorted! We need to sort by key.
-    unsorted_data.append((key,value))
-  sorted_data = sorted(unsorted_data, key = lambda x: float(x[0]), reverse = False)
-  print("sorted:",sorted_data)
+#  unsorted_data = []
+#  for key,value in sp:                      # NB: these sp's are unsorted! We need to sort by key.
+#    unsorted_data.append((key,value))
+  unsorted_data = [(key,value) for key,value in sp ]       # doesn't seem to be any faster than data.append version.
+#  sorted_data = sorted(unsorted_data, key = lambda x: float(x[0]), reverse = False)
+  unsorted_data.sort(key = lambda x: float(x[0]), reverse = False)
 
-  data = [ x[1] for x in sorted_data ]
+  if verbose:
+    print("sorted:",unsorted_data)
+
+  data = [ x[1] for x in unsorted_data ]
 
   im = Image.new('L',size)                  # assume this, rather than RGB. Will work for now.
   im.putdata(data)
@@ -254,7 +263,7 @@ def phi_transform_image(sw_dict,name,k):
     elif image_mode == "RGB":
       arr = numpy.zeros((height,width,3),numpy.float)
     count = 0
-    image_phi_sp = superposition()
+#    image_phi_sp = superposition()                                                        # switch off image_phi_sp creation, see if it speeds things.
     for h in range(0,height-k):
       for w in range(0,width-k):
         count += 1
@@ -269,7 +278,7 @@ def phi_transform_image(sw_dict,name,k):
 #        phi_sp = phi.apply_op(context,"layer-1").rescale(255)
 #        tweaked_phi_sp = phi_sp.apply_sigmoid(subtraction_invert,255).multiply(phi_similarity).apply_sigmoid(subtraction_invert,255)
 
-        image_phi_sp.add(phi_label,phi_value)
+#        image_phi_sp.add(phi_label,phi_value)
         phi_sp = sw_dict[phi_label].rescale(255)
         tweaked_phi_sp = phi_sp                                # look into full tweaked_phi_sp later, since we need sigmoids and multiply.
 
@@ -279,8 +288,10 @@ def phi_transform_image(sw_dict,name,k):
         elif image_mode == "RGB":
           phi_im = sp_to_rgb_image(tweaked_phi_sp)
           im3 = Image.new('RGB',(width,height),"white")
-        print("phi: %s|%s>" % (phi_value,phi_label))
-        print("phi sp:",phi_sp)
+
+        if verbose:
+          print("phi: %s|%s>" % (phi_value,phi_label))
+          print("phi sp:",phi_sp)
 #        sys.exit(0)
 
         im3.paste(phi_im,(w,h))
@@ -317,7 +328,8 @@ def phi_transform_image(sw_dict,name,k):
 #    out.show()
 #    sys.exit(0)
 
-    return image_phi_sp
+#    return image_phi_sp
+    return None
   except Exception as e:
     print("phi_transform_image reason:",e)
     return superposition()
@@ -329,7 +341,7 @@ def phi_transform_image(sw_dict,name,k):
 for filename in glob.glob(file_dir + "/*"):
 
   image_phi_sp = phi_transform_image(sw_dict,filename,ngram_size)
-  print("image_phi_sp:",image_phi_sp)
+#  print("image_phi_sp:",image_phi_sp)
 #  sys.exit(0)  
   continue
 
