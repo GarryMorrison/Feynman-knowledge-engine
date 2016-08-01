@@ -221,8 +221,8 @@ def make_phi_superpositions(context,name,k):
         our_sp = image_to_sp(im2)
         phi = our_sp.similar_input(context,"layer-1").select_range(1,1).ket()
         if phi.label == "":
-#          continue
-          phi = ket("phi: 0")                                 # may as well use this as a data point too. Now testing time.
+          continue
+#          phi = ket("phi: 0")                                 # may as well use this as a data point too. Now testing time.
 #        phi_similarity = phi.value
         image_phi_sp += phi                                   # map image to phi sp
 #        phi_sp = phi.apply_op(context,"layer-1").rescale(255)
@@ -299,7 +299,8 @@ for filename in glob.glob(file_dir + "/*"):
 #  phi_image.save("%s%s.png" % (destination_phi_images,filehead))
 
 #context2.save("sw-examples/image-phi-superpositions-test-1000--%s--t_0_4--v2.sw" % str(ngram_size))
-context2.save("sw-examples/image-phi-superpositions--test-2000--using-edge-enhanced-features--k_5--t_0_4--phi0.sw")
+#context2.save("sw-examples/image-phi-superpositions--test-2000--using-edge-enhanced-features--k_5--t_0_4--phi0.sw")
+context2.save("sw-examples/image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw")
 
 
 
