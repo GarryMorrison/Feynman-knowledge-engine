@@ -25,10 +25,13 @@ from the_semantic_db_processor import *
 context = context_list("delete me")
 
 # for now, assume they exist, without testing it:
-source = "work-on-handwritten-digits/mnist_test_labels.csv"
+#source = "work-on-handwritten-digits/mnist_test_labels.csv"
+source = "work-on-handwritten-digits/mnist_train_labels.csv"
+
 #destination = "work-on-handwritten-digits/train-images/"
 #source = "work-on-handwritten-digits/mnist_test_images.csv"
 #destination = "work-on-handwritten-digits/test-images/"
+
 
 with open(source,'r') as f:
   for line in f:
@@ -36,10 +39,13 @@ with open(source,'r') as f:
     if len(line) == 0:
       continue
     for k,label in enumerate(line.split(',')):
-      image_ket = ket("image: mnist-test-image-" + str(k+1))
-      context.learn("test-label",image_ket,label)
+#      image_ket = ket("image: mnist-test-image-" + str(k+1))
+#      context.learn("test-label",image_ket,label)
+      image_ket = ket("image: mnist-train-image-%s--edge-enhanced-20" % str(k+1))
+      context.learn("train-label",image_ket,label)
 context.print_universe()
-context.save("sw-examples/mnist-test-labels.sw")
+#context.save("sw-examples/mnist-test-labels.sw")
+context.save("sw-examples/mnist-train-labels.sw",False)
 sys.exit(0)
 
 count = 0

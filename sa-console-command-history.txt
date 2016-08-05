@@ -32316,3 +32316,712 @@
   common[supported-ops] split |Fred Sam>
   q
 
+2016-07-29
+  load high-order-sequences.sw
+  the-table
+  q
+
+2016-07-31
+  load improved-high-order-sequences.sw
+  sequence-table
+  dump
+  
+  sequence-table
+  dump |*>
+  similar-input[pattern] input-encode |count>
+  50 similar-input[pattern] input-encode |count>
+  sequence-number 50 similar-input[pattern] input-encode |count>
+  
+  similar-input[pattern] input-encode |one>
+  50 similar-input[pattern] input-encode |one>
+  sequence-number 50 similar-input[pattern] input-encode |one>
+  ket-simm(append-column[13] encode |count>, random-column[13] encode |count>)
+  1/13 |x>
+  
+  sequence-number (1.0|node 1: 1> + 1.0|node 1: 2>)
+  C |F: 50>
+  day-of-the-week |date: 2010/7/2>
+  day-of-the-week |date: 2010/7/3>
+  q
+
+2016-07-31
+  full |range> => range(|1>,|65536>)
+  encode |count> => pick[40] full |range>
+  encode |one> => pick[40] full |range>
+  encode |two> => pick[40] full |range>
+  encode |three> => pick[40] full |range>
+  encode |four> => pick[40] full |range>
+  encode |five> => pick[40] full |range>
+  encode |six> => pick[40] full |range>
+  encode |seven> => pick[40] full |range>
+  encode |Fibonacci> => pick[40] full |range>
+  encode |eight> => pick[40] full |range>
+  encode |thirteen> => pick[40] full |range>
+  encode |factorial> => pick[40] full |range>
+  encode |twenty-four> => pick[40] full |range>
+  encode |one-hundred-twenty> => pick[40] full |range>
+  
+  simm-op |*> #=> 100 self-similar[encode] |_self>
+  map[simm-op,similarity] rel-kets[encode]
+  matrix[similarity]
+  history
+  context smaller range
+  full |range> => range(|1>,|2048>)
+  encode |count> => pick[40] full |range>
+  encode |one> => pick[40] full |range>
+  encode |two> => pick[40] full |range>
+  encode |three> => pick[40] full |range>
+  encode |four> => pick[40] full |range>
+  encode |five> => pick[40] full |range>
+  encode |six> => pick[40] full |range>
+  encode |seven> => pick[40] full |range>
+  encode |Fibonacci> => pick[40] full |range>
+  encode |eight> => pick[40] full |range>
+  encode |thirteen> => pick[40] full |range>
+  encode |factorial> => pick[40] full |range>
+  encode |twenty-four> => pick[40] full |range>
+  encode |one-hundred-twenty> => pick[40] full |range>
+  
+  simm-op |*> #=> 100 self-similar[encode] |_self>
+  map[simm-op,similarity] rel-kets[encode]
+  matrix[similarity]
+  context
+  context bigger range
+  full |range> => range(|1>,|1000000>)
+  encode |count> => pick[40] full |range>
+  encode |one> => pick[40] full |range>
+  encode |two> => pick[40] full |range>
+  encode |three> => pick[40] full |range>
+  encode |four> => pick[40] full |range>
+  encode |five> => pick[40] full |range>
+  encode |six> => pick[40] full |range>
+  encode |seven> => pick[40] full |range>
+  encode |Fibonacci> => pick[40] full |range>
+  encode |eight> => pick[40] full |range>
+  encode |thirteen> => pick[40] full |range>
+  encode |factorial> => pick[40] full |range>
+  encode |twenty-four> => pick[40] full |range>
+  encode |one-hundred-twenty> => pick[40] full |range>simm-op |*> #=> 100 self-similar[encode] |_self>
+  map[simm-op,similarity] rel-kets[encode]
+  matrix[similarity]
+  
+  matrix[similarity]
+  simm-op |*> #=> 100 self-similar[encode] |_self>
+  map[simm-op,similarity] rel-kets[encode]
+  matrix[similarity]
+  26^2 |x>
+  26^3 |x>
+  q
+
+2016-08-03
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  history
+  dump
+  simm-op |*> #=> 100 select[1,40] similar[log-phi-sp] |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  load mnist-test-labels--edge-enhanced.sw
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  score |top 1> => 0.05 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  1/2000 |x>
+  score |top 1> => equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  score |top 2> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  score |top 4> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  score |top 5> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  score |top 6> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  score |top 7> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  score |top 8> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  score |top 9> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  score |top 11> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  score |top 12> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  score |top 13> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  score |top 14> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  score |top 15> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  score |top 16> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  score |top 17> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  score |top 18> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  score |top 19> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  score |top 20> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  score |top 21> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  score |top 22> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  score |top 23> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,24] similarity |_self>
+  score |top 24> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,25] similarity |_self>
+  score |top 25> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,26] similarity |_self>
+  score |top 26> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,27] similarity |_self>
+  score |top 27> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,28] similarity |_self>
+  score |top 28> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,29] similarity |_self>
+  score |top 29> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,30] similarity |_self>
+  score |top 30> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  
+  table[top-k,score] rel-kets[score]
+  history
+  history 1000
+  
+  save image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4--saved.sw
+  similarity select[1,1] rel-kets[log-phi-sp]
+  q
+
+2016-08-03
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4--train-log-phi.sw
+  how-many rel-kets[train-log-phi-sp]
+  how-many rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  load mnist-train-labels.sw
+  select[1,1] rel-kets[train-log-phi-sp]
+  train-label select[1,1] rel-kets[train-log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  select[1,1] rel-kets[log-phi-sp]
+  history
+  test-label select[1,1] rel-kets[log-phi-sp]
+  load mnist-test-labels--edge-enhanced.sw
+  test-label select[1,1] rel-kets[log-phi-sp]
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] select[1,1] rel-kets[log-phi-sp]
+  similarity select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,1] similarity select[1,1] rel-kets[log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,10] similarity select[1,1] rel-kets[log-phi-sp]
+  save history
+
+2016-08-04
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4--train-log-phi.sw
+  how-many rel-kets[train-log-phi-sp]
+  how-many rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  load mnist-train-labels.sw
+  select[1,1] rel-kets[train-log-phi-sp]
+  train-label select[1,1] rel-kets[train-log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  select[1,1] rel-kets[log-phi-sp]
+  history
+  test-label select[1,1] rel-kets[log-phi-sp]
+  load mnist-test-labels--edge-enhanced.sw
+  test-label select[1,1] rel-kets[log-phi-sp]
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] select[1,1] rel-kets[log-phi-sp]
+  similarity select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,1] similarity select[1,1] rel-kets[log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,10] similarity select[1,1] rel-kets[log-phi-sp]
+  save history
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  history
+  save full-mnist-phi-transformed-edge-enhanced--save.sw
+  save history
+
+2016-08-04
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4--train-log-phi.sw
+  how-many rel-kets[train-log-phi-sp]
+  how-many rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  load mnist-train-labels.sw
+  select[1,1] rel-kets[train-log-phi-sp]
+  train-label select[1,1] rel-kets[train-log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  select[1,1] rel-kets[log-phi-sp]
+  history
+  test-label select[1,1] rel-kets[log-phi-sp]
+  load mnist-test-labels--edge-enhanced.sw
+  test-label select[1,1] rel-kets[log-phi-sp]
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] select[1,1] rel-kets[log-phi-sp]
+  similarity select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,1] similarity select[1,1] rel-kets[log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,10] similarity select[1,1] rel-kets[log-phi-sp]
+  save history
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  history
+  save full-mnist-phi-transformed-edge-enhanced--save.sw
+  save history
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  score |top 2> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  score |top 4> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  score |top 5> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  score |top 6> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  score |top 7> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  score |top 8> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  score |top 9> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  score |top 11> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  score |top 12> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  score |top 13> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  score |top 14> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  score |top 15> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  score |top 16> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  score |top 17> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  score |top 18> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  score |top 19> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  score |top 20> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  score |top 21> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  score |top 22> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  score |top 23> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,24] similarity |_self>
+  score |top 24> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,25] similarity |_self>
+  score |top 25> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,26] similarity |_self>
+  score |top 26> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,27] similarity |_self>
+  score |top 27> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,28] similarity |_self>
+  score |top 28> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,29] similarity |_self>
+  score |top 29> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,30] similarity |_self>
+  score |top 30> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  
+  table[top-k,score] rel-kets[score]
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  table[top-k,score] rel-kets[score]
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  table[top-k,score] rel-kets[score]
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,2] similarity |_self>
+  score |top 2> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,4] similarity |_self>
+  score |top 4> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,5] similarity |_self>
+  score |top 5> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,6] similarity |_self>
+  score |top 6> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,7] similarity |_self>
+  score |top 7> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,8] similarity |_self>
+  score |top 8> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,9] similarity |_self>
+  score |top 9> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,11] similarity |_self>
+  score |top 11> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,12] similarity |_self>
+  score |top 12> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,13] similarity |_self>
+  score |top 13> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,14] similarity |_self>
+  score |top 14> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,15] similarity |_self>
+  score |top 15> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,16] similarity |_self>
+  score |top 16> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,17] similarity |_self>
+  score |top 17> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,18] similarity |_self>
+  score |top 18> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,19] similarity |_self>
+  score |top 19> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,20] similarity |_self>
+  score |top 20> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,21] similarity |_self>
+  score |top 21> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,22] similarity |_self>
+  score |top 22> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,23] similarity |_self>
+  score |top 23> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,24] similarity |_self>
+  score |top 24> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,25] similarity |_self>
+  score |top 25> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,26] similarity |_self>
+  score |top 26> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,27] similarity |_self>
+  score |top 27> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,28] similarity |_self>
+  score |top 28> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,29] similarity |_self>
+  score |top 29> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,30] similarity |_self>
+  score |top 30> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  table[top-k,score] rel-kets[score]
+  save full-mnist-phi-transformed-edge-enhanced--saved.sw
+  save history
+
+2016-08-05
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4--train-log-phi.sw
+  how-many rel-kets[train-log-phi-sp]
+  how-many rel-kets[log-phi-sp]
+  load mnist-test-labels.sw
+  load mnist-train-labels.sw
+  select[1,1] rel-kets[train-log-phi-sp]
+  train-label select[1,1] rel-kets[train-log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  select[1,1] rel-kets[log-phi-sp]
+  history
+  test-label select[1,1] rel-kets[log-phi-sp]
+  load mnist-test-labels--edge-enhanced.sw
+  test-label select[1,1] rel-kets[log-phi-sp]
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] select[1,1] rel-kets[log-phi-sp]
+  similarity select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,1] similarity select[1,1] rel-kets[log-phi-sp]
+  test-label select[1,1] rel-kets[log-phi-sp]
+  train-label select[1,10] similarity select[1,1] rel-kets[log-phi-sp]
+  save history
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  history
+  save full-mnist-phi-transformed-edge-enhanced--save.sw
+  save history
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,2] similarity |_self>
+  score |top 2> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,4] similarity |_self>
+  score |top 4> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,5] similarity |_self>
+  score |top 5> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,6] similarity |_self>
+  score |top 6> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,7] similarity |_self>
+  score |top 7> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,8] similarity |_self>
+  score |top 8> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,9] similarity |_self>
+  score |top 9> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,11] similarity |_self>
+  score |top 11> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,12] similarity |_self>
+  score |top 12> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,13] similarity |_self>
+  score |top 13> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,14] similarity |_self>
+  score |top 14> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,15] similarity |_self>
+  score |top 15> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,16] similarity |_self>
+  score |top 16> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,17] similarity |_self>
+  score |top 17> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,18] similarity |_self>
+  score |top 18> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,19] similarity |_self>
+  score |top 19> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,20] similarity |_self>
+  score |top 20> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,21] similarity |_self>
+  score |top 21> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,22] similarity |_self>
+  score |top 22> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,23] similarity |_self>
+  score |top 23> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,24] similarity |_self>
+  score |top 24> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,25] similarity |_self>
+  score |top 25> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,26] similarity |_self>
+  score |top 26> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,27] similarity |_self>
+  score |top 27> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,28] similarity |_self>
+  score |top 28> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,29] similarity |_self>
+  score |top 29> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,30] similarity |_self>
+  score |top 30> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  
+  table[top-k,score] rel-kets[score]
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  table[top-k,score] rel-kets[score]
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  table[top-k,score] rel-kets[score]
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,2] similarity |_self>
+  score |top 2> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,4] similarity |_self>
+  score |top 4> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,5] similarity |_self>
+  score |top 5> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,6] similarity |_self>
+  score |top 6> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,7] similarity |_self>
+  score |top 7> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,8] similarity |_self>
+  score |top 8> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,9] similarity |_self>
+  score |top 9> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,11] similarity |_self>
+  score |top 11> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,12] similarity |_self>
+  score |top 12> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,13] similarity |_self>
+  score |top 13> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,14] similarity |_self>
+  score |top 14> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,15] similarity |_self>
+  score |top 15> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,16] similarity |_self>
+  score |top 16> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,17] similarity |_self>
+  score |top 17> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,18] similarity |_self>
+  score |top 18> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,19] similarity |_self>
+  score |top 19> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,20] similarity |_self>
+  score |top 20> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,21] similarity |_self>
+  score |top 21> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,22] similarity |_self>
+  score |top 22> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,23] similarity |_self>
+  score |top 23> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,24] similarity |_self>
+  score |top 24> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,25] similarity |_self>
+  score |top 25> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,26] similarity |_self>
+  score |top 26> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,27] similarity |_self>
+  score |top 27> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,28] similarity |_self>
+  score |top 28> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,29] similarity |_self>
+  score |top 29> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,30] similarity |_self>
+  score |top 30> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  table[top-k,score] rel-kets[score]
+  save full-mnist-phi-transformed-edge-enhanced--saved.sw
+  save history
+  table[top-k,score] rel-kets[score]
+  
+  history
+  table[top-k,score] rel-kets[score]
+  save history
+
