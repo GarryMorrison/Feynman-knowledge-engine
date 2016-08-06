@@ -357,3 +357,24 @@ table[top-k,score] rel-kets[score]
 +--------+------------+
 
 save full-mnist-phi-transformed-edge-enhanced--saved.sw
+
+
+-----------------------------------------------
+$ ./contract-mnist-if-then-machines.py
+
+load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+load mnist-test-labels--edge-enhanced.sw
+
+load mnist-contracted-if-then-machines.sw
+
+
+-- simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+-- map[simm-op,similarity] rel-kets[log-phi-sp]
+
+
+simm-op |*> #=> 100 coeff-sort then similar-input[pattern] log-phi-sp |_self>
+map[simm-op,similarity] select[1,30] rel-kets[log-phi-sp]
+
+
+simm-op-2 |*> #=> 100 coeff-sort then select[1,10] similar-input[pattern] log-phi-sp |_self>
+map[simm-op-2,similarity-2] select[1,30] rel-kets[log-phi-sp]
