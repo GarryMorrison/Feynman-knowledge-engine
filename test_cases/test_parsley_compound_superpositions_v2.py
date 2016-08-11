@@ -114,6 +114,17 @@ sub_bracket_sp = S0 '-' S0 bracket_literal_superposition:sp -> ('-', sp)
 bracket_sp_ops = (add_bracket_sp | sub_bracket_sp )
 bracket_superposition_sum = S0 bracket_literal_superposition:left S0 (bracket_sp_ops+:right S0 -> sp_calculate(left,right)
                                                                   | -> left ) 
+ket_like_sp = S0 ( coeff_ket:sp | '(' literal_superposition:sp ')' ) S0 -> sp
+op_sequence_sp = op_sequence:op_seq ket_like_sp:sp -> process_op_sequence_sp(op_seq,sp)
+bracket_ops_sp = bracket_ops:bracket_op ket_like_sp:sp -> process_bracket_ops_sp(bracket_op,sp)
+
+op_sequence_fn2 = op_sequence:op_seq bracket2_literal_superposition:sp_list -> process_op_sequence_fn2(op_seq,sp_list)
+op_sequence_fn3 = op_sequence:op_seq bracket3_literal_superposition:sp_list -> process_op_sequence_fn3(op_seq,sp_list)
+op_sequence_fn4 = op_sequence:op_seq bracket4_literal_superposition:sp_list -> process_op_sequence_fn4(op_seq,sp_list)
+
+bracket_ops_fn2 = bracket_ops:bracket_op simple_op:fn2 bracket2_literal_superposition:sp_list -> process_bracket_ops_fn2(bracket_op,fn2,sp_list)
+bracket_ops_fn3 = bracket_ops:bracket_op simple_op:fn3 bracket3_literal_superposition:sp_list -> process_bracket_ops_fn3(bracket_op,fn3,sp_list)
+bracket_ops_fn4 = bracket_ops:bracket_op simple_op:fn4 bracket4_literal_superposition:sp_list -> process_bracket_ops_fn4(bracket_op,fn4,sp_list)
 
 """
 
@@ -147,12 +158,51 @@ def sp_calculate(start,pairs):                      # I don't think we want merg
       result += value.multiply(-1)
   return result
 
+def process_op_sequence_sp(op_seq,sp):              # needs to handle the 1-param function case too: "op-sequence foo-1 (ECS)"
+#  print("op_seq:",str(op_seq))
+#  print("sp:",str(sp))
+  return [op_seq,str(sp)]
+
+def process_bracket_ops_sp(bracket_op,sp):
+#  print("bracket_op:",str(bracket_op))
+#  print("sp:",str(sp))
+  return [bracket_op,str(sp)]
+
+def process_op_sequence_fn2(op_seq,sp_list):
+  return [op_seq,[str(sp_list[0]),str(sp_list[1])]]
+  
+def process_op_sequence_fn3(op_seq,sp_list):
+  return [op_seq,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2])]]
+
+def process_op_sequence_fn4(op_seq,sp_list):
+  return [op_seq,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
+
+
+def process_bracket_ops_fn2(bracket_op,fn2,sp_list):
+  return [bracket_op,fn2,[str(sp_list[0]),str(sp_list[1])]]
+  
+def process_bracket_ops_fn3(bracket_op,fn3,sp_list):
+  return [bracket_op,fn3,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2])]]
+
+def process_bracket_ops_fn4(bracket_op,fn4,sp_list):
+  return [bracket_op,fn4,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
+
+
 parse_dictionary = {
-  "float_int"           : float_int, 
-  "ket"                 : ket,
-  "ket_calculate"       : ket_calculate,
-  "sp_calculate"        : sp_calculate,
-  }
+  "float_int"               : float_int, 
+  "ket"                     : ket,
+  "ket_calculate"           : ket_calculate,
+  "sp_calculate"            : sp_calculate,
+  "process_op_sequence_sp"  : process_op_sequence_sp,
+  "process_bracket_ops_sp"  : process_bracket_ops_sp,
+  "process_op_sequence_fn2" : process_op_sequence_fn2,
+  "process_op_sequence_fn3" : process_op_sequence_fn3,
+  "process_op_sequence_fn4" : process_op_sequence_fn4,
+  "process_bracket_ops_fn2" : process_bracket_ops_fn2,
+  "process_bracket_ops_fn3" : process_bracket_ops_fn3,
+  "process_bracket_ops_fn4" : process_bracket_ops_fn4,
+  
+}
   
 op_grammar = makeGrammar(our_operator_grammar,parse_dictionary)
 
@@ -304,6 +354,75 @@ def test_op_literal_superposition_plus_literal_superposition_plus_more():
   assert str(x) == "3.2|a> + 8|b> + 0.5|c> + |d> + 6|x> + 1.7|y> + |fish>"
 
 
+# 3.7|fish>
+def test_op_ket_like_sp_single_ket():
+  x = op_grammar(" 3.7|fish> ").ket_like_sp()
+  assert str(x) == "3.7|fish>"
+
+# 2|x> + |y>   
+def test_op_ket_like_sp_literal_sp():
+  x = op_grammar(" (2|x> + |y>) ").ket_like_sp()
+  assert str(x) == "2|x> + |y>"
+
+# [['op3', 'op2', 'op1', 3.7], '|fish>']
+# NB: the 3.7 is considered an operator. Not sure if we want this. Don't know how to change if we don't.
+def test_op_op_sequence_sp_single_ket():
+  x = op_grammar(" op3 op2 op1 3.7|fish> ").op_sequence_sp()
+  assert str(x) == "[['op3', 'op2', 'op1', 3.7], '|fish>']"
+
+# [['op3', 'op2', 'op1'], '2|x> + |y>']   
+def test_op_op_sequence_sp_literal_sp():
+  x = op_grammar(" op3 op2 op1 (2|x> + |y>) ").op_sequence_sp()
+  assert str(x) == "[['op3', 'op2', 'op1'], '2|x> + |y>']"
+
+
+# [[('+', [1]), ('+', ['op']), ('-', [('op', 2)]), ('+', [('op3', 5)])], '3.7|fish>']  
+def test_op_bracket_ops_sp_single_ket():
+  x = op_grammar(" (1 + op - op^2 + op3^5) 3.7|fish> ").bracket_ops_sp()
+  assert str(x) == "[[('+', [1]), ('+', ['op']), ('-', [('op', 2)]), ('+', [('op3', 5)])], '3.7|fish>']"
+
+# for later!
+#def test_op_bracket_ops_sp_kets():
+#  x = op_grammar(" (1 + op - op^2 + op3^5) 3.7|fish> + 3|pie> + 0.5 |cats> ").bracket_ops_sp()
+#  assert str(x) == ""
+
+# [[('+', [1]), ('+', ['op']), ('-', [('op', 2)]), ('+', [('op3', 5)])], '2|x> + |y>']   
+def test_op_bracket_ops_sp_literal_sp():
+  x = op_grammar(" (1 + op - op^2 + op3^5) (2|x> + |y>) ").bracket_ops_sp()
+  assert str(x) == "[[('+', [1]), ('+', ['op']), ('-', [('op', 2)]), ('+', [('op3', 5)])], '2|x> + |y>']"
+
+# [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
+def test_op_op_sequence_fn2_literal_sps():
+  x = op_grammar(" op3 op2 op1 fn-1 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").op_sequence_fn2()
+  assert str(x) == "[['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>']]"
+  
+# [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]
+def test_op_op_sequence_fn3_literal_sps():
+  x = op_grammar(" op3 op2 op1 fn-1 (2|x> + |y>, |a> + |b> + 0.3|z>,|fish> ) ").op_sequence_fn3()
+  assert str(x) == "[['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]"
+
+# [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]
+def test_op_op_sequence_fn4_literal_sps():
+  x = op_grammar(" op3 op2 op1 fn-1 (2|x> + |y>, |a> + |b> + 0.3|z>,|pi>,|e> + |log> ) ").op_sequence_fn4()
+  assert str(x) == "[['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]"
+
+
+# [[('+', ['op3']), ('+', ['op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
+def test_op_bracket_ops_fn2_literal_sps():
+  x = op_grammar(" (op3 + op2 op1) fn-2 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").bracket_ops_fn2()
+  assert str(x) == "[[('+', ['op3']), ('+', ['op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]"
+  
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']] 
+def test_op_bracket_ops_fn3_literal_sps():
+  x = op_grammar(" ( op3 op2 op1) fn-3 (2|x> + |y>, |a> + |b> + 0.3|z>,|fish> ) ").bracket_ops_fn3()
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]"
+
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-4', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']] 
+def test_op_bracket_ops_fn4_literal_sps():
+  x = op_grammar(" (op3 op2 op1) fn-4 (2|x> + |y>, |a> + |b> + 0.3|z>,|pi>,|e> + |log> ) ").bracket_ops_fn4()
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-4', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]"
+
+  
 #
 def test_op_param2_fn():
   x = op_grammar("foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
