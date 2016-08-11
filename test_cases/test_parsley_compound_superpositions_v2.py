@@ -56,7 +56,13 @@ simple_float = ('-' | -> ''):sign <(digit | '.')+>:numerator ('/' <(digit | '.')
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
 # allow dot as an op char??
 op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.') -> x
-simple_op = op_start_char:first <op_char*>:rest -> first + rest
+#simple_op = op_start_char:first <op_char*>:rest -> first + rest
+valid_op_string = op_start_char:first <op_char*>:rest -> first + rest
+# breaks "common[op]" since we also have: "common(sp1,sp2)":
+#simple_op = valid_op_string:s ?(not parameter_function(s)) -> s
+# for now:
+simple_op = valid_op_string:s -> s
+parameter_function_name = valid_op_string:s ?(parameter_function(s)) -> s
 parameters = (simple_float | simple_op | '\"\"' | '*'):p -> str(p)
 
 # more elegant, process at the end version:
@@ -101,10 +107,10 @@ bracket2_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_su
 bracket3_literal_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ')' S0 -> [sp1,sp2,sp3]
 bracket4_literal_superposition =  S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ',' literal_superposition:sp4 ')' S0 -> [sp1,sp2,sp3,sp4]
 
-param1_fn = op_sequence:head bracket1_literal_superposition:tail -> [head,tail]
-param2_fn = op_sequence:head bracket2_literal_superposition:tail -> [head,tail]
-param3_fn = op_sequence:head bracket3_literal_superposition:tail -> [head,tail]
-param4_fn = op_sequence:head bracket4_literal_superposition:tail -> [head,tail]
+#param1_fn = op_sequence:head bracket1_literal_superposition:tail -> [head,tail]
+#param2_fn = op_sequence:head bracket2_literal_superposition:tail -> [head,tail]
+#param3_fn = op_sequence:head bracket3_literal_superposition:tail -> [head,tail]
+#param4_fn = op_sequence:head bracket4_literal_superposition:tail -> [head,tail]
 
 #bracket_literal_superposition_sum = S0 '(' literal_superposition:sp1 ')' S0 '+' S0 '(' literal_superposition:sp2 ')' S0 -> sp1 + sp2
 #bracket_literal_superposition_sum = bracket_literal_superposition:sp1 '+' bracket_literal_superposition:sp2 -> sp1 + sp2
@@ -114,6 +120,7 @@ sub_bracket_sp = S0 '-' S0 bracket_literal_superposition:sp -> ('-', sp)
 bracket_sp_ops = (add_bracket_sp | sub_bracket_sp )
 bracket_superposition_sum = S0 bracket_literal_superposition:left S0 (bracket_sp_ops+:right S0 -> sp_calculate(left,right)
                                                                   | -> left ) 
+
 ket_like_sp = S0 ( coeff_ket:sp | '(' literal_superposition:sp ')' ) S0 -> sp
 op_sequence_sp = op_sequence:op_seq ket_like_sp:sp -> process_op_sequence_sp(op_seq,sp)
 bracket_ops_sp = bracket_ops:bracket_op ket_like_sp:sp -> process_bracket_ops_sp(bracket_op,sp)
@@ -126,6 +133,17 @@ bracket_ops_fn2 = bracket_ops:bracket_op simple_op:fn2 bracket2_literal_superpos
 bracket_ops_fn3 = bracket_ops:bracket_op simple_op:fn3 bracket3_literal_superposition:sp_list -> process_bracket_ops_fn3(bracket_op,fn3,sp_list)
 bracket_ops_fn4 = bracket_ops:bracket_op simple_op:fn4 bracket4_literal_superposition:sp_list -> process_bracket_ops_fn4(bracket_op,fn4,sp_list)
 
+processed_op_sequence = op_sequence:op_seq -> process_op_sequence(op_seq)
+
+bracket1_superposition = S0 '(' literal_superposition:sp1 ')' S0 -> [sp1]
+bracket2_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ')' S0 -> [sp1,sp2]
+bracket3_superposition = S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ')' S0 -> [sp1,sp2,sp3]
+bracket4_superposition =  S0 '(' literal_superposition:sp1 ',' literal_superposition:sp2 ',' literal_superposition:sp3 ',' literal_superposition:sp4 ')' S0 -> [sp1,sp2,sp3,sp4]
+
+param1_fn = S0 parameter_function_name:name bracket1_superposition:sp -> process_param1_fn(name,sp) 
+param2_fn = S0 parameter_function_name:name bracket2_superposition:sp -> process_param2_fn(name,sp) 
+param3_fn = S0 parameter_function_name:name bracket3_superposition:sp -> process_param3_fn(name,sp) 
+param4_fn = S0 parameter_function_name:name bracket4_superposition:sp -> process_param4_fn(name,sp) 
 """
 
 # what happens if we have eg: "3.73.222751" (ie, more than one dot?)
@@ -134,6 +152,15 @@ def float_int(n,d):
   if x.is_integer():
     return int(x)                                      
   return x              
+
+# not sure this is the best way to handle this.
+# the idea is to help distinguish between "op-sequence (ECS)" and "op-sequence foo-1 (ECS)"
+# Bah! Breaks "common[friends]" since we also have: "common(sp1,sp2)"
+def parameter_function(s):       # returns True if s is the name of a function in 1-param-fn, 2-param-fn, 3-param-fn or 4-param-fn tables. 
+  #return False                   # for now just hardwire no.
+  if s in whitelist_table_1 or s in whitelist_table_2 or s in whitelist_table_3 or s in  whitelist_table_4:
+    return True
+  return False
 
 def ket_calculate(start,pairs,self_ket_label=None):
   result = start
@@ -168,14 +195,14 @@ def process_bracket_ops_sp(bracket_op,sp):
 #  print("sp:",str(sp))
   return [bracket_op,str(sp)]
 
-def process_op_sequence_fn2(op_seq,sp_list):
-  return [op_seq,[str(sp_list[0]),str(sp_list[1])]]
+def process_op_sequence_fn2(op_seq,sp_list):             # need to test for S0 operator sequence
+  return [[('+',op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1])]]
   
 def process_op_sequence_fn3(op_seq,sp_list):
-  return [op_seq,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2])]]
+  return [[('+', op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1]),str(sp_list[2])]]
 
 def process_op_sequence_fn4(op_seq,sp_list):
-  return [op_seq,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
+  return [[('+', op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
 
 
 def process_bracket_ops_fn2(bracket_op,fn2,sp_list):
@@ -188,8 +215,35 @@ def process_bracket_ops_fn4(bracket_op,fn4,sp_list):
   return [bracket_op,fn4,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
 
 
+def process_op_sequence(op_seq):
+  processed_operators = [ process_single_op(op) for op in op_seq ]
+  return "".join(reversed(processed_operators))
+
+
+def process_param1_fn(fn_name,sp):
+  if fn_name in whitelist_table_1:
+    return "%s(%s)" % (whitelist_table_1[fn_name],sp[0])
+  return None 
+
+def process_param2_fn(fn_name,sp):
+  if fn_name in whitelist_table_2:
+    return "%s(%s, %s)" % (whitelist_table_2[fn_name],sp[0],sp[1])
+  return None 
+
+def process_param3_fn(fn_name,sp):
+  if fn_name in whitelist_table_3:
+    return "%s(%s, %s, %s)" % (whitelist_table_3[fn_name],sp[0],sp[1],sp[2])
+  return None 
+
+def process_param4_fn(fn_name,sp):
+  if fn_name in whitelist_table_4:
+    return "%s(%s, %s, %s, %s)" % (whitelist_table_4[fn_name],sp[0],sp[1],sp[2],sp[3])
+  return None 
+
+
 parse_dictionary = {
-  "float_int"               : float_int, 
+  "float_int"               : float_int,
+  "parameter_function"      : parameter_function, 
   "ket"                     : ket,
   "ket_calculate"           : ket_calculate,
   "sp_calculate"            : sp_calculate,
@@ -201,7 +255,13 @@ parse_dictionary = {
   "process_bracket_ops_fn2" : process_bracket_ops_fn2,
   "process_bracket_ops_fn3" : process_bracket_ops_fn3,
   "process_bracket_ops_fn4" : process_bracket_ops_fn4,
+  "process_op_sequence"     : process_op_sequence,
   
+  "process_param1_fn"       : process_param1_fn,  
+  "process_param2_fn"       : process_param2_fn,  
+  "process_param3_fn"       : process_param3_fn,  
+  "process_param4_fn"       : process_param4_fn,  
+
 }
   
 op_grammar = makeGrammar(our_operator_grammar,parse_dictionary)
@@ -391,28 +451,31 @@ def test_op_bracket_ops_sp_literal_sp():
   x = op_grammar(" (1 + op - op^2 + op3^5) (2|x> + |y>) ").bracket_ops_sp()
   assert str(x) == "[[('+', [1]), ('+', ['op']), ('-', [('op', 2)]), ('+', [('op3', 5)])], '2|x> + |y>']"
 
-# [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
+## [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
 def test_op_op_sequence_fn2_literal_sps():
-  x = op_grammar(" op3 op2 op1 fn-1 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").op_sequence_fn2()
-  assert str(x) == "[['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>']]"
+  x = op_grammar(" op3 op2 op1 fn-2 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").op_sequence_fn2()
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]"
   
-# [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]
+## [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]
 def test_op_op_sequence_fn3_literal_sps():
-  x = op_grammar(" op3 op2 op1 fn-1 (2|x> + |y>, |a> + |b> + 0.3|z>,|fish> ) ").op_sequence_fn3()
-  assert str(x) == "[['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]"
+  x = op_grammar(" op3 op2 op1 fn-3 (2|x> + |y>, |a> + |b> + 0.3|z>,|fish> ) ").op_sequence_fn3()
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]"
 
-# [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]
+## [['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-4', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]
 def test_op_op_sequence_fn4_literal_sps():
-  x = op_grammar(" op3 op2 op1 fn-1 (2|x> + |y>, |a> + |b> + 0.3|z>,|pi>,|e> + |log> ) ").op_sequence_fn4()
-  assert str(x) == "[['op3', 'op2', 'op1', 'fn-1'], ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]"
+  x = op_grammar(" op3 op2 op1 fn-4 (2|x> + |y>, |a> + |b> + 0.3|z>,|pi>,|e> + |log> ) ").op_sequence_fn4()
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-4', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]"
 
 
-# [[('+', ['op3']), ('+', ['op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]
 def test_op_bracket_ops_fn2_literal_sps():
-  x = op_grammar(" (op3 + op2 op1) fn-2 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").bracket_ops_fn2()
-  assert str(x) == "[[('+', ['op3']), ('+', ['op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]"
-  
-# [[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']] 
+  x = op_grammar(" (op3 op2 op1) fn-2 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").bracket_ops_fn2()
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-2', ['2|x> + |y>', '|a> + |b> + 0.3|z>']]"
+
+# [[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]
 def test_op_bracket_ops_fn3_literal_sps():
   x = op_grammar(" ( op3 op2 op1) fn-3 (2|x> + |y>, |a> + |b> + 0.3|z>,|fish> ) ").bracket_ops_fn3()
   assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-3', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|fish>']]"
@@ -422,16 +485,49 @@ def test_op_bracket_ops_fn4_literal_sps():
   x = op_grammar(" (op3 op2 op1) fn-4 (2|x> + |y>, |a> + |b> + 0.3|z>,|pi>,|e> + |log> ) ").bracket_ops_fn4()
   assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-4', ['2|x> + |y>', '|a> + |b> + 0.3|z>', '|pi>', '|e> + |log>']]"
 
+
+# test bracket_ops_fn2 == op_sequence_fn2. This is to help make some things easier:
+def test_op_bracket_ops_fn2__op_sequence_fn2_literal_sps():
+  x1 = op_grammar(" op3 op2 op1 fn-2 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").op_sequence_fn2()
+  x2 = op_grammar(" (op3 op2 op1) fn-2 (2|x> + |y>, |a> + |b> + 0.3|z> ) ").bracket_ops_fn2()
+  assert str(x1) == str(x2)
+
+
+
+# .apply_fn(split_ket).apply_sp_fn(common,context,"friends").multiply(3).multiply(3)
+def test_op_processed_op_sequence():
+  x = op_grammar("3^2 common[friends] split").processed_op_sequence() 
+  assert str(x) == '.apply_fn(split_ket).apply_sp_fn(common,context,"friends").multiply(3).multiply(3)'
+  
+
+# sp_len_1(|x> + 3.2|y> + -1|z>)
+def test_op_param1_fn():
+  x = op_grammar("sp (|x> + 3.2|y> -|z>)").param1_fn() 
+  assert str(x) == "sp_len_1(|x> + 3.2|y> + -1|z>)"
+
+# intersection(|x> + 3.2|y> + -1|z>, |y>)
+def test_op_param2_fn():
+  x = op_grammar("intn (|x> + 3.2|y> -|z>,|y>)").param2_fn() 
+  assert str(x) == "intersection(|x> + 3.2|y> + -1|z>, |y>)"
+
+# algebra(|a>, |+>, |b>)
+def test_op_param3_fn():
+  x = op_grammar("algebra (|a>,|+>,|b>)").param3_fn() 
+  assert str(x) == "algebra(|a>, |+>, |b>)"
+
+#def test_op_param4_fn():
+#  x = op_grammar("intn (|x> + 3.2|y> -|z>,|y>)").param4_fn() 
+#  assert str(x) == ""
   
 #
-def test_op_param2_fn():
-  x = op_grammar("foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
-  assert str(x) == ""
+#def test_op_param2_fn():
+#  x = op_grammar("foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
+#  assert str(x) == ""
 
 
 #
-def test_op_param2_fn_example_2():
-  x = op_grammar("op3^2 op2 op1 foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
-  assert str(x) == ""
+#def test_op_param2_fn_example_2():
+#  x = op_grammar("op3^2 op2 op1 foo (3|x> + 7.3|y> + |z>,|a> + 0.2|b>)").param2_fn()
+#  assert str(x) == ""
 
 
