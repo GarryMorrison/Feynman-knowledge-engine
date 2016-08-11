@@ -378,3 +378,61 @@ map[simm-op,similarity] select[1,30] rel-kets[log-phi-sp]
 
 simm-op-2 |*> #=> 100 coeff-sort then select[1,10] similar-input[pattern] log-phi-sp |_self>
 map[simm-op-2,similarity-2] select[1,30] rel-kets[log-phi-sp]
+
+map[simm-op-2,similarity-2] rel-kets[log-phi-sp]
+  Time taken: 13 hours, 58 minutes, 695 milliseconds
+
+
+h |*> #=> normalize[100] select[1,1] similarity-2 |_self>
+equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+-- h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+score |top 1> => 0.01 equal? ket-sort rel-kets[similarity-2] |>
+
+
+sa: score |top 1>
+94.53|True>
+
+
+
+simm-op-3 |*> #=> 100 coeff-sort then clean select[1,10] similar-input[pattern] log-phi-sp |_self>
+map[simm-op-3,similarity-3] select[1,30] rel-kets[log-phi-sp]
+
+map[simm-op-3,similarity-3] rel-kets[log-phi-sp]
+  Time taken: 14 hours, 1 minute, 27 seconds, 751 milliseconds
+
+h |*> #=> normalize[100] select[1,1] similarity-3 |_self>
+equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+score |top 1> => 0.01 equal? ket-sort rel-kets[similarity-3] |>
+
+sa: score |top 1>
+94.56|True>
+
+
+-----------------------------------------------------------------------------------
+-- try putting in a clean after the select:
+
+load full-mnist-phi-transformed-edge-enhanced--saved.sw
+
+h |*> #=> normalize[100] select[1,1] coeff-sort train-label clean select[1,6] similarity |_self>
+score |top 6> => 0.01 equal? ket-sort rel-kets[similarity] |>
+
+sa: score |top 6>
+94.58|True>
+
+ie, 0.02% worse.
+-----------------------------------------------------------------------------------
+
+-- try normalizing based on digit counts (NB: the norm term in the if-then machine operator):
+load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+load mnist-test-labels--edge-enhanced.sw
+load mnist-contracted-if-then-machines.sw
+
+
+simm-op-4 |*> #=> 100 coeff-sort norm then select[1,10] similar-input[pattern] log-phi-sp |_self>
+map[simm-op-4,similarity-4] rel-kets[log-phi-sp]
+
+
+h |*> #=> normalize[100] select[1,1] similarity-4 |_self>
+equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+score |top 1> => 0.01 equal? ket-sort rel-kets[similarity-4] |>
+

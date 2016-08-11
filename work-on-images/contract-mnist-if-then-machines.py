@@ -59,7 +59,14 @@ for x in context.relevant_kets(op):             # find all relevant kets for op
 #  if count > 15:
 #    break
 
-#context2.print_universe()
-context2.save("sw-examples/mnist-contracted-if-then-machines.sw",False)
+# define norm operators, just another tweak, that might or might not help our results:
+for label,value in node_dict.items():
+  label = ket(label)
+  value = int(value)
+  context2.learn("norm",label,label.multiply(1/value))
 
+#context2.print_universe()
+context2.save("sw-examples/mnist-contracted-if-then-machines.sw")
+
+#print("node dict:",node_dict)
 

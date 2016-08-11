@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/7/2016
+# Update: 11/8/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -562,15 +562,101 @@ def valid_op(op):
   return all(c in ascii_letters + '0123456789-+!?.' for c in op)
 
 
+# operator parse:
+our_operator_grammar = """
+S0 = ' '*
+S1 = ' '+
+
+digit = :x ?(x in '0123456789') -> x
+positive_int = <digit+>:n -> int(n)
+
+# what about handle more than one dot char??
+# fix eventually, but not super important for now
+# what about minus sign?
+#simple_float = ('-' | -> ''):sign <(digit | '.')+>:n -> float_int(sign + n)
+# handle 9.3/5.2
+simple_float = ('-' | -> ''):sign <(digit | '.')+>:numerator ('/' <(digit | '.')+> | -> '1'):denominator -> float_int(sign + numerator,denominator)
+
+
+op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
+# allow dot as an op char??
+op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.') -> x
+simple_op = op_start_char:first <op_char*>:rest -> first + rest
+parameters = (simple_float | simple_op | '\"\"' | '*'):p -> str(p)
+
+# more elegant, process at the end version:
+compound_op = simple_op:the_op '[' parameters:first (',' parameters)*:rest ']' -> [the_op] + [first] + rest
+general_op = (compound_op | simple_op | simple_float | '\"\"' | '-'):the_op -> the_op
+powered_op = general_op:the_op '^' positive_int:power -> (the_op,power)
+
+# process as you go version:
+# I eventually decided this version was too ugly! 
+#compound_op = simple_op:the_op '[' parameters:first (',' parameters)*:rest ']' -> process_compound_op(the_op,[first] + rest)
+#general_op = (compound_op | simple_op | simple_float | '\"\"' | '-'):the_op -> process_single_op(the_op)
+#powered_op = general_op:the_op '^' positive_int:power -> process_power_op(the_op,power)
+
+op = (powered_op | general_op):the_op -> the_op
+op_sequence = (S0 op:first (S1 op)*:rest S0 -> [first] + rest)
+              | S0 -> []
+
+add_sequence = S0 '+' S0 op_sequence:k -> ('+',k)
+sub_sequence = S0 '-' S0 op_sequence:k -> ('-',k)
+sequence_ops = (add_sequence | sub_sequence)
+bracket_ops = S0 '(' op_sequence:first S0 (sequence_ops+:rest S0 ')' S0 -> [('+',first)] + rest
+                                          | ')' S0 -> [('+',first)] )
+
+valid_ket_chars = anything:x ?(x not in '<|>') -> x
+naked_ket = '|' <valid_ket_chars*>:x '>' -> x
+coeff_ket = (number | -> 1):value S0 naked_ket:label -> ket(label,value)
+
+add_ket = S0 '+' S0 coeff_ket:k -> ('+', k)
+sub_ket = S0 '-' S0 coeff_ket:k -> ('-', k)
+merge_ket = S0 '_' S0 coeff_ket:k -> ('_', k)
+#sequence_ket = S0 '.' S0 coeff_ket:k -> ('.', k)
+
+ket_ops = (add_ket | sub_ket | merge_ket | sequence_ket)
+literal_superposition = S0 coeff_ket:left S0 (ket_ops+:right S0 -> ket_calculate(left,right)
+                                          | -> left)                                          
+"""
+
+# what happens if we have eg: "3.73.222751" (ie, more than one dot?)
+def float_int(n,d):
+  x = float(n)/float(d)
+  if x.is_integer():
+    return int(x)                                      # still haven't decided if should return float/int or string.
+  return x                                             # seems compound-op is easier if we return a string.
+
+def process_compound_op(op,parameters):
+  parameters = ",".join(parameters) 
+  if op not in compound_table:
+    logger.debug(op + " not in compound_table")
+    python_code = ""
+  else:
+    python_code = compound_table[op].format(parameters)   # possibly risk of injection attack here
+  return python_code
+  
+def process_power_op(op,power):
+  python_code = op
+  for k in range(power):                                   # is there a better way to do this? Does it matter?
+    python_code += op
+  return python_code
+
+def is_number(x):
+  try:
+    v = float(x)
+    return True
+  except:
+    return False
+
 # converts a single operator into python
 # this takes quite a bit of work, because there are such a variety of different operator types, and they all need to be handled separately.
 #
 # At some stage I want to rearchitect this beast. Instead of a million separate tables, I just want one. But that is for later.    
 #
 def process_single_op(op):
-  logger.debug("op: " + str(op)) 
+  logger.debug("process_single_op: op: " + str(op)) 
 
-  if type(op) is list:                                    # compound op found:
+  if type(op) is list:                                         # compound op found:
     logger.debug("compound op found")
     the_op = op[0]
     parameters = ",".join(op[1:])                         # not 100% sure this is the best way to handle parameters. eg, maybe we should pass a list? 
@@ -578,8 +664,30 @@ def process_single_op(op):
       logger.debug(the_op + " not in compound_table")
       python_code = ""
     else:
-      python_code = compound_table[the_op].format(parameters)   # probably risk of injection attack here
+      python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here
 
+  elif type(op) is tuple:                                               # powered op found:
+    logger.debug("powered op found")
+    the_op, power = op
+    processed_op = process_single_op(the_op)                            # recursion, hope it works.
+    python_code = ""
+    for k in range(power):
+      python_code += processed_op
+    
+#  elif is_number(op):                                                    # simple-float found
+  elif type(op) in [int, float]:  
+    python_code = ".multiply({0})".format(str(op))
+  
+  elif op == '-':       # treat - |x> as mult[-1] |x>                   # not sure we want to keep this. I think simple-float has this covered. Just use '-1', not '-' 
+    python_code = ".multiply(-1)"
+
+  elif op == "\"\"":
+    python_code = ".apply_op(context,\"\")"
+
+  elif op == "ops":                                          # short-cut so we don't have to type supported-ops all the time!
+    python_code = ".apply_op(context,\"supported-ops\")"
+    
+                                                             # must be a simple-op. Let's find in which table:
   elif op in built_in_table:                # tables don't have injection bugs, since they must be in tables, hence already vetted.
     logger.debug("op in built in table")           # unless I guess a hash-table collision between safe and unsafe?
     python_code = ".{0}()".format(built_in_table[op])
@@ -601,96 +709,48 @@ def process_single_op(op):
   elif op in sp_context_table:
     logger.debug("op in sp context table")
     python_code = ".apply_sp_fn({0},context)".format(sp_context_table[op])
+  elif not valid_op(op):                                 # doesn't the parsley handle this?
+    logger.info("why are we in the not valid_op section of process_single_op??")
+    return ""
   else:
-    if op == "\"\"":
-      python_code = ".apply_op(context,\"\")"
-    elif op == "ops":                     # short-cut so we don't have to type supported-ops all the damn time!
-      python_code = ".apply_op(context,\"supported-ops\")"
-    elif not valid_op(op):
-#      return ""
-# add code so that op2 7 op1 |x> is the same as op2 mult[7] op1 |x>
-      try:
-        value = float(op)
-        python_code = ".multiply({0})".format(op)
-      except:
-        if op == '-':       # treat - |x> as mult[-1] |x>
-          python_code = ".multiply(-1)"
-        else:
-          return ""
-    else:
-      logger.debug("op is literal")               # NB: we have to be very careful here, or it will cause SQL-injection type bugs!!
-      python_code = ".apply_op(context,\"{0}\")".format(op)  # fix is not hard. Process the passed in op to a valid op form.
-  logger.debug("py: " + python_code)                                   # lower+upper+dash+number and thats roughly it.
+    logger.debug("op is literal")               # NB: we have to be very careful here, or it will cause SQL-injection type bugs!!
+    python_code = ".apply_op(context,\"{0}\")".format(op)  # fix is not hard. Process the passed in op to a valid op form.
+  logger.debug("in process_single_op: python:" + python_code)                                   # lower+upper+dash+number and thats roughly it.
   return python_code
+    
 
+parse_dictionary = {
+  "float_int"           : float_int, 
+#  "process_compound_op" : process_compound_op,
+#  "process_single_op"   : process_single_op,
+#  "process_power_op"    : process_power_op, 
+  }
+  
+op_grammar = makeGrammar(our_operator_grammar,parse_dictionary)
 
-# operator parse:
-our_operator_grammar = """
-S0 = ' '*
-S1 = ' '+
-
-digit = :x ?(x in '0123456789') -> x
-positive_int = <digit+>:n -> int(n)
-
-# what about handle more than one dot char??
-# fix eventually, but not super important for now
-# what about minus sign?
-#simple_float = ('-' | -> ''):sign <(digit | '.')+>:n -> float_int(sign + n)
-# handle 9.3/5.2
-simple_float = ('-' | -> ''):sign <(digit | '.')+>:numerator ('/' <(digit | '.')+> | -> '1'):denominator -> float_int(sign + numerator,denominator)
-
-
-op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
-# allow dot as an op char??
-op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.') -> x
-literal_op = op_start_char:first <op_char*>:rest -> first + rest
-
-parameters = (simple_float | literal_op | '\"\"' | '*')
-compound_op = literal_op:the_op '[' parameters:first (',' parameters)*:rest ']' -> [the_op] + [first] + rest
-
-general_op = (compound_op | literal_op | simple_float | '\"\"' | '-'):the_op -> the_op
-
-powered_op = general_op:the_op '^' positive_int:power -> (the_op,power)
-
-op = (powered_op | general_op):the_op -> the_op
-
-op_sequence = (S0 op:first (S1 op)*:rest S0 -> [first] + rest)
-              | S0 -> []
-"""
-
-# what happens if we have eg: "3.73.222751" (ie, more than one dot?)
-def float_int(n,d):
-  x = float(n)/float(d)
-  if x.is_integer():
-    return str(int(x))
-  return str(x)
-
-op_grammar = makeGrammar(our_operator_grammar,{"float_int" : float_int})
-
-# converts an op-sequence into python
-def process(context,ops,x):
-  logger.debug("ops: " + ops)
-  logger.debug("x: " + str(x))
+# converts an op-sequence into python:
+def process_op_sequence(ops):
+  logger.debug("process_op_sequence: ops: " + ops)
   try:
     parsed_operators = op_grammar(ops).op_sequence()
-  except:
+    logger.debug("parsed_ops: " + str(parsed_operators))
+    processed_operators = [ process_single_op(op) for op in parsed_operators ]
+  except Exception as e:
+    logger.debug("process_op_sequence: exception reason: " + str(e))
     return None
-  logger.debug("parsed_ops: " + str(parsed_operators))
-  code = "x"
-  for op in reversed(parsed_operators):
-    if type(op) is tuple:                     # powered-op found.
-      the_op,power = op                       # unpack tuple.       
-      logger.debug("powered-op power: " + str(power))
-      tmp = process_single_op(the_op)
-      for k in range(power):
-        code += tmp
-    else:
-      code += process_single_op(op)
-  if code == "x":
-    return None
-  logger.debug("python: " + code)      
-  return eval(code)
+  return "".join(reversed(processed_operators))
 
+# this function will probably go away in future, now that process_op_sequence does most of the work.
+def process(context,ops,x):
+  logger.debug("process: ops: " + ops)
+  logger.debug("process: x: " + str(x))
+  python_code = "x" + process_op_sequence(ops)
+  if python_code == "x":
+    return None
+  logger.debug("in process: python: " + python_code)      
+  return eval(python_code)                                                    
+  
+    
 
 
 # 17/2/2014:
