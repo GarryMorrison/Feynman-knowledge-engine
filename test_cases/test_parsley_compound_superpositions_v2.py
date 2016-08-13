@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-8-11
-# Update: 12/8/2016
+# Update: 13/8/2016
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parsley_compound_superpositions_v2.py
@@ -171,11 +171,26 @@ op_like = (bracket_ops | normed_op_sequence )
 #            | op_sequence_fn2 | op_sequence_fn3 | op_sequence_fn4
 #            | bracket_ops_fn1 | bracket_ops_fn2 | bracket_ops_fn3 | bracket_ops_fn4 )   
 
-bracket1_object = S0 '(' object:k ')' S0 -> [k]
+bracket1_object = S0 '(' object:k ')' S0 -> k
+# not sure why we need the :k 's in this expression. 
+ket_like_object = S0 ( coeff_ket:k | bracket1_object:k ) S0 -> k 
+op_sequence_object = op_sequence:op_seq ket_like_object:sp -> process_op_sequence_sp(op_seq,sp)
+bracket_ops_object = bracket_ops:bracket_op ket_like_object:sp -> process_bracket_ops_sp(bracket_op,sp)
+bracket2_object = S0 '(' object:k1 ',' object:k2 ')' S0 -> [k1,k2]
+bracket3_object = S0 '(' object:k1 ',' object:k2 ',' object:k3 ')' S0 -> [k1,k2,k3]
+bracket4_object = S0 '(' object:k1 ',' object:k2 ',' object:k3 ',' object:k4 ')' S0 -> [k1,k2,k3,k4]
+
+op_sequence_object_fn2 = op_sequence:op_seq bracket2_object:sp_list -> process_op_sequence_fn2(op_seq,sp_list)
+op_sequence_object_fn3 = op_sequence:op_seq bracket3_object:sp_list -> process_op_sequence_fn3(op_seq,sp_list)
+op_sequence_object_fn4 = op_sequence:op_seq bracket4_object:sp_list -> process_op_sequence_fn4(op_seq,sp_list)
+
 object = S0 ( literal_superposition 
-            | bracket1_object 
-            | op_sequence_sp | bracket_ops_sp 
-            | op_sequence_fn2 | op_sequence_fn3 | op_sequence_fn4
+            | bracket1_object
+            | op_sequence_object
+            | bracket_ops_object 
+#            | op_sequence_sp | bracket_ops_sp 
+            | op_sequence_object_fn2 | op_sequence_object_fn3 | op_sequence_object_fn4
+#            | op_sequence_fn2 | op_sequence_fn3 | op_sequence_fn4
             | bracket_ops_fn1 | bracket_ops_fn2 | bracket_ops_fn3 | bracket_ops_fn4 )   
 
 #value = ws (string | number | object | array
@@ -652,7 +667,7 @@ def test_op_objects_literal_sp():
 # 2|x> + |y> + 3.27|z>
 def test_op_objects_literal_sp_bracket():
   x = op_grammar(" ( 2|x> + |y> +3.27|z>)").object()
-  assert str(x[0]) == "2|x> + |y> + 3.27|z>"
+  assert str(x) == "2|x> + |y> + 3.27|z>"
 
 def test_op_objects_ops_ket():
   x = op_grammar(" op3 op2 op1 2|x>").object()
@@ -662,9 +677,37 @@ def test_op_objects_ops_ket_bracket():
   x = op_grammar(" (op3 op2 op1 2|x>)").object()
   assert str(x) == "[[[('+', ['op3', 'op2', 'op1', 2])], '|x>']]"
   
+# [[('+', ['op3', 'op2', 'op1', 2])], '|x>']
 def test_op_objects_ops_ket_bracket():
   x = op_grammar(" ( (op3 op2 op1 2|x>))").object()
-  assert str(x) == "[[[[('+', ['op3', 'op2', 'op1', 2])], '|x>']]]"
+#  assert str(x) == "[[[[('+', ['op3', 'op2', 'op1', 2])], '|x>']]]"
+  assert str(x) == "[[('+', ['op3', 'op2', 'op1', 2])], '|x>']"
+
+# [[('+', ['op5', 'op4'])], "[[('+', ['op3', 'op2', 'op1', 2])], '|x>']"]
+def test_op_objects_ops_ops_ket_bracket():
+  x = op_grammar(" op5 op4 (op3 op2 op1 2|x>)").object()
+  assert str(x) == "[[('+', ['op5', 'op4'])], \"[[('+', ['op3', 'op2', 'op1', 2])], '|x>']\"]"
+
+# [[('+', ['op5', 'op4'])], "[[('+', ['op3', 'op2', 'op1', 2])], '|x>']"]
+def test_op_objects_bracket_ops_ops_ket_bracket():
+  x = op_grammar(" (op5 op4) (op3 op2 op1 2|x>)").object()
+  assert str(x) == "[[('+', ['op5', 'op4'])], \"[[('+', ['op3', 'op2', 'op1', 2])], '|x>']\"]"
+
+# [[('+', ['op5', 'op4'])], 'fn-2', ["[[('+', ['op2', 'op1', 2])], '|x>']", "[[('+', ['fish'])], '|soup>']"]]
+def test_op_objects_ops_fn2_ops_ket_bracket():
+  x = op_grammar(" op5 op4 fn-2 (op2 op1 2|x>, fish |soup>)").object()
+  assert str(x) == "[[('+', ['op5', 'op4'])], 'fn-2', [\"[[('+', ['op2', 'op1', 2])], '|x>']\", \"[[('+', ['fish'])], '|soup>']\"]]"
+
+# [[('+', ['op5', 'op4'])], 'fn-2', ["[[('+', ['op2', 'op1'])], '2|x> + |y>']", "[[('+', ['fish'])], '|soup>']"]]
+def test_op_objects_ops_fn2_ops_literal_sp_bracket():
+  x = op_grammar(" op5 op4 fn-2 (op2 op1 (2|x> +|y>), fish |soup>)").object()
+  assert str(x) == "[[('+', ['op5', 'op4'])], 'fn-2', [\"[[('+', ['op2', 'op1'])], '2|x> + |y>']\", \"[[('+', ['fish'])], '|soup>']\"]]"
+  
+# [[('+', ['op8', 'op7'])], '[[(\'+\', [\'op5\', \'op4\'])], \'fn-2\', ["[[(\'+\', [\'op2\', \'op1\'])], \'2|x> + |y>\']", "[[(\'+\', [\'fish\'])], \'|soup>\']"]]']
+def test_op_objects_ops_ops_fn2_ops_literal_sp_bracket():
+  x = op_grammar(" op8 op7 (op5 op4 fn-2 (op2 op1 (2|x> +|y>), fish |soup>))").object()
+  assert str(x) == "[[('+', ['op8', 'op7'])], '[[(\'+\', [\'op5\', \'op4\'])], \'fn-2\', [\"[[(\'+\', [\'op2\', \'op1\'])], \'2|x> + |y>\']\", \"[[(\'+\', [\'fish\'])], \'|soup>\']\"]]']"
+  
 
 
 
