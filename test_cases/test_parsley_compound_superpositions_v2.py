@@ -172,26 +172,45 @@ op_like = (bracket_ops | normed_op_sequence )
 #            | bracket_ops_fn1 | bracket_ops_fn2 | bracket_ops_fn3 | bracket_ops_fn4 )   
 
 bracket1_object = S0 '(' object:k ')' S0 -> k
-# not sure why we need the :k 's in this expression. 
-ket_like_object = S0 ( coeff_ket:k | bracket1_object:k ) S0 -> k 
+# not sure why we need the :k 's in this expression:
+#ket_like_object = S0 ( coeff_ket:k | bracket1_object:k ) S0 -> k
+ket_like_object = S0 ( coeff_ket:k | bracket1_object:k | op_sequence_object:k | bracket_ops_object:k ) S0 -> k 
 op_sequence_object = op_sequence:op_seq ket_like_object:sp -> process_op_sequence_sp(op_seq,sp)
 bracket_ops_object = bracket_ops:bracket_op ket_like_object:sp -> process_bracket_ops_sp(bracket_op,sp)
 bracket2_object = S0 '(' object:k1 ',' object:k2 ')' S0 -> [k1,k2]
 bracket3_object = S0 '(' object:k1 ',' object:k2 ',' object:k3 ')' S0 -> [k1,k2,k3]
 bracket4_object = S0 '(' object:k1 ',' object:k2 ',' object:k3 ',' object:k4 ')' S0 -> [k1,k2,k3,k4]
 
-op_sequence_object_fn2 = op_sequence:op_seq bracket2_object:sp_list -> process_op_sequence_fn2(op_seq,sp_list)
-op_sequence_object_fn3 = op_sequence:op_seq bracket3_object:sp_list -> process_op_sequence_fn3(op_seq,sp_list)
-op_sequence_object_fn4 = op_sequence:op_seq bracket4_object:sp_list -> process_op_sequence_fn4(op_seq,sp_list)
+op_sequence_object_fn2 = op_sequence:op_seq bracketk_object:sp_list -> process_op_sequence_fnk(op_seq,sp_list)
+op_sequence_object_fn3 = op_sequence:op_seq bracketk_object:sp_list -> process_op_sequence_fnk(op_seq,sp_list)
+op_sequence_object_fn4 = op_sequence:op_seq bracketk_object:sp_list -> process_op_sequence_fnk(op_seq,sp_list)
+
+bracket_ops_object_fn1 = bracket_ops:bracket_op simple_op:fnk bracketk_object:sp_list -> process_bracket_ops_fnk(bracket_op,fnk,sp_list) 
+bracket_ops_object_fn2 = bracket_ops:bracket_op simple_op:fnk bracketk_object:sp_list -> process_bracket_ops_fnk(bracket_op,fnk,sp_list)
+bracket_ops_object_fn3 = bracket_ops:bracket_op simple_op:fnk bracketk_object:sp_list -> process_bracket_ops_fnk(bracket_op,fnk,sp_list)
+bracket_ops_object_fn4 = bracket_ops:bracket_op simple_op:fnk bracketk_object:sp_list -> process_bracket_ops_fnk(bracket_op,fnk,sp_list)
+
+op_sequence_object_fnk = op_sequence:op_seq bracketk_object:sp_list -> process_op_sequence_fnk(op_seq,sp_list)
+bracket_ops_object_fnk = bracket_ops:bracket_op simple_op:fnk bracketk_object:sp_list -> process_bracket_ops_fnk(bracket_op,fnk,sp_list)
+
+#op_sequence = (S0 op:first (S1 op)*:rest S0 -> [first] + rest)
+#              | S0 -> []
+# not sure where the S0 are needed
+bracketk_object = S0 '(' object:first ( S0 ',' S0 object)*:rest ')' S0 -> [first] + rest
 
 object = S0 ( literal_superposition 
             | bracket1_object
             | op_sequence_object
             | bracket_ops_object 
 #            | op_sequence_sp | bracket_ops_sp 
-            | op_sequence_object_fn2 | op_sequence_object_fn3 | op_sequence_object_fn4
+#            | bracket_ops_object_fn1 | bracket_ops_object_fn2 | bracket_ops_object_fn3 | bracket_ops_object_fn4
+            | bracket_ops_object_fnk 
+            | op_sequence_object_fnk )
+#            | op_sequence_object_fn2 | op_sequence_object_fn3 | op_sequence_object_fn4 ) 
+#            | bracket1_object )
 #            | op_sequence_fn2 | op_sequence_fn3 | op_sequence_fn4
-            | bracket_ops_fn1 | bracket_ops_fn2 | bracket_ops_fn3 | bracket_ops_fn4 )   
+#            | bracket_ops_fn1 | bracket_ops_fn2 | bracket_ops_fn3 | bracket_ops_fn4 )
+#            | bracket_ops_object_fn1 | bracket_ops_object_fn2 | bracket_ops_object_fn3 | bracket_ops_object_fn4 )   
 
 #value = ws (string | number | object | array
 #           | 'true'  -> True
@@ -261,14 +280,23 @@ def process_bracket_ops_sp(bracket_op,sp):
 #  print("sp:",str(sp))
   return [bracket_op,str(sp)]
 
-def process_op_sequence_fn2(op_seq,sp_list):             # need to test for S0 operator sequence
-  return [[('+',op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1])]]
+def process_op_sequence_fn2(op_seq,sp_list):             # need to test for fn-1 operator sequence
+#  return [[('+',op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1])]]
+  return [[('+',op_seq[:-1])], op_seq[-1],[str(x) for x in sp_list]]
   
 def process_op_sequence_fn3(op_seq,sp_list):
-  return [[('+', op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1]),str(sp_list[2])]]
+#  return [[('+', op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1]),str(sp_list[2])]]
+  return [[('+',op_seq[:-1])], op_seq[-1],[str(x) for x in sp_list]]
 
 def process_op_sequence_fn4(op_seq,sp_list):
-  return [[('+', op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
+#  return [[('+', op_seq[:-1])], op_seq[-1],[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
+  return [[('+',op_seq[:-1])], op_seq[-1],[str(x) for x in sp_list]]
+
+# nice start on generalizing to the general case, rather than specific k in {1,2,3,4}.
+# of course, still need appropriate whitelist_tables though.
+# need to handle that later.
+def process_op_sequence_fnk(op_seq,sp_list):             # need to test for fn-1 operator sequence
+  return [[('+',op_seq[:-1])], op_seq[-1],[str(x) for x in sp_list]]
 
 
 def process_bracket_ops_fn1(bracket_op,fn1,sp_list):
@@ -282,6 +310,9 @@ def process_bracket_ops_fn3(bracket_op,fn3,sp_list):
 
 def process_bracket_ops_fn4(bracket_op,fn4,sp_list):
   return [bracket_op,fn4,[str(sp_list[0]),str(sp_list[1]),str(sp_list[2]),str(sp_list[3])]]
+
+def process_bracket_ops_fnk(bracket_op,fnk,sp_list):
+  return [bracket_op,fnk,[str(x) for x in sp_list]]
 
 
 def compile_op_sequence(op_seq):
@@ -335,9 +366,12 @@ parse_dictionary = {
   "process_op_sequence_fn2" : process_op_sequence_fn2,
   "process_op_sequence_fn3" : process_op_sequence_fn3,
   "process_op_sequence_fn4" : process_op_sequence_fn4,
+    "process_op_sequence_fnk" : process_op_sequence_fnk,
+  
   "process_bracket_ops_fn2" : process_bracket_ops_fn2,
   "process_bracket_ops_fn3" : process_bracket_ops_fn3,
   "process_bracket_ops_fn4" : process_bracket_ops_fn4,
+  "process_bracket_ops_fnk" : process_bracket_ops_fnk,  
 
   "compile_op_sequence"     : compile_op_sequence,
   "compile_bracket_ops"     : compile_bracket_ops,
@@ -751,6 +785,17 @@ def test_op_objects_bracket_ops_fn_3():
 def test_op_objects_bracket_ops_fn_4():
   x = op_grammar(" (op3 op2 op1) fn-4(|a>,|b> ,|c>,|d> )").object()
   assert str(x) == "[[('+', ['op3', 'op2', 'op1'])], 'fn-4', ['|a>', '|b>', '|c>', '|d>']]"
+
+#
+def test_op_objects_sequences_v1():
+  x = op_grammar(" op2 op1 (op6 + op7) op8 op9 |x> ").object()
+  assert str(x) == ""
+
+
+# op2 op1 (1 + op3 + op5^2) (op6 + op7) op8 op9 |x>
+def test_op_objects_sequences_v2():
+  x = op_grammar(" op2 op1 (1 + op3 + op5^2) (op6 + op7) op8 op9 |x> ").object()
+  assert str(x) == ""
 
 
 # testing object_sum rule:
