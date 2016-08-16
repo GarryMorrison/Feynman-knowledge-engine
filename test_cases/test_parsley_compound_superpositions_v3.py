@@ -63,7 +63,7 @@ valid_op_string = op_start_char:first <op_char*>:rest -> first + rest
 #simple_op = valid_op_string:s ?(not parameter_function(s)) -> s
 # for now:
 simple_op = valid_op_string:s -> s
-parameter_function_name = valid_op_string:s ?(parameter_function(s)) -> s
+#parameter_function_name = valid_op_string:s ?(parameter_function(s)) -> s
 parameters = (simple_float | simple_op | '\"\"' | '*'):p -> str(p)
 
 # more elegant, process at the end version:
@@ -148,7 +148,6 @@ def ket_substitute(label,value,self_object=None):
       return ket(self_object,value)
     if type(self_object) == ket:                            # check for superposition later.
       return self_object.multiply(value)
-    return ket(label,value) 
   return ket(label,value)
   
 
@@ -185,10 +184,11 @@ def sp_calculate(start,pairs):                      # I don't think we want merg
 def process_op_sequence_sp(op_seq,sp):              # needs to handle the 1-param function case too: "op-sequence foo-1 (ECS)"
 #  print("op_seq:",str(op_seq))
 #  print("sp:",str(sp))
-#  return [op_seq,str(sp)]                                      
-  if op_seq[-1] in whitelist_table_1:
+#  return [op_seq,str(sp)]
+  fn1 = op_seq[-1]                                      
+  if fn1 in whitelist_table_1:
 #    return [[('+',op_seq[:-1])], op_seq[-1],[str(sp)]]          # needs to have the same shape as process_bracket_ops_fn1
-    return [[('+',op_seq[:-1])], whitelist_table_1[op_seq[-1]], [str(sp)]]          # needs to have the same shape as process_bracket_ops_fn1
+    return [[('+',op_seq[:-1])], whitelist_table_1[fn1], [str(sp)]]          # needs to have the same shape as process_bracket_ops_fn1
   return [[('+', op_seq)],str(sp)]                              # needs to have the same shape as process_bracket_ops_sp     
 
 def process_bracket_ops_sp(bracket_op,sp):
@@ -268,51 +268,75 @@ def process_param4_fn(fn_name,sp):
     return "%s(%s, %s, %s, %s)" % (whitelist_table_4[fn_name],sp[0],sp[1],sp[2],sp[3])
   return None 
 
-
+self_object = None
+self_object = ket("mice",7)
 parse_dictionary = {
   "float_int"               : float_int,
-  "parameter_function"      : parameter_function, 
-  "ket"                     : ket,
+#  "parameter_function"      : parameter_function, 
+#  "ket"                     : ket,
   "ket_substitute"          : ket_substitute,
 #  "self_object"             : "fish-soup",
   "self_object"             : ket("fish-soup",3),
+#  "self_object"              : self_object,
   
   "ket_calculate"           : ket_calculate,
   "sp_calculate"            : sp_calculate,
   "process_op_sequence_sp"  : process_op_sequence_sp,
   "process_bracket_ops_sp"  : process_bracket_ops_sp,
-  "process_op_sequence_fn2" : process_op_sequence_fn2,
-  "process_op_sequence_fn3" : process_op_sequence_fn3,
-  "process_op_sequence_fn4" : process_op_sequence_fn4,
-    "process_op_sequence_fnk" : process_op_sequence_fnk,
+#  "process_op_sequence_fn2" : process_op_sequence_fn2,
+#  "process_op_sequence_fn3" : process_op_sequence_fn3,
+#  "process_op_sequence_fn4" : process_op_sequence_fn4,
+  "process_op_sequence_fnk" : process_op_sequence_fnk,
   
-  "process_bracket_ops_fn2" : process_bracket_ops_fn2,
-  "process_bracket_ops_fn3" : process_bracket_ops_fn3,
-  "process_bracket_ops_fn4" : process_bracket_ops_fn4,
+#  "process_bracket_ops_fn2" : process_bracket_ops_fn2,
+#  "process_bracket_ops_fn3" : process_bracket_ops_fn3,
+#  "process_bracket_ops_fn4" : process_bracket_ops_fn4,
   "process_bracket_ops_fnk" : process_bracket_ops_fnk,  
 
   "compile_op_sequence"     : compile_op_sequence,
   "compile_bracket_ops"     : compile_bracket_ops,
-  "compile_object_sum"      : compile_object_sum,
+#  "compile_object_sum"      : compile_object_sum,
   
-  "process_param1_fn"       : process_param1_fn,  
-  "process_param2_fn"       : process_param2_fn,  
-  "process_param3_fn"       : process_param3_fn,  
-  "process_param4_fn"       : process_param4_fn,  
+#  "process_param1_fn"       : process_param1_fn,  
+#  "process_param2_fn"       : process_param2_fn,  
+#  "process_param3_fn"       : process_param3_fn,  
+#  "process_param4_fn"       : process_param4_fn,  
 
 }
-  
+
+    
+# wow! slow. 755 ms per makeGrammar.
+# and we haven't even finished yet. 
+start_time = time.time()      
 op_grammar = makeGrammar(our_full_grammar,parse_dictionary)
+#op_grammar = makeGrammar(our_full_grammar,parse_dictionary)
+end_time = time.time()
+delta_time = end_time - start_time
+print("\n  Time taken:",display_time(delta_time))
+#sys.exit(0)
 
 def test_grammar_literal_sp():
   x = op_grammar("3|x> + |y> + 2.7|z>").literal_superposition()
   assert str(x) == "3|x> + |y> + 2.7|z>"
 
-def test_grammar_literal_sp_substitute():                   # woot! We have self_object working.
+def test_grammar_literal_sp_substitute():                   # woot! We have self_object partially working.
   x = op_grammar("3|x> + |y> + 2.7|_self>").literal_superposition()
   assert str(x) == "3|x> + |y> + 8.1|fish-soup>"
 
+def test_grammar_literal_sp_substitute_rabbits():                   
+  self_object = ket("rabbits")
+  x = op_grammar("3|x> + |y> + 2.7|_self>").literal_superposition()
+  assert str(x) == ""
 
+# run-time for the two parse rules: 2 ms
+# I wonder what run-time for .object()? 
+start_time = time.time()      
+test_grammar_literal_sp()
+test_grammar_literal_sp_substitute()
+end_time = time.time()
+delta_time = end_time - start_time
+print("\n  Time taken v2:",display_time(delta_time))
+sys.exit(0)
 
 # ('some-frog', 37)
 def test_op_powered_op():
