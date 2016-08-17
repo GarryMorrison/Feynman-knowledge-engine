@@ -68,8 +68,10 @@ class reference(object):
   def __init__(self,value=None):
     if type(value) == str:                                # cast value to ket/sp type
       self.object = ket(value)
-    if type(value) in [ket,superposition]:
+    elif type(value) in [ket,superposition]:
       self.object = value
+    else:
+      self.object = None
 
   def get(self):
     return self.object
@@ -85,8 +87,6 @@ def new_ket_substitute(label,value,self_object):
   if label == "_self":
     if self_object.get() is not None:
       return self_object.get().multiply(value)
-#    if self_object.value is not None:
-#      return self_object.value.multiply(value)
   return ket(label,value)
 
 def ket_calculate(start,pairs):
@@ -107,8 +107,6 @@ def ket_calculate(start,pairs):
 # initialize the self_object:
 self_object = reference()
 
-# nope. Fails
-#self_object.value = None
 
 # define the bindings dictionary:
 bindings_dictionary = {
@@ -160,13 +158,11 @@ def test_grammar_literal_sp_substitute_compile():
 
 def test_grammar_coeff_ket_set_value():
   self_object.set("fish")
-#  self_object.value = ket("fish")
   x = the_grammar("2.7|_self>").coeff_ket_v2()
   assert str(x) == "2.7|fish>"
 
 def test_grammar_literal_sp_substitute_set_value():
   self_object.set(ket("rats",3))
-#  self_object.value = ket("rats",3)
   x = the_grammar("3|x> + |y> + 2.7|_self> -|d>").literal_superposition_v2()
   assert str(x) == "3|x> + |y> + 8.1|rats> + -1|d>"
 
