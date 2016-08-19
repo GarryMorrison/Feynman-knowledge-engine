@@ -3,12 +3,11 @@
 #######################################################################
 # Now I understand parsing a little better, still not great, but hey.
 # let's try again for extract-compound-superposition.
-# getting closer. I have a parse tree that looks roughly right now.
-# Though I don't yet handle foo(ECS,ECS) type rules.    
+# let's try to compile our parse tree's from yesterday 
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
-# Date: 2016-8-18
+# Date: 2016-8-19
 # Update: 
 # Copyright: GPLv3
 #
@@ -104,7 +103,7 @@ compiled_bracket_ops = bracket_ops:bracket_op -> compile_bracket_ops(bracket_op)
 
 rhs_ket_like = S0 coeff_ket:k S0 -> k
 op_like = bracket_ops | normed_op_sequence
-op_like_cs = S0 ( bracket_ops:ops | normed_op_sequence:ops ) S0 compound_superposition:sp -> (ops,sp)
+op_like_cs = S0 ( bracket_ops:ops | op_sequence:ops ) S0 compound_superposition:sp -> (ops,sp)
 #op_like_cs = S0 ( bracket_ops:ops | normed_op_sequence:ops ) S0 compound_superposition:sp -> compile_bracket_ops_sp(ops,sp)
 
 add_cs = S0 '+' S0 compound_superposition:k -> ('sp +',k)
@@ -120,9 +119,9 @@ cs_ops = (add_cs | sub_cs)
 #compound_superposition = S0 ( coeff_ket:first | '(' compound_superposition:first ')' | op_like_cs:first ) S0 cs_ops*:rest S0 -> sp_calculate(first,rest)
 #compound_superposition  :rest = S0 ( bracket_ops | normed_op_sequence ):ops S0 ( coeff_ket:first | '(' compound_superposition:first ')' | op_like_cs:first | compound_superposition:first cs_ops*:rest ) S0 -> sp_calculate(ops,first,rest)
 #compound_superposition = S0 ( bracket_ops | normed_op_sequence ):ops S0 ( coeff_ket:first | '(' compound_superposition:first ')' | op_like_cs:first )  S0 cs_ops*:rest S0 -> sp_calculate(ops,first,rest)
-compound_superposition = S0 ( bracket_ops | op_sequence ):ops S0 ( naked_ket:first | '(' compound_superposition:first ')' | op_like_cs:first )  S0 (cs_ops+:rest S0 -> pprint([ops,(first)] + rest)
-                                                                                                                                                     | S0 -> pprint([ops,(first)]) )
-                                                                                                                                                     
+compound_superposition = S0 ( bracket_ops | op_sequence ):ops S0 ( naked_ket:first | '(' compound_superposition:first ')' | op_like_cs:first )  S0 (cs_ops+:rest S0 -> [ops,(first)] + rest
+                                                                                                                                                     | S0 -> [ops,(first)] )
+compiled_compound_superposition = compound_superposition:sp -> compile_compound_superposition(sp)                                                                                                                                                     
 
 #op_like_cs = S0 ( bracket_ops:ops | normed_op_sequence:ops ) S0 compound_superposition:sp -> compile_bracket_ops_sp(ops,sp)
 
@@ -387,6 +386,62 @@ def my_pprint(s):
   pprint(s)
   return s
 
+# currently need this since op_sequence and bracket_ops have different "shapes" 
+def compile_op_sp(ops,sp): 
+  foo = compile_op_sequence_sp                        # default to op_sequence type ops, not bracket_ops
+  if len(ops) > 0:                                # tidy later!
+    if type(ops[0]) == tuple:                     # bracket_ops found
+      if ops[0][0] in ['+', '-']:
+        print("found bracket_ops")
+        foo = compile_bracket_ops_sp
+  return foo(ops,sp)        
+
+# compile sp parse tree
+def compile_compound_superposition(cs,sign=None):           # tidy this function once it is working.
+  ops, object, *rest = cs
+  print("cs: ",end='')
+  pprint(cs)
+  print("ops: ",end='')
+  pprint(ops)
+  print("object: ",end='')
+  pprint(object)
+  print("sign:",sign)
+  print("rest: ",end='')
+  pprint(rest)
+
+  if sign == "sp -":
+    sign = -1
+  else:
+   sign = 1
+
+  if type(object) == str:                         # ket found
+    the_sp = ket(object)
+  if type(object) == list:
+    the_sp = compile_compound_superposition(object)
+  if type(object) == tuple:
+    tuple_ops, tuple_rest = object
+    print("tuple_ops: ",end='')
+    pprint(tuple_ops)
+    print("tuple_rest: ",end='')
+    pprint(tuple_rest)
+    tuple_sp = compile_compound_superposition(tuple_rest)
+    print("tuple_sp:",str(tuple_sp))
+    the_sp = compile_op_sp(tuple_ops,tuple_sp)
+    
+  result = compile_op_sp(ops,the_sp).multiply(sign)
+  print("result:",str(result))
+  if len(rest) == 0:
+    return result
+  if type(rest) == list:
+    sign,tail = rest[0]
+#    print("sign:",sign)
+    #pprint(sign)
+    print("tail: ",end='')
+    pprint(tail)
+    result += compile_compound_superposition(tail,sign)
+    return result
+  
+
 # initialize the self_object
 self_object = reference()
 
@@ -414,7 +469,8 @@ bindings_dictionary = {
   "compile_bracket_ops_fnk" : compile_bracket_ops_fnk,
   "compile_op_sequence_fnk" : compile_op_sequence_fnk,
   
-  "pprint"                  : my_pprint,
+#  "pprint"                  : my_pprint,
+  "compile_compound_superposition" : compile_compound_superposition,
 }
 
     
@@ -432,86 +488,89 @@ def test_grammar_rhs_ket_like():
   assert str(x) == "2.7|z>"
 
 def test_grammar_compound_superposition():
-  x = op_grammar(" 2.7|z> ").compound_superposition()
+  x = op_grammar(" 2.7|z> ").compiled_compound_superposition()
   assert str(x) == "2.7|z>"
 
 def test_grammar_compound_superposition_sp():
-  x = op_grammar(" |x> - 3|y> + 2.7|z> ").compound_superposition()
+  x = op_grammar(" |x> - 3|y> + 2.7|z> ").compiled_compound_superposition()
   assert str(x) == ""
 
 def test_grammar_compound_superposition_sp_big():
-  x = op_grammar(" |x> - 3|y> + 2.7|z> - |fish> - |cats> + |dogs> ").compound_superposition()
+  x = op_grammar(" |x> - 3|y> + 2.7|z> - |fish> - |cats> + |dogs> ").compiled_compound_superposition()
   assert str(x) == ""
 
 def test_grammar_compound_superposition_bracket():
-  x = op_grammar(" ( 2.7|z> ) ").compound_superposition()
-  assert str(x) == "2.7|z>"
-  
+  x = op_grammar(" ( 2.7|z> ) ").compiled_compound_superposition()
+#  assert str(x) == "2.7|z>"
+  assert str(x) == ""
+    
 def test_grammar_compound_superposition_bracket_sp():
-  x = op_grammar(" ( |x> + 0.5|y> + 2.7|z> ) ").compound_superposition()
-  assert str(x) == "|x> + 0.5|y> + 2.7|z>"
-
+  x = op_grammar(" ( |x> + 0.5|y> + 2.7|z> ) ").compiled_compound_superposition()
+#  assert str(x) == "|x> + 0.5|y> + 2.7|z>"
+  assert str(x) == ""
+  
 def test_grammar_compound_superposition_bracket_sp_big():
-  x = op_grammar(" ( |x> + 0.5|y> + 2.7|z> ) + |fish> + (|cats> + |dogs>) + |mice> + |rats> ").compound_superposition()
-  assert str(x) == "|x> + 0.5|y> + 2.7|z> + |fish> + |cats> + |dogs> + |mice> + |rats>"
+  x = op_grammar(" ( |x> + 0.5|y> + 2.7|z> ) + |fish> + (|cats> + |dogs>) + |mice> + |rats> ").compiled_compound_superposition()
+#  assert str(x) == "|x> + 0.5|y> + 2.7|z> + |fish> + |cats> + |dogs> + |mice> + |rats>"
+  assert str(x) == ""
 
 def test_grammar_compound_superposition_bracket_sp_big_brackets():
-  x = op_grammar(" ( |x> + 0.5|y> + 2.7|z> ) + ((|fish> + (|cats> + |dogs>)) + |mice>) + |rats> ").compound_superposition()
-  assert str(x) == "|x> + 0.5|y> + 2.7|z> + |fish> + |cats> + |dogs> + |mice> + |rats>"
-
-# op_like_cs
-def test_grammar_op_like_cs():
-  x = op_grammar(" op3 op2 op1 2.7|z>  ").op_like_cs()
-  assert str(x) == "2.7|op3: op2: op1: z>"
-
-def test_grammar_op_like_cs_bracket():
-  x = op_grammar(" (op3 op2 op1) |x>  ").op_like_cs()
-  assert str(x) == "|op3: op2: op1: x>"
+  x = op_grammar(" ( |x> + 0.5|y> + 2.7|z> ) + ((|fish> + (|cats> + |dogs>)) + |mice>) + |rats> ").compiled_compound_superposition()
+#  assert str(x) == "|x> + 0.5|y> + 2.7|z> + |fish> + |cats> + |dogs> + |mice> + |rats>"
+  assert str(x) == ""
 
 def test_grammar_compound_superpostion_op_seq():
-  x = op_grammar(" op3 op2 op1 2.7|z>  ").compound_superposition()
-  assert str(x) == "2.7|op3: op2: op1: z>"
+  x = op_grammar(" op3 op2 op1 2.7|z>  ").compiled_compound_superposition()
+#  assert str(x) == "2.7|op3: op2: op1: z>"
+  assert str(x) == ""
 
 def test_grammar_compound_superposition_bracket_ops():
-  x = op_grammar(" (op3 op2 op1) |x>  ").compound_superposition()
-  assert str(x) == "|op3: op2: op1: x>"
+  x = op_grammar(" (op3 op2 op1) |x>  ").compiled_compound_superposition()
+#  assert str(x) == "|op3: op2: op1: x>"
+  assert str(x) == ""
 
 def test_grammar_compound_superposition_bracket_ops_seq():
-  x = op_grammar(" (op5 op4 op3) op2 op1 |x>  ").compound_superposition()
-  assert str(x) == "|op5: op4: op3: op2: op1: x>"
+  x = op_grammar(" (op5 op4 op3) op2 op1 |x>  ").compiled_compound_superposition()
+#  assert str(x) == "|op5: op4: op3: op2: op1: x>"
+  assert str(x) == ""
 
 def test_grammar_compound_superposition_op_bracket():
-  x = op_grammar(" op2 op1 (3|x> + |y> + 0.2|z>) ").compound_superposition()
-  assert str(x) == "3|op2: op1: x> + |op2: op1: y> + 0.2|op2: op1: z>"
+  x = op_grammar(" op2 op1 (3|x> + |y> + 0.2|z>) ").compiled_compound_superposition()
+#  assert str(x) == "3|op2: op1: x> + |op2: op1: y> + 0.2|op2: op1: z>"
+  assert str(x) == ""
 
 def test_grammar_compound_superposition_brackets_op_bracket():
-  x = op_grammar(" (1 + op4 - op3) op2 op1 (3|x> + 0.2|z>) ").compound_superposition()
-  assert str(x) == "3|op2: op1: x> + 0.2|op2: op1: z> + 3|op4: op2: op1: x> + 0.2|op4: op2: op1: z> + -3|op3: op2: op1: x> + -0.2|op3: op2: op1: z>"  
+  x = op_grammar(" (1 + op4 - op3) op2 op1 (3|x> + 0.2|z>) ").compiled_compound_superposition()
+#  assert str(x) == "3|op2: op1: x> + 0.2|op2: op1: z> + 3|op4: op2: op1: x> + 0.2|op4: op2: op1: z> + -3|op3: op2: op1: x> + -0.2|op3: op2: op1: z>"
+  assert str(x) == ""  
 
 def test_grammar_compound_superposition_brackets_op_bracket_v2():
-  x = op_grammar(" op5 (1 - op4 ) op2 op1 (3|x> + 0.2|z>) ").compound_superposition()
-  assert str(x) == "3|op5: op2: op1: x> + 0.2|op5: op2: op1: z> + -3|op5: op4: op2: op1: x> + -0.2|op5: op4: op2: op1: z>"
+  x = op_grammar(" op5 (1 - op4 ) op2 op1 (3|x> + 0.2|z>) ").compiled_compound_superposition()
+#  assert str(x) == "3|op5: op2: op1: x> + 0.2|op5: op2: op1: z> + -3|op5: op4: op2: op1: x> + -0.2|op5: op4: op2: op1: z>"
+  assert str(x) == ""
 
 def test_grammar_compound_superpostion_empty_bracket():
-  x = op_grammar(" () (3|x> + |y>) ").compound_superposition()
-  assert str(x) == "3|x> + |y>"
+  x = op_grammar(" () (3|x> + |y>) ").compiled_compound_superposition()
+#  assert str(x) == "3|x> + |y>"
+  assert str(x) == ""
 
 def test_grammar_compound_superposition_op_sentence():
-  x = op_grammar(" 3^2 common[friends] split |Fred Sam> ").compound_superposition() 
-  assert str(x) == "9|Jack> + 9|Emma> + 9|Charlie>"  
+  x = op_grammar(" 3^2 common[friends] split |Fred Sam> ").compiled_compound_superposition() 
+#  assert str(x) == "9|Jack> + 9|Emma> + 9|Charlie>"
+  assert str(x) == ""  
 
 # Bah! This is being parsed as: "3^2 common[friends] ( split |Fred Sam> + |mice> + (|cats> + |dogs>)) "
 def test_grammar_compound_superposition_op_sentence_sum():
-  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) + split |horse pony mare> ").compound_superposition()
-#  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) ").compound_superposition() 
+  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) + split |horse pony mare> ").compiled_compound_superposition()
+#  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) ").compiled_compound_superposition() 
   assert str(x) == ""  
 
 def test_grammar_compound_superposition_op_sentence_sum_v2():
-  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) + 5^3 split |horse pony mare> ").compound_superposition()
+  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) + 5^3 split |horse pony mare> ").compiled_compound_superposition()
   assert str(x) == ""
 
 def test_grammar_compound_superposition_op_sentence_sum_v3():
-  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> - (|cats> + |dogs>) + 5^3 split |horse pony mare> ").compound_superposition()
+  x = op_grammar(" 3^2 common[friends] split |Fred Sam> + |mice> - (|cats> + |dogs>) + 5^3 split |horse pony mare> ").compiled_compound_superposition()
   assert str(x) == ""
         
 #===================================================================================================================
