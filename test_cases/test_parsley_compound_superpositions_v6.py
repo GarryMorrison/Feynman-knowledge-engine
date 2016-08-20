@@ -9,7 +9,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-8-19
-# Update: 
+# Update: 20/8/2016
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parsley_compound_superpositions_v3.py
@@ -123,8 +123,8 @@ cs_ops = (add_cs | sub_cs)
 #compound_superposition = S0 ( bracket_ops | normed_op_sequence ):ops S0 ( coeff_ket:first | '(' compound_superposition:first ')' | op_like_cs:first )  S0 cs_ops*:rest S0 -> sp_calculate(ops,first,rest)
 #compound_superposition = S0 ( bracket_ops | op_sequence ):ops S0 ( naked_ket:first | '(' compound_superposition:first ')' | op_like_cs:first )  S0 (cs_ops+:rest S0 -> [ops,(first)] + rest
 #                                                                                                                                                     | S0 -> [ops,(first)] )
-compound_superposition = S0 ( bracket_ops | op_sequence ):ops S0 ( naked_ket:first | bracketk_cs:first | op_like_cs:first )  S0 (cs_ops+:rest S0 -> [ops,(first)] + rest
-                                                                                                                                                     | S0 -> [ops,(first)] )
+compound_superposition = S0 ( bracket_ops | op_sequence ):ops S0 ( naked_ket:first | bracketk_cs:first | op_like_cs:first )  S0 (cs_ops+:rest S0 -> [ops,first] + rest
+                                                                                                                                                     | S0 -> [ops,first] )
 
 compiled_compound_superposition = compound_superposition:sp -> compile_compound_superposition(sp)                                                                                                                                                     
 
@@ -295,16 +295,16 @@ def compile_superposition(pairs,self_object):
   return result
 
 
-def compile_op_sequence_sp(op_seq,sp):
 #    return [[('+',op_seq[:-1])], whitelist_table_1[fn1], [str(sp)]]
+def compile_op_sequence_sp(op_seq,sp):
   if len(op_seq) == 0:
     return sp
-  fn1 = op_seq[-1]                                      
-  if fn1 in whitelist_table_1:
-    python_code = "%s(sp)" % whitelist_table_1[fn1]
-    print("python code:", python_code)
-    first_eval = eval(python_code)
-    return compile_op_sequence_sp(op_seq[:-1],first_eval)                    # what happens if the last element of op_seq[:-1] is also in whitelist_table_1?
+#  fn1 = op_seq[-1]                                      
+#  if fn1 in whitelist_table_1:
+#    python_code = "%s(sp)" % whitelist_table_1[fn1]
+#    print("python code:", python_code)
+#    first_eval = eval(python_code)
+#    return compile_op_sequence_sp(op_seq[:-1],first_eval)                    # what happens if the last element of op_seq[:-1] is also in whitelist_table_1?
   python_code = "sp" + compile_op_sequence(op_seq)
   print("python code:", python_code)
   return eval(python_code)
@@ -413,7 +413,7 @@ def compile_op_sp(ops,sp):
   return foo(ops,sp)        
 
 # compile sp parse tree
-def compile_compound_superposition(cs,sign=None):           # tidy this function once it is working.
+def old_compile_compound_superposition(cs,sign=None):           # tidy this function once it is working.
   ops, object, *rest = cs
   print("cs: ",end='')
   pprint(cs)
@@ -434,8 +434,8 @@ def compile_compound_superposition(cs,sign=None):           # tidy this function
     the_sp = ket(object)
   elif type(object) == list:                        # I think this is where we have to handle bracketk_cs. Yup, looks like it.
     if len(object) == 1:                            # Hrmm.... currently "sp |x> == sp (|x>)". I don't think we want this. 
-      the_sp = compile_compound_superposition(object[0])
-    else:
+      the_sp = compile_compound_superposition(object[0])  # the problem is, given "fn1 (|x> + |y>)" if fn1 in whitelist_table_1 then use it, otherwise return the sp and treat fn1 as an operator.
+    else:                                                 # but for all other cases, if "fnk (ECS,ECS,...,ECS)" and fnk is not in whitelist_table_k, then return the empty ket.
       print("bracketk_cs found")                  
       if ops_type(ops) != "opsequence" or len(ops) == 0:        # "bracket_ops bracketk_cs" makes no sense. eg "(op3 + op2 op1) (|x>, |y>, |z>)", so return |>
         the_sp = ket("")                                        # |> or 0|> ??
@@ -470,7 +470,7 @@ def compile_compound_superposition(cs,sign=None):           # tidy this function
     print("tuple_rest: ",end='')
     pprint(tuple_rest)
     if tuple_rest[0] == []:
-      new_tuple_object = [tuple_ops,tuple_rest[1]]             # does this break anything??
+      new_tuple_object = [tuple_ops,tuple_rest[1]]             # does this break anything?? Let's call it "operator injection".
       print("new_tuple_object: ",end='')
       pprint(new_tuple_object)
       the_sp = compile_compound_superposition(new_tuple_object)
@@ -493,7 +493,95 @@ def compile_compound_superposition(cs,sign=None):           # tidy this function
     print("final result:",result)
     return result
   
+# compile sp parse tree
+def compile_compound_superposition(cs,sign=None):           # tidy this function once it is working.
+  ops, object, *rest = cs
+  print("cs: ",end='')
+  pprint(cs)
+  print("ops: ",end='')
+  pprint(ops)
+  print("object: ",end='')
+  pprint(object)
+  print("sign:",sign)
+  print("rest: ",end='')
+  pprint(rest)
 
+  if sign == "sp -":
+    sign = -1
+  else:
+   sign = 1
+
+  if type(object) == str:                                     # ket found. later put in the self_object code here.
+    the_sp = ket(object)
+  elif type(object) == list:                                  # this is where we have to handle bracketk_cs. Yup, looks like it.
+    print("bracketk_cs found")                  
+    if ops_type(ops) != "opsequence" or len(ops) == 0:        # "bracket_ops bracketk_cs" makes no sense. eg "(op3 + op2 op1) (|x>, |y>, |z>)", so return |>
+      if len(object) == 1:                                    # Hrmm.... currently "sp |x> == sp (|x>)". I don't think we want this.
+        the_sp = compile_compound_superposition(object[0])    # the problem is, given "fn1 (|x> + |y>)" if fn1 in whitelist_table_1 then use it, otherwise return the sp and treat fn1 as an operator.
+      else:                                                   # but for all other cases, if "fnk (ECS,ECS,...,ECS)" and fnk is not in whitelist_table_k, then return the empty ket.
+        the_sp = ket("")                                        # |> or 0|> ??    
+    else:                                                 
+      sp_list = [compile_compound_superposition(x) for x in object]
+      str_sp_list = [ str(x) for x in sp_list]
+      print("str_sp_list:",str_sp_list)
+      fnk = ops[-1]
+      new_ops = ops[:-1]
+      print("fnk:",fnk)
+      print("new_ops:",new_ops)
+      
+      if len(object) == 1 and fnk not in whitelist_table_1:
+        the_sp = sp_list[0]
+      else: 
+        python_code = 'ket("")'                                 # default value if fnk(ECS,ECS,...,ECS) is not in whitelist_table. Maybe we want something else?
+        if len(sp_list) == 1:                                   # 1-parameter function:
+          if fnk in whitelist_table_1:
+            python_code = "%s(sp_list[0])" % whitelist_table_1[fnk]
+        if len(sp_list) == 2:                                   # 2-parameter function:
+          if fnk in whitelist_table_2:
+            python_code = "%s(sp_list[0],sp_list[1])" % whitelist_table_2[fnk]
+        elif len(sp_list) == 3:                                   # 3-parameter function:
+          if fnk in whitelist_table_3:
+            python_code = "%s(sp_list[0],sp_list[1],sp_list[2])" % whitelist_table_3[fnk]
+        elif len(sp_list) == 4:                                   # 4-parameter function:
+          if fnk in whitelist_table_4:
+            python_code = "%s(sp_list[0],sp_list[1],sp_list[2],sp_list[3])" % whitelist_table_4[fnk]
+        print("python code:", python_code)
+        the_sp = eval(python_code)
+        ops = new_ops
+              
+  elif type(object) == tuple:                                   # how handle fnk objects in this branch?
+    prefix, tuple_ops, tuple_rest = object                            # eg: " (op2 op1) fn3 ( |x>,|y> ,|z>  ) "
+    if prefix != 'op_cs':
+      print("WARNING: wrong prefix:",prefix)
+    print("tuple_ops: ",end='')
+    pprint(tuple_ops)
+    print("tuple_rest: ",end='')
+    pprint(tuple_rest)
+    if tuple_rest[0] == []:
+      new_tuple_object = [tuple_ops,tuple_rest[1]]             # does this break anything?? Let's call it "operator injection".
+      print("new_tuple_object: ",end='')
+      pprint(new_tuple_object)
+      the_sp = compile_compound_superposition(new_tuple_object)
+    else:    
+      tuple_sp = compile_compound_superposition(tuple_rest)
+      print("tuple_sp:",str(tuple_sp))
+      the_sp = compile_op_sp(tuple_ops,tuple_sp)
+  else:
+    print("WARNING: unknown object type!")
+      
+  result = compile_op_sp(ops,the_sp).multiply(sign)           # how handle |x> _ |y> _ |z> ??
+  print("result:",str(result))
+  if len(rest) == 0:
+    return result
+  if type(rest) == list:
+    sign,tail = rest[0]
+    print("tail: ",end='')
+    pprint(tail)
+    result += compile_compound_superposition(tail,sign)
+    print("final result:",result)
+    return result
+
+    
 # initialize the self_object
 self_object = reference()
 
@@ -546,6 +634,10 @@ def test_grammar_compound_superposition_sp_ket():
 def test_grammar_compound_superposition_sp_bracket_ket():
   x = op_grammar(" sp (|x>) ").compiled_compound_superposition()
   assert str(x) == ""
+  
+def test_grammar_compound_superposition_sp_bracket_sp():
+  x = op_grammar(" sp (|x> + |y> + |z>) ").compiled_compound_superposition()
+  assert str(x) == ""  
 
 def test_grammar_compound_superposition_naked_fn2():
   x = op_grammar(" ( |x>,|y> ) ").compiled_compound_superposition()
