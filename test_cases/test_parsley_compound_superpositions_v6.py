@@ -549,9 +549,9 @@ def compile_compound_superposition(cs,sign=None):           # tidy this function
         the_sp = eval(python_code)
         ops = new_ops
               
-  elif type(object) == tuple:                                   # how handle fnk objects in this branch?
-    prefix, tuple_ops, tuple_rest = object                            # eg: " (op2 op1) fn3 ( |x>,|y> ,|z>  ) "
-    if prefix != 'op_cs':
+  elif type(object) == tuple:                                   # op_cs found
+    prefix, tuple_ops, tuple_rest = object                      # how handle fnk objects in this branch?
+    if prefix != 'op_cs':                                       # eg: " (op2 op1) fn3 ( |x>,|y> ,|z>  ) "
       print("WARNING: wrong prefix:",prefix)
     print("tuple_ops: ",end='')
     pprint(tuple_ops)
@@ -567,7 +567,7 @@ def compile_compound_superposition(cs,sign=None):           # tidy this function
       print("tuple_sp:",str(tuple_sp))
       the_sp = compile_op_sp(tuple_ops,tuple_sp)
   else:
-    print("WARNING: unknown object type!")
+    print("WARNING: unknown object type!")                    # we should never land here! Maybe make it an assert?
       
   result = compile_op_sp(ops,the_sp).multiply(sign)           # how handle |x> _ |y> _ |z> ??
   print("result:",str(result))
@@ -577,7 +577,11 @@ def compile_compound_superposition(cs,sign=None):           # tidy this function
     sign,tail = rest[0]
     print("tail: ",end='')
     pprint(tail)
-    result += compile_compound_superposition(tail,sign)
+    #result += compile_compound_superposition(tail,sign)
+    tail_result = compile_compound_superposition(tail,sign)
+    print("head result:",result)
+    print("tail result:",tail_result)
+    result += tail_result
     print("final result:",result)
     return result
 
