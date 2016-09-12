@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 11/8/2016
+# Update: 12/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -123,6 +123,10 @@ sigmoid_table = {
 # 14/1/2016:
   "square"             : "square",           # for now these two are sigmoids. Maybe wan't to change that later?
   "sqrt"               : "sqrt",    
+
+# 12/9/2016:
+  "floor"              : "floor",
+  "ceiling"            : "ceiling",
 }                                   
 
 # some ket -> ket functions:
@@ -211,6 +215,9 @@ fn_table = {
 
 # 19/6/2016:
   "hash-compress"      : "hash_compress",
+  
+# 12/9/2016:
+  "words-to-list"      : "words_to_sp",  
 }
 
 
@@ -500,6 +507,9 @@ compound_table = {
   
 # 28/7/2016:
 #  "have-in-common"         : ".apply_sp_fn(have_in_common,context)",   # have-in-common has no parameters, so wont work here!  
+
+# 12/9/2016:
+  "bar-chart"          : ".apply_sp_fn(bar_chart,\"{0}\")",  
 }
 
 

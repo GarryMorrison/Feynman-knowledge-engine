@@ -34,8 +34,8 @@ import re
 import random
 
 # choose verbose ramble mode:
-#verbose = False
-verbose = True
+verbose = False
+#verbose = True
 
 # define our bare-bones superposition class:
 class superposition(object):
@@ -147,7 +147,7 @@ def format_fake_paragraphs(text):
             dot_found = False
             dot_count += 1
             if dot_count == random.choice(paragraph_lengths) or dot_count >= max(paragraph_lengths):
-                result+="\n"
+                result+="\n\n"
                 dot_count = 0
             else:
                 result+=c

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/6/2016
+# Update: 12/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1458,7 +1458,14 @@ def square(x):
   return x*x
   
 def sqrt(x):
-  return math.sqrt(x)  
+  return math.sqrt(x)
+  
+# 12/9/2016:
+def floor(x):
+  return math.floor(x)
+  
+def ceiling(x):
+  return math.ceil(x)      
 
 # we need this since pattern_recognition() requires simm().
 # bug's out if I put this at the top of the page.

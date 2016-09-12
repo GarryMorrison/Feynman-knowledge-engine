@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 28/7/2016
+# Update: 12/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1920,7 +1920,27 @@ def sp_to_words(one):
     result = head + " and " + tail
 #  return ket("text: " + result)
   return ket(result)
-  
+
+# 12/9/2016
+# let's implement the inverse of list-to-words
+# sa: words-to-list |a, b, c, d and e> 
+# |a> + |b> + |c> + |d> + |e> 
+# this will be the first very, very early step towards parsing incoming English into back-end BKO
+# That would need a LOT of thinking time though. 
+#
+# one is a ket
+def words_to_sp(one):
+  try:
+    head, tail = one.label.split(' and ')
+    front = head.split(', ')
+    r = superposition()
+    for x in front + [tail]:
+      #r.data.append(ket(x))                        # yeah, breaking the class abstraction again. Later swap in: r += ket(x)
+      r += ket(x)
+    return r
+  except Exception as e:
+    logger.debug("words-to-list exception reason: " + str(e))
+    return one   
 
 
 # Hrmm.. sp_to_words() is an implementation of list-to-words.
@@ -4602,4 +4622,24 @@ def have_in_common(one,context):
     supported_ops = intersection(supported_ops,tmp)
   if len(supported_ops) == 0:
     return ket("",0)                 
+# ... finish
+
+
+def bar_chart(one,width):
+  if len(one) == 0:
+    return ket("bar chart")
+  try:
+    width = int(width)
+  except:
+    return ket("bar chart")
+  max_len = max(len(x.label) for x in one)
+#  print("max_len:",max_len)
+  two = one.coeff_sort().rescale(width).apply_sigmoid(floor)
+  mid = ' : '
+  print("----------")
+  for x in two:
+    print(x.label.ljust(max_len) + mid + '|'*x.value)
+  print("----------")
+  return ket("bar chart")      
+
                                                          

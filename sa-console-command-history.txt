@@ -33428,3 +33428,1149 @@
   ket-simm(ngrams |research>, ngrams |seeking>)
   q
 
+2016-08-22
+  context cyc
+  sleep-at-home? |animal: *> => |yes>
+  sleep-at-home? |animal: lost dog> => |no>
+  dump
+  full-tree |*> => |_self>
+  full-tree |lost dog> => |animal: lost dog>
+  full-tree |my cat> => |animal: my cat>
+  dump
+  full-tree |frog>
+  full-tree |*> #=> |_self>
+  dump
+  full-tree |frog>
+  sleep-at-home? full-tree |my cat>
+  sleep-at-home? full-tree |lost dog>
+  dump
+  do-you-know sleep-at-home? |lost dog>
+  full-sleep-at-home? |*> #=> sleep-at-home? full-tree |_self>
+  full-sleep-at-home? |lost dog>
+  full-sleep-at-home? |my cat>
+  full-sleep-at-home? |frog>
+  full-tree |frog> => |amphibian: frog?
+  full-tree |frog> => |amphibian: frog>
+  dump
+  sleep-at-home? |amphibian: *> => |no>
+  full-sleep-at-home? |frog>
+  q
+
+2016-08-22
+  load names.sw
+  dummp
+  dump
+  rel-kets[names]
+  male-name-coeff |*> #=> mbr(|_self>,names |male name>)
+  male-name-coeff |fred>
+  dump |*>
+  female-name-coeff |*> #=> mbr(|_self>,names |female name>)
+  female-name-coeff |susan>
+  female-name-coeff |mary>
+  select[1,20] names |female name>
+  history
+  save history
+
+2016-08-23
+  load high-order-sequences--saved.sw
+  load high-order-sequences.sw
+  step-1 |count>
+  step-2 |count>
+  step-3 |count>
+  step-1 |one>
+  step-1 |two>
+  table[node,step-1,step-2] rel-kets[encode]
+  history
+  save high-order-sequences--saved.sw
+  q
+
+2016-08-23
+  load names.sw
+  dummp
+  dump
+  rel-kets[names]
+  male-name-coeff |*> #=> mbr(|_self>,names |male name>)
+  male-name-coeff |fred>
+  dump |*>
+  female-name-coeff |*> #=> mbr(|_self>,names |female name>)
+  female-name-coeff |susan>
+  female-name-coeff |mary>
+  select[1,20] names |female name>
+  history
+  save history
+  letter-ngrams[1,2,3] |management>
+  letter-ngrams[1,2,3] |measurement>
+  ket-simm(letter-ngrams[1,2,3] |measurement>, letter-ngrams[1,2,3] |management>)
+  how-many letter-ngrams[1,2,3] |measurement>
+  how-many letter-ngrams[1,2,3] |management>
+  ket-simm(pick[18] letter-ngrams[1,2,3] |measurement>, pick[18] letter-ngrams[1,2,3] |management>)
+  ket-simm(pick[10] letter-ngrams[1,2,3] |measurement>, pick[10] letter-ngrams[1,2,3] |management>)
+  full |range> => range(|1>,|65536>)
+  encode |count> => pick[40] full |range>
+  encode |count>
+  q
+
+2016-08-25
+  load names.sw
+  list-of |female names> => clean select[1,30] names |female name>
+  list-of |face features> => |eye type> + |ear type> + |nose type> + |chin type> + |lip type> + |cheek type> + |hair type> + |eyebrow type>
+  features-op |*> #=> random-column[5] list-of |face features>
+  map[features-op,features] list-of |female names>
+  dump
+  similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 2>)
+  100 similar-input[features] (|eye type: 4> + |ear type: 0> + |nose type: 4> + |chin type: 0> + |lip type: 4> + |cheek type: 2> + |hair type: 2> + |eyebrow type: 0>)
+  dump
+  features |mary>
+  features |sarah>
+  100 similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 2>)
+  100 similar-input[features] (|eye type: 4> + |ear type: 0> + |nose type: 4> + |chin type: 0> + |lip type: 4> + |cheek type: 2> + |hair type: 2> + |eyebrow type: 0>)
+  history
+  save history
+
+2016-08-26
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  dump
+  similar-input[sounds-it-makes] |scratching at the door>
+  similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  full |range> => range(|1>,|100>)
+  dump
+  history
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  
+  dump
+  context animal sound SDR's
+  
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  dump
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  dump
+  similar-input[sounds-it-makes] encode |scratching at the door>
+  similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  normalize similar-input[sounds-it-makes] encode |scratching at the door>
+  normalize similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  save history
+
+2016-08-26
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  dump
+  similar-input[sounds-it-makes] |scratching at the door>
+  similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  full |range> => range(|1>,|100>)
+  dump
+  history
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  
+  dump
+  context animal sound SDR's
+  
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  dump
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  dump
+  similar-input[sounds-it-makes] encode |scratching at the door>
+  similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  normalize similar-input[sounds-it-makes] encode |scratching at the door>
+  normalize similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  save history
+  icontext
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  history
+  save history
+
+2016-08-29
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  encode |purring and miaowing> => encode (|purring> + |miaowing>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |dog>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |cat>)
+  normalize (0.667|y1> + 0.067|y2>)
+  matrix[encode]
+  matrix[sounds-it-makes]
+  dump
+  similar-input[sounds-it-makes] encode |purring>
+  sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+
+2016-08-30
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  encode |purring and miaowing> => encode (|purring> + |miaowing>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |dog>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |cat>)
+  normalize (0.667|y1> + 0.067|y2>)
+  matrix[encode]
+  matrix[sounds-it-makes]
+  dump
+  similar-input[sounds-it-makes] encode |purring>
+  sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+  dump
+  context
+  context animal sounds
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  dump
+  full |range> => range(|1>,|1000>)
+  dump
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  context animal sounds v2
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  matrix[encode]
+  matrix[sounds-it-makes]
+  context
+  icontext
+  icontext
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  context original animal sounds SDR's
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  encode |panting>
+  similar-input[sounds-it-makes] encode |panting>
+  sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from |*> #=> list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  history
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+
+2016-08-30
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  encode |purring and miaowing> => encode (|purring> + |miaowing>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |dog>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |cat>)
+  normalize (0.667|y1> + 0.067|y2>)
+  matrix[encode]
+  matrix[sounds-it-makes]
+  dump
+  similar-input[sounds-it-makes] encode |purring>
+  sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+  dump
+  context
+  context animal sounds
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  dump
+  full |range> => range(|1>,|1000>)
+  dump
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  context animal sounds v2
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  matrix[encode]
+  matrix[sounds-it-makes]
+  context
+  icontext
+  icontext
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  context original animal sounds SDR's
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  encode |panting>
+  similar-input[sounds-it-makes] encode |panting>
+  sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from |*> #=> list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  history
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+  drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from-v2 |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |panting>
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |scratching at the door>
+  
+  save history
+
+2016-08-30
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  encode |purring and miaowing> => encode (|purring> + |miaowing>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |dog>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |cat>)
+  normalize (0.667|y1> + 0.067|y2>)
+  matrix[encode]
+  matrix[sounds-it-makes]
+  dump
+  similar-input[sounds-it-makes] encode |purring>
+  sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+  dump
+  context
+  context animal sounds
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  dump
+  full |range> => range(|1>,|1000>)
+  dump
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  context animal sounds v2
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  matrix[encode]
+  matrix[sounds-it-makes]
+  context
+  icontext
+  icontext
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  context original animal sounds SDR's
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  encode |panting>
+  similar-input[sounds-it-makes] encode |panting>
+  sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from |*> #=> list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  history
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+  drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from-v2 |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |panting>
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |scratching at the door>
+  
+  save history
+  history
+  I-predict-from |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  find-inverse[sounds-it-makes]
+  matrix[sounds-it-makes]
+  matrix[inverse-sounds-it-makes]
+  matrix[inverse-sounds-it-makes,encode]
+  find-inverse[encode]
+  matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  inverse-encode sounds-it-makes inverse-sounds-it-makes encode |purring>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |purring>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |panting>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |scratching at the door>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  new-prediction |*> #=> list-to-words drop-below[0.15] normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  new-prediction |panting>
+  history
+  new-prediction |*> #=> list-to-words drop-below[0.15] (normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self> + -|_self>)
+  new-prediction |panting>
+  new-prediction |purring>
+  new-prediction |scratching at the door>
+  history
+  new-prediction |*> #=> list-to-words drop-below[0.13] (normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self> + -|_self>)
+  new-prediction |panting>
+  new-prediction |purring>
+  new-prediction |scratching at the door>
+  is-cat-or-dog |*> #=> normalize coeff-sort inverse-sounds-it-makes encode |_self>
+  is-cat-or-dog |scratching at the door>
+  is-cat-or-dog |sniffing>
+  is-cat-or-dog |purring>
+  is-cat-or-dog |miaowing>
+  matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  save history
+
+2016-08-30
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  encode |purring and miaowing> => encode (|purring> + |miaowing>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |dog>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |cat>)
+  normalize (0.667|y1> + 0.067|y2>)
+  matrix[encode]
+  matrix[sounds-it-makes]
+  dump
+  similar-input[sounds-it-makes] encode |purring>
+  sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+  dump
+  context
+  context animal sounds
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  dump
+  full |range> => range(|1>,|1000>)
+  dump
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  context animal sounds v2
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  matrix[encode]
+  matrix[sounds-it-makes]
+  context
+  icontext
+  icontext
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  context original animal sounds SDR's
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  encode |panting>
+  similar-input[sounds-it-makes] encode |panting>
+  sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from |*> #=> list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  history
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+  drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from-v2 |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |panting>
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |scratching at the door>
+  
+  save history
+  history
+  I-predict-from |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  find-inverse[sounds-it-makes]
+  matrix[sounds-it-makes]
+  matrix[inverse-sounds-it-makes]
+  matrix[inverse-sounds-it-makes,encode]
+  find-inverse[encode]
+  matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  inverse-encode sounds-it-makes inverse-sounds-it-makes encode |purring>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |purring>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |panting>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |scratching at the door>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  new-prediction |*> #=> list-to-words drop-below[0.15] normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  new-prediction |panting>
+  history
+  new-prediction |*> #=> list-to-words drop-below[0.15] (normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self> + -|_self>)
+  new-prediction |panting>
+  new-prediction |purring>
+  new-prediction |scratching at the door>
+  history
+  new-prediction |*> #=> list-to-words drop-below[0.13] (normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self> + -|_self>)
+  new-prediction |panting>
+  new-prediction |purring>
+  new-prediction |scratching at the door>
+  is-cat-or-dog |*> #=> normalize coeff-sort inverse-sounds-it-makes encode |_self>
+  is-cat-or-dog |scratching at the door>
+  is-cat-or-dog |sniffing>
+  is-cat-or-dog |purring>
+  is-cat-or-dog |miaowing>
+  matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  save history
+  history
+  normalize coeff-sort inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  is-cat-or-dog |panting>
+  
+  matrix[sounds-it-makes,inverse-sounds-it-makes]
+  merged-matrix[sounds-it-makes,inverse-sounds-it-makes]
+  merged-matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  history
+  merge-op |*> #=> normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  map[merge-op,merged-encode] rel-kets[encode]
+  matrix[merged-encode]
+  history
+  merge-op |*> #=> drop-below[0.13] normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  map[merge-op,merged-encode] rel-kets[encode]
+  matrix[merged-encode]
+  merged-matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  history
+  lin-approx-op |*> #=> similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  map[lin-approx-op,linear-approximation] rel-kets[encode]
+  matrix[linear-approximation]
+  history
+  lin-approx-op |*> #=> 100 similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  map[lin-approx-op,linear-approximation] rel-kets[encode]
+  matrix[linear-approximation]
+  merged-matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  save history
+
+2016-09-08
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  dump
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  sounds-it-makes similar-input[sounds-it-makes] |panting>
+  sounds-it-makes similar-input[sounds-it-makes] |purring>
+  sounds-it-makes similar-input[sounds-it-makes] |scratching at the door>
+  context animal sound SDR's
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => union[encode] (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  history
+  dump
+  normalize similar-input[sounds-it-makes] encode |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  normalize similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+
+2016-09-08
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  dump
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  sounds-it-makes similar-input[sounds-it-makes] |panting>
+  sounds-it-makes similar-input[sounds-it-makes] |purring>
+  sounds-it-makes similar-input[sounds-it-makes] |scratching at the door>
+  context animal sound SDR's
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => union[encode] (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  history
+  dump
+  normalize similar-input[sounds-it-makes] encode |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  normalize similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+  context face features
+  load names.sw
+  list-of |female names> => clean select[1,30] names |female name>
+  list-of |face features> => |eye type> + |ear type> + |nose type> + |chin type> + |lip type> + |cheek type> + |hair type> + |eyebrow type>
+  features-op |*> #=> random-column[5] list-of |face features>
+  map[features-op,features] list-of |female names>
+  features |mary>
+  features |sarah>
+  
+  100 similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 2>)
+  features |laura>
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 3>)
+  100 similar-input[features] (|eye type: 4> + |ear type: 0> + |nose type: 4> + |chin type: 4> + |lip type: 4> + |cheek type: 4> + |hair type: 3> + |eyebrow type: 2>)
+  save history
+
+2016-09-11
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  dump
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  sounds-it-makes similar-input[sounds-it-makes] |panting>
+  sounds-it-makes similar-input[sounds-it-makes] |purring>
+  sounds-it-makes similar-input[sounds-it-makes] |scratching at the door>
+  context animal sound SDR's
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => union[encode] (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  history
+  dump
+  normalize similar-input[sounds-it-makes] encode |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  normalize similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+  context face features
+  load names.sw
+  list-of |female names> => clean select[1,30] names |female name>
+  list-of |face features> => |eye type> + |ear type> + |nose type> + |chin type> + |lip type> + |cheek type> + |hair type> + |eyebrow type>
+  features-op |*> #=> random-column[5] list-of |face features>
+  map[features-op,features] list-of |female names>
+  features |mary>
+  features |sarah>
+  
+  100 similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 2>)
+  features |laura>
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 3>)
+  100 similar-input[features] (|eye type: 4> + |ear type: 0> + |nose type: 4> + |chin type: 4> + |lip type: 4> + |cheek type: 4> + |hair type: 3> + |eyebrow type: 2>)
+  save history
+  history
+  q
+
+2016-09-12
+  floor 3.5 |x>
+  ceiling 3.5 |x>
+  debug on
+  floor 3.5 |x>
+  floor rescale[10] coeff-sort (3|a> + 22|bbb> + 0.3|c>)
+  q
+
+2016-09-12
+  bar-chart[10] (3|a> + 22|bbb> + 0.3|c>)
+  bar-chart[100] (3|a> + 22|bbb> + 0.3|c>)
+  q
+
+2016-09-12
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  encode |purring and miaowing> => encode (|purring> + |miaowing>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |dog>)
+  ket-simm(encode |purring and miaowing>, sounds-it-makes |cat>)
+  normalize (0.667|y1> + 0.067|y2>)
+  matrix[encode]
+  matrix[sounds-it-makes]
+  dump
+  similar-input[sounds-it-makes] encode |purring>
+  sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+  dump
+  context
+  context animal sounds
+  full |range> => range(|1>,|100>)
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  dump
+  full |range> => range(|1>,|1000>)
+  dump
+  encode |purring> => pick[5] full |range>
+  encode |miaowing> => pick[5] full |range>
+  encode |scratching at the door> => pick[5] full |range>
+  encode |panting> => pick[5] full |range>
+  encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog sounds SDR's:
+  sounds-it-makes |cat> => encode (|purring> + |miaowing> + |scratching at the door>)
+  sounds-it-makes |dog> => encode (|panting> + |sniffing> + |scratching at the door>)
+  
+  dump
+  normalize similar-input[sounds-it-makes] encode (|purring> + |miaowing>)
+  history
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  context animal sounds v2
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  matrix[encode]
+  matrix[sounds-it-makes]
+  context
+  icontext
+  icontext
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  context original animal sounds SDR's
+  encode |purring> => |49> + |16> + |8> + |95> + |46>
+  encode |miaowing> => |90> + |1> + |49> + |57> + |43>
+  encode |scratching at the door> => |44> + |26> + |13> + |9> + |39>
+  encode |panting> => |23> + |14> + |19> + |65> + |24>
+  encode |sniffing> => |43> + |33> + |85> + |99> + |44>
+  
+  sounds-it-makes |cat> => 2|49> + |16> + |8> + |95> + |46> + |90> + |1> + |57> + |43> + |44> + |26> + |13> + |9> + |39>
+  sounds-it-makes |dog> => |23> + |14> + |19> + |65> + |24> + |43> + |33> + |85> + |99> + 2|44> + |26> + |13> + |9> + |39>
+  
+  dump
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  encode |panting>
+  similar-input[sounds-it-makes] encode |panting>
+  sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from |*> #=> list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  history
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  save history
+  drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  list-to-words drop-below[0.18] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  I-predict-from-v2 |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |panting>
+  I-predict-from-v2 |purring>
+  I-predict-from-v2 |scratching at the door>
+  
+  save history
+  history
+  I-predict-from |*> #=> list-to-words drop-below[0.18] (similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self> + -|_self>)
+  I-predict-from |panting>
+  I-predict-from |purring>
+  I-predict-from |scratching at the door>
+  find-inverse[sounds-it-makes]
+  matrix[sounds-it-makes]
+  matrix[inverse-sounds-it-makes]
+  matrix[inverse-sounds-it-makes,encode]
+  find-inverse[encode]
+  matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  inverse-encode sounds-it-makes inverse-sounds-it-makes encode |purring>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |purring>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |panting>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |scratching at the door>
+  coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  new-prediction |*> #=> list-to-words drop-below[0.15] normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  new-prediction |panting>
+  history
+  new-prediction |*> #=> list-to-words drop-below[0.15] (normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self> + -|_self>)
+  new-prediction |panting>
+  new-prediction |purring>
+  new-prediction |scratching at the door>
+  history
+  new-prediction |*> #=> list-to-words drop-below[0.13] (normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self> + -|_self>)
+  new-prediction |panting>
+  new-prediction |purring>
+  new-prediction |scratching at the door>
+  is-cat-or-dog |*> #=> normalize coeff-sort inverse-sounds-it-makes encode |_self>
+  is-cat-or-dog |scratching at the door>
+  is-cat-or-dog |sniffing>
+  is-cat-or-dog |purring>
+  is-cat-or-dog |miaowing>
+  matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  save history
+  history
+  normalize coeff-sort inverse-sounds-it-makes encode (|purring> + |miaowing>)
+  is-cat-or-dog |panting>
+  
+  matrix[sounds-it-makes,inverse-sounds-it-makes]
+  merged-matrix[sounds-it-makes,inverse-sounds-it-makes]
+  merged-matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  history
+  merge-op |*> #=> normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  map[merge-op,merged-encode] rel-kets[encode]
+  matrix[merged-encode]
+  history
+  merge-op |*> #=> drop-below[0.13] normalize coeff-sort inverse-encode sounds-it-makes inverse-sounds-it-makes encode |_self>
+  map[merge-op,merged-encode] rel-kets[encode]
+  matrix[merged-encode]
+  merged-matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  history
+  lin-approx-op |*> #=> similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  map[lin-approx-op,linear-approximation] rel-kets[encode]
+  matrix[linear-approximation]
+  history
+  lin-approx-op |*> #=> 100 similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |_self>
+  map[lin-approx-op,linear-approximation] rel-kets[encode]
+  matrix[linear-approximation]
+  merged-matrix[inverse-encode,sounds-it-makes,inverse-sounds-it-makes,encode]
+  save history
+  q
+
+2016-09-12
+  bar-chart[100] (3|a> + 22|bbb> + 0.3|c>)
+  load fred-sam-friends.sw
+  bar-chart[100] friends |Fred>
+  context animal sound SDR's
+  full |range> => range(|1>,|100>)
+    encode |purring> => pick[5] full |range>
+    encode |miaowing> => pick[5] full |range>
+    encode |scratching at the door> => pick[5] full |range>
+    encode |panting> => pick[5] full |range>
+    encode |sniffing> => pick[5] full |range>
+  
+  -- generate cat and dog noise SDR's by taking the union of the concept SDR's:
+    sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+    sounds-it-makes |dog> => union[encode] (|panting> + |sniffing> + |scratching at the door>)
+  dump
+  bar-chart[100] normalize similar-input[sounds-it-makes] encode |scratching at the door>
+  bar-chart[100] normalize similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  bar-chart[100] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  bar-chart[100] similar-input[sounds-it-makes] encode |scratching at the door>
+  bar-chart[100] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  history
+  table[ket,coeff] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  bar-chart[50] similar-input[sounds-it-makes] encode |scratching at the door>
+  bar-chart[50] similar-input[sounds-it-makes] encode (|scratching at the door> + |sniffing>)
+  bar-chart[50] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |panting>
+  bar-chart[50] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |purring>
+  bar-chart[50] similar-input[encode] sounds-it-makes similar-input[sounds-it-makes] encode |scratching at the door>
+  save history
+
+2016-09-12
+  debug on
+  words-to-list |a and b>
+  q
+
+2016-09-12
+  words-to-list |a and b>
+  words-to-list |a>
+  words-to-list |a, b and c>
+  words-to-list |a, b, c and d>
+  words-to-list |fish and chips>
+  words-to-list |monday, tuesday, wednesday, thursday, friday, saturday and sunday>
+  q
+
+2016-09-12
+  words-to-list |scratching at the door and sniffing>
+  q
+
