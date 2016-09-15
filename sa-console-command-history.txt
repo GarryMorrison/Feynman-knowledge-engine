@@ -34574,3 +34574,252 @@
   words-to-list |scratching at the door and sniffing>
   q
 
+2016-09-12
+  list-to-words words-to-list |monday, tuesday, wednesday, thursday, friday, saturday and sunday>
+  q
+
+2016-09-12
+  context animal sound SDR's
+    full |range> => range(|1>,|100>)
+    encode |purring> => pick[5] full |range>
+    encode |miaowing> => pick[5] full |range>
+    encode |scratching at the door> => pick[5] full |range>
+    encode |panting> => pick[5] full |range>
+    encode |sniffing> => pick[5] full |range>sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+   sounds-it-makes |dog> => union[encode] (|panting> + |sniffing> + |scratching at the door>)
+  predict-which-animal |*> #=> similar-input[sounds-it-makes] encode words-to-list |_self>
+  predict-which-animal |scratching at the door and sniffing>
+  predict-which-animal |scratching at the door and purring>
+  dump
+  sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+  dum
+  dump
+  predict-which-animal |scratching at the door and sniffing>
+  predict-which-animal-from |*> #=> bar-chart[50] similar-input[sounds-it-makes] encode words-to-list |_self>
+  dump
+  predict-which-animal-from |purring>
+  predict-which-animal-from |panting>
+  predict-which-animal-from |panting and sniffing>
+  predict-which-animal-from |scratching at the door>
+  predict-which-animal-from |scratching at the door, sniffing and panting>
+  save history
+
+2016-09-14
+  context animal sound SDR's
+    full |range> => range(|1>,|100>)
+    encode |purring> => pick[5] full |range>
+    encode |miaowing> => pick[5] full |range>
+    encode |scratching at the door> => pick[5] full |range>
+    encode |panting> => pick[5] full |range>
+    encode |sniffing> => pick[5] full |range>sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+   sounds-it-makes |dog> => union[encode] (|panting> + |sniffing> + |scratching at the door>)
+  predict-which-animal |*> #=> similar-input[sounds-it-makes] encode words-to-list |_self>
+  predict-which-animal |scratching at the door and sniffing>
+  predict-which-animal |scratching at the door and purring>
+  dump
+  sounds-it-makes |cat> => union[encode] (|purring> + |miaowing> + |scratching at the door>)
+  dum
+  dump
+  predict-which-animal |scratching at the door and sniffing>
+  predict-which-animal-from |*> #=> bar-chart[50] similar-input[sounds-it-makes] encode words-to-list |_self>
+  dump
+  predict-which-animal-from |purring>
+  predict-which-animal-from |panting>
+  predict-which-animal-from |panting and sniffing>
+  predict-which-animal-from |scratching at the door>
+  predict-which-animal-from |scratching at the door, sniffing and panting>
+  save history
+  predict-which-animal-from |purring and miaowing>
+  words-to-list |a, a and a>
+  dump
+  predict-animal |*> #=> bar-chart[100] drop-below[0.15] similar-input[sounds-it-makes] encode words-to-list |_self>
+  history
+  predict-animal |purring and miaowing>
+  similar-input[sounds-it-makes] encode words-to-list |purring and miaowing>
+  
+  q
+
+2016-09-14
+  shout |a>
+  q
+
+2016-09-15
+  load names.sw
+  list-of |female names> => clean select[1,30] names |female name>
+  list-of |face features> => |eye type> + |ear type> + |nose type> + |chin type> + |lip type> + |cheek type> + |hair type> + |eyebrow type>
+  features-op |*> #=> random-column[5] list-of |face features>
+  map[features-op,features] list-of |female names>
+  dump
+  similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 2>)
+  100 similar-input[features] (|eye type: 4> + |ear type: 0> + |nose type: 4> + |chin type: 0> + |lip type: 4> + |cheek type: 2> + |hair type: 2> + |eyebrow type: 0>)
+  dump
+  features |mary>
+  features |sarah>
+  100 similar-input[features] (|eye type: 3> + |chin type: 0> + |ear type: 4>)
+  100 similar-input[features] (|ear type: 0> + |nose type: 4> + |lip type: 4> + |cheek type: 2> + |hair type: 2>)
+  100 similar-input[features] (|eye type: 4> + |ear type: 0> + |nose type: 4> + |chin type: 0> + |lip type: 4> + |cheek type: 2> + |hair type: 2> + |eyebrow type: 0>)
+  history
+  save history
+  q
+
+2016-09-15
+  load truncated-alphabet.sw
+  dump
+  current |node> => start-node |alphabet>
+  dump
+  similar-input[encode] extract-category current |node>
+  
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  save history
+
+2016-09-15
+  load truncated-alphabet.sw
+  dump
+  current |node> => start-node |alphabet>
+  dump
+  similar-input[encode] extract-category current |node>
+  
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  current |node> => then similar-input[pattern] current |node>
+  similar-input[encode] extract-category current |node>
+  save history
+  debug on
+  start-node |alphabet>
+  similar-input[encode] extract-category current |node>
+  then clean select[1,1] similar-input[pattern] current |node>
+  q
+
+2016-09-15
+  load truncated-alphabet.sw
+  dump
+  recall-sequence |alphabet>
+  history
+  q
+
+2016-09-15
+  load truncated-alphabet.sw
+  recall-sequence |alphabet>
+  q
+
+2016-09-15
+  load truncated-alphabet.sw
+  recall-sequence |alphabet>
+  dump
+  recall-sequence |alphabet>
+  .
+  .
+  .
+  q
+
+2016-09-15
+  load chunked-truncated-alphabet.sw
+  dump
+  recall-sequence |alphabet>
+  recall-sequence |alpha 0>
+  recall-sequence |alpha 1>
+  recall-sequence |alpha 2>
+  q
+
+2016-09-15
+  load chunked-truncated-alphabet.sw
+  dump
+  recall-sequence |alphabet>
+  recall-sequence |alpha 1>
+  dump
+  q
+
+2016-09-15
+  load chunked-truncated-alphabet.sw
+  recall-chunked-sequence |alphabet>
+  q
+
+2016-09-15
+  load chunked-pi-sequence.sw
+  recall-sequence |pi>
+  recall-chunked-sequence |pi>
+  recall-sequence |alpha 2>
+  do-you-know start-node |alpha 2>
+  do-you-know start-node |alphabet>
+  debug on
+  do-you-know start-node |alphabet>
+  recall-chunked-sequence |alphabet>
+  recall-sequence |alphabet>
+  recall-sequence |fish>
+  recall-chunked-sequence |fish>
+  q
+
+2016-09-15
+  load chunked-pi-sequence.sw
+  recall-chunked-sequence |pi>
+  recall-sequence |pi>
+  recall-sequence |alpha 5>
+  recall-sequence |alpha 4>
+  recall-sequence |alpha 7>
+  load chunked-alphabet.sw
+  load chunked-truncated-alphabet.sw
+  recall-sequence |alphabet>
+  recall-chunked-sequence |alphabet>
+  q
+
+2016-09-15
+  load chunked-alphabet.sw
+  dump
+  recall-sequence |alphabet>
+  recall-chunked-sequence |alphabet>
+  q
+
+2016-09-15
+  load chunked-pi-sequence.sw
+  dump
+  recall-chunked-sequence |pi>
+  1 |x>
+  1.0 |x>
+  history
+  q
+
+2016-09-15
+  load chunked-pi-sequence.sw
+  recall-sequence |pi>
+  q
+
+2016-09-15
+  load chunked-pi-sequence.sw
+  recall-chunked-sequence |pi>
+  q
+
+2016-09-15
+  load chunked-pi-sequence.sw
+  recall-chunked-sequence |pi>
+  do-you-know start-node |fish>
+  not |no> => |yes>
+  not |yes> => |no>
+  not do-you-know start-node |fish>
+  not do-you-know start-node |pi>
+  q
+

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 12/9/2016
+# Update: 15/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4634,12 +4634,81 @@ def bar_chart(one,width):
     return ket("bar chart")
   max_len = max(len(x.label) for x in one)
 #  print("max_len:",max_len)
-  two = one.coeff_sort().rescale(width).apply_sigmoid(floor)
+#  two = one.coeff_sort().rescale(width).apply_sigmoid(floor)
+  two = one.coeff_sort().rescale(width)
   mid = ' : '
   print("----------")
   for x in two:
-    print(x.label.ljust(max_len) + mid + '|'*x.value)
+    print(x.label.ljust(max_len) + mid + '|'*int(x.value))
   print("----------")
   return ket("bar chart")      
 
-                                                         
+
+# 15/9/2016:
+# recall a learned high-order sequence, and print it out.
+# see:
+# Using the proposed swc language: 
+# (which I'm never going to be able to write a compiler for! and is almost certainly going to be a tar-pit)
+#
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# current |node> => start-node |input ket>
+# while name current |node> /= |end of sequence>:
+#   print name current |node>
+#   current |node> => next current |node>
+# print |end of sequence>
+#
+# one is a ket
+def recall_sequence(one,context):
+  if len(one.apply_op(context,"start-node")) == 0:                  # we don't know the start-node, so return the input ket
+    return one
+  print("recall sequence:",one)
+  context.learn("current","node",one.apply_op(context,"start-node"))
+  name = context.recall("current","node").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  while name.the_label() != "end of sequence":
+    print(name)
+    context.learn("current","node",ket("node").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
+    name = context.recall("current","node").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+#  print(name)
+  return name
+
+# recall a chunked high order sequence, and print it out.
+#
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# not |yes> => |no>
+# not |no> => |yes>
+#
+# if not do-you-know start-node |input ket>:
+#   return |input ket>
+# current |node L2> => start-node |input ket>
+# while name current |node L2> /= |end of sequence>:
+#   current |node L1> => start-node name current |node L2>
+#   while name current |node L1> /= |end of sequence>:
+#     print name current |node L1>
+#     current |node L1> => next current |node L1>
+#   current |node L2> => next current |node L2>
+# print |end of sequence>
+#
+# one is a ket
+def recall_chunked_sequence(one,context):
+  if len(one.apply_op(context,"start-node")) == 0:                  # we don't know the start-node, so return the input ket
+    return one
+  print("recall chunked sequence:",one)
+  context.learn("current","node L2",one.apply_op(context,"start-node"))
+  name2 = context.recall("current","node L2").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1)
+  while name2.the_label() != "end of sequence":
+
+    context.learn("current","node L1",name2.apply_op(context,"start-node"))
+    name1 = context.recall("current","node L1").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+    while name1.the_label() != "end of sequence":
+      print(name1)
+      context.learn("current","node L1",ket("node L1").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
+      name1 = context.recall("current","node L1").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+
+    context.learn("current","node L2",ket("node L2").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
+    name2 = context.recall("current","node L2").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  return name2
+                                                           

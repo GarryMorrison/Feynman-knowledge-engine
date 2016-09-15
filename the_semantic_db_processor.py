@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 12/9/2016
+# Update: 15/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -547,7 +547,11 @@ ket_context_table = {
   "show-image"         : "show_image", 
   
 # 9/2/2016:
-  "guess-ket"          : "guess_ket",     
+  "guess-ket"          : "guess_ket",
+  
+# 15/9/2016:
+  "recall-sequence"    : "recall_sequence",
+  "recall-chunked-sequence"    : "recall_chunked_sequence",       
 }
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.
