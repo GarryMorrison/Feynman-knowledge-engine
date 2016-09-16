@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/9/2016
+# Update: 16/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -225,7 +225,7 @@ fn_table = {
 # some other functions. Some are ket -> ket, some are ket -> superposition.
 fn_table2 = {
   "read"              : "read_text",
-  "spell"             : "spell_word",
+#  "spell"             : "spell_word",                          # removed 16/9/2016. We have a new spell that uses high order sequences
 # don't get the point of this one!
 #  "factor"            : "factor_numbers",
   "factor"            : "factor_number",
@@ -551,7 +551,10 @@ ket_context_table = {
   
 # 15/9/2016:
   "recall-sequence"    : "recall_sequence",
-  "recall-chunked-sequence"    : "recall_chunked_sequence",       
+  "recall-chunked-sequence"    : "recall_chunked_sequence",
+  
+# 16/9/2016:
+  "spell"              : "spell",         
 }
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.

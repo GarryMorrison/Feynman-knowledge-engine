@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/9/2016
+# Update: 16/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4711,4 +4711,37 @@ def recall_chunked_sequence(one,context):
     context.learn("current","node L2",ket("node L2").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
     name2 = context.recall("current","node L2").apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
   return name2
-                                                           
+
+
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# not |yes> => |no>
+# not |no> => |yes>
+#
+# if not do-you-know first-letter |input ket>:
+#   return |input ket>
+# current |node> => first-letter |input ket>
+# while name current |node> /= |end of sequence>:
+#   print name current |node>
+#   current |node> => next current |node>
+# print |end of sequence>
+#
+# code to spell words
+#
+# one is a ket
+def spell(one,context):
+  start = one.apply_op(context,"first-letter")
+  if len(start) == 0:                  # we don't know the first letter, so return the input ket
+    return one
+  print("spell word:",one)
+  context.learn("current","node",start)
+  name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,15)   #.apply_sigmoid(clean)
+  while name.the_label() != "end of sequence":
+    print(name)
+    context.learn("current","node",ket("node").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
+    name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,15)  #.apply_sigmoid(clean)
+#  print(name)
+  return name
+  
+                                                             

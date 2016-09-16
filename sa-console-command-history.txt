@@ -34823,3 +34823,32 @@
   not do-you-know start-node |pi>
   q
 
+2016-09-16
+  load chunked-pi-sequence.sw
+  recall-chunked-sequence |pi>
+  how-many rel-kets[encode]
+  how-many rel-kets[start-node]
+  how-many rel-kets[pattern]
+  dump
+  history
+  recall-chunked-sequence |alpha 1>
+  q
+
+2016-09-16
+  load spelling-dictionary.sw
+  spell |fish>
+  spell |Adelaide>
+  spell |number>
+  spell |elephant>
+  spell |electronics>
+  spell |alkj>
+  spell |New York>
+  spell |Canberra>
+  spell |neutrino>
+  q
+
+2016-09-16
+  load spelling-dictionary.sw
+  spell |Adelaide>
+  q
+
