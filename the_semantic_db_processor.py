@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/9/2016
+# Update: 25/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -554,7 +554,10 @@ ket_context_table = {
   "recall-chunked-sequence"    : "recall_chunked_sequence",
   
 # 16/9/2016:
-  "spell"              : "spell",         
+  "spell"              : "spell",
+  
+# 25/9/2016:
+  "print-sequence"     : "print_sequence",           
 }
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.

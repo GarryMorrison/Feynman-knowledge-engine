@@ -34852,3 +34852,120 @@
   spell |Adelaide>
   q
 
+2016-09-16
+  load spelling-dictionary.sw
+  spell |fish>
+  spell |Adelaide>
+  how-many rel-kets[pattern]
+  save history
+
+2016-09-16
+  load spelling-dictionary.sw
+  spell |fish>
+  spell |Adelaide>
+  how-many rel-kets[pattern]
+  save history
+  how-many rel-kets[encode]
+  q
+
+2016-09-17
+  load spelling-dictionary.sw
+  spell |Adelaide>
+  spell |A.I.>
+  spell |Aberdeen>
+  q
+
+2016-09-25
+  list-to-words (|a> + |b> + |c>)
+  words-to-list |a, b and c>
+  list-to-words |a>
+  list-to-words (|a> + |b>)
+  list-to-words (|a> + |b> + |c>)
+  list-to-words (|a> + |b> + |c> + |d>)
+  words-to-list |a>
+  words-to-list |a and b>
+  words-to-list |a, b and c>
+  words-to-list |a, b, c and d>
+  my-current |mood> => |hungry, tired and sleepy>
+  my-current |mood>
+  my-current |mood> => words-to-list |hungry, tired and sleepy>
+  my-current |mood>
+  list-to-words words-to-list |a, b, c, d and e>
+  words-to-list list-to-words (|a> + |b> + |c> + |d> + |e>)
+  non-Abelian-algebra(|a>,|^>,|2>)
+  non-Abelian-algebra(split |u v w>,|^>,|3>)
+  algebra(split |A B C>, |^>, |3>)
+  non-Abelian-algebra(split |A B C>,|^>,|3>)
+  history
+  q
+
+2016-09-25
+  load truncated-alphabet.sw
+  print-sequence |alphabet>
+  q
+
+2016-09-25
+  load truncated-alphabet.sw
+  print-sequence |alphabet>
+  q
+
+2016-09-25
+  load truncated-alphabet.sw
+  print-sequence |alphabet>
+  q
+
+2016-09-25
+  load chunked-pi-sequence.sw
+  recall-chunked-sequence |pi>
+  print-sequence |pi>
+  q
+
+2016-09-25
+  load truncated-alphabet.sw
+  print-sequence |alphabet>
+  q
+
+2016-09-25
+  load chunked-pi-sequence.sw
+  print-sequence |pi>
+  q
+
+2016-09-25
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  save history
+
+2016-09-25
+  load chunked-alphabet-pi.sw
+  start-node |Y>
+  q
+
+2016-09-25
+  load chunked-alphabet-pi.sw
+  current |node> => start-node |Y>
+  clean select[1,1] similar-input[encode] extract-category current |node>
+  current |node 2> => then clean select[1,1] similar-input[pattern] current |node>
+  recall-chunked-sequence |alphabet>
+  recall-sequence |alphabet>
+  recall-sequence |D E F>
+  recall-sequence |Y>
+  q
+
+2016-09-25
+  load chunked-alphabet-pi.sw
+  print-sequence |Y>
+  print-sequence |alphabet>
+  q
+
+2016-09-25
+  load chunked-alphabet-pi.sw
+  print-sequence |alphabet>
+  print-sequence |pi>
+  print-sequence |9 2 6>
+  print-sequence |6>
+  history
+  save history
+

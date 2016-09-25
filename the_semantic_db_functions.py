@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/9/2016
+# Update: 25/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4738,10 +4738,48 @@ def spell(one,context):
   context.learn("current","node",start)
   name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,15)   #.apply_sigmoid(clean)
   while name.the_label() != "end of sequence":
-    print(name)
+#    print(name)
+    bar_chart(name,'80')
     context.learn("current","node",ket("node").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
     name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,15)  #.apply_sigmoid(clean)
 #  print(name)
   return name
   
-                                                             
+
+# 25/9/2016:
+# recall a learned high-order sequence, and print it out.
+#
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# if not do-you-know start-node |input ket>:
+#   return |input ket>
+# current |node> => start-node |input ket>
+# while name current |node> /= |end of sequence>:
+#   print name current |node>
+#   current |node> => next current |node>
+# print |end of sequence>
+#
+# one is a ket
+def print_sequence(one,context,start_node=None,node_id=1):
+  if start_node is None:
+    start_node = "start-node"
+  node = "node " + str(node_id)
+  if len(one.apply_op(context,start_node)) == 0:                  # we don't know the start-node, so return the input ket
+    return one
+  print("print sequence:",one)
+  context.learn("current",node,one.apply_op(context,start_node))
+  name = context.recall("current",node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  if name.the_label() == one.the_label():                                                 # stop infintie recursive loop
+    print(name)
+    return name 
+  while name.the_label() != "end of sequence": 
+    has_start_node = name.apply_op(context,start_node)
+    if len(has_start_node) == 0:
+      print(name)      
+    else:
+      print_sequence(name,context,start_node,node_id + 1)
+    context.learn("current",node,ket(node).apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
+    name = context.recall("current",node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  return name
+                                                               
