@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/9/2016
+# Update: 29/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4625,7 +4625,7 @@ def have_in_common(one,context):
 # ... finish
 
 
-def bar_chart(one,width):
+def bar_chart(one,width,sorted=False):
   if len(one) == 0:
     return ket("bar chart")
   try:
@@ -4635,7 +4635,10 @@ def bar_chart(one,width):
   max_len = max(len(x.label) for x in one)
 #  print("max_len:",max_len)
 #  two = one.coeff_sort().rescale(width).apply_sigmoid(floor)
-  two = one.coeff_sort().rescale(width)
+  if sorted:
+    two = one.coeff_sort().rescale(width)
+  else:
+    two = one.rescale(width)
   mid = ' : '
   print("----------")
   for x in two:
@@ -4747,11 +4750,12 @@ def spell(one,context):
   
 
 # 25/9/2016:
-# recall a learned high-order sequence, and print it out.
+# recall a learned chunked high-order sequence, of arbitrary depth, and print it out.
 #
 # next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
 # name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
 #
+# NB: this pseudo-code is out of date! Update it!!
 # if not do-you-know start-node |input ket>:
 #   return |input ket>
 # current |node> => start-node |input ket>
@@ -4764,13 +4768,13 @@ def spell(one,context):
 def print_sequence(one,context,start_node=None,node_id=1):
   if start_node is None:
     start_node = "start-node"
-  node = "node " + str(node_id)
+  node = "seq node " + str(node_id)
   if len(one.apply_op(context,start_node)) == 0:                  # we don't know the start-node, so return the input ket
     return one
   print("print sequence:",one)
   context.learn("current",node,one.apply_op(context,start_node))
   name = context.recall("current",node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
-  if name.the_label() == one.the_label():                                                 # stop infintie recursive loop
+  if name.the_label() == one.the_label():                         # stop infintie recursive loop. Maybe there is a better way? Also need to implement 'sp1 == sp2' at some stage.
     print(name)
     return name 
   while name.the_label() != "end of sequence": 
@@ -4782,4 +4786,18 @@ def print_sequence(one,context,start_node=None,node_id=1):
     context.learn("current",node,ket(node).apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
     name = context.recall("current",node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
   return name
-                                                               
+
+
+# 29/9/2016:
+# discrimination. The difference in coeff between the highest and the next highest
+# Bah! Seems I have already implemented it over in the ket and sp classes. 
+#
+def discrimination(one):
+  if len(one) == 0:
+    return ket("discrimination",0)
+  if len(one) == 1:
+    return ket("discrimination")
+  r = one.coeff_sort().normalize()
+  first = r.data[0].value                                 # yeah, breaks the superposition class abstraction. Fix later!
+  second = r.data[1].value
+  return ket("discrimination",first-second)                                                                 

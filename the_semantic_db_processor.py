@@ -5,7 +5,6 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -509,7 +508,13 @@ compound_table = {
 #  "have-in-common"         : ".apply_sp_fn(have_in_common,context)",   # have-in-common has no parameters, so wont work here!  
 
 # 12/9/2016:
-  "bar-chart"          : ".apply_sp_fn(bar_chart,\"{0}\")",  
+  "bar-chart"              : ".apply_sp_fn(bar_chart,\"{0}\")",
+# 29/9/2016:
+  "sbar-chart"              : ".apply_sp_fn(bar_chart,\"{0}\",True)",
+    
+  
+# 26/9/2016:
+  "print-sequence"         : ".apply_fn(print_sequence,context,\"{0}\")",  
 }
 
 

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 12/9/2016
+# Update: 29/9/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -337,8 +337,14 @@ class ket(object):
   def number_find_min_coeff(self):
     return ket("number: " + str(self.value))
     
-  def discrimination(self):
+  def old_discrimination(self):
     return ket(" ",self.value)
+
+  def discrimination(self):
+    if self.label == "":
+      return ket("discrimination",0)
+    return ket("discrimination")
+    
 
 # 24/2/2015:
 # implements discrim-drop[t] SP
@@ -1185,8 +1191,13 @@ class superposition(object):
     result = superposition()
 #    result.data = sorted(self.data, key=lambda x: x.label.lower())
 #    result.data = sorted(self.data, key=lambda x: x.label.lower(),reverse=False)
-# 22/5/2014: let's try for a natural sort: Woot! It works!
+# 22/5/2014: let's try for a natural sort: Woot! It works! (most of the time)
     result.data = natural_sorted(self.data, key=lambda x: x.label.lower())
+# 29/9/2016:
+# Nope! Wrong way to do it. This is the right way: 
+# float-value |*> #=> coeff-sort pop-float clean |_self>
+# then use: sort-by[float-value]
+#    result.data = sorted(self.data, key=lambda x: float(x.label))
     return result
 
   def find_max_elt(self):
@@ -1250,7 +1261,7 @@ class superposition(object):
       value = min(x.value for x in self.data)
     return ket("number: " + str(value))
   
-  def discrimination(self):
+  def old_discrimination(self):
     result = 0
     if len(self.data) == 0:
       result = 0
@@ -1260,6 +1271,17 @@ class superposition(object):
       tmp = self.coeff_sort()
       result = tmp.data[0].value - tmp.data[1].value  # if something is "distinctive", this result will be large.
     return ket(" ",result)                            # really the definition of distinctive, if you think about it!
+
+  def discrimination(self):
+    result = 0
+    if len(self.data) == 0:
+      result = 0
+    elif len(self.data) == 1:
+      result = 1
+    else:
+      tmp = self.coeff_sort().normalize()             # the normalization step is key for discrimination to have consistent meaning.
+      result = tmp.data[0].value - tmp.data[1].value  # if something is "distinctive", this result will be large.
+    return ket("discrimination",result)                            # really the definition of distinctive, if you think about it!
     
 # 24/2/2015:
 # implements discrim-drop[t] SP

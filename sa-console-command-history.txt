@@ -34969,3 +34969,435 @@
   history
   save history
 
+2016-09-25
+  load chunked-alphabet-pi.sw
+  print-sequence |alphabet>
+  print-sequence |pi>
+  print-sequence |9 2 6>
+  print-sequence |6>
+  history
+  save history
+  
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |alphabet>
+  print-sequence |pi>
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  save history
+
+2016-09-26
+  load chunked-alphabet-pi.sw
+  print-sequence |alphabet>
+  print-sequence |pi>
+  print-sequence |9 2 6>
+  print-sequence |6>
+  history
+  save history
+  
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |alphabet>
+  print-sequence |pi>
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  reset
+  load chunked-alphabet-pi.sw
+  how-many rel-kets[pattern]
+  save history
+  print-sequence |alphabet>
+  print-sequence |pi>
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  print-sequence |alphabet>
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  print-sequence |alphabet>
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  print-sequence |alphabet>
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  .
+  .
+  print-sequence |alphabet>
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |alphabet>
+  print-sequence |pi>
+  how-many rel-kets[pattern]
+  how-many rel-kets[encode]
+  reset
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  print-sequence |alphabet>
+  how-many rel-kets[pattern]
+  rel-kets[pattern]
+  extract-category rel-kets[pattern]
+  history
+  q
+
+2016-09-26
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  print-sequence |alphabet>
+  print-sequence[start-node] |alphabet>
+  print-sequence[first-letter] |alphabet>
+  reset
+  load spelling-dictionary.sw
+  print-sequence |alphabet>
+  print-sequence[first-letter] |alphabet>
+  spell |alphabet>
+  history
+  save history
+
+2016-09-27
+  load chunked-alphabet-pi.sw
+  print-sequence |pi>
+  print-sequence |alphabet>
+  print-sequence[start-node] |alphabet>
+  print-sequence[first-letter] |alphabet>
+  reset
+  load spelling-dictionary.sw
+  print-sequence |alphabet>
+  print-sequence[first-letter] |alphabet>
+  spell |alphabet>
+  history
+  save history
+  spell-op |*> #=> print-sequence[first-letter] |_self>
+  spell-op split |elephant food>
+  print-sequence[first-letter] |A.I.>
+  spell |random>
+  history
+  q
+
+2016-09-29
+  normalize coeff-sort (3|a> + 5|b>)
+  debug on
+  normalize coeff-sort (3|a> + 5|b>)
+  q
+
+2016-09-29
+  discrimination (3|a> + 5|b>)
+  0.375|x> + 0.25|x>
+  discrimination 3|fish>
+  discrimination (0.5|yes> + 0.5|no>)
+  q
+
+2016-09-29
+  discrimination 37|fish>
+  discrim 13|>
+  discrim split |a b c>
+  discrim (37|a> + 2|b>)
+  q
+
+2016-09-29
+  load make-ft-spikes.sw
+  simm |*> #=> 100 self-similar[spikes] |_self>
+  map[simm,similarity] rel-kets[spikes] |>
+  bar-chart[50] similarity |wave-1>
+  bar-chart[50] similarity |wave-2>
+  history
+  q
+
+2016-09-29
+  load make-ft-spikes.sw
+  bar-chart[50] similarity |wave-2>
+    simm |*> #=> 100 self-similar[spikes] |_self>
+    map[simm,similarity] rel-kets[spikes] |>
+  bar-chart[50] similarity |wave-2>
+  bar-chart[50] ket-sort similarity |wave-2>
+  history
+  simm-op |*> #=> ket-sort self-similar[spikes] |_self>
+  map[simm-op,similarity] rel-kets[spikes]
+  bar-chart[50] ket-sort similarity |wave-2>
+  bar-chart[50] similarity |wave-3>
+  bar-chart[50] similarity |wave-5>
+  sbar-chart[50] similarity |wave-5>
+  
+  bar-chart[50] spikes |wave-1>
+  bar-chart[50] select[1,100] spikes |wave-2>
+  history
+  spikes |empty> => 0 spikes |wave-1>
+  history
+  bar-chart[50] select[1,100] spikes (|wave-2> + |empty>)
+  spikes |empty>
+  history
+  bar-chart[50] select[1,100] ket-sort spikes (|wave-2> + |empty>)
+  history
+  bar-chart[50] select[1,100] ket-sort spikes split |wave-5 empty>
+  history
+  bar-chart[50] similarity |wave-5>
+  
+  save history
+
+2016-09-29
+  load make-ft-spikes.sw
+  bar-chart[50] similarity |wave-2>
+    simm |*> #=> 100 self-similar[spikes] |_self>
+    map[simm,similarity] rel-kets[spikes] |>
+  bar-chart[50] similarity |wave-2>
+  bar-chart[50] ket-sort similarity |wave-2>
+  history
+  simm-op |*> #=> ket-sort self-similar[spikes] |_self>
+  map[simm-op,similarity] rel-kets[spikes]
+  bar-chart[50] ket-sort similarity |wave-2>
+  bar-chart[50] similarity |wave-3>
+  bar-chart[50] similarity |wave-5>
+  sbar-chart[50] similarity |wave-5>
+  
+  bar-chart[50] spikes |wave-1>
+  bar-chart[50] select[1,100] spikes |wave-2>
+  history
+  spikes |empty> => 0 spikes |wave-1>
+  history
+  bar-chart[50] select[1,100] spikes (|wave-2> + |empty>)
+  spikes |empty>
+  history
+  bar-chart[50] select[1,100] ket-sort spikes (|wave-2> + |empty>)
+  history
+  bar-chart[50] select[1,100] ket-sort spikes split |wave-5 empty>
+  history
+  bar-chart[50] similarity |wave-5>
+  
+  save history
+  show-spike-wave |*> #=> bar-chart[50] select[1,30] ket-sort spikes (|empty> + |_self>)
+  show-spike-wave |wave-1>
+  show-spike-waves |wave-2>
+  history
+  show-spike-wave |wave-2>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-5>
+  show-spike-wave |wave-13>
+  history
+  show-similarity |*> #=> bar-chart[50] similarity |_self>
+  show-similarity |wave-13>
+  show-similarity |wave-6>
+  history
+  history 1000
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  show-similarity |wave-3>
+  show-spike-wave |wave-1>
+  show-spike-wave |wave-2>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-7>
+  history
+  show-similarity |wave-1>
+  show-similarity |wave-2>
+  show-similarity |wave-3>
+  show-similarity |wave-4>
+  show-similarity |wave-5>
+  show-similarity |wave-6>
+  show-similarity |wave-7>
+  show-similarity |wave-8>
+  show-similarity |wave-9>
+  show-similarity |wave-10>
+  show-similarity |wave-11>
+  spikes |wave non-integer> => range(|0>,|1000>,|0.13>)
+  history
+  show-similarity |wave non-integer>
+  reset
+  spikes |wave-1> => range(|0>,|1000>,|1>)
+  spikes |wave-2> => range(|0>,|1000>,|2>)
+  spikes |wave-3> => range(|0>,|1000>,|3>)
+  spikes |wave-4> => range(|0>,|1000>,|4>)
+  spikes |wave-5> => range(|0>,|1000>,|5>)
+  spikes |wave-6> => range(|0>,|1000>,|6>)
+  spikes |wave-7> => range(|0>,|1000>,|7>)
+  spikes |wave-8> => range(|0>,|1000>,|8>)
+  spikes |wave-9> => range(|0>,|1000>,|9>)
+  spikes |wave-10> => range(|0>,|1000>,|10>)
+  spikes |wave-11> => range(|0>,|1000>,|11>)
+  spikes |wave-12> => range(|0>,|1000>,|12>)
+  spikes |wave-13> => range(|0>,|1000>,|13>)
+  spikes |wave-14> => range(|0>,|1000>,|14>)
+  spikes |wave-15> => range(|0>,|1000>,|15>)
+  spikes |wave-16> => range(|0>,|1000>,|16>)
+  spikes |wave-17> => range(|0>,|1000>,|17>)
+  spikes |wave-18> => range(|0>,|1000>,|18>)
+  spikes |wave-19> => range(|0>,|1000>,|19>)
+  spikes |wave-20> => range(|0>,|1000>,|20>)
+  spikes |empty> => 0 spikes |wave-1>
+  
+  show-spike-wave |*> #=> bar-chart[50] select[1,30] ket-sort spikes (|empty> + |_self>)
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  
+  show-similarity |wave-1>
+  show-similarity |wave-2>
+  show-similarity |wave-3>
+  show-similarity |wave-4>
+  show-similarity |wave-5>
+  show-similarity |wave-6>
+  show-similarity |wave-7>
+  show-similarity |wave-8>
+  show-similarity |wave-9>
+  show-similarity |wave-10>
+  show-similarity |wave-11>
+  show-similarity |wave-12>
+  ket-simm(split |a b c d>,split |b c>)
+  spikes |wave-9.9> => range(|0>,|1000>,|9.9>)
+  show-similarity |wave-9.9>
+  smooth[0.1] |10>
+  smooth[0.1]^10 |10>
+  bar-chart[100] smooth[0.1]^10 |10>
+  save history
+
+2016-09-29
+  bar-chart[100] smooth[0.25]^5 |10>
+  0.25/2 |x>
+  bar-chart[100] smooth[0.125]^5 |10>
+  bar-chart[100] smooth[0.25]^5 range(|0>,|20>)
+  history
+  bar-chart[100] smooth[0.25]^5 range(|0>,|20>,|3>)
+  bar-chart[100] smooth[0.25]^5 range(|0>,|20>,|7>)
+  spikes |wave-1> => range(|0>,|1000>,|1>)
+  spikes |wave-2> => range(|0>,|1000>,|2>)
+  spikes |wave-3> => range(|0>,|1000>,|3>)
+  spikes |wave-4> => range(|0>,|1000>,|4>)
+  spikes |wave-5> => range(|0>,|1000>,|5>)
+  spikes |wave-6> => range(|0>,|1000>,|6>)
+  spikes |wave-7> => range(|0>,|1000>,|7>)
+  spikes |wave-8> => range(|0>,|1000>,|8>)
+  spikes |wave-9> => range(|0>,|1000>,|9>)
+  spikes |wave-10> => range(|0>,|1000>,|10>)
+  spikes |wave-11> => range(|0>,|1000>,|11>)
+  spikes |wave-12> => range(|0>,|1000>,|12>)
+  spikes |wave-13> => range(|0>,|1000>,|13>)
+  spikes |wave-14> => range(|0>,|1000>,|14>)
+  spikes |wave-15> => range(|0>,|1000>,|15>)
+  spikes |wave-16> => range(|0>,|1000>,|16>)
+  spikes |wave-17> => range(|0>,|1000>,|17>)
+  spikes |wave-18> => range(|0>,|1000>,|18>)
+  spikes |wave-19> => range(|0>,|1000>,|19>)
+  spikes |wave-20> => range(|0>,|1000>,|20>)
+  spikes |empty> => 0 spikes |wave-1>
+  smooth-spike-op |*> #=> smooth[0.25]^5 spikes |_self>
+  map[smooth-spike-op,smoothed-spikes] rel-kets[spikes]
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] ket-sort smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-1>
+  history
+  show-smoothed-spike-wave |wave-2>
+  history
+  save history
+
+2016-09-29
+  load smoothed-spike-fourier-transform.sw
+  show-smoothed-spike-wave |wave-2>
+  float-value |*> #=> coeff-sort clean |_self>
+  float-value |10.25>
+  float-value |*> #=> coeff-sort pop-float clean |_self>
+  float-value |10.25>
+  dump
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-2>
+  
+  history
+  show-smoothed-spike-wave |wave-3>
+  history
+  show-smoothed-spike-wave |wave-7>
+  history
+  save history
+
+2016-09-29
+  load smoothed-spike-fourier-transform.sw
+  show-smoothed-spike-wave |wave-2>
+  float-value |*> #=> coeff-sort clean |_self>
+  float-value |10.25>
+  float-value |*> #=> coeff-sort pop-float clean |_self>
+  float-value |10.25>
+  dump
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-2>
+  
+  history
+  show-smoothed-spike-wave |wave-3>
+  history
+  show-smoothed-spike-wave |wave-7>
+  history
+  save history
+  show-smoothed-spike-wave |wave-1>
+  show-smoothed-spike-wave |wave-2>
+  show-smoothed-spike-wave |wave-3>
+  show-smoothed-spike-wave |wave-7>
+  show-smoothed-similarity |*> #=> bar-chart[50] ket-sort similar-input[smoothed-spikes] smoothed-spikes |_self>
+  show-smoothed-similarity |wave-1>
+  history
+  float-value |*> #=> pop-float clean |_self>
+  show-smoothed-spike-wave |wave-3>
+  show-smoothed-spike-wave |wave-2>
+  history
+  save history
+
+2016-09-29
+  bar-chart[100] smooth[0.25]^5 |10>
+  0.25/2 |x>
+  bar-chart[100] smooth[0.125]^5 |10>
+  bar-chart[100] smooth[0.25]^5 range(|0>,|20>)
+  history
+  bar-chart[100] smooth[0.25]^5 range(|0>,|20>,|3>)
+  bar-chart[100] smooth[0.25]^5 range(|0>,|20>,|7>)
+  spikes |wave-1> => range(|0>,|1000>,|1>)
+  spikes |wave-2> => range(|0>,|1000>,|2>)
+  spikes |wave-3> => range(|0>,|1000>,|3>)
+  spikes |wave-4> => range(|0>,|1000>,|4>)
+  spikes |wave-5> => range(|0>,|1000>,|5>)
+  spikes |wave-6> => range(|0>,|1000>,|6>)
+  spikes |wave-7> => range(|0>,|1000>,|7>)
+  spikes |wave-8> => range(|0>,|1000>,|8>)
+  spikes |wave-9> => range(|0>,|1000>,|9>)
+  spikes |wave-10> => range(|0>,|1000>,|10>)
+  spikes |wave-11> => range(|0>,|1000>,|11>)
+  spikes |wave-12> => range(|0>,|1000>,|12>)
+  spikes |wave-13> => range(|0>,|1000>,|13>)
+  spikes |wave-14> => range(|0>,|1000>,|14>)
+  spikes |wave-15> => range(|0>,|1000>,|15>)
+  spikes |wave-16> => range(|0>,|1000>,|16>)
+  spikes |wave-17> => range(|0>,|1000>,|17>)
+  spikes |wave-18> => range(|0>,|1000>,|18>)
+  spikes |wave-19> => range(|0>,|1000>,|19>)
+  spikes |wave-20> => range(|0>,|1000>,|20>)
+  spikes |empty> => 0 spikes |wave-1>
+  smooth-spike-op |*> #=> smooth[0.25]^5 spikes |_self>
+  map[smooth-spike-op,smoothed-spikes] rel-kets[spikes]
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] ket-sort smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-1>
+  history
+  show-smoothed-spike-wave |wave-2>
+  history
+  save history
+  save smoothed-spike-fourier-transform.sw
+  dump
+  history
+  smooth[0.25] |10>
+  bar-chart[50] smooth[0.25] |10>
+  bar-chart[50] smooth[0.25]^5 |10>
+  q
+

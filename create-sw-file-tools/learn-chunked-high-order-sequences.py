@@ -37,7 +37,7 @@ column_size = 10
 
 
 destination = "sw-examples/chunked-alphabet-pi.sw"
-#saved_destination = "sw-examples/spelling-dictionary--saved.sw"
+saved_destination = "sw-examples/chunked-alphabet-pi--saved.sw"
 
 
 # drop below threshold:
@@ -174,7 +174,7 @@ def learn_chunked_sequences(data,chunk_len,destination,total_bits,bits):
 #learn_chunked_sequence(name,sequence,chunk_len,destination)
 learn_chunked_sequences(data,chunk_len,destination,total_bits,bits)
 
-sys.exit(0)
+#sys.exit(0)
 
 # load the knowledge into memory, then save out the result:
 context.load(destination)
