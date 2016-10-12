@@ -2204,7 +2204,9 @@ class new_context(object):
     for label in self.ket_rules_dict:                                   # though when I do so I will probably rename fast_sp to plain superposition.
       if op in self.ket_rules_dict[label]:
 #        candidate_pattern = self.recall(op,label,True)                       # do we need active=True here? probably. OK. On a trial basis :)
-        candidate_pattern = self.ket_rules_dict[label][op]
+        candidate_pattern = self.ket_rules_dict[label][op]              # currently is an exception if any patterns are stored rules!
+        if type(candidate_pattern) in [stored_rule, memoizing_rule]:
+          candidate_pattern = candidate_pattern.activate(self,op,label) # do we really want to activate memoizing rules just by running similar-input[op]??
 #        value = silent_simm(pattern,candidate_pattern)
         value = fast_simm(pattern,candidate_pattern)                    # see if this speeds things up!
         if value > t:                                                   # "value >= t" instead?

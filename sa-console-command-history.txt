@@ -35401,3 +35401,1264 @@
   bar-chart[50] smooth[0.25]^5 |10>
   q
 
+2016-10-01
+  load smoothed-spike-fourier-transform.sw
+  show-smoothed-similarity |*> #=> bar-chart[50] ket-sort similar-input[smoothed-spikes] smoothed-spikes |_self>
+  show-smoothed-similarity |wave-1>
+  show-smoothed-similarity |wave-2>
+  show-smoothed-similarity |wave-3>
+  show-smoothed-similarity |wave-4>
+  show-smoothed-similarity |wave-5>
+  show-smoothed-similarity |wave-6>
+  show-smoothed-similarity |wave-11>
+  show-smoothed-similarity |wave-12>
+  show-smoothed-similarity |wave-7>
+  show-smoothed-similarity |wave-8>
+  show-smoothed-similarity |wave-9>
+  show-smoothed-similarity |wave-10>
+  spikes |wave-9.75> => range(|0>,|1000>,|9.75>)
+  smooth-spike-op |*> #=> smooth[0.25]^5 spikes |_self>
+  
+  
+  map[smooth-spike-op,smoothed-spikes]
+  smoothed-spikes |wave-9.75> => smooth-spike-op |_self>
+  show-smoothed-spike-wave |wave-9.75>
+  history
+  float-value |*> #=> coeff-sort pop-float clean |_self>
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-9.75>
+  history
+  
+  show-smoothed-similarity |wave-9.75>
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  show-similarity |wave-9.75>
+  common[spikes] split |wave-1 wave-9.75>
+  spikes |wave-9.75>
+  spikes |wave-1>
+  
+  smoothed-spikes |wave-1>
+  smoothed-spikes |wave-9.75>
+  
+  spikes |wave-9.75>
+  smooth[0.25]^0 |10>
+  history
+  save history
+
+2016-10-03
+  load smoothed-spike-fourier-transform.sw
+  show-smoothed-similarity |*> #=> bar-chart[50] ket-sort similar-input[smoothed-spikes] smoothed-spikes |_self>
+  show-smoothed-similarity |wave-1>
+  show-smoothed-similarity |wave-2>
+  show-smoothed-similarity |wave-3>
+  show-smoothed-similarity |wave-4>
+  show-smoothed-similarity |wave-5>
+  show-smoothed-similarity |wave-6>
+  show-smoothed-similarity |wave-11>
+  show-smoothed-similarity |wave-12>
+  show-smoothed-similarity |wave-7>
+  show-smoothed-similarity |wave-8>
+  show-smoothed-similarity |wave-9>
+  show-smoothed-similarity |wave-10>
+  spikes |wave-9.75> => range(|0>,|1000>,|9.75>)
+  smooth-spike-op |*> #=> smooth[0.25]^5 spikes |_self>
+  
+  
+  map[smooth-spike-op,smoothed-spikes]
+  smoothed-spikes |wave-9.75> => smooth-spike-op |_self>
+  show-smoothed-spike-wave |wave-9.75>
+  history
+  float-value |*> #=> coeff-sort pop-float clean |_self>
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-9.75>
+  history
+  
+  show-smoothed-similarity |wave-9.75>
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  show-similarity |wave-9.75>
+  common[spikes] split |wave-1 wave-9.75>
+  spikes |wave-9.75>
+  spikes |wave-1>
+  
+  smoothed-spikes |wave-1>
+  smoothed-spikes |wave-9.75>
+  
+  spikes |wave-9.75>
+  smooth[0.25]^0 |10>
+  history
+  save history
+  q
+
+2016-10-03
+  load spelling-dictionary.sw
+  spell |frog>
+  how-many rel-kets[pattern]
+  how-many rel-kets[encode]
+  how-many rel-kets[first-letter]
+  how-many starts-with |node >
+  first-letter |frog>
+  similar-input[encode] extract-category first-letter |frog>
+  clean select[1,1] similar-input[encode] extract-category first-letter |frog>
+  similar-input[pattern] first-letter |frog>
+  
+  then select[1,20] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,20] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,2] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,1] similar-input[pattern] first-letter |frog>
+  history
+  save history
+
+2016-10-03
+  load spelling-dictionary.sw
+  spell |frog>
+  how-many rel-kets[pattern]
+  how-many rel-kets[encode]
+  how-many rel-kets[first-letter]
+  how-many starts-with |node >
+  first-letter |frog>
+  similar-input[encode] extract-category first-letter |frog>
+  clean select[1,1] similar-input[encode] extract-category first-letter |frog>
+  similar-input[pattern] first-letter |frog>
+  
+  then select[1,20] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,20] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,2] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,1] similar-input[pattern] first-letter |frog>
+  history
+  save history
+  similar-input[pattern] first-letter |frog>
+  then |node 34329: 0>
+  similar-input[encode] extract-category then |node 34329: 0>
+  starts-with |node 34329: >
+  display starts-with |node 34329: >
+  similar-input[encode] extract-category pattern |node 34329: 0>
+  similar-input[encode] extract-category pattern |node 34329: 1>
+  similar-input[encode] extract-category pattern |node 34329: 2>
+  similar-input[encode] extract-category pattern |node 34329: 3>
+  similar-input[encode] extract-category pattern |node 34329: 4>
+  similar-input[encode] extract-category pattern |node 34329: 5>
+  similar-input[encode] extract-category pattern |node 34329: 6>
+  similar-input[encode] extract-category pattern |node 34329: 7>
+  similar-input[encode] extract-category pattern |node 34329: 8>
+  spell |firebird>
+  spell |frog>
+  similar-input[encode] extract-category first-letter |frog>
+  clean select[1,1] similar-input[encode] extract-category first-letter |frog>
+  first-letter |frog>
+  display starts-with |node 35839: >
+  display |frog>
+  dump starts-with |node 35839: >
+  input-encode |*> #=> append-column[10] encode |_self>
+  step-1 |*> #=> similar-input[encode] extract-category then drop-below[0.5] similar-input[pattern] input-encode |_self>
+  step-1 |f>
+  similar-input[pattern] input-encode |f>
+  history
+  select[1,20] similar-input[pattern] input-encode |f>
+  step-1 |*> #=> similar-input[encode] extract-category then select[1,20] similar-input[pattern] input-encode |_self>
+  step-1 |f>
+  how-many step-1 |f>
+  bar-chart[100] step-1 |a>
+  bar-chart[100] step-1 |b>
+  bar-chart[100] step-1 
+  Bhistory
+  history
+  save history
+
+2016-10-03
+  load spelling-dictionary.sw
+  spell |frog>
+  how-many rel-kets[pattern]
+  how-many rel-kets[encode]
+  how-many rel-kets[first-letter]
+  how-many starts-with |node >
+  first-letter |frog>
+  similar-input[encode] extract-category first-letter |frog>
+  clean select[1,1] similar-input[encode] extract-category first-letter |frog>
+  similar-input[pattern] first-letter |frog>
+  
+  then select[1,20] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,20] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,2] similar-input[pattern] first-letter |frog>
+  similar-input[encode] extract-category then select[1,1] similar-input[pattern] first-letter |frog>
+  history
+  save history
+  similar-input[pattern] first-letter |frog>
+  then |node 34329: 0>
+  similar-input[encode] extract-category then |node 34329: 0>
+  starts-with |node 34329: >
+  display starts-with |node 34329: >
+  similar-input[encode] extract-category pattern |node 34329: 0>
+  similar-input[encode] extract-category pattern |node 34329: 1>
+  similar-input[encode] extract-category pattern |node 34329: 2>
+  similar-input[encode] extract-category pattern |node 34329: 3>
+  similar-input[encode] extract-category pattern |node 34329: 4>
+  similar-input[encode] extract-category pattern |node 34329: 5>
+  similar-input[encode] extract-category pattern |node 34329: 6>
+  similar-input[encode] extract-category pattern |node 34329: 7>
+  similar-input[encode] extract-category pattern |node 34329: 8>
+  spell |firebird>
+  spell |frog>
+  similar-input[encode] extract-category first-letter |frog>
+  clean select[1,1] similar-input[encode] extract-category first-letter |frog>
+  first-letter |frog>
+  display starts-with |node 35839: >
+  display |frog>
+  dump starts-with |node 35839: >
+  input-encode |*> #=> append-column[10] encode |_self>
+  step-1 |*> #=> similar-input[encode] extract-category then drop-below[0.5] similar-input[pattern] input-encode |_self>
+  step-1 |f>
+  similar-input[pattern] input-encode |f>
+  history
+  select[1,20] similar-input[pattern] input-encode |f>
+  step-1 |*> #=> similar-input[encode] extract-category then select[1,20] similar-input[pattern] input-encode |_self>
+  step-1 |f>
+  how-many step-1 |f>
+  bar-chart[100] step-1 |a>
+  bar-chart[100] step-1 |b>
+  bar-chart[100] step-1 
+  Bhistory
+  history
+  save history
+  bar-chart[100] step-1 |A>
+  next-step |*> #=> bar-chart[100] similar-input[encode] extract-category then select[1,100] similar-input[pattern] input-encode |_self>
+  next-step |A>
+  
+  history
+  next-step |b>
+  history
+  next-step |*> #=> bar-chart[100] similar-input[encode] extract-category then select[1,1000] similar-input[pattern] input-encode |_self>
+  next-step |b>
+  history
+  next-step |*> #=> bar-chart[100] similar-input[encode] extract-category then drop-below[0.1] similar-input[pattern] input-encode |_self>
+  next-step |b>
+  next-step |*> #=> bar-chart[100] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step |b>
+  history
+  next-step |B>
+  
+  history
+  bar-chart[100] similar-input[encode] extract-category first-letter |big>
+  bar-chart[100] similar-input[encode] encode |6>
+  similar-input[encode] encode |6>
+  history
+  q
+
+2016-10-05
+  load spelling-dictionary-big-range.sw
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  similar-input[encode] encode |b>
+  similar-input[encode] encode |end of sequence>
+  next-step |b>
+  next-step |A>
+  history
+  save spelling-dictionary-big-range--saved.sw
+  history
+  next-step |f>
+  history
+  encode-loop |*> #=> similar-input[encode] encode |_self>
+  table[ket,encode-loop] rel-kets[encode]
+  
+  next-step |k>
+  next-step |e>
+  history
+  table[ket,encode-loop] ket-sort rel-kets[encode]
+  history
+  step-1 |*> #=> select[1,10] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  table[ket,step-1] split |x y z>
+  history
+  step-1 |*> #=> 100 select[1,15] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  table[ket,step-1] split |x y z>
+  history
+  table[ket,step-1] ket-sort rel-kets[encode]
+  save history
+
+2016-10-05
+  load spelling-dictionary-big-range.sw
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  similar-input[encode] encode |b>
+  similar-input[encode] encode |end of sequence>
+  next-step |b>
+  next-step |A>
+  history
+  save spelling-dictionary-big-range--saved.sw
+  history
+  next-step |f>
+  history
+  encode-loop |*> #=> similar-input[encode] encode |_self>
+  table[ket,encode-loop] rel-kets[encode]
+  
+  next-step |k>
+  next-step |e>
+  history
+  table[ket,encode-loop] ket-sort rel-kets[encode]
+  history
+  step-1 |*> #=> select[1,10] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  table[ket,step-1] split |x y z>
+  history
+  step-1 |*> #=> 100 select[1,15] similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  table[ket,step-1] split |x y z>
+  history
+  table[ket,step-1] ket-sort rel-kets[encode]
+  save history
+  history
+  select[1,10] drop-below[0.09] similar-input[pattern] input-encode |b>
+  extract-value clean select[1,10] drop-below[0.09] similar-input[pattern] input-encode |b>
+  bar-chart[50] ket-sort extract-value clean select[1,10] drop-below[0.09] similar-input[pattern] input-encode |b>
+  find-position |*> #=> bar-chart[50] ket-sort extract-value clean drop-below[0.09] similar-input[pattern] input-encode |_self>
+  find-position |A>
+  find-position |a>
+  find-position |B>
+  find-position |b>
+  find-position |C>
+  find-position |c>
+  find-position |d>
+  find-position |E>
+  find-position |e>
+  find-position |q>
+  find-position |u>
+  history
+  display |frog>
+  similar-input[pattern] first-letter |frog>
+  display starts-with |node 35839: >
+  display |frog>
+  q
+
+2016-10-05
+  load spelling-dictionary-big-range--saved.sw
+  first-letter |frog>
+  follow-sequence first-letter |frog>
+  follow-sequence first-letter |intelligence>
+  follow-sequence pattern |node 42736: 6>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 37884: 0>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  pick-elt starts-with |node >
+  extract-category pick-elt starts-with |node >
+  merge-label (|a> + |b>)
+  merge-labels(|a> + |b>)
+  merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  .
+  history
+  follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  spell-random-word |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  save history
+
+2016-10-05
+  load spelling-dictionary-big-range--saved.sw
+  first-letter |frog>
+  follow-sequence first-letter |frog>
+  follow-sequence first-letter |intelligence>
+  follow-sequence pattern |node 42736: 6>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 37884: 0>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  pick-elt starts-with |node >
+  extract-category pick-elt starts-with |node >
+  merge-label (|a> + |b>)
+  merge-labels(|a> + |b>)
+  merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  .
+  history
+  follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  spell-random-word |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  save history
+  spell-random-word
+  .
+  .
+  .
+  .
+  .
+  history
+  follow-sequence pattern pick-elt starts-with |node >
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step |A>
+  next-step |k>
+  extract-value |node 37: 5>
+  extract-value starts-with |node >
+  bar-chart[100] ket-sort extract-value starts-with |node >
+  history
+  save history
+
+2016-10-06
+  load spelling-dictionary-big-range--saved.sw
+  first-letter |frog>
+  follow-sequence first-letter |frog>
+  follow-sequence first-letter |intelligence>
+  follow-sequence pattern |node 42736: 6>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 37884: 0>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  pick-elt starts-with |node >
+  extract-category pick-elt starts-with |node >
+  merge-label (|a> + |b>)
+  merge-labels(|a> + |b>)
+  merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  .
+  history
+  follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  spell-random-word |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  save history
+  spell-random-word
+  .
+  .
+  .
+  .
+  .
+  history
+  follow-sequence pattern pick-elt starts-with |node >
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step |A>
+  next-step |k>
+  extract-value |node 37: 5>
+  extract-value starts-with |node >
+  bar-chart[100] ket-sort extract-value starts-with |node >
+  history
+  save history
+  to-lower |Fish>
+  lower-case |FISh>
+  lower-case rel-kets[encode]
+  clean lower-case rel-kets[encode]
+  ket-sort clean lower-case rel-kets[encode]
+  history
+  next-step-op |*> #=> ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step-op |X>
+  history
+  map[next-step-op,next-char] ket-sort clean lower-case rel-kets[encode]
+  history
+  save history
+
+2016-10-06
+  load spelling-dictionary-big-range--saved.sw
+  first-letter |frog>
+  follow-sequence first-letter |frog>
+  follow-sequence first-letter |intelligence>
+  follow-sequence pattern |node 42736: 6>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 37884: 0>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  pick-elt starts-with |node >
+  extract-category pick-elt starts-with |node >
+  merge-label (|a> + |b>)
+  merge-labels(|a> + |b>)
+  merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  .
+  history
+  follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  spell-random-word |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  save history
+  spell-random-word
+  .
+  .
+  .
+  .
+  .
+  history
+  follow-sequence pattern pick-elt starts-with |node >
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step |A>
+  next-step |k>
+  extract-value |node 37: 5>
+  extract-value starts-with |node >
+  bar-chart[100] ket-sort extract-value starts-with |node >
+  history
+  save history
+  to-lower |Fish>
+  lower-case |FISh>
+  lower-case rel-kets[encode]
+  clean lower-case rel-kets[encode]
+  ket-sort clean lower-case rel-kets[encode]
+  history
+  next-step-op |*> #=> ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step-op |X>
+  history
+  map[next-step-op,next-char] ket-sort clean lower-case rel-kets[encode]
+  history
+  save history
+  bar-chart[100] next-char |a>
+  bar-chart[100] next-char |b>
+  history
+  simm-next-char-op |*> #=> 100 ket-sort self-similar[next-char] |_self>
+  simm-next-char-op |a>
+  bar-chart[100] simm-next-char-op |a>
+  bar-chart[100] simm-next-char-op |b>
+  bar-chart[100] simm-next-char-op |h>
+  history
+  map[simm-next-char-op,similar-next-char] ket-sort clean lower-case rel-kets[encode]
+  matrix[similar-next-char]
+  .
+  history
+  save history
+
+2016-10-06
+  load spelling-dictionary-big-range--saved.sw
+  first-letter |frog>
+  follow-sequence first-letter |frog>
+  follow-sequence first-letter |intelligence>
+  follow-sequence pattern |node 42736: 6>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 37884: 0>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  pick-elt starts-with |node >
+  extract-category pick-elt starts-with |node >
+  merge-label (|a> + |b>)
+  merge-labels(|a> + |b>)
+  merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  .
+  history
+  follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  spell-random-word |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  save history
+  spell-random-word
+  .
+  .
+  .
+  .
+  .
+  history
+  follow-sequence pattern pick-elt starts-with |node >
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step |A>
+  next-step |k>
+  extract-value |node 37: 5>
+  extract-value starts-with |node >
+  bar-chart[100] ket-sort extract-value starts-with |node >
+  history
+  save history
+  to-lower |Fish>
+  lower-case |FISh>
+  lower-case rel-kets[encode]
+  clean lower-case rel-kets[encode]
+  ket-sort clean lower-case rel-kets[encode]
+  history
+  next-step-op |*> #=> ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step-op |X>
+  history
+  map[next-step-op,next-char] ket-sort clean lower-case rel-kets[encode]
+  history
+  save history
+  bar-chart[100] next-char |a>
+  bar-chart[100] next-char |b>
+  history
+  simm-next-char-op |*> #=> 100 ket-sort self-similar[next-char] |_self>
+  simm-next-char-op |a>
+  bar-chart[100] simm-next-char-op |a>
+  bar-chart[100] simm-next-char-op |b>
+  bar-chart[100] simm-next-char-op |h>
+  history
+  map[simm-next-char-op,similar-next-char] ket-sort clean lower-case rel-kets[encode]
+  matrix[similar-next-char]
+  .
+  history
+  save history
+  vector[similar-next-char] split |a b c>
+  history
+  map[simm-next-char-op,tidy-similar-next-char] split |a b c d e f g h i j k l m n o p q r s t u v w x y z>
+  matrix[tidy-similar-next-char]
+  history
+  
+                                                                           bar-chart[100] simm-next-char-op |k>
+  bar-chart[100] simm-next-char-op |a>
+  bar-chart[100] next-char |a>
+  bar-chart[100] next-char |b>
+  history
+  history 50
+  
+  history 1000
+  save spelling-dictionary-big-range--saved-v2.sw
+  pick-elt drop-below[0.09] similar-input[pattern] input-encode |b>
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] input-encode |b>
+  .
+  save history
+
+2016-10-06
+  load spelling-dictionary-big-range--saved.sw
+  first-letter |frog>
+  follow-sequence first-letter |frog>
+  follow-sequence first-letter |intelligence>
+  follow-sequence pattern |node 42736: 6>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 37884: 0>
+  follow-sequence pattern pick-elt starts-with |node >
+  .
+  pick-elt starts-with |node >
+  extract-category pick-elt starts-with |node >
+  merge-label (|a> + |b>)
+  merge-labels(|a> + |b>)
+  merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  .
+  history
+  follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  spell-random-word |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt starts-with |node > + |: 0>)
+  save history
+  spell-random-word
+  .
+  .
+  .
+  .
+  .
+  history
+  follow-sequence pattern pick-elt starts-with |node >
+  input-encode |*> #=> append-column[10] encode |_self>
+  next-step |*> #=> bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step |A>
+  next-step |k>
+  extract-value |node 37: 5>
+  extract-value starts-with |node >
+  bar-chart[100] ket-sort extract-value starts-with |node >
+  history
+  save history
+  to-lower |Fish>
+  lower-case |FISh>
+  lower-case rel-kets[encode]
+  clean lower-case rel-kets[encode]
+  ket-sort clean lower-case rel-kets[encode]
+  history
+  next-step-op |*> #=> ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+  next-step-op |X>
+  history
+  map[next-step-op,next-char] ket-sort clean lower-case rel-kets[encode]
+  history
+  save history
+  bar-chart[100] next-char |a>
+  bar-chart[100] next-char |b>
+  history
+  simm-next-char-op |*> #=> 100 ket-sort self-similar[next-char] |_self>
+  simm-next-char-op |a>
+  bar-chart[100] simm-next-char-op |a>
+  bar-chart[100] simm-next-char-op |b>
+  bar-chart[100] simm-next-char-op |h>
+  history
+  map[simm-next-char-op,similar-next-char] ket-sort clean lower-case rel-kets[encode]
+  matrix[similar-next-char]
+  .
+  history
+  save history
+  vector[similar-next-char] split |a b c>
+  history
+  map[simm-next-char-op,tidy-similar-next-char] split |a b c d e f g h i j k l m n o p q r s t u v w x y z>
+  matrix[tidy-similar-next-char]
+  history
+  
+                                                                           bar-chart[100] simm-next-char-op |k>
+  bar-chart[100] simm-next-char-op |a>
+  bar-chart[100] next-char |a>
+  bar-chart[100] next-char |b>
+  history
+  history 50
+  
+  history 1000
+  save spelling-dictionary-big-range--saved-v2.sw
+  pick-elt drop-below[0.09] similar-input[pattern] input-encode |b>
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] input-encode |b>
+  .
+  save history
+  .
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] input-encode |X>
+  follow-sequence pattern |node 7412: 0>
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] input-encode |X>
+  follow-sequence pattern |node 1392: 0>
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] input-encode |X>
+  dump |frog>
+  dump starts-with |node 35839: >
+  display |frog>
+  display starts-with |node 35839: >
+  history
+  save history
+
+2016-10-10
+  friends |Rob> #=> |Harry>
+  friends |Rob>
+  debug on
+  drop-below[0.09] similar-input[pattern]
+  context spell frog
+  pattern |node 35839: 0> => |14762: 6> + |55517: 4> + |41746: 6> + |1601: 7> + |17006: 6> + |15198: 1> + |10047: 7> + |34340: 7> + |2681: 2> + |8174: 8>
+  then |node 35839: 0> => |21262: 2> + |35941: 9> + |47223: 7> + |17129: 2> + |42193: 6> + |60430: 5> + |31479: 7> + |63629: 1> + |15968: 9> + |21266: 7>
+  
+  pattern |node 35839: 1> => |21262: 2> + |35941: 9> + |47223: 7> + |17129: 2> + |42193: 6> + |60430: 5> + |31479: 7> + |63629: 1> + |15968: 9> + |21266: 7>
+  then |node 35839: 1> => |64703: 3> + |3991: 9> + |23854: 0> + |54118: 4> + |64835: 1> + |57220: 4> + |37467: 4> + |2456: 4> + |65314: 5> + |13269: 2>
+  
+  pattern |node 35839: 2> => |64703: 3> + |3991: 9> + |23854: 0> + |54118: 4> + |64835: 1> + |57220: 4> + |37467: 4> + |2456: 4> + |65314: 5> + |13269: 2>
+  then |node 35839: 2> => |611: 7> + |45516: 5> + |61658: 6> + |18419: 1> + |867: 3> + |24425: 2> + |51083: 5> + |55299: 3> + |11711: 8> + |5454: 1>
+  
+  pattern |node 35839: 3> => |611: 7> + |45516: 5> + |61658: 6> + |18419: 1> + |867: 3> + |24425: 2> + |51083: 5> + |55299: 3> + |11711: 8> + |5454: 1>
+  then |node 35839: 3> #=> append-column[10] encode |end of sequence>
+  dump
+  similar-input[pattern] then similar-input[pattern] pattern |node 35839: 0>
+  debug off
+  dump
+  similar-input[pattern] then similar-input[pattern] pattern |node 35839: 0>
+  similar-input[pattern] pattern |node 35839: 1>
+  q
+
+2016-10-10
+  load fred-sam-friends.sw
+  dump
+  similar-input[friends] |Harry>
+  friends |Rob> #=> |Harry>
+  similar-input[friends] |Harry>
+  friends |Rob> !=> |Harry>
+  dump
+  similar-input[friends] |Harry>
+  dump
+  q
+
+2016-10-10
+  load spelling-dictionary-v3.sw
+  display starts-with |node 35839: >
+  history
+  save spelling-dictionary-v3--saved.sw
+  history
+  q
+
+2016-10-11
+  load spelling-dictionary-v3--saved.sw
+  select[1,20] similar-input[then] append-column[10] encode |end of sequence>
+  extract-value |node 0: 4>
+  history
+  bar-chart[100] ket-sort extract-value clean similar-input[then] append-column[10] encode |end of sequence>
+  history
+  display starts-with |node 35839: >
+  dump starts-with |node 35839: >
+  whats-next(append-column[10] encode |f>, append-column[10] encode |f>)
+  save history
+
+2016-10-11
+  parent-word |node 35839: *> => |frog>
+  
+  pattern |node 35839: 0> => |2883: 7> + |64218: 8> + |12536: 2> + |65422: 7> + |29295: 9> + |40270: 3> + |49650: 9> + |43633: 1> + |23347: 5> + |5460: 6>
+  then |node 35839: 0> => |47391: 2> + |64380: 8> + |53570: 2> + |64731: 8> + |12501: 1> + |20202: 2> + |51177: 7> + |56086: 9> + |5748: 1> + |45686: 1>
+  
+  pattern |node 35839: 1> => |47391: 2> + |64380: 8> + |53570: 2> + |64731: 8> + |12501: 1> + |20202: 2> + |51177: 7> + |56086: 9> + |5748: 1> + |45686: 1>
+  then |node 35839: 1> => |3606: 5> + |12530: 8> + |62071: 8> + |6644: 5> + |43817: 4> + |39714: 3> + |30980: 2> + |28607: 6> + |24236: 9> + |36068: 2>
+  
+  pattern |node 35839: 2> => |3606: 5> + |12530: 8> + |62071: 8> + |6644: 5> + |43817: 4> + |39714: 3> + |30980: 2> + |28607: 6> + |24236: 9> + |36068: 2>
+  then |node 35839: 2> => |53347: 2> + |7633: 9> + |17676: 4> + |31664: 0> + |54722: 2> + |5963: 7> + |44025: 4> + |22352: 5> + |10579: 8> + |6355: 5>
+  
+  pattern |node 35839: 3> => |53347: 2> + |7633: 9> + |17676: 4> + |31664: 0> + |54722: 2> + |5963: 7> + |44025: 4> + |22352: 5> + |10579: 8> + |6355: 5>
+  then |node 35839: 3> #=> append-column[10] encode |end of sequence>
+  
+  dump
+  input-encode |*> #=> append-column[10] encode |_self>
+  intersection(drop-below[0.09] similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>, drop-below[0.09] similar-input[pattern] input-encode |r>)
+  intersection(drop-below[0.09] similar-input[pattern] then drop-below[0.09] similar-input[pattern] pattern |node 35839: 0>, drop-below[0.09] similar-input[pattern] pattern |node 35839: 1>)
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  dump
+  
+  q
+
+2016-10-11
+  load spelling-dictionary-v3--saved.sw
+  select[1,20] similar-input[then] append-column[10] encode |end of sequence>
+  extract-value |node 0: 4>
+  history
+  bar-chart[100] ket-sort extract-value clean similar-input[then] append-column[10] encode |end of sequence>
+  history
+  display starts-with |node 35839: >
+  dump starts-with |node 35839: >
+  whats-next(append-column[10] encode |f>, append-column[10] encode |f>)
+  save history
+  intersection(split|a b c>,split |c b>)
+  history
+  input-encode |*> #=> append-column[10] encode |_self>
+  intersection(drop-below[0.09] similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>, drop-below[0.09] similar-input[pattern] input-encode |f>)
+  display starts-with |node 35839: >
+  dump starts-with |node 35839: >
+  history
+  bar-chart[100] ket-sort similar-input[encode] extract-category whats-next(input-encode |f>, input-encode |r>)
+  history
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  history
+  save history
+
+2016-10-11
+  full |range> => range(|1>,|65536>)
+  encode |-> => pick[10] full |range>
+  encode |a> => pick[10] full |range>
+  encode |b> => pick[10] full |range>
+  encode |l> => pick[10] full |range>
+  encode |e> => pick[10] full |range>
+  encode |c> => pick[10] full |range>
+  encode |o> => pick[10] full |range>
+  encode |u> => pick[10] full |range>
+  encode |s> => pick[10] full |range>
+  encode |d> => pick[10] full |range>
+  encode |m> => pick[10] full |range>
+  encode |i> => pick[10] full |range>
+  encode |g> => pick[10] full |range>
+  encode |y> => pick[10] full |range>
+  encode |n> => pick[10] full |range>
+  encode |r> => pick[10] full |range>
+  encode |t> => pick[10] full |range>
+  encode |h> => pick[10] full |range>
+  encode |v> => pick[10] full |range>
+  encode |p> => pick[10] full |range>
+  encode |q> => pick[10] full |range>
+  encode |f> => pick[10] full |range>
+  encode |z> => pick[10] full |range>
+  encode |k> => pick[10] full |range>
+  encode |'> => pick[10] full |range>
+  encode |x> => pick[10] full |range>
+  encode |w> => pick[10] full |range>
+  encode |3> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |A> => pick[10] full |range>
+  encode | > => pick[10] full |range>
+  encode |&> => pick[10] full |range>
+  encode |R> => pick[10] full |range>
+  encode |1> => pick[10] full |range>
+  encode |.> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |M> => pick[10] full |range>
+  
+  
+  
+  dump
+  first-letter |frog> => random-column[10] encode |f>
+  parent-word |node 35839: *> => |frog>
+  pattern |node 35839: 0> => first-letter |frog>
+  then |node 35839: 0> => random-column[10] encode |r>
+  
+  pattern |node 35839: 1> => then |node 35839: 0>
+  then |node 35839: 1> => random-column[10] encode |o>
+  
+  pattern |node 35839: 2> => then |node 35839: 1>
+  then |node 35839: 2> => random-column[10] encode |g>
+  
+  pattern |node 35839: 3> => then |node 35839: 2>
+  then |node 35839: 3> #=> append-column[10] encode |end of sequence>
+  
+  
+  dump
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  first-letter |frog kick> => random-column[10] encode |f>
+  parent-word |node 35840: *> => |frog kick>
+  pattern |node 35840: 0> => first-letter |frog kick>
+  then |node 35840: 0> => random-column[10] encode |r>
+  
+  pattern |node 35840: 1> => then |node 35840: 0>
+  then |node 35840: 1> => random-column[10] encode |o>
+  
+  pattern |node 35840: 2> => then |node 35840: 1>
+  then |node 35840: 2> => random-column[10] encode |g>
+  
+  pattern |node 35840: 3> => then |node 35840: 2>
+  then |node 35840: 3> => random-column[10] encode | >
+  
+  pattern |node 35840: 4> => then |node 35840: 3>
+  then |node 35840: 4> => random-column[10] encode |k>
+  
+  pattern |node 35840: 5> => then |node 35840: 4>
+  then |node 35840: 5> => random-column[10] encode |i>
+  
+  pattern |node 35840: 6> => then |node 35840: 5>
+  then |node 35840: 6> => random-column[10] encode |c>
+  
+  pattern |node 35840: 7> => then |node 35840: 6>
+  then |node 35840: 7> => random-column[10] encode |k>
+  
+  pattern |node 35840: 8> => then |node 35840: 7>
+  then |node 35840: 8> #=> append-column[10] encode |end of sequence>
+  
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  first-letter |frog spit> => random-column[10] encode |f>
+  parent-word |node 35841: *> => |frog spit>
+  pattern |node 35841: 0> => first-letter |frog spit>
+  then |node 35841: 0> => random-column[10] encode |r>
+  
+  pattern |node 35841: 1> => then |node 35841: 0>
+  then |node 35841: 1> => random-column[10] encode |o>
+  
+  pattern |node 35841: 2> => then |node 35841: 1>
+  then |node 35841: 2> => random-column[10] encode |g>
+  
+  pattern |node 35841: 3> => then |node 35841: 2>
+  then |node 35841: 3> => random-column[10] encode | >
+  
+  pattern |node 35841: 4> => then |node 35841: 3>
+  then |node 35841: 4> => random-column[10] encode |s>
+  
+  pattern |node 35841: 5> => then |node 35841: 4>
+  then |node 35841: 5> => random-column[10] encode |p>
+  
+  pattern |node 35841: 6> => then |node 35841: 5>
+  then |node 35841: 6> => random-column[10] encode |i>
+  
+  pattern |node 35841: 7> => then |node 35841: 6>
+  then |node 35841: 7> => random-column[10] encode |t>
+  
+  pattern |node 35841: 8> => then |node 35841: 7>
+  then |node 35841: 8> #=> append-column[10] encode |end of sequence>
+  
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  q
+
+2016-10-12
+  load make-ft-spikes.sw
+  bar-chart[50] similarity |wave-2>
+    simm |*> #=> 100 self-similar[spikes] |_self>
+    map[simm,similarity] rel-kets[spikes] |>
+  bar-chart[50] similarity |wave-2>
+  bar-chart[50] ket-sort similarity |wave-2>
+  history
+  simm-op |*> #=> ket-sort self-similar[spikes] |_self>
+  map[simm-op,similarity] rel-kets[spikes]
+  bar-chart[50] ket-sort similarity |wave-2>
+  bar-chart[50] similarity |wave-3>
+  bar-chart[50] similarity |wave-5>
+  sbar-chart[50] similarity |wave-5>
+  
+  bar-chart[50] spikes |wave-1>
+  bar-chart[50] select[1,100] spikes |wave-2>
+  history
+  spikes |empty> => 0 spikes |wave-1>
+  history
+  bar-chart[50] select[1,100] spikes (|wave-2> + |empty>)
+  spikes |empty>
+  history
+  bar-chart[50] select[1,100] ket-sort spikes (|wave-2> + |empty>)
+  history
+  bar-chart[50] select[1,100] ket-sort spikes split |wave-5 empty>
+  history
+  bar-chart[50] similarity |wave-5>
+  
+  save history
+  show-spike-wave |*> #=> bar-chart[50] select[1,30] ket-sort spikes (|empty> + |_self>)
+  show-spike-wave |wave-1>
+  show-spike-waves |wave-2>
+  history
+  show-spike-wave |wave-2>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-5>
+  show-spike-wave |wave-13>
+  history
+  show-similarity |*> #=> bar-chart[50] similarity |_self>
+  show-similarity |wave-13>
+  show-similarity |wave-6>
+  history
+  history 1000
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  show-similarity |wave-3>
+  show-spike-wave |wave-1>
+  show-spike-wave |wave-2>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-7>
+  history
+  show-similarity |wave-1>
+  show-similarity |wave-2>
+  show-similarity |wave-3>
+  show-similarity |wave-4>
+  show-similarity |wave-5>
+  show-similarity |wave-6>
+  show-similarity |wave-7>
+  show-similarity |wave-8>
+  show-similarity |wave-9>
+  show-similarity |wave-10>
+  show-similarity |wave-11>
+  spikes |wave non-integer> => range(|0>,|1000>,|0.13>)
+  history
+  show-similarity |wave non-integer>
+  reset
+  spikes |wave-1> => range(|0>,|1000>,|1>)
+  spikes |wave-2> => range(|0>,|1000>,|2>)
+  spikes |wave-3> => range(|0>,|1000>,|3>)
+  spikes |wave-4> => range(|0>,|1000>,|4>)
+  spikes |wave-5> => range(|0>,|1000>,|5>)
+  spikes |wave-6> => range(|0>,|1000>,|6>)
+  spikes |wave-7> => range(|0>,|1000>,|7>)
+  spikes |wave-8> => range(|0>,|1000>,|8>)
+  spikes |wave-9> => range(|0>,|1000>,|9>)
+  spikes |wave-10> => range(|0>,|1000>,|10>)
+  spikes |wave-11> => range(|0>,|1000>,|11>)
+  spikes |wave-12> => range(|0>,|1000>,|12>)
+  spikes |wave-13> => range(|0>,|1000>,|13>)
+  spikes |wave-14> => range(|0>,|1000>,|14>)
+  spikes |wave-15> => range(|0>,|1000>,|15>)
+  spikes |wave-16> => range(|0>,|1000>,|16>)
+  spikes |wave-17> => range(|0>,|1000>,|17>)
+  spikes |wave-18> => range(|0>,|1000>,|18>)
+  spikes |wave-19> => range(|0>,|1000>,|19>)
+  spikes |wave-20> => range(|0>,|1000>,|20>)
+  spikes |empty> => 0 spikes |wave-1>
+  
+  show-spike-wave |*> #=> bar-chart[50] select[1,30] ket-sort spikes (|empty> + |_self>)
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  
+  show-similarity |wave-1>
+  show-similarity |wave-2>
+  show-similarity |wave-3>
+  show-similarity |wave-4>
+  show-similarity |wave-5>
+  show-similarity |wave-6>
+  show-similarity |wave-7>
+  show-similarity |wave-8>
+  show-similarity |wave-9>
+  show-similarity |wave-10>
+  show-similarity |wave-11>
+  show-similarity |wave-12>
+  ket-simm(split |a b c d>,split |b c>)
+  spikes |wave-9.9> => range(|0>,|1000>,|9.9>)
+  show-similarity |wave-9.9>
+  smooth[0.1] |10>
+  smooth[0.1]^10 |10>
+  bar-chart[100] smooth[0.1]^10 |10>
+  save history
+  smooth-spike-op |*> #=> smooth[0.1]^10 spikes |_self>
+  map[smooth-spike-op,smoothed-spikes] rel-kets[spikes]
+  float-value |*> #=> pop-float clean |_self>
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-4>
+  history
+  minus[5] |10>
+  plus[5] |11>
+  int-encode |*> #=> range(minus[5] |_self>, plus[5] |_self>)
+  int-encode |48>
+  int-encode |49>
+  ket-simm (int-encode |48>, int-encode |49>)
+  bar-chart[100] int-encode split |48 49>
+  history
+  soft-max (3.1|a> + 2|b> + 7.2|c>)
+  softmax split |a b c>
+  softmax (3.1|a> + 2|b> + 7.2|c>)
+  save history
+
+2016-10-12
+  load spelling-dictionary-v3--saved.sw
+  similar-input[pattern] pattern |node 35839: 0>
+  
+  input-encode |*> #=> append-column[10] |_self>
+  history
+  similar-input[pattern] input-encode |f>
+  input-encode |*> #=> append-column[10] encode |_self>
+  similar-input[pattern] input-encode |f>
+  
+  how-many similar-input[pattern] input-encode |f>
+  bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history
+  similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history
+  save history
+
+2016-10-12
+  load spelling-dictionary-v3--saved.sw
+  similar-input[pattern] pattern |node 35839: 0>
+  
+  input-encode |*> #=> append-column[10] |_self>
+  history
+  similar-input[pattern] input-encode |f>
+  input-encode |*> #=> append-column[10] encode |_self>
+  similar-input[pattern] input-encode |f>
+  
+  how-many similar-input[pattern] input-encode |f>
+  bar-chart[100] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history
+  similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history
+  save history
+  select[1,2000] similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history
+  recale 3 |x>
+  rescale 3 |x>
+  rescale select[1,2000] similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>
+  
+  follow-sequence pattern |node 33489: 3>
+  parent-word |node 33489: 3>
+  history
+  
+  parent-word |node 33489: 3>
+  
+  parent-word |node 23584: 3>
+  drop-below[0.9] rescale similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history
+  how-many drop-below[0.9] rescale similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>
+  history 1000
+  q
+
+2016-10-12
+  load spelling-dictionary-v3--saved.sw
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  history
+  q
+
+2016-10-12
+  load spelling-dictionary-v3--saved.sw
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  
+  history
+  q
+
+2016-10-12
+  load make-ft-spikes.sw
+  bar-chart[50] similarity |wave-2>
+    simm |*> #=> 100 self-similar[spikes] |_self>
+    map[simm,similarity] rel-kets[spikes] |>
+  bar-chart[50] similarity |wave-2>
+  bar-chart[50] ket-sort similarity |wave-2>
+  history
+  simm-op |*> #=> ket-sort self-similar[spikes] |_self>
+  map[simm-op,similarity] rel-kets[spikes]
+  bar-chart[50] ket-sort similarity |wave-2>
+  bar-chart[50] similarity |wave-3>
+  bar-chart[50] similarity |wave-5>
+  sbar-chart[50] similarity |wave-5>
+  
+  bar-chart[50] spikes |wave-1>
+  bar-chart[50] select[1,100] spikes |wave-2>
+  history
+  spikes |empty> => 0 spikes |wave-1>
+  history
+  bar-chart[50] select[1,100] spikes (|wave-2> + |empty>)
+  spikes |empty>
+  history
+  bar-chart[50] select[1,100] ket-sort spikes (|wave-2> + |empty>)
+  history
+  bar-chart[50] select[1,100] ket-sort spikes split |wave-5 empty>
+  history
+  bar-chart[50] similarity |wave-5>
+  
+  save history
+  show-spike-wave |*> #=> bar-chart[50] select[1,30] ket-sort spikes (|empty> + |_self>)
+  show-spike-wave |wave-1>
+  show-spike-waves |wave-2>
+  history
+  show-spike-wave |wave-2>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-5>
+  show-spike-wave |wave-13>
+  history
+  show-similarity |*> #=> bar-chart[50] similarity |_self>
+  show-similarity |wave-13>
+  show-similarity |wave-6>
+  history
+  history 1000
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  show-similarity |wave-3>
+  show-spike-wave |wave-1>
+  show-spike-wave |wave-2>
+  show-spike-wave |wave-3>
+  show-spike-wave |wave-7>
+  history
+  show-similarity |wave-1>
+  show-similarity |wave-2>
+  show-similarity |wave-3>
+  show-similarity |wave-4>
+  show-similarity |wave-5>
+  show-similarity |wave-6>
+  show-similarity |wave-7>
+  show-similarity |wave-8>
+  show-similarity |wave-9>
+  show-similarity |wave-10>
+  show-similarity |wave-11>
+  spikes |wave non-integer> => range(|0>,|1000>,|0.13>)
+  history
+  show-similarity |wave non-integer>
+  reset
+  spikes |wave-1> => range(|0>,|1000>,|1>)
+  spikes |wave-2> => range(|0>,|1000>,|2>)
+  spikes |wave-3> => range(|0>,|1000>,|3>)
+  spikes |wave-4> => range(|0>,|1000>,|4>)
+  spikes |wave-5> => range(|0>,|1000>,|5>)
+  spikes |wave-6> => range(|0>,|1000>,|6>)
+  spikes |wave-7> => range(|0>,|1000>,|7>)
+  spikes |wave-8> => range(|0>,|1000>,|8>)
+  spikes |wave-9> => range(|0>,|1000>,|9>)
+  spikes |wave-10> => range(|0>,|1000>,|10>)
+  spikes |wave-11> => range(|0>,|1000>,|11>)
+  spikes |wave-12> => range(|0>,|1000>,|12>)
+  spikes |wave-13> => range(|0>,|1000>,|13>)
+  spikes |wave-14> => range(|0>,|1000>,|14>)
+  spikes |wave-15> => range(|0>,|1000>,|15>)
+  spikes |wave-16> => range(|0>,|1000>,|16>)
+  spikes |wave-17> => range(|0>,|1000>,|17>)
+  spikes |wave-18> => range(|0>,|1000>,|18>)
+  spikes |wave-19> => range(|0>,|1000>,|19>)
+  spikes |wave-20> => range(|0>,|1000>,|20>)
+  spikes |empty> => 0 spikes |wave-1>
+  
+  show-spike-wave |*> #=> bar-chart[50] select[1,30] ket-sort spikes (|empty> + |_self>)
+  show-similarity |*> #=> bar-chart[50] ket-sort similar-input[spikes] spikes |_self>
+  
+  show-similarity |wave-1>
+  show-similarity |wave-2>
+  show-similarity |wave-3>
+  show-similarity |wave-4>
+  show-similarity |wave-5>
+  show-similarity |wave-6>
+  show-similarity |wave-7>
+  show-similarity |wave-8>
+  show-similarity |wave-9>
+  show-similarity |wave-10>
+  show-similarity |wave-11>
+  show-similarity |wave-12>
+  ket-simm(split |a b c d>,split |b c>)
+  spikes |wave-9.9> => range(|0>,|1000>,|9.9>)
+  show-similarity |wave-9.9>
+  smooth[0.1] |10>
+  smooth[0.1]^10 |10>
+  bar-chart[100] smooth[0.1]^10 |10>
+  save history
+  smooth-spike-op |*> #=> smooth[0.1]^10 spikes |_self>
+  map[smooth-spike-op,smoothed-spikes] rel-kets[spikes]
+  float-value |*> #=> pop-float clean |_self>
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-4>
+  history
+  minus[5] |10>
+  plus[5] |11>
+  int-encode |*> #=> range(minus[5] |_self>, plus[5] |_self>)
+  int-encode |48>
+  int-encode |49>
+  ket-simm (int-encode |48>, int-encode |49>)
+  bar-chart[100] int-encode split |48 49>
+  history
+  soft-max (3.1|a> + 2|b> + 7.2|c>)
+  softmax split |a b c>
+  softmax (3.1|a> + 2|b> + 7.2|c>)
+  save history
+  discrimination (3.1|a> + 2|b> + 7.2|c>)
+  discrimination softmax (3.1|a> + 2|b> + 7.2|c>)
+  q
+
+2016-10-12
+  load spelling-dictionary-v3--saved.sw
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  
+  q
+

@@ -5,6 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
+# Update: 5/10/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -562,7 +563,10 @@ ket_context_table = {
   "spell"              : "spell",
   
 # 25/9/2016:
-  "print-sequence"     : "print_sequence",           
+  "print-sequence"     : "print_sequence",
+  
+# 5/10/2016:
+#  "follow-sequence"    : "follow_sequence",            # nope! wrong spot!             
 }
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.
@@ -571,6 +575,9 @@ ket_context_table = {
 sp_context_table = {
 #28/7/2016:
   "have-in-common"    : "have_in_common",
+  
+# 5/10/2016:
+  "follow-sequence"    : "follow_sequence",             
 } 
 
 def sanitize_op(op):
@@ -1336,7 +1343,10 @@ context_whitelist_table_2 = {
   "apply"    : "apply_sp",
 
 # 17/1/2015:
-  "clone"    : "clone_ket",  
+  "clone"    : "clone_ket",
+
+# 10/10/2016
+  "whats-next" : "whats_next_two",    
 }
 
 

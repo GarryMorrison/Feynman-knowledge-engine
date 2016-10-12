@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 29/9/2016
+# Update: 10/10/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4739,12 +4739,12 @@ def spell(one,context):
     return one
   print("spell word:",one)
   context.learn("current","node",start)
-  name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,15)   #.apply_sigmoid(clean)
+  name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
   while name.the_label() != "end of sequence":
-#    print(name)
-    bar_chart(name,'80')
+    print(name)
+#    bar_chart(name,'80')
     context.learn("current","node",ket("node").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
-    name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,15)  #.apply_sigmoid(clean)
+    name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
 #  print(name)
   return name
   
@@ -4800,4 +4800,104 @@ def discrimination(one):
   r = one.coeff_sort().normalize()
   first = r.data[0].value                                 # yeah, breaks the superposition class abstraction. Fix later!
   second = r.data[1].value
-  return ket("discrimination",first-second)                                                                 
+  return ket("discrimination",first-second)
+  
+  
+# 5/10/2016
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# follow-sequence (*) #=>
+#   current |node> => |_self>
+#   while name current |node> /= |end of sequence>:
+#     print name current |node>
+#     current |node> => next current |node>
+#   return |end of sequence>
+#
+# code to follow a sequence
+#
+# one is a sp
+def follow_sequence(one,context):
+  if len(one) == 0:
+    return one
+  context.learn("current","node",one)
+  name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  while name.the_label() != "end of sequence":
+    print(name)
+    context.learn("current","node",ket("node").apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
+    name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  return name
+  
+
+
+# 10/10/2016
+# whats_next(sp)
+# whats_next(sp,sp)
+# whats_next(sp,sp,sp)
+# ...
+# ie, given learned high order sequences of SDR's, predict what the next SDR is going to be.
+#
+# then drop-below[t] similar-input[pattern] sp1
+# then intersection(drop-below[t] similar-input[pattern] then drop-below[t] similar-input[pattern] sp1, drop-below[t] similar-input[pattern] sp2)
+# then intersection(drop-below[0.09] similar-input[pattern] then drop-below[0.09] similar-input[pattern] input-encode |f>, drop-below[0.09] similar-input[pattern] input-encode |f>)
+# or ...
+# find-pattern (*) #=> drop-below[t] similar-input[pattern] |_self>
+# then find-pattern sp1
+# then intersection(find-pattern then find-pattern sp1, find-pattern sp2)
+# then intersection(find-pattern then find-pattern then find-pattern sp1, find-pattern then find-pattern sp2, find-pattern sp3) 
+#
+# one is a sp
+def whats_next_one(context,one):
+  pattern = "pattern"
+  then = "then"
+  t = 0.09
+  return one.similar_input(context,pattern).drop_below(t).apply_op(context,then)
+
+# bah! I can't get it to work.... Not sure where the bug is.
+# Hrmm... I think it is from "then similar-input[pattern]" applied to more than one pattern at a time.
+# Maybe not. Since this works:
+# next-step-op |*> #=> ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] input-encode |_self>
+#  
+# one, two are sp's
+def first_attempt_whats_next_two(context,one,two):
+  pattern = "pattern"
+  then = "then"
+  t1 = 0.09
+  t2 = 0.8
+  nodes_one = one.similar_input(context,pattern).drop_below(t1).apply_op(context,then).similar_input(context,pattern).rescale() 
+  nodes_two = two.similar_input(context,pattern).drop_below(t1)
+#  return intersection(nodes_one,nodes_two).apply_op(context,then)
+  print("nodes_one:",nodes_one)
+  print("nodes_two:",nodes_two)
+  return intersection(nodes_two,nodes_one)                             # I should look into optimizing intersection! 
+  
+# one, two and three are sp's
+def whats_next_three(context,one,two,three):
+  pattern = "pattern"
+  then = "then"
+  t = 0.09
+  nodes_one = one.similar_input(context,pattern).drop_below(t).apply_op(context,then).similar_input(context,pattern).drop_below(t).apply_op(context,then).similar_input(context,pattern).drop_below(t) 
+  nodes_two = two.similar_input(context,pattern).drop_below(t).apply_op(context,then).similar_input(context,pattern).drop_below(t) 
+  nodes_three = three.similar_input(context,pattern).drop_below(t)
+  return intersection(intersection(nodes_one,nodes_two),nodes_three).apply_op(context,then)       
+
+# bah! Try another approach!
+# one, two are sp's
+def whats_next_two(context,one,two):
+  pattern = "pattern"
+  then = "then"
+  t1 = 0.09
+  t2 = 0.8
+  nodes_one = one.similar_input(context,pattern).drop_below(t1) 
+  nodes_two = two.similar_input(context,pattern).drop_below(t1)
+  r = superposition()
+  for x in nodes_one:
+    y = x.apply_sigmoid(clean).apply_op(context,then).similar_input(context,pattern).drop_below(t1)               # maybe select[1,1] instead of drop-below
+    z = intersection(y,nodes_two)
+    r += z
+  return r 
+#  return intersection(nodes_one,nodes_two).apply_op(context,then)
+#  print("nodes_one:",nodes_one)
+#  print("nodes_two:",nodes_two)
+#  return intersection(nodes_two,nodes_one)                             # I should look into optimizing intersection! 
+                                                                           

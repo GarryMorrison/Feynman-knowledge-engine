@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-09-16
-# Update:
+# Update: 2016-10-10
 # Copyright: GPLv3
 #
 # Usage: ./learn-to-spell.py
@@ -27,8 +27,8 @@ context = new_context("chunked high order sequences")
 bits = 10
 
 # total number of bits:
-#total_bits = 65536
-total_bits = 2048
+total_bits = 65536
+#total_bits = 2048
 
 # column size:
 #column_size = 200
@@ -37,8 +37,8 @@ column_size = 10
 
 dictionary = "text/745550--common-words.txt"
 
-destination = "sw-examples/spelling-dictionary.sw"
-saved_destination = "sw-examples/spelling-dictionary--saved.sw"
+destination = "sw-examples/spelling-dictionary-v3.sw"
+saved_destination = "sw-examples/spelling-dictionary-v3--saved.sw"
 
 
 # drop below threshold:
@@ -53,24 +53,6 @@ t = 0
 #t2 = 0.05
 t2 = 0
 
-#name = "alphabet"
-#sequence = "A B C D E F G H".split()
-
-name = "alphabet"
-sequence = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split()
-
-#name = "pi"
-#sequence = "3 . 1 4 1 5 9 2 6 5 3 5 8 9 7 9".split()
-
-
-chunk_len = 3                      # this is the length of the chunks. 3 seems like a good starting value.
-chunk_name = "alpha"
-chunked_data = [sequence[i:i + chunk_len] for i in range(0,len(sequence), chunk_len)]
-middle_nodes = [chunk_name + " " + str(k) for k in range(len(chunked_data))]
-
-print("chunked data:",chunked_data)
-print("middle_nodes:",middle_nodes)
-#sys.exit(0)
 
 def encode_concepts(bits, sequence, elements_dictionary, f):
   for element in sequence:
@@ -89,6 +71,7 @@ def encode_sequence(node, name, sequence, f):
   for k,element in enumerate(sequence):
     if k == 0:
       f.write("first-letter |%s> => random-column[%s] encode |%s>\n" % (name, column_size, sequence[k]))
+      f.write("parent-word |node %s: *> => |%s>\n" % (node, name))
       f.write("pattern |node %s: %s> => first-letter |%s>\n" % (node, k, name))
 
       if len(sequence) > 1:
@@ -125,23 +108,6 @@ with open(destination,'w') as f:
       word = list(line)
       encode_sequence(node, line, word, f)
       node += 1
-
-sys.exit(0)
-elements_dictionary = {}
-with open(destination,'w') as f:
-  f.write("full |range> => range(|1>,|%s>)\n" % total_bits)
-  encode_concepts(bits, sequence, elements_dictionary, f)
-  encode_concepts(bits, middle_nodes, elements_dictionary, f)
-  f.write("encode |end of sequence> => pick[%s] full |range>\n" % (bits))
-
-  node = 0
-  encode_sequence(node, name, middle_nodes, f)  
-
-  for idx,sequence in enumerate(chunked_data):
-    node += 1
-    name = middle_nodes[idx]
-    encode_sequence(node, name, sequence, f)  
-
 
 sys.exit(0)
 
