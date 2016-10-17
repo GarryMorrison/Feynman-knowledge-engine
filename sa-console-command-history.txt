@@ -36662,3 +36662,119 @@
   
   q
 
+2016-10-12
+  debug on
+  select[1,1] split |a b c>
+  q
+
+2016-10-13
+  pattern |node 35839: 0> => |2883: 7> + |64218: 8> + |12536: 2> + |65422: 7> + |29295: 9> + |40270: 3> + |49650: 9> + |43633: 1> + |23347: 5> + |5460: 6>
+  then |node 35839: 0> => |47391: 2> + |64380: 8> + |53570: 2> + |64731: 8> + |12501: 1> + |20202: 2> + |51177: 7> + |56086: 9> + |5748: 1> + |45686: 1>
+  
+  pattern |node 35839: 1> => |47391: 2> + |64380: 8> + |53570: 2> + |64731: 8> + |12501: 1> + |20202: 2> + |51177: 7> + |56086: 9> + |5748: 1> + |45686: 1>
+  then |node 35839: 1> => |3606: 5> + |12530: 8> + |62071: 8> + |6644: 5> + |43817: 4> + |39714: 3> + |30980: 2> + |28607: 6> + |24236: 9> + |36068: 2>
+  
+  pattern |node 35839: 2> => |3606: 5> + |12530: 8> + |62071: 8> + |6644: 5> + |43817: 4> + |39714: 3> + |30980: 2> + |28607: 6> + |24236: 9> + |36068: 2>
+  then |node 35839: 2> => |53347: 2> + |7633: 9> + |17676: 4> + |31664: 0> + |54722: 2> + |5963: 7> + |44025: 4> + |22352: 5> + |10579: 8> + |6355: 5>
+  
+  pattern |node 35839: 3> => |53347: 2> + |7633: 9> + |17676: 4> + |31664: 0> + |54722: 2> + |5963: 7> + |44025: 4> + |22352: 5> + |10579: 8> + |6355: 5>
+  then |node 35839: 3> #=> append-column[10] encode |end of sequence>
+  
+  dump
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  q
+
+2016-10-13
+  pattern |node 35839: 0> => |2883: 7> + |64218: 8> + |12536: 2> + |65422: 7> + |29295: 9> + |40270: 3> + |49650: 9> + |43633: 1> + |23347: 5> + |5460: 6>
+  then |node 35839: 0> => |47391: 2> + |64380: 8> + |53570: 2> + |64731: 8> + |12501: 1> + |20202: 2> + |51177: 7> + |56086: 9> + |5748: 1> + |45686: 1>
+  
+  pattern |node 35839: 1> => |47391: 2> + |64380: 8> + |53570: 2> + |64731: 8> + |12501: 1> + |20202: 2> + |51177: 7> + |56086: 9> + |5748: 1> + |45686: 1>
+  then |node 35839: 1> => |3606: 5> + |12530: 8> + |62071: 8> + |6644: 5> + |43817: 4> + |39714: 3> + |30980: 2> + |28607: 6> + |24236: 9> + |36068: 2>
+  
+  pattern |node 35839: 2> => |3606: 5> + |12530: 8> + |62071: 8> + |6644: 5> + |43817: 4> + |39714: 3> + |30980: 2> + |28607: 6> + |24236: 9> + |36068: 2>
+  then |node 35839: 2> => |53347: 2> + |7633: 9> + |17676: 4> + |31664: 0> + |54722: 2> + |5963: 7> + |44025: 4> + |22352: 5> + |10579: 8> + |6355: 5>
+  
+  pattern |node 35839: 3> => |53347: 2> + |7633: 9> + |17676: 4> + |31664: 0> + |54722: 2> + |5963: 7> + |44025: 4> + |22352: 5> + |10579: 8> + |6355: 5>
+  then |node 35839: 3> #=> append-column[10] encode |end of sequence>
+  
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  q
+
+2016-10-17
+  load spelling-dictionary-v3--saved.sw
+  whats-next(pattern |node 35839: 0>, pattern |node 35839: 1>)
+  q
+
+2016-10-17
+  load smoothed-spike-fourier-transform.sw
+  show-smoothed-spike-wave |wave-2>
+  float-value |*> #=> coeff-sort clean |_self>
+  float-value |10.25>
+  float-value |*> #=> coeff-sort pop-float clean |_self>
+  float-value |10.25>
+  dump
+  show-smoothed-spike-wave |*> #=> bar-chart[50] select[1,45] sort-by[float-value] smoothed-spikes (|empty> + |_self>)
+  show-smoothed-spike-wave |wave-2>
+  
+  history
+  show-smoothed-spike-wave |wave-3>
+  history
+  show-smoothed-spike-wave |wave-7>
+  history
+  save history
+  show-smoothed-spike-wave |wave-1>
+  show-smoothed-spike-wave |wave-2>
+  show-smoothed-spike-wave |wave-3>
+  show-smoothed-spike-wave |wave-7>
+  show-smoothed-similarity |*> #=> bar-chart[50] ket-sort similar-input[smoothed-spikes] smoothed-spikes |_self>
+  show-smoothed-similarity |wave-1>
+  history
+  float-value |*> #=> pop-float clean |_self>
+  show-smoothed-spike-wave |wave-3>
+  show-smoothed-spike-wave |wave-2>
+  history
+  save history
+  bar-chart[100] smooth[1]^10 |48>
+  ket-simm(smooth[1]^10 |48>, smooth[1]^10 |49>)
+  history
+  bar-chart[100] smooth[1]^10 split |48 49>
+  bar-chart[100] -3|x>
+  history
+  q
+
+2016-10-17
+  load names.sw
+  find-topic[names] |mary>
+  q
+
+2016-10-17
+  load 30k--wikipedia-frequency-list.sw
+  bar-chart[100] select[1,50] find-topic[words-1] |gene>
+  history
+  bar-chart[100] select[1,100] find-topic[words-1] |slave>
+  history
+  topic |*> #=> bar-chart[100] select[1,100] find-topic[words-1] |_self>
+  topic |adelaide>
+  history
+  topic |php>
+  history
+  topic |university>
+  
+  q
+
+2016-10-17
+  load 30k--wikipedia-frequency-list.sw
+  topic |*> #=> bar-chart[100] select[1,60] find-topic[words-1] |_self>
+  topic |electron>
+  history
+  T |*> #=> table[page,coeff] select[1,60] find-topic[words-1] |_self>
+  T |*> #=> table[page,coeff] select[1,100] find-topic[words-1] |_self>
+  T |electron>
+  T |the>
+  T |feynman>
+  T |documentation>
+  T |python>
+  T |algorithm>
+  
+  q
+

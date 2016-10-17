@@ -2203,8 +2203,8 @@ class new_context(object):
     result = superposition()                                            # later swap out superposition to fast_superposition
     for label in self.ket_rules_dict:                                   # though when I do so I will probably rename fast_sp to plain superposition.
       if op in self.ket_rules_dict[label]:
-#        candidate_pattern = self.recall(op,label,True)                       # do we need active=True here? probably. OK. On a trial basis :)
-        candidate_pattern = self.ket_rules_dict[label][op]              # currently is an exception if any patterns are stored rules!
+#        candidate_pattern = self.recall(op,label,True)                 # do we need active=True here? probably. OK. On a trial basis :)
+        candidate_pattern = self.ket_rules_dict[label][op]              # currently is an exception if any patterns are stored rules! Fixed.
         if type(candidate_pattern) in [stored_rule, memoizing_rule]:
           candidate_pattern = candidate_pattern.activate(self,op,label) # do we really want to activate memoizing rules just by running similar-input[op]??
 #        value = silent_simm(pattern,candidate_pattern)
@@ -2222,7 +2222,10 @@ class new_context(object):
     result = superposition()                                            # later swap out superposition to fast_superposition
     for label in self.ket_rules_dict:
       if op in self.ket_rules_dict[label]:
-        frequency_list = self.recall(op,label,True)                       # do we need active=True here? probably. OK. On a trial basis :)
+#        frequency_list = self.recall(op,label,True)                    # do we need active=True here? probably. OK. On a trial basis :)
+        frequency_list = self.ket_rules_dict[label][op]                 # this cut runtime in half!
+        if type(frequency_list) in [stored_rule, memoizing_rule]:
+          frequency_list = frequency_list.activate(self,op,label)       # do we really want to activate memoizing rules just by running find-topic[op]??       
         value = normed_frequency_class(e,frequency_list)
         if value > t:                                                   # "value >= t" instead?
           result.data.append(ket(label,value))                          # "result += ket(label,value)" when swap in fast_superposition

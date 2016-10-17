@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 10/10/2016
+# Update: 13/10/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4882,6 +4882,8 @@ def whats_next_three(context,one,two,three):
   return intersection(intersection(nodes_one,nodes_two),nodes_three).apply_op(context,then)       
 
 # bah! Try another approach!
+# I don't even know if it is correct!....
+# 
 # one, two are sp's
 def whats_next_two(context,one,two):
   pattern = "pattern"
@@ -4892,8 +4894,11 @@ def whats_next_two(context,one,two):
   nodes_two = two.similar_input(context,pattern).drop_below(t1)
   r = superposition()
   for x in nodes_one:
-    y = x.apply_sigmoid(clean).apply_op(context,then).similar_input(context,pattern).drop_below(t1)               # maybe select[1,1] instead of drop-below
-    z = intersection(y,nodes_two)
+#    y = x.apply_sigmoid(clean).apply_op(context,then).similar_input(context,pattern).drop_below(t1)               # maybe select[1,1] instead of drop-below
+    y = ket(x.label).apply_op(context,then).similar_input(context,pattern).select_range(1,1).apply_sigmoid(clean)
+#    z = intersection(y,nodes_two)                                          # value = two.find_value(e)
+#    z = ket(nodes_two.find_value(y))
+    z = mbr(y,nodes_two)
     r += z
   return r 
 #  return intersection(nodes_one,nodes_two).apply_op(context,then)
