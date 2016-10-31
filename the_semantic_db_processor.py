@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/10/2016
+# Update: 31/10/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -515,7 +515,11 @@ compound_table = {
     
   
 # 26/9/2016:
-  "print-sequence"         : ".apply_fn(print_sequence,context,\"{0}\")",  
+  "print-sequence"         : ".apply_fn(print_sequence,context,\"{0}\")",
+  
+# 31/10/2016:
+  "new-print-sequence"     : ".apply_fn(new_print_sequence,context,\"{0}\")",
+    
 }
 
 
@@ -564,6 +568,10 @@ ket_context_table = {
   
 # 25/9/2016:
   "print-sequence"     : "print_sequence",
+  
+# 31/10/2016:
+  "new-print-sequence" : "new_print_sequence",
+  
   
 # 5/10/2016:
 #  "follow-sequence"    : "follow_sequence",            # nope! wrong spot!             
@@ -1326,7 +1334,8 @@ whitelist_table_3 = {
   "respond-to-pattern" : "respond_to_pattern",
   
 # 9/2/2016:
-  "rename-kets"   : "rename_kets",      
+  "rename-kets"   : "rename_kets",
+  "rewrite"       : "rename_kets",      
 }
 
 # the code needed for this not yet implemented.

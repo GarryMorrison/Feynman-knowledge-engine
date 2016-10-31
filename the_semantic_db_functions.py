@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 13/10/2016
+# Update: 31/10/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4305,7 +4305,22 @@ def process_catalytic_reaction(one,two,three):
     return one
   else:
     return one + three
-    
+
+# 31/10/2016:
+# rewrite(SP,|s1>,|s2>)
+# replace all instances of string "s1" with "s2" in SP
+# simple, but powerful. cf. productions: https://en.wikipedia.org/wiki/Production_(computer_science)
+# Doh! Already implemented long ago as "rename_kets" with essentially identical code!
+#
+# one is a sp, s1 and s2 are kets
+def rewrite(one,s1,s2):
+  string1 = s1.the_label()
+  string2 = s2.the_label()
+  r = superposition()
+  for x in one:
+    y_label = x.label.replace(string1,string2)
+    r += ket(y_label,x.value)
+  return r     
 
 # x,y are floats
 def filter_fn(x,y):
@@ -4456,7 +4471,8 @@ def rename_kets(one,two,three):
     result = superposition()
     for x in one:
       y = ket(x.label.replace(s1,s2),x.value)
-      result.data.append(y)                                         # later swap in result += y
+#      result.data.append(y)                                         # later swap in result += y. data.append is buggy in case the string replace creates duplicate kets
+      result += y
     return result
   except:
     return ket("",0) 
@@ -4722,13 +4738,14 @@ def recall_chunked_sequence(one,context):
 # not |yes> => |no>
 # not |no> => |yes>
 #
-# if not do-you-know first-letter |input ket>:
-#   return |input ket>
-# current |node> => first-letter |input ket>
-# while name current |node> /= |end of sequence>:
-#   print name current |node>
-#   current |node> => next current |node>
-# print |end of sequence>
+# spell (*) #=>
+#   if not do-you-know first-letter |_self>:
+#     return |_self>
+#   current |node> => first-letter |_self>
+#   while name current |node> /= |end of sequence>:
+#     print name current |node>
+#     current |node> => next current |node>
+#   return |end of sequence>
 #
 # code to spell words
 #
@@ -4764,19 +4781,42 @@ def spell(one,context):
 #   current |node> => next current |node>
 # print |end of sequence>
 #
+# Let's try to update the pseudo-code:
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# print-sequence (*,*) #=>
+#   if not do-you-know start-node |_self1>:
+#     return |_self1>
+#   if name start-node |_self1> == |_self1>:                  -- prevent infinite loop
+#     print |_self1>
+#     return |>
+#   |node> => |_self2>
+#   current "" |node> => start-node |_self1>
+#   while name current "" |node> != |end of sequence>:
+#     if not do-you-know start-node name current "" |node>:
+#       print name current "" |node>
+#     else:
+#       print-sequence(name current "" |node>, plus[1] "" |node>)
+#     current "" |node> => next current "" |node>
+#   return |end of sequence>
+#
+# Invoke using:
+# print-sequence(|alphabet>, |seq node: 1>)              -- need a version that doesn't need to pass in the sequence node! Need a GUID generator! How implement that??
+#
 # one is a ket
 def print_sequence(one,context,start_node=None,node_id=1):
-  if start_node is None:
+  if start_node is None:                                          # so we can change the operator name that links to the first element in the sequence.
     start_node = "start-node"
-  node = "seq node " + str(node_id)
   if len(one.apply_op(context,start_node)) == 0:                  # we don't know the start-node, so return the input ket
     return one
   print("print sequence:",one)
+  if one.apply_op(context,start_node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean).the_label() == one.the_label():  # need to implement 'sp1 == sp2' at some stage. 
+    print(one)                                                   # infinte loop when object is its own sequence.
+    return ket("")  
+  node = "seq node: " + str(node_id)
   context.learn("current",node,one.apply_op(context,start_node))
   name = context.recall("current",node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
-  if name.the_label() == one.the_label():                         # stop infintie recursive loop. Maybe there is a better way? Also need to implement 'sp1 == sp2' at some stage.
-    print(name)
-    return name 
   while name.the_label() != "end of sequence": 
     has_start_node = name.apply_op(context,start_node)
     if len(has_start_node) == 0:
@@ -4786,6 +4826,53 @@ def print_sequence(one,context,start_node=None,node_id=1):
     context.learn("current",node,ket(node).apply_op(context,"current").similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then"))
     name = context.recall("current",node).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
   return name
+
+#
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# print-sequence |*> #=>                                      -- I don't see the advantage of this function over the python! Why should my language exist?? 
+#   if not do-you-know start-node |_self>:
+#     return |_self>
+#   if name start-node |_self> == |_self>:                    -- prevent infinite loop
+#     print |_self>
+#     return |>
+#   |node> => new-GUID |>                                     -- feels like a hack! 
+#   current "" |node> => start-node |_self>
+#   while name current "" |node> != |end of sequence>:
+#     if not do-you-know start-node name current "" |node>:
+#       print name current "" |node>
+#     else:
+#       print-sequence name current "" |node>
+#     current "" |node> => next current "" |node>
+#   return |end of sequence>
+#
+# Invoke using:
+# print-sequence |alphabet>                 
+#
+def new_print_sequence(one,context,start_node=None):
+  if start_node is None:                                          # so we can change the operator name that links to the first element in the sequence.
+    start_node = "start-node"
+  if len(one.apply_op(context,start_node)) == 0:                  # if we don't know the start-node, return the input ket
+    return one
+  print("print sequence:",one)
+
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+    
+  if name(one.apply_op(context,start_node)).the_label() == one.the_label():  # need to implement 'sp1 == sp2' at some stage so we don't need .the_label() 
+    print(one)                                                               # prevent infinte loop when object is its own sequence.
+    return ket("")  
+  current_node = one.apply_op(context,start_node)  
+  while name(current_node).the_label() != "end of sequence":
+    if len(name(current_node).apply_op(context,start_node)) == 0:
+      print(name(current_node))      
+    else:
+      new_print_sequence(name(current_node),context,start_node)
+    current_node = next(current_node)
+  return |end of sequence>
 
 
 # 29/9/2016:
