@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 31/10/2016
+# Update: 1/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4863,7 +4863,7 @@ def new_print_sequence(one,context,start_node=None):
     return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
     
   if name(one.apply_op(context,start_node)).the_label() == one.the_label():  # need to implement 'sp1 == sp2' at some stage so we don't need .the_label() 
-    print(one)                                                               # prevent infinte loop when object is its own sequence.
+    print(one)                                                               # prevent infinte loop when object is its own sequence. Maybe should have handled at learn stage, not recall?
     return ket("")  
   current_node = one.apply_op(context,start_node)  
   while name(current_node).the_label() != "end of sequence":
@@ -4872,7 +4872,7 @@ def new_print_sequence(one,context,start_node=None):
     else:
       new_print_sequence(name(current_node),context,start_node)
     current_node = next(current_node)
-  return |end of sequence>
+  return ket("end of sequence")
 
 
 # 29/9/2016:
@@ -4992,4 +4992,28 @@ def whats_next_two(context,one,two):
 #  print("nodes_one:",nodes_one)
 #  print("nodes_two:",nodes_two)
 #  return intersection(nodes_two,nodes_one)                             # I should look into optimizing intersection! 
-                                                                           
+
+
+# 5/11/2016:
+# vsa-mult(sp1,sp2)
+# eg:
+# vsa-mult(|name>,|usa>) == |name: usa>
+#
+# one, two are superpositions
+def vsa_mult(one,two):
+  r = superposition()
+  for x in one:
+    for y in two:
+      x_pieces = x.label.split(": ")
+      y_pieces = y.label.split(": ")
+      pieces = x_pieces + y_pieces
+      print("pieces:",pieces)
+      new_pieces = []
+      for p in pieces:
+        if p in x_pieces and p in y_pieces:                 # not pefect, but works for now.
+          continue
+        new_pieces.append(p)        
+#      new_pieces.sort()
+      r += ket(": ".join(new_pieces))
+  return r
+                                                                             

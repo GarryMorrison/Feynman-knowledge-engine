@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 31/10/2016
+# Update: 5/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1305,7 +1305,10 @@ whitelist_table_2 = {
   "exclude"             : "exclude",
   
 # 16/9/2015:
-  "filter-down-to"      : "filter_down_to",        
+  "filter-down-to"      : "filter_down_to",
+  
+# 5/11/2016:
+  "vsa-mult"            : "vsa_mult",          
 }
 
 # whitelisted functions that take 3 parameters:

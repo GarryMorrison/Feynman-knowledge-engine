@@ -37805,3 +37805,348 @@
   new-print-sequence |pi>
   q
 
+2016-11-01
+  load spelling-dictionary-v3.sw
+  encode-loop |*> #=> similar-input[encode] encode |_self>
+  table[page,encode-loop] ket-sort rel-kets[encode]
+  history
+  save spelling-dictionary-v3--saved.sw
+  dump |frog>
+  dump starts-with |node 35839: >
+  display |frog>
+  display starts-with |node 35839: >
+  encode |f>
+  first-letter |frog>
+  first-letter |fish>
+  name-pattern |*> #=> clean select[1,1] similar-input[encode] extract-category pattern |_self>
+  name-pattern |node 35839: 1>
+  name-pattern |node 35839: 0>
+  name-pattern |node 35839: 1>
+  name-pattern |node 35839: 2>
+  name-pattern |node 35839: 3>
+  pattern |node 35839: 0>
+  extract-category pattern |node 35839: 0>
+  similar-input[encode] extract-category pattern |node 35839: 0>
+  select[1,1] similar-input[encode] extract-category pattern |node 35839: 0>
+  clean select[1,1] similar-input[encode] extract-category pattern |node 35839: 0>
+  history
+  save history
+  next-pattern |*> #=> then clean select[1,1] similar-input[pattern] pattern |_self>
+  next-pattern |node 35839: 0>
+  pattern |node 35839: 0>
+  similar-input[pattern] pattern |node 35839: 0>
+  select[1,1] similar-input[pattern] pattern |node 35839: 0>
+  clean select[1,1] similar-input[pattern] pattern |node 35839: 0>
+  then clean select[1,1] similar-input[pattern] pattern |node 35839: 0>
+  history
+  
+  parent-word |node 35370: 0>
+  parent-word |node 11806: 3>
+  next-pattern |node 35839: 0>
+  next-pattern |node 35839: 1>
+  next-pattern |node 35839: 2>
+  next-pattern |node 35839: 3>
+  spell |frog>
+  spell |fish>
+  spell |fish>
+  spell |rabbit>
+  save history
+  how-many rel-kets[encode]
+  how-many rel-kets[first-letter]
+  how-many rel-kets[pattern]
+  how-many starts-with |node >
+  bar-chart[50] ket-sort extract-value clean similar-input[then] append-column[10] encode |end of sequence>
+  next-symbol |*> #=> bar-chart[50] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  dump |*>
+  next-symbol |A>
+  history
+  save history
+  
+  next-symbol |a>
+  next-symbol-after |*> #=> bar-chart[50] ket-sort similar-input[encode] extract-category then drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  next-symbol-after |k>
+  symbol-positions-for |*> #=> bar-chart[50] ket-sort extract-value clean drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  history
+  save history
+  symbol-positions-for |B>
+  symbol-positions-for |b>
+  symbol-positions-for |k>
+  symbol-positions-for |x>
+  table[page,encode-loop] ket-sort rel-kets[encode]
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] input-encode |X>
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] append-column[10] encode |X>
+  parent-word |7412: 1>
+  parent-word |node 7412: 1>
+  follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] append-column[10] encode |X>
+  follow-sequence pattern pick-elt rel-kets[pattern] |>
+  parent-word |node 69596: 2>
+  follow-sequence pattern pick-elt rel-kets[pattern] |>
+  follow-sequence pattern pick-elt rel-kets[pattern] |>
+  follow-sequence pattern pick-elt rel-kets[pattern] |>
+  parent-word |node 43118: 3>
+  pick-elt rel-kets[first-letter]
+  spell-a-random-word |*> #=> follow-sequence first-letter pick-elt rel-kets[first-letter] |>
+  spell-a-random-word
+  history
+  save history
+  spell-a-random-word
+  spell-a-random-word
+  follow-sequence-starting-with |*> #=> follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  follow-sequence-starting-with |Y>
+  follow-sequence-starting-at |*> #=> follow-sequence pattern pick-elt drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  follow-sequence-starting-at |c>
+  follow-sequence-starting-at |c>
+  parent-word |node 42039: 6>
+  follow-sequence-starting-at |c>
+  follow-sequence-starting-at |c>
+  save history
+  parent-word |node 27871: 2>
+  
+  spell-a-random-word-that-starts-with |*> #=> follow-sequence first-letter pick-elt drop-below[0.09] similar-input[first-letter] append-column[10] encode |_self>
+  spell-a-random-word-that-starts-with |X>
+  spell-a-random-word-that-starts-with |f>
+  spell-a-random-word-that-starts-with |f>
+  spell-a-random-word-that-starts-with |f>
+  history
+  save history
+  spell-a-random-word-that-starts-with |f>
+  follow-a-random-sequence |*> #=> follow-sequence pattern pick-elt rel-kets[pattern] |>
+  follow-a-random-sequence
+  history
+  spell-a-random-word-that-contains |*> #=> follow-sequence first-letter merge-labels (extract-category pick-elt drop-below[0.09] similar-input[pattern] append-column[10] encode |_self> + |: 0>)
+  spell-a-random-word-that-contains
+  spell-a-random-word-that-contains |x>
+  spell-a-random-word-that-contains |*> #=> follow-sequence pattern merge-labels (extract-category pick-elt drop-below[0.09] similar-input[pattern] append-column[10] encode |_self> + |: 0>)
+  spell-a-random-word-that-contains |x>
+  spell-a-random-word-that-contains |x>
+  spell-a-random-word-that-contains |z>
+  spell-a-random-word-that-contains |z>
+  spell-a-random-word-that-contains |z>
+  spell-a-random-word-that-contains |z>
+  history
+  save history
+  ket-sort extract-value clean similar-input[then] append-column[10] encode |end of sequence>
+  plus[1] (51|0> + 346|1> + 1262|2>)
+  history
+  table[page,coeff] plus[1] ket-sort extract-value clean similar-input[then] append-column[10] encode |end of sequence>
+  history
+  bar-chart[50] plus[1] ket-sort extract-value clean similar-input[then] append-column[10] encode |end of sequence>
+  history
+  
+  name-pattern first-letter |frog>
+  pattern |node 35839: 0>
+  pattern |node 35370: 0>
+  common[pattern] (|node 35839: 0> + |node 35370: 0>)
+  history
+  how-many drop-below[0.09] similar-input[pattern] append-column[10] encode |x>
+  merge-labels (|x> + |: > + extract-value |number: 1914>)
+  pop-float merge-labels (|x> + |: > + extract-value |number: 1914>)
+  count-letter-frequency |*> #=> pop-float merge-labels (|_self> + |: > + extract-value how-many drop-below[0.09] similar-input[pattern] append-column[10] encode |_self> )
+  count-letter-frequency |x>
+  ket-sort rel-kets[encode]
+  bar-chart[50] count-letter-frequency split |x y>
+  bar-chart[50] count-letter-frequency ket-sort rel-kets[encode]
+  history
+  save history
+  bar-chart[50] count-letter-frequency split |a b c d e f g h i j k l m n o p q r s t u v w x y z>
+  history
+  count-letter-frequence |j>
+  count-letter-frequency |j>
+  count-letter-frequency |k>
+  history
+  bar-chart[50] count-letter-frequency split |A B C D E F G H I J K L M N O P Q R S T U V W X Y Z>
+  history
+  count-first-letter-frequency |*> #=> pop-float merge-labels (|_self> + |: > + extract-value how-many drop-below[0.09] similar-input[first-letter] append-column[10] encode |_self> )
+  bar-chart[50] count-first-letter-frequency split |a b c d e f g h i j k l m n o p q r s t u v w x y z>
+  history
+  bar-chart[50] count-first-letter-frequency split |A B C D E F G H I J K L M N O P Q R S T U V W X Y Z>
+  save history
+  random-column[10] |>
+  pick[5] range(|1>,|5>)
+  random-column[10] range(|1>,|10>)
+  random-column[10]^2 range(|1>,|10>)
+  remove-leading-category |1: 5: 2>
+  remove-leading-category random-column[10]^2 range(|1>,|10>)
+  history
+  history 1000
+  q
+
+2016-11-02
+  rewrite(|S>,|S>,|aSb>)
+  rule-1 |*> #=> rewrite(|_self>,|S>,|aSb>)
+  rule-2 |*> #=> rewrite(|_self>,|S>,|ba>)
+  rule-2 rule-1^2 |S>
+  apply(|op: rule-1>, |S>)
+  pick-random-rule |*> #=> pick-elt (|op: rule-1> + |op: rule-2>)
+  pick-random-rule
+  pick-random-rule |>
+  .
+  history
+  random-rule |*> #=> apply(pick-random-rule |>, |_self>)
+  random-rule |S>
+  .
+  .
+  history
+  random-rule^10 |S>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  save history
+  the-list-of |rules> => |op: rule-1> + |op: rule-2>
+  history
+  random-rule |*> #=> apply(pick-elt the-list-of- |rules>, |_self>)
+  random-rule |S>
+  history
+  random-rule |*> #=> apply(pick-elt the-list-of |rules>, |_self>)
+  random-rule |S>
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  random-rule^50 |S>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  q
+
+2016-11-03
+  load spelling-dictionary-v3--saved.sw
+  count-letter-frequency |*> #=> pop-float rewrite( how-many drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>, |number>, |_self> )
+  count-first-letter-frequency |*> #=> pop-float rewrite( how-many drop-below[0.09] similar-input[first-letter] append-column[10] encode |_self>, |number>, |_self> )
+  count-letter-frequency |j>
+  count-letter-frequency |k>
+  bar-chart[50] count-first-letter-frequency split |A B C D E F G H I J K L M N O P Q R S T U V W X Y Z>
+  bar-chart[50] count-first-letter-frequency split |a b c d e f g h i j k l m n o p q r s t u v w x y z>
+  bar-chart[50] count-letter-frequency split |A B C D E F G H I J K L M N O P Q R S T U V W X Y Z>
+  bar-chart[50] count-letter-frequency split |a b c d e f g h i j k l m n o p q r s t u v w x y z>
+  q
+
+2016-11-05
+  load chunked-alphabet-pi.sw
+  new-print-sequence |alphabet>
+  new-print-sequence |pi>
+  new-print-sequence |D E F>
+  new-print-sequence |8 9 7>
+  new-print-sequence |Y Z>
+  history
+  context vsa
+  the-name-of |the USA> => |the United States of America>
+  the-capital-of |the USA> => |Washington DC>
+  the-monetary-unit-of |the USA> => |dollar>
+  the-neighbour-to-the-south-of |the USA> => |Mexico>
+  
+  the-name-of |Mexico> => |Mexico>
+  the-capital-of |Mexico> => |Mexico City>
+  the-monetary-unit-of |Mexico> => |peso>
+  dump
+  the-monetary-unit-of |Mexico>
+  the-name-of the-neighbour-to-the-south-of |the USA>
+  the-capital-of the-neighbour-to-the-south-of |the USA>
+  the-monetary-unit-of the-neighbour-to-the-south-of |the USA>
+  |v1> => |name: usa> + |cap: wdc> + |mon: dol>
+  |v2> => |name: mex> + |cap: mxc> + |mon: pes>
+  dump
+  q
+
+2016-11-05
+  vsa-mult(|name>,|usa>)
+  vsa-mult(|name: usa> + |cap: wdc> + |mon: dol>, |name: mex> + |cap: mxc> + |mon: pes>)
+  history
+  q
+
+2016-11-05
+  vsa-mult(|name>,|usa>)
+  vsa-mult(|name: usa> + |cap: wdc> + |mon: dol>, |name: mex> + |cap: mxc> + |mon: pes>)
+  q
+
+2016-11-05
+  vsa-mult(|name: usa> + |cap: wdc> + |mon: dol>, |name: mex> + |cap: mxc> + |mon: pes>)
+  vsa-mult(|dol>, |usa: mex> + |name: usa: cap: mxc> + |name: usa: mon: pes> + |cap: wdc: name: mex> + |wdc: mxc> + |cap: wdc: mon: pes> + |mon: dol: name: mex> + |mon: dol: cap: mxc> + |dol: pes>)
+  vsa-mult(|name>, |usa>)
+  |v1> => |name: usa> + |cap: wdc> + |mon: dol>
+  |v2> => |name: mex> + |cap: mxc> + |mon: pes>
+  |temp> => vsa-mult(""|v1>, ""|v2>)
+  vsa-mult(|dol>, "" |temp>)
+  history
+  save history
+
+2016-11-06
+  vsa-mult(|name: usa> + |cap: wdc> + |mon: dol>, |name: mex> + |cap: mxc> + |mon: pes>)
+  vsa-mult(|dol>, |usa: mex> + |name: usa: cap: mxc> + |name: usa: mon: pes> + |cap: wdc: name: mex> + |wdc: mxc> + |cap: wdc: mon: pes> + |mon: dol: name: mex> + |mon: dol: cap: mxc> + |dol: pes>)
+  vsa-mult(|name>, |usa>)
+  |v1> => |name: usa> + |cap: wdc> + |mon: dol>
+  |v2> => |name: mex> + |cap: mxc> + |mon: pes>
+  |temp> => vsa-mult(""|v1>, ""|v2>)
+  vsa-mult(|dol>, "" |temp>)
+  history
+  save history
+  the-name-of |the USA> => |the United States of America>
+  the-capital-of |the USA> => |Washington DC>
+  the-monetary-unit-of |the USA> => |dollar>
+  the-neighbour-to-the-south-of |the USA> => |Mexico>
+  
+  the-name-of |Mexico> => |Mexico>
+  the-capital-of |Mexico> => |Mexico City>
+  the-monetary-unit-of |Mexico> => |peso>
+  
+  dump
+  context Matt Taylor talk
+  full |range> => range(|1>,|2048>)
+  |x> => pick[40] full |range>
+  |x'> => pick[20] "" |x>
+  dump
+  |y> => pick[40] full |range>
+  dump
+  ket-simm(""|x>,""|x'>)
+  ket-simm(""|x>, "" |y>)
+  ket-simm(""|x'>, "" |y>)
+  history
+  q
+
+2016-11-07
+  load word-classes.sw
+  dump
+  class-2-2 |her X>
+  common[class-2-2] (|her X> + |his X> + |my X>)
+  reset
+  load word-classes.sw
+  common[class-3-3] (|one of X> + |none of X> + |some of X> + |all of X>)
+  common[class-3-3] (|a little X> + |a lot X>)
+  common[class-4-4] (|a little of X> + |a lot of X>)
+  common[class-2-2] (|i X> + |he X> + |she X>)
+  common[class-2-2] (|where X> + |what X> + |when X>)
+  history
+  common[class-3-3] (|i can X> + |he can X> + |she can X>)
+  common[class-3-3] (|i was X> + |he was X> + |she was X>)
+  common[class-2-2] (|her X> + |his X> + |my X>)
+  common[class-3-3] (|her own X> + |his own X> + |my own X>)
+  common[class-3-3] (|her face X> + |his face X> + |my face X>)
+  common[class-3-3] (|her way X> + |his way X> + |my way X>)
+  common[class-3-3] (|her way X> + |his way X>)
+  common[class-2-2] (|her X> + |his X> + |my X>)
+  common[class-3-3] (|her family X> + |his family X> + |my family X>)
+  common[class-3-3] (|her family X> + |his family X>)
+  common[class-3-3] (|her mind X> + |his mind X>)
+  common[class-4-4] (|her mind and X> + |his mind and X>)
+  history
+  common[class-2-2] (|one X> + |none X> + |some X>)
+  common[class-2-2] (|one X> + |some X>)
+  common[class-2-2] (|one X> + |two X> + |three X>)
+  common[class-3-3] (|one of X> + |two of X> + |three of X>)
+  common[class-4-4] (|one of the X> + |two of the X> + |three of the X>)
+  history
+  save history
+

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-09-25
-# Update:
+# Update: 2016-11-3
 # Copyright: GPLv3
 #
 # Usage: ./learn-chunked-high-order-sequences.py
@@ -39,21 +39,6 @@ column_size = 10
 destination = "sw-examples/chunked-alphabet-pi.sw"
 saved_destination = "sw-examples/chunked-alphabet-pi--saved.sw"
 
-
-# drop below threshold:
-# use 0 for off
-t = 0
-#t = 0.01
-#t = 0.1
-#t = 0.05
-#t = 0.3
-#t = 0.5
-
-#t2 = 0.05
-t2 = 0
-
-#name = "alphabet"
-#sequence = "A B C D E F G H".split()
 
 name1 = "alphabet"
 sequence1 = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split()
