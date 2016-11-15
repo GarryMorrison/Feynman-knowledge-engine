@@ -6,10 +6,10 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-11-13
-# Update: 2016-11-13
+# Update: 2016-11-15
 # Copyright: GPLv3
 #
-# Usage: ./create-intersection-classes.py
+# Usage: ./create-intersection-classes.py [filename.txt]
 #
 # Seems to work. Now need to think how to optimize it.
 # In testing only a bit faster than the console version!
@@ -22,7 +22,7 @@ import sys
 import re
 from collections import OrderedDict
 
-number_of_results = 2000
+number_of_results = 20000
 class_width = 12
 #tidy = False
 tidy = True
@@ -37,9 +37,15 @@ strict = True
 #filename = "text/trane.txt"
 #filename = "text/tidy-procrasti.txt"
 #filename = "text/Cable4096.txt"
-filename = "text/ebook-moby-shakespeare.txt"
+#filename = "text/ebook-moby-shakespeare.txt"
 #filename = "text/ebook-Asimov_Isaac_-_I_Robot.txt"
 #filename = "text/ebook-Alices_Adventures_in_Wonderland_11.txt"
+#filename = "text/WP-Australia.txt"
+#filename = "text/high-order-sequence-paper.txt"
+filename = "text/code.txt"
+
+if len(sys.argv) == 2:
+  filename = sys.argv[1]
 
 
 def create_word_n_grams(s,N):
@@ -239,16 +245,22 @@ class_1_1, class_2_1, class_2_2 = create_word_classes(filename)
 #sys.exit(0)
 
 def pre_class_op(class_2_1, word, class_width):
-  head = "X %s" % word
-  pattern = class_2_1[head]
-  result = pattern_recognition_sp(class_2_1, pattern, class_width)
-  return [ word.replace("X ","") for word,value in result ]
+  try:
+    head = "X %s" % word
+    pattern = class_2_1[head]
+    result = pattern_recognition_sp(class_2_1, pattern, class_width)
+    return [ word.replace("X ","") for word,value in result ]
+  except:
+    return []
 
 def post_class_op(class_2_2, word, class_width):
-  head = "%s X" % word
-  pattern = class_2_2[head]
-  result = pattern_recognition_sp(class_2_2, pattern, class_width)
-  return [ word.replace(" X","") for word,value in result ]
+  try:
+    head = "%s X" % word
+    pattern = class_2_2[head]                                           # had a key error. How??? Ahh... end of document.
+    result = pattern_recognition_sp(class_2_2, pattern, class_width)
+    return [ word.replace(" X","") for word,value in result ]
+  except:
+    return []
 
 def list_intersection(one,two):
   return [ x for x in one if x in two]
