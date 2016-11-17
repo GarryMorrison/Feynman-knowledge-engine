@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 1/11/2016
+# Update: 17/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4904,7 +4904,7 @@ def discrimination(one):
 # code to follow a sequence
 #
 # one is a sp
-def follow_sequence(one,context):
+def old_follow_sequence(one,context):
   if len(one) == 0:
     return one
   context.learn("current","node",one)
@@ -4915,7 +4915,39 @@ def follow_sequence(one,context):
     name = context.recall("current","node",True).apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
   return name
   
-
+# 17/11/2016
+# next (*) #=> then clean select[1,1] similar-input[pattern] |_self>
+# name (*) #=> clean select[1,1] similar-input[encode] extract-category |_self>
+#
+# follow-sequence[op] (*) #=>
+#   current |node> => |_self>
+#   while name current |node> /= |end of sequence>:
+#     op name current |node>                              -- NB: "op" instead of "print"
+#     current |node> => next current |node>
+#   return |end of sequence>
+#
+# code to follow a sequence
+#
+# one is a sp
+def follow_sequence(one,context,op=None):
+  if len(one) == 0:
+    return one
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)    
+    
+  current_node = one  
+  while name(current_node).the_label() != "end of sequence":
+    if op == None:
+      print(name(current_node))      
+    else:
+      name(current_node).apply_op(context,op)
+    current_node = next(current_node)
+  return ket("end of sequence")
+  
+  
 
 # 10/10/2016
 # whats_next(sp)

@@ -40466,3 +40466,1436 @@
   history
   save history
 
+2016-11-15
+  load word-classes--rusty--filtered.sw
+  table-3-3 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  table-3-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-3-2] class-3-2 |_self>
+  table-3-2 |the X of>
+  history
+  table-2-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-2-2] class-2-2 |_self>
+  table-2-2 |thanks X>
+  table-2-2 |excuse X>
+  table-3-3 |excuse for X>
+  table-2-2 |peppermint X>
+  table-3-3 |hungry for X>
+  history
+  save history
+  table-3-3 |i was X>
+  common-3-3 |*> #=> common[class-3-3] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  common-3-3 |i was X>
+  history
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  table-2-2 |basically X>
+  table-2-2 |perhaps X>
+  table-3-3 |i was X>
+  history
+  save history
+  table-3-3 |should be X>
+  history
+  simm-words-3-3 |*> #=> clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  simm-words-3-3 |should be X>
+  table-2-2 |pretty X>
+  table-2-2 |particularly X>
+  table-2-2 |shockingly X>
+  table-2-2 |particularly X>
+  table-2-2 |personally X>
+  table-2-2 |books X>
+  table-2-2 |stories X>
+  table-2-2 |perfectly X>
+  table-2-2 |myself X>
+  table-2-2 |up X>
+  history
+  save history
+  history 200
+  table-4-4 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  table-4-4 |the price of X>
+  history
+  simm-words-4-4 |*> #=> clean select[1,100] coeff-sort class-4-4 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  simm-words-4-4 |the price of X>
+  class-4-4 |the price of X>
+  history
+  table-2-1 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-2-1] class-2-1 |_self>
+  table-2-1 |X august>
+  table-2-1 |X april>
+  history
+  save history
+  table-2-2 |up X>
+  table-2-2 |shitty X>
+  table-2-2 |crappy X>
+  table-2-2 |ago X>
+  table-2-2 |lately X>
+  table-2-2 |today X>
+  table-2-2 |felt X>
+  history 1000
+  table-3-2 |the X of>
+  table-3-2 |the X that>
+  table-2-2 |interesting X>
+  table-2-2 |rusty X>
+  table-2-2 |a X>
+  table-2-2 |joe X>
+  table-2-2 |blockquote X>
+  history
+  save history
+  class-4-4 |the university of X>
+  class-4-4 |the capital of X>
+  class-4-4 |the class of X>
+  class-4-4 |the owner of X>
+  class-3-2 |the X of>
+  class-4-4 |the size of X>
+  table-2-2 |me X>
+  table-2-2 |table 2>
+  table-2-2 |table X>
+  class-3-3 |upon the X>
+  class-3-3 |applications of X>
+  class-2-2 |applications X>
+  class-3-3 |applications for X>
+  class-3-3 |applications and X>
+  table-2-2 |persistently X>
+  table-2-2 |teh X>
+  table-2-2 |youtube X>
+  table-2-2 |yield X>
+  table-2-2 |bittorrent X>
+  class-2-2 |inflation X>
+  table-2-2 |twitter X>
+  table-2-2 |yield X>
+  table-2-2 |oxygen X>
+  class-2-2 |buffoon X>
+  table-2-2 |buffoon X>
+  table-2-2 |apple X>
+  class-2-2 |apple X>
+  class-2-2 |government X>
+  table-2-2 |table X>
+  table-2-2 |space X>
+  table-2-2 |house X>
+  table-2-2 |everything X>
+  table-2-2 |anything X>
+  class-2-2 |say X>
+  table-2-2 |say X>
+  table-2-2 |like X>
+  table-2-2 |find X>
+  table-2-2 |buy X>
+  table-2-2 |spend X>
+  table-2-2 |into X>
+  table-2-2 |applied X>
+  table-2-2 |forum X>
+  table-2-2 |latitude X>
+  table-2-2 |domesticated X>
+  table-3-3 |the sad X>
+  table-2-2 |knowledge X>
+  select[1,30] class-1-1 |X>
+  table-2-2 |not X>
+  table-2-2 |if X>
+  table-2-2 |just X>
+  table-2-2 |with X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 |_self>
+  history
+  select[1,40] class-1-1 |X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  op |the>
+  table[rule,op] clean select[1,40] class-1-1 |X>
+  history
+  save history
+  table[rule,op] clean select[1,60] class-1-1 |X>
+  history
+  table[rule,op] select[1,100] class-1-1 |X>
+  history
+  table[rule,op] select[1,200] class-1-1 |X>
+  history
+  short-op |*> #=> clean select[1,5] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  table[rule,short-op] select[1,400] class-1-1 |X>
+  history
+  table[rule,short-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  rev-op |*> #=> clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,rev-op] select[1,20] class-1-1 |X>
+  history
+  table[rule,rev-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  filter-op |*> #=> clean drop-below[0.5] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean select[1,10] drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  table[rule,filter-op] select[1,1000] class-1-1 |X>
+  
+  history
+  remove-X |*> #=> rewrite(|_self>,|X >,|>)
+  remove-X |X fish>
+  remove-X (|X fish> + |X cats>)
+  history
+  tidy-op |*> #=> remove-X clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,tidy-op] select[1,10] class-1-1 |X>
+  history
+  save history
+  table[rule,tidy-op] select[1,1000] class-1-1 |X>
+  history
+  map[tidy-op,pre-class] select[1,2] class-1-1 |X>
+  pre-class |the>
+  history
+  pre-class |to>
+  clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  remove-X clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  history
+  map[tidy-op,pre-class] clean select[1,2] class-1-1 |X>
+  history
+  pre-class |the>
+  pre-class |to>
+  history
+  map[tidy-op,pre-class] clean select[1,1000] class-1-1 |X>
+  history
+  save history
+  table[rule,pre-class] rel-kets[pre-class]
+  history
+  post-class-op |*> #=> remove-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  remove-post-X |*> #=> rewrite(|_self>,| X>,|>)
+  post-class-op |*> #=> remove-post-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  save history
+  map[post-class-op,post-class] clean select[1,1000] class-1-1 |X>
+  history
+  post-class |the>
+  pre-class |the>
+  intn(pre-class |the>, post-class |the>)
+  intn-class-op |*> #=> intn(pre-class |_self>, post-class |_self>)
+  intn-class-op |the>
+  intn-class-op |he>
+  intn-class-op |and>
+  intn-class-op |to>
+  intn-class-op |up>
+  intn-class-op |year>
+  intn-class-op |monday>
+  intn-class-op |today>
+  intn-class-op |should>
+  history
+  save history
+  map[intn-class-op,intn-class] rel-kets[pre-class]
+  history
+  table[word,intn-class] rel-kets[intn-class]
+  
+  save word-classes--rusty--processed.sw
+  history
+  save history
+  table[word,intn-class] rel-kets[intn-class]
+  history
+  dump |*>
+  reset
+  history 1000
+  load word-classes--rusty--filtered.sw
+  load word-classes-operators.sw
+  history
+  reset
+  load word-classes--sherlock-v2.sw
+  history
+  save history
+  load word-classes-operators.sw
+  reset
+  load word-classes--tdillo.sw
+  load word-classes-operators.sw
+  history
+  save history
+  load word-classes--trane.sw
+  load word-classes-operators.sw
+  reset
+  history
+  load word-classes--procrasti.sw
+  load word-classes-operators.sw
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X>)
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  .
+  intn-class |he>
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  save history
+
+2016-11-15
+  load word-classes--rusty--filtered.sw
+  table-3-3 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  table-3-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-3-2] class-3-2 |_self>
+  table-3-2 |the X of>
+  history
+  table-2-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-2-2] class-2-2 |_self>
+  table-2-2 |thanks X>
+  table-2-2 |excuse X>
+  table-3-3 |excuse for X>
+  table-2-2 |peppermint X>
+  table-3-3 |hungry for X>
+  history
+  save history
+  table-3-3 |i was X>
+  common-3-3 |*> #=> common[class-3-3] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  common-3-3 |i was X>
+  history
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  table-2-2 |basically X>
+  table-2-2 |perhaps X>
+  table-3-3 |i was X>
+  history
+  save history
+  table-3-3 |should be X>
+  history
+  simm-words-3-3 |*> #=> clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  simm-words-3-3 |should be X>
+  table-2-2 |pretty X>
+  table-2-2 |particularly X>
+  table-2-2 |shockingly X>
+  table-2-2 |particularly X>
+  table-2-2 |personally X>
+  table-2-2 |books X>
+  table-2-2 |stories X>
+  table-2-2 |perfectly X>
+  table-2-2 |myself X>
+  table-2-2 |up X>
+  history
+  save history
+  history 200
+  table-4-4 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  table-4-4 |the price of X>
+  history
+  simm-words-4-4 |*> #=> clean select[1,100] coeff-sort class-4-4 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  simm-words-4-4 |the price of X>
+  class-4-4 |the price of X>
+  history
+  table-2-1 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-2-1] class-2-1 |_self>
+  table-2-1 |X august>
+  table-2-1 |X april>
+  history
+  save history
+  table-2-2 |up X>
+  table-2-2 |shitty X>
+  table-2-2 |crappy X>
+  table-2-2 |ago X>
+  table-2-2 |lately X>
+  table-2-2 |today X>
+  table-2-2 |felt X>
+  history 1000
+  table-3-2 |the X of>
+  table-3-2 |the X that>
+  table-2-2 |interesting X>
+  table-2-2 |rusty X>
+  table-2-2 |a X>
+  table-2-2 |joe X>
+  table-2-2 |blockquote X>
+  history
+  save history
+  class-4-4 |the university of X>
+  class-4-4 |the capital of X>
+  class-4-4 |the class of X>
+  class-4-4 |the owner of X>
+  class-3-2 |the X of>
+  class-4-4 |the size of X>
+  table-2-2 |me X>
+  table-2-2 |table 2>
+  table-2-2 |table X>
+  class-3-3 |upon the X>
+  class-3-3 |applications of X>
+  class-2-2 |applications X>
+  class-3-3 |applications for X>
+  class-3-3 |applications and X>
+  table-2-2 |persistently X>
+  table-2-2 |teh X>
+  table-2-2 |youtube X>
+  table-2-2 |yield X>
+  table-2-2 |bittorrent X>
+  class-2-2 |inflation X>
+  table-2-2 |twitter X>
+  table-2-2 |yield X>
+  table-2-2 |oxygen X>
+  class-2-2 |buffoon X>
+  table-2-2 |buffoon X>
+  table-2-2 |apple X>
+  class-2-2 |apple X>
+  class-2-2 |government X>
+  table-2-2 |table X>
+  table-2-2 |space X>
+  table-2-2 |house X>
+  table-2-2 |everything X>
+  table-2-2 |anything X>
+  class-2-2 |say X>
+  table-2-2 |say X>
+  table-2-2 |like X>
+  table-2-2 |find X>
+  table-2-2 |buy X>
+  table-2-2 |spend X>
+  table-2-2 |into X>
+  table-2-2 |applied X>
+  table-2-2 |forum X>
+  table-2-2 |latitude X>
+  table-2-2 |domesticated X>
+  table-3-3 |the sad X>
+  table-2-2 |knowledge X>
+  select[1,30] class-1-1 |X>
+  table-2-2 |not X>
+  table-2-2 |if X>
+  table-2-2 |just X>
+  table-2-2 |with X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 |_self>
+  history
+  select[1,40] class-1-1 |X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  op |the>
+  table[rule,op] clean select[1,40] class-1-1 |X>
+  history
+  save history
+  table[rule,op] clean select[1,60] class-1-1 |X>
+  history
+  table[rule,op] select[1,100] class-1-1 |X>
+  history
+  table[rule,op] select[1,200] class-1-1 |X>
+  history
+  short-op |*> #=> clean select[1,5] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  table[rule,short-op] select[1,400] class-1-1 |X>
+  history
+  table[rule,short-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  rev-op |*> #=> clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,rev-op] select[1,20] class-1-1 |X>
+  history
+  table[rule,rev-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  filter-op |*> #=> clean drop-below[0.5] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean select[1,10] drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  table[rule,filter-op] select[1,1000] class-1-1 |X>
+  
+  history
+  remove-X |*> #=> rewrite(|_self>,|X >,|>)
+  remove-X |X fish>
+  remove-X (|X fish> + |X cats>)
+  history
+  tidy-op |*> #=> remove-X clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,tidy-op] select[1,10] class-1-1 |X>
+  history
+  save history
+  table[rule,tidy-op] select[1,1000] class-1-1 |X>
+  history
+  map[tidy-op,pre-class] select[1,2] class-1-1 |X>
+  pre-class |the>
+  history
+  pre-class |to>
+  clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  remove-X clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  history
+  map[tidy-op,pre-class] clean select[1,2] class-1-1 |X>
+  history
+  pre-class |the>
+  pre-class |to>
+  history
+  map[tidy-op,pre-class] clean select[1,1000] class-1-1 |X>
+  history
+  save history
+  table[rule,pre-class] rel-kets[pre-class]
+  history
+  post-class-op |*> #=> remove-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  remove-post-X |*> #=> rewrite(|_self>,| X>,|>)
+  post-class-op |*> #=> remove-post-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  save history
+  map[post-class-op,post-class] clean select[1,1000] class-1-1 |X>
+  history
+  post-class |the>
+  pre-class |the>
+  intn(pre-class |the>, post-class |the>)
+  intn-class-op |*> #=> intn(pre-class |_self>, post-class |_self>)
+  intn-class-op |the>
+  intn-class-op |he>
+  intn-class-op |and>
+  intn-class-op |to>
+  intn-class-op |up>
+  intn-class-op |year>
+  intn-class-op |monday>
+  intn-class-op |today>
+  intn-class-op |should>
+  history
+  save history
+  map[intn-class-op,intn-class] rel-kets[pre-class]
+  history
+  table[word,intn-class] rel-kets[intn-class]
+  
+  save word-classes--rusty--processed.sw
+  history
+  save history
+  table[word,intn-class] rel-kets[intn-class]
+  history
+  dump |*>
+  reset
+  history 1000
+  load word-classes--rusty--filtered.sw
+  load word-classes-operators.sw
+  history
+  reset
+  load word-classes--sherlock-v2.sw
+  history
+  save history
+  load word-classes-operators.sw
+  reset
+  load word-classes--tdillo.sw
+  load word-classes-operators.sw
+  history
+  save history
+  load word-classes--trane.sw
+  load word-classes-operators.sw
+  reset
+  history
+  load word-classes--procrasti.sw
+  load word-classes-operators.sw
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X>)
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  .
+  intn-class |he>
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  save history
+  history
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|really X> + |just X> + |actually X> + |probably X> + |still X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|not X> + |just X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|ten X> + |five X> + |four X> + |fifteen X> + |thirty X> + |twenty X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|ten X> + |five X> + |four X> + |fifteen X>)
+  append-X |*> #=> merge-labels(|_self> + | X>)
+  append-X split |fish frog cat dog>
+  history
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] append-X intn-class |he>
+  history
+  multi-step |*> #=> bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] append-X intn-class |_self>
+  multi-step |he>
+  multi-step |came>
+  intn-class |up>
+  multi-step |up>
+  save history
+
+2016-11-15
+  load word-classes--rusty--filtered.sw
+  table-3-3 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  table-3-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-3-2] class-3-2 |_self>
+  table-3-2 |the X of>
+  history
+  table-2-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-2-2] class-2-2 |_self>
+  table-2-2 |thanks X>
+  table-2-2 |excuse X>
+  table-3-3 |excuse for X>
+  table-2-2 |peppermint X>
+  table-3-3 |hungry for X>
+  history
+  save history
+  table-3-3 |i was X>
+  common-3-3 |*> #=> common[class-3-3] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  common-3-3 |i was X>
+  history
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  table-2-2 |basically X>
+  table-2-2 |perhaps X>
+  table-3-3 |i was X>
+  history
+  save history
+  table-3-3 |should be X>
+  history
+  simm-words-3-3 |*> #=> clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  simm-words-3-3 |should be X>
+  table-2-2 |pretty X>
+  table-2-2 |particularly X>
+  table-2-2 |shockingly X>
+  table-2-2 |particularly X>
+  table-2-2 |personally X>
+  table-2-2 |books X>
+  table-2-2 |stories X>
+  table-2-2 |perfectly X>
+  table-2-2 |myself X>
+  table-2-2 |up X>
+  history
+  save history
+  history 200
+  table-4-4 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  table-4-4 |the price of X>
+  history
+  simm-words-4-4 |*> #=> clean select[1,100] coeff-sort class-4-4 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  simm-words-4-4 |the price of X>
+  class-4-4 |the price of X>
+  history
+  table-2-1 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-2-1] class-2-1 |_self>
+  table-2-1 |X august>
+  table-2-1 |X april>
+  history
+  save history
+  table-2-2 |up X>
+  table-2-2 |shitty X>
+  table-2-2 |crappy X>
+  table-2-2 |ago X>
+  table-2-2 |lately X>
+  table-2-2 |today X>
+  table-2-2 |felt X>
+  history 1000
+  table-3-2 |the X of>
+  table-3-2 |the X that>
+  table-2-2 |interesting X>
+  table-2-2 |rusty X>
+  table-2-2 |a X>
+  table-2-2 |joe X>
+  table-2-2 |blockquote X>
+  history
+  save history
+  class-4-4 |the university of X>
+  class-4-4 |the capital of X>
+  class-4-4 |the class of X>
+  class-4-4 |the owner of X>
+  class-3-2 |the X of>
+  class-4-4 |the size of X>
+  table-2-2 |me X>
+  table-2-2 |table 2>
+  table-2-2 |table X>
+  class-3-3 |upon the X>
+  class-3-3 |applications of X>
+  class-2-2 |applications X>
+  class-3-3 |applications for X>
+  class-3-3 |applications and X>
+  table-2-2 |persistently X>
+  table-2-2 |teh X>
+  table-2-2 |youtube X>
+  table-2-2 |yield X>
+  table-2-2 |bittorrent X>
+  class-2-2 |inflation X>
+  table-2-2 |twitter X>
+  table-2-2 |yield X>
+  table-2-2 |oxygen X>
+  class-2-2 |buffoon X>
+  table-2-2 |buffoon X>
+  table-2-2 |apple X>
+  class-2-2 |apple X>
+  class-2-2 |government X>
+  table-2-2 |table X>
+  table-2-2 |space X>
+  table-2-2 |house X>
+  table-2-2 |everything X>
+  table-2-2 |anything X>
+  class-2-2 |say X>
+  table-2-2 |say X>
+  table-2-2 |like X>
+  table-2-2 |find X>
+  table-2-2 |buy X>
+  table-2-2 |spend X>
+  table-2-2 |into X>
+  table-2-2 |applied X>
+  table-2-2 |forum X>
+  table-2-2 |latitude X>
+  table-2-2 |domesticated X>
+  table-3-3 |the sad X>
+  table-2-2 |knowledge X>
+  select[1,30] class-1-1 |X>
+  table-2-2 |not X>
+  table-2-2 |if X>
+  table-2-2 |just X>
+  table-2-2 |with X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 |_self>
+  history
+  select[1,40] class-1-1 |X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  op |the>
+  table[rule,op] clean select[1,40] class-1-1 |X>
+  history
+  save history
+  table[rule,op] clean select[1,60] class-1-1 |X>
+  history
+  table[rule,op] select[1,100] class-1-1 |X>
+  history
+  table[rule,op] select[1,200] class-1-1 |X>
+  history
+  short-op |*> #=> clean select[1,5] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  table[rule,short-op] select[1,400] class-1-1 |X>
+  history
+  table[rule,short-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  rev-op |*> #=> clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,rev-op] select[1,20] class-1-1 |X>
+  history
+  table[rule,rev-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  filter-op |*> #=> clean drop-below[0.5] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean select[1,10] drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  table[rule,filter-op] select[1,1000] class-1-1 |X>
+  
+  history
+  remove-X |*> #=> rewrite(|_self>,|X >,|>)
+  remove-X |X fish>
+  remove-X (|X fish> + |X cats>)
+  history
+  tidy-op |*> #=> remove-X clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,tidy-op] select[1,10] class-1-1 |X>
+  history
+  save history
+  table[rule,tidy-op] select[1,1000] class-1-1 |X>
+  history
+  map[tidy-op,pre-class] select[1,2] class-1-1 |X>
+  pre-class |the>
+  history
+  pre-class |to>
+  clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  remove-X clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  history
+  map[tidy-op,pre-class] clean select[1,2] class-1-1 |X>
+  history
+  pre-class |the>
+  pre-class |to>
+  history
+  map[tidy-op,pre-class] clean select[1,1000] class-1-1 |X>
+  history
+  save history
+  table[rule,pre-class] rel-kets[pre-class]
+  history
+  post-class-op |*> #=> remove-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  remove-post-X |*> #=> rewrite(|_self>,| X>,|>)
+  post-class-op |*> #=> remove-post-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  save history
+  map[post-class-op,post-class] clean select[1,1000] class-1-1 |X>
+  history
+  post-class |the>
+  pre-class |the>
+  intn(pre-class |the>, post-class |the>)
+  intn-class-op |*> #=> intn(pre-class |_self>, post-class |_self>)
+  intn-class-op |the>
+  intn-class-op |he>
+  intn-class-op |and>
+  intn-class-op |to>
+  intn-class-op |up>
+  intn-class-op |year>
+  intn-class-op |monday>
+  intn-class-op |today>
+  intn-class-op |should>
+  history
+  save history
+  map[intn-class-op,intn-class] rel-kets[pre-class]
+  history
+  table[word,intn-class] rel-kets[intn-class]
+  
+  save word-classes--rusty--processed.sw
+  history
+  save history
+  table[word,intn-class] rel-kets[intn-class]
+  history
+  dump |*>
+  reset
+  history 1000
+  load word-classes--rusty--filtered.sw
+  load word-classes-operators.sw
+  history
+  reset
+  load word-classes--sherlock-v2.sw
+  history
+  save history
+  load word-classes-operators.sw
+  reset
+  load word-classes--tdillo.sw
+  load word-classes-operators.sw
+  history
+  save history
+  load word-classes--trane.sw
+  load word-classes-operators.sw
+  reset
+  history
+  load word-classes--procrasti.sw
+  load word-classes-operators.sw
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X>)
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  .
+  intn-class |he>
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  save history
+  history
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|really X> + |just X> + |actually X> + |probably X> + |still X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|not X> + |just X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|ten X> + |five X> + |four X> + |fifteen X> + |thirty X> + |twenty X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|ten X> + |five X> + |four X> + |fifteen X>)
+  append-X |*> #=> merge-labels(|_self> + | X>)
+  append-X split |fish frog cat dog>
+  history
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] append-X intn-class |he>
+  history
+  multi-step |*> #=> bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] append-X intn-class |_self>
+  multi-step |he>
+  multi-step |came>
+  intn-class |up>
+  multi-step |up>
+  save history
+  history
+  multi-step |cat>
+  multi-step |dog>
+  multi-step |db>
+  multi-step |sye>
+  multi-step |the>
+  multi-step |or>
+  multi-step |how>
+  multi-step |everyone>
+  
+  save history
+
+2016-11-15
+  load word-classes--rusty--filtered.sw
+  table-3-3 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  table-3-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-3-2] class-3-2 |_self>
+  table-3-2 |the X of>
+  history
+  table-2-2 |*> #=> table[ket,coeff] 100 select[1,40] similar-input[class-2-2] class-2-2 |_self>
+  table-2-2 |thanks X>
+  table-2-2 |excuse X>
+  table-3-3 |excuse for X>
+  table-2-2 |peppermint X>
+  table-3-3 |hungry for X>
+  history
+  save history
+  table-3-3 |i was X>
+  common-3-3 |*> #=> common[class-3-3] 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  common-3-3 |i was X>
+  history
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  history
+  clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |i was X>
+  table-2-2 |basically X>
+  table-2-2 |perhaps X>
+  table-3-3 |i was X>
+  history
+  save history
+  table-3-3 |should be X>
+  history
+  simm-words-3-3 |*> #=> clean select[1,100] coeff-sort class-3-3 100 select[1,40] similar-input[class-3-3] class-3-3 |_self>
+  simm-words-3-3 |should be X>
+  table-2-2 |pretty X>
+  table-2-2 |particularly X>
+  table-2-2 |shockingly X>
+  table-2-2 |particularly X>
+  table-2-2 |personally X>
+  table-2-2 |books X>
+  table-2-2 |stories X>
+  table-2-2 |perfectly X>
+  table-2-2 |myself X>
+  table-2-2 |up X>
+  history
+  save history
+  history 200
+  table-4-4 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  table-4-4 |the price of X>
+  history
+  simm-words-4-4 |*> #=> clean select[1,100] coeff-sort class-4-4 100 select[1,40] similar-input[class-4-4] class-4-4 |_self>
+  simm-words-4-4 |the price of X>
+  class-4-4 |the price of X>
+  history
+  table-2-1 |*> #=> table[page,coeff] 100 select[1,40] similar-input[class-2-1] class-2-1 |_self>
+  table-2-1 |X august>
+  table-2-1 |X april>
+  history
+  save history
+  table-2-2 |up X>
+  table-2-2 |shitty X>
+  table-2-2 |crappy X>
+  table-2-2 |ago X>
+  table-2-2 |lately X>
+  table-2-2 |today X>
+  table-2-2 |felt X>
+  history 1000
+  table-3-2 |the X of>
+  table-3-2 |the X that>
+  table-2-2 |interesting X>
+  table-2-2 |rusty X>
+  table-2-2 |a X>
+  table-2-2 |joe X>
+  table-2-2 |blockquote X>
+  history
+  save history
+  class-4-4 |the university of X>
+  class-4-4 |the capital of X>
+  class-4-4 |the class of X>
+  class-4-4 |the owner of X>
+  class-3-2 |the X of>
+  class-4-4 |the size of X>
+  table-2-2 |me X>
+  table-2-2 |table 2>
+  table-2-2 |table X>
+  class-3-3 |upon the X>
+  class-3-3 |applications of X>
+  class-2-2 |applications X>
+  class-3-3 |applications for X>
+  class-3-3 |applications and X>
+  table-2-2 |persistently X>
+  table-2-2 |teh X>
+  table-2-2 |youtube X>
+  table-2-2 |yield X>
+  table-2-2 |bittorrent X>
+  class-2-2 |inflation X>
+  table-2-2 |twitter X>
+  table-2-2 |yield X>
+  table-2-2 |oxygen X>
+  class-2-2 |buffoon X>
+  table-2-2 |buffoon X>
+  table-2-2 |apple X>
+  class-2-2 |apple X>
+  class-2-2 |government X>
+  table-2-2 |table X>
+  table-2-2 |space X>
+  table-2-2 |house X>
+  table-2-2 |everything X>
+  table-2-2 |anything X>
+  class-2-2 |say X>
+  table-2-2 |say X>
+  table-2-2 |like X>
+  table-2-2 |find X>
+  table-2-2 |buy X>
+  table-2-2 |spend X>
+  table-2-2 |into X>
+  table-2-2 |applied X>
+  table-2-2 |forum X>
+  table-2-2 |latitude X>
+  table-2-2 |domesticated X>
+  table-3-3 |the sad X>
+  table-2-2 |knowledge X>
+  select[1,30] class-1-1 |X>
+  table-2-2 |not X>
+  table-2-2 |if X>
+  table-2-2 |just X>
+  table-2-2 |with X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 |_self>
+  history
+  select[1,40] class-1-1 |X>
+  op |*> #=> clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  op |the>
+  table[rule,op] clean select[1,40] class-1-1 |X>
+  history
+  save history
+  table[rule,op] clean select[1,60] class-1-1 |X>
+  history
+  table[rule,op] select[1,100] class-1-1 |X>
+  history
+  table[rule,op] select[1,200] class-1-1 |X>
+  history
+  short-op |*> #=> clean select[1,5] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  table[rule,short-op] select[1,400] class-1-1 |X>
+  history
+  table[rule,short-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  rev-op |*> #=> clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,rev-op] select[1,20] class-1-1 |X>
+  history
+  table[rule,rev-op] select[1,1000] class-1-1 |X>
+  history
+  save history
+  filter-op |*> #=> clean drop-below[0.5] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  filter-op |*> #=> clean select[1,10] drop-below[0.45] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,filter-op] select[1,10] class-1-1 |X>
+  history
+  table[rule,filter-op] select[1,1000] class-1-1 |X>
+  
+  history
+  remove-X |*> #=> rewrite(|_self>,|X >,|>)
+  remove-X |X fish>
+  remove-X (|X fish> + |X cats>)
+  history
+  tidy-op |*> #=> remove-X clean select[1,10] similar-input[class-2-1] class-2-1 merge-labels(|X > + |_self>)
+  table[rule,tidy-op] select[1,10] class-1-1 |X>
+  history
+  save history
+  table[rule,tidy-op] select[1,1000] class-1-1 |X>
+  history
+  map[tidy-op,pre-class] select[1,2] class-1-1 |X>
+  pre-class |the>
+  history
+  pre-class |to>
+  clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  remove-X clean select[1,10] similar-input[class-2-1] class-2-1 |X the>
+  history
+  map[tidy-op,pre-class] clean select[1,2] class-1-1 |X>
+  history
+  pre-class |the>
+  pre-class |to>
+  history
+  map[tidy-op,pre-class] clean select[1,1000] class-1-1 |X>
+  history
+  save history
+  table[rule,pre-class] rel-kets[pre-class]
+  history
+  post-class-op |*> #=> remove-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  remove-post-X |*> #=> rewrite(|_self>,| X>,|>)
+  post-class-op |*> #=> remove-post-X clean select[1,10] similar-input[class-2-2] class-2-2 merge-labels(|_self> + | X>)
+  post-class-op |the>
+  history
+  save history
+  map[post-class-op,post-class] clean select[1,1000] class-1-1 |X>
+  history
+  post-class |the>
+  pre-class |the>
+  intn(pre-class |the>, post-class |the>)
+  intn-class-op |*> #=> intn(pre-class |_self>, post-class |_self>)
+  intn-class-op |the>
+  intn-class-op |he>
+  intn-class-op |and>
+  intn-class-op |to>
+  intn-class-op |up>
+  intn-class-op |year>
+  intn-class-op |monday>
+  intn-class-op |today>
+  intn-class-op |should>
+  history
+  save history
+  map[intn-class-op,intn-class] rel-kets[pre-class]
+  history
+  table[word,intn-class] rel-kets[intn-class]
+  
+  save word-classes--rusty--processed.sw
+  history
+  save history
+  table[word,intn-class] rel-kets[intn-class]
+  history
+  dump |*>
+  reset
+  history 1000
+  load word-classes--rusty--filtered.sw
+  load word-classes-operators.sw
+  history
+  reset
+  load word-classes--sherlock-v2.sw
+  history
+  save history
+  load word-classes-operators.sw
+  reset
+  load word-classes--tdillo.sw
+  load word-classes-operators.sw
+  history
+  save history
+  load word-classes--trane.sw
+  load word-classes-operators.sw
+  reset
+  history
+  load word-classes--procrasti.sw
+  load word-classes-operators.sw
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X>)
+  common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  .
+  intn-class |he>
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|he X> + |she X> + |we X> + |i X> + |they X>)
+  save history
+  history
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|really X> + |just X> + |actually X> + |probably X> + |still X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|not X> + |just X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|ten X> + |five X> + |four X> + |fifteen X> + |thirty X> + |twenty X>)
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] (|ten X> + |five X> + |four X> + |fifteen X>)
+  append-X |*> #=> merge-labels(|_self> + | X>)
+  append-X split |fish frog cat dog>
+  history
+  bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] append-X intn-class |he>
+  history
+  multi-step |*> #=> bar-chart[100] select[1,100] similar-input[intn-class] common[class-2-2] append-X intn-class |_self>
+  multi-step |he>
+  multi-step |came>
+  intn-class |up>
+  multi-step |up>
+  save history
+  history
+  multi-step |cat>
+  multi-step |dog>
+  multi-step |db>
+  multi-step |sye>
+  multi-step |the>
+  multi-step |or>
+  multi-step |how>
+  multi-step |everyone>
+  
+  save history
+  history
+  multi-step |only>
+  multi-step |because>
+  multi-step |i'm>
+  
+  multi-step |just>
+  history
+  next-step |*> #=> select[1,1] similar-input[intn-class] common[class-2-2] append-X intn-class |_self>
+  next-step |i'm>
+  next-step |just>
+  next-step |any>
+  next-step |thing>
+  next-step |and>
+  next-step |this>
+  next-step |has>
+  next-step |any>
+  next-step |thing>
+  history
+  rand-step |*> #=> pick-elt select[1,10] similar-input[intn-class] common[class-2-2] append-X intn-class |_self>
+  rand-step |i'm>
+  r |*> #=> pick-elt select[1,10] similar-input[intn-class] common[class-2-2] append-X intn-class |_self>
+  r |still>
+  r |have>
+  r |to>
+  r |his>
+  r |systems>
+  r |it>
+  r |was>
+  r |our>
+  r |food>
+  r |they>
+  r |wouldn't>
+  r |make>
+  r |a>
+  r |fucking>
+  r |it>
+  r |will>
+  r |run>
+  r |my>
+  r |thing>
+  r |they>
+  r |can>
+  r |write>
+  r |our>
+  r |problems>
+  r |or>
+  r |the>
+  r |time>
+  r |we>
+  r |should>
+  r |be>
+  r |another>
+  r |reason>
+  r |people>
+  r |we>
+  r |should>
+  r |be>
+  r |a>
+  r |point>
+  r |is>
+  r |my>
+  save history
+
+2016-11-17
+  pattern |node 1: 0> => random-column[10] encode |A>
+  then |node 1: 0> => random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> => append-column[10] encode |end of sequence>
+  
+  start-node |A B C> => pattern |node 1: 0>
+  dump
+  reset
+  full |range> => range(|1>,|2048>)
+  encode |end of sequence> => pick[10] full |range>
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  encode |J> => pick[10] full |range>
+  encode |K> => pick[10] full |range>
+  encode |L> => pick[10] full |range>
+  encode |M> => pick[10] full |range>
+  encode |N> => pick[10] full |range>
+  encode |O> => pick[10] full |range>
+  encode |P> => pick[10] full |range>
+  encode |Q> => pick[10] full |range>
+  encode |R> => pick[10] full |range>
+  encode |S> => pick[10] full |range>
+  encode |T> => pick[10] full |range>
+  encode |U> => pick[10] full |range>
+  encode |V> => pick[10] full |range>
+  encode |W> => pick[10] full |range>
+  encode |X> => pick[10] full |range>
+  encode |Y> => pick[10] full |range>
+  encode |Z> => pick[10] full |range>
+  encode |A B C> => pick[10] full |range>
+  encode |D E F> => pick[10] full |range>
+  encode |G H I> => pick[10] full |range>
+  encode |J K L> => pick[10] full |range>
+  encode |M N O> => pick[10] full |range>
+  encode |P Q R> => pick[10] full |range>
+  encode |S T U> => pick[10] full |range>
+  encode |V W X> => pick[10] full |range>
+  encode |Y Z> => pick[10] full |range>
+  encode |3> => pick[10] full |range>
+  encode |.> => pick[10] full |range>
+  encode |1> => pick[10] full |range>
+  encode |4> => pick[10] full |range>
+  encode |5> => pick[10] full |range>
+  encode |9> => pick[10] full |range>
+  encode |2> => pick[10] full |range>
+  encode |6> => pick[10] full |range>
+  encode |8> => pick[10] full |range>
+  encode |7> => pick[10] full |range>
+  encode |3 . 1> => pick[10] full |range>
+  encode |4 1 5> => pick[10] full |range>
+  encode |9 2 6> => pick[10] full |range>
+  encode |5 3 5> => pick[10] full |range>
+  encode |8 9 7> => pick[10] full |range>
+  encode |9 3 2> => pick[10] full |range>
+  encode |3 8 4> => pick[10] full |range>
+  pattern |node 1: 0> => random-column[10] encode |A>
+  then |node 1: 0> => random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> => append-column[10] encode |end of sequence>
+  
+  start-node |A B C> => pattern |node 1: 0>
+  dump
+  dump |A B C>
+  new-print-sequence |A B C>
+  pattern |node: 20: 0> => append-column[10] encode |end of sequence>
+  start-node |empty> => pattern |node: 20: 0>
+  new-print-sequence |empty>
+  history
+  follow-sequence pattern |node 1: 0>
+  follow-sequence pattern |node: 20: 0>
+  save history
+
+2016-11-17
+  pattern |node 1: 0> => random-column[10] encode |A>
+  then |node 1: 0> => random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> => append-column[10] encode |end of sequence>
+  
+  start-node |A B C> => pattern |node 1: 0>
+  dump
+  reset
+  full |range> => range(|1>,|2048>)
+  encode |end of sequence> => pick[10] full |range>
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  encode |J> => pick[10] full |range>
+  encode |K> => pick[10] full |range>
+  encode |L> => pick[10] full |range>
+  encode |M> => pick[10] full |range>
+  encode |N> => pick[10] full |range>
+  encode |O> => pick[10] full |range>
+  encode |P> => pick[10] full |range>
+  encode |Q> => pick[10] full |range>
+  encode |R> => pick[10] full |range>
+  encode |S> => pick[10] full |range>
+  encode |T> => pick[10] full |range>
+  encode |U> => pick[10] full |range>
+  encode |V> => pick[10] full |range>
+  encode |W> => pick[10] full |range>
+  encode |X> => pick[10] full |range>
+  encode |Y> => pick[10] full |range>
+  encode |Z> => pick[10] full |range>
+  encode |A B C> => pick[10] full |range>
+  encode |D E F> => pick[10] full |range>
+  encode |G H I> => pick[10] full |range>
+  encode |J K L> => pick[10] full |range>
+  encode |M N O> => pick[10] full |range>
+  encode |P Q R> => pick[10] full |range>
+  encode |S T U> => pick[10] full |range>
+  encode |V W X> => pick[10] full |range>
+  encode |Y Z> => pick[10] full |range>
+  encode |3> => pick[10] full |range>
+  encode |.> => pick[10] full |range>
+  encode |1> => pick[10] full |range>
+  encode |4> => pick[10] full |range>
+  encode |5> => pick[10] full |range>
+  encode |9> => pick[10] full |range>
+  encode |2> => pick[10] full |range>
+  encode |6> => pick[10] full |range>
+  encode |8> => pick[10] full |range>
+  encode |7> => pick[10] full |range>
+  encode |3 . 1> => pick[10] full |range>
+  encode |4 1 5> => pick[10] full |range>
+  encode |9 2 6> => pick[10] full |range>
+  encode |5 3 5> => pick[10] full |range>
+  encode |8 9 7> => pick[10] full |range>
+  encode |9 3 2> => pick[10] full |range>
+  encode |3 8 4> => pick[10] full |range>
+  pattern |node 1: 0> => random-column[10] encode |A>
+  then |node 1: 0> => random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> => append-column[10] encode |end of sequence>
+  
+  start-node |A B C> => pattern |node 1: 0>
+  dump
+  dump |A B C>
+  new-print-sequence |A B C>
+  pattern |node: 20: 0> => append-column[10] encode |end of sequence>
+  start-node |empty> => pattern |node: 20: 0>
+  new-print-sequence |empty>
+  history
+  follow-sequence pattern |node 1: 0>
+  follow-sequence pattern |node: 20: 0>
+  save history
+  follow-sequence start-node |A B C>
+  history
+  q
+
+2016-11-17
+  load sentence-sequence.sw
+  dump
+  random-class-sequence |X>
+  .
+  .
+  .
+  .
+  history
+  random-class-sequence |Y>
+  .
+  .
+  .
+  .
+  history
+  dump
+  random-sequence
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  history 1000
+  q
+
+2016-11-17
+  load sentence-sequence.sw
+  dump
+  random-class-sequence |A>
+  random-class-sequence |B>
+  random-class-sequence |C>
+  q
+
+2016-11-17
+  load sentence-sequence.sw
+  pick-elt rel-kets[pattern]
+  .
+  rel-kets[pattern]
+  follow-sequence pattern pick-elt rel-kets[pattern]
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  dump
+  follow-sequence pattern |node 9: 1>
+  q
+
+2016-11-17
+  load sentence-sequence.sw
+  dump
+  random-sequence
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  q
+
+2016-11-17
+  load sentence-sequence.sw
+  dump
+  random-sequence
+  .
+  .
+  .
+  follow-sequence pattern |node 9: 1>
+  follow-sequence[random-class-sequence] pattern |node 9: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  dump
+  history
+  q
+
