@@ -13,6 +13,9 @@ encode |man> => pick[10] full |range>
 encode |used> => pick[10] full |range>
 encode |a> => pick[10] full |range>
 encode |telescope> => pick[10] full |range>
+encode |woman> => pick[10] full |range>
+encode |lady> => pick[10] full |range>
+
 
 -- encode classes:
 encode |A> => pick[10] full |range>
@@ -66,6 +69,14 @@ then |node 8: 2> => random-column[10] encode |telescope>
 pattern |node 8: 3> => then |node 8: 2>
 then |node 8: 3> => append-column[10] encode |end of sequence>
 
+-- woman
+pattern |node 9: 1> => random-column[10] encode |woman>
+then |node 9: 1> => append-column[10] encode |end of sequence>
+
+-- lady
+pattern |node 10: 1> => random-column[10] encode |lady>
+then |node 10: 1> => append-column[10] encode |end of sequence>
+
 
 
 -- X: {{}, old, other}
@@ -81,28 +92,30 @@ start-node |Y: 3> => pattern |node 5: 1>
 -- A: {the}
 start-node |A: 1> => pattern |node 6: 1>
 
--- B: {man}
+-- B: {man,woman,lady}
 start-node |B: 1> => pattern |node 7: 1>
+start-node |B: 2> => pattern |node 9: 1>
+start-node |B: 3> => pattern |node 10: 1>
 
 -- C: {used a telescope}
 start-node |C: 1> => pattern |node 8: 1>
 
 
 -- A, X, B, Y, C
-pattern |node 9: 1> => random-column[10] encode |A>
-then |node 9: 1> => random-column[10] encode |X>
+pattern |node 20: 1> => random-column[10] encode |A>
+then |node 20: 1> => random-column[10] encode |X>
 
-pattern |node 9: 2> => then |node 9: 1>
-then |node 9: 2> => random-column[10] encode |B>
+pattern |node 20: 2> => then |node 20: 1>
+then |node 20: 2> => random-column[10] encode |B>
 
-pattern |node 9: 3> => then |node 9: 2>
-then |node 9: 3> => random-column[10] encode |Y>
+pattern |node 20: 3> => then |node 20: 2>
+then |node 20: 3> => random-column[10] encode |Y>
 
-pattern |node 9: 4> => then |node 9: 3>
-then |node 9: 4> => random-column[10] encode |C>
+pattern |node 20: 4> => then |node 20: 3>
+then |node 20: 4> => random-column[10] encode |C>
 
-pattern |node 9: 5> => then |node 9: 4>
-then |node 9: 5> => append-column[10] encode |end of sequence>
+pattern |node 20: 5> => then |node 20: 4>
+then |node 20: 5> => append-column[10] encode |end of sequence>
 
 
 -- operators:
@@ -112,5 +125,5 @@ random-sequence |*> #=> follow-sequence start-node pick-elt rel-kets[start-node]
 recall-sentence |*> #=> follow-sequence[random-class-sequence] pattern |_self>
 
 -- usage:
--- sa: recall-sentence |node 9: 1>
+-- sa: recall-sentence |node 20: 1>
 

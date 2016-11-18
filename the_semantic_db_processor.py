@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/11/2016
+# Update: 18/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -862,7 +862,8 @@ def old_extract_literal_superposition(s):
         return result, saved
 
     except:
-      print("els final result:",result)
+      #print("els final result:",result)
+      logger.debug("els final result: %s" % result)      
       return result, rest
 
 
@@ -893,7 +894,7 @@ def extract_literal_superposition(s,self_object=None):
         return result, saved
 
     except:
-      print("els final result:",result)
+      logger.debug("els final result: %s" % result)
       return result, rest
 
 # 7/1/2015
@@ -1448,7 +1449,8 @@ def old_process_brackets(C,line,left_label=None):
   return None
 
 def process_brackets(C,line,left_label=None):
-  print("inside process_brackets:",line)
+#  print("inside process_brackets:",line)
+  logger.debug("inside process_brackets: %s " % line)
   try:
     fn, rest = line.split("(",1)
     fn = fn.strip()
@@ -1457,7 +1459,8 @@ def process_brackets(C,line,left_label=None):
       try:
         sp, rest = extract_compound_superposition(C,rest,left_label)     # sp is short for superposition
         pieces.append(sp)
-        print("inside while, rest:",rest)
+        #print("inside while, rest:",rest)
+        logger.debug("inside while, rest: %s" % rest)        
         null, rest = rest.split(",",1)
       except:
         break
@@ -1467,11 +1470,18 @@ def process_brackets(C,line,left_label=None):
   except:
     return None
 
-  print("fn:  ",fn)
-  print("len: ",len(pieces))
+  #print("fn:  ",fn)
+  #print("len: ",len(pieces))
+  #for sp in pieces:
+  #  print("sp: ",sp)
+  #print("rest:",rest)
+
+  logger.debug("fn:  %s " % fn)
+  logger.debug("len: %s" % len(pieces))
   for sp in pieces:
-    print("sp: ",sp)
-  print("rest:",rest)  
+    logger.debug("sp: %s" % sp)
+  logger.debug("rest: %s" % rest)
+    
 
 # what if len(fn) == 0?
 

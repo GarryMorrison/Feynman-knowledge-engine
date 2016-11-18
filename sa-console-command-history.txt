@@ -41899,3 +41899,72 @@
   history
   q
 
+2016-11-17
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 9: 1>
+  q
+
+2016-11-17
+  a-little |*> #=> 0.05 |_self>
+  somewhat |*> #=> 0.2 |_self>
+  very |*> #=> 0.8 |_self>
+  extremely |*> #=> 1.2 |_self>
+  dump
+  a-little |hungry>
+  somewhat |hungry>
+  very |hungry>
+  extremely |hungry>
+  -- a little thirsty, somewhat hungry and extremely tired:
+  a-little |thirsty> + somewhat |hungry> + extremely |tired>
+  q
+
+2016-11-17
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 9: 1>
+  recall-sentence |node 9: 1>
+  recall-sentence |node 9: 1>
+  q
+
+2016-11-18
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 20: 1>
+  q
+
+2016-11-18
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 20: 1>
+  history
+  q
+
+2016-11-18
+  load sentence-sequence.sw
+  recall-sentence |node 20: 1>
+  history
+  q
+
+2016-11-18
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 20: 1>
+  q
+
+2016-11-18
+  load sentence-sequence.sw
+  recall-sentence |node 20: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  q
+
