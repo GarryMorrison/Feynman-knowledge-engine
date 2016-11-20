@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/11/2016
+# Update: 20/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4947,7 +4947,49 @@ def follow_sequence(one,context,op=None):
     current_node = next(current_node)
   return ket("end of sequence")
   
-  
+
+# 20/11/2016:
+# code to recall a sentence
+# hrm... seems to work. Needs tidying though.
+#
+# Usage:
+# load load sentence-sequence--multi-layer.sw 
+# print-sentence |*> #=> recall-sentence pattern |_self>
+# print-sentence |node 200: 1>
+#
+#
+# one is a sp
+def recall_sentence(one,context):
+  if len(one) == 0:
+    return one
+  current_node = one
+#  current_node = one.apply_op(context,"pattern")
+#  if len(current_node) == 0:
+#    return one
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  def has_start_node(one):                                            # check if one is a class
+    two = ket(one.the_label() + ": 1")
+    return len(two.apply_op(context,"start-node")) > 0
+
+# python: x.apply_op(context,"append-colon").apply_fn(starts_with,context).pick_elt().apply_op(context,"start-node").apply_sp_fn(follow_sequence,context)
+  def get_start_node(one):
+    two = ket(one.the_label() + ": ")
+    return two.apply_fn(starts_with,context).pick_elt().apply_op(context,"start-node")        
+   
+  while name(current_node).the_label() != "end of sequence":
+    if not has_start_node(name(current_node)):
+      print(name(current_node))
+    else:
+#      print("%s has start node" % name(current_node))
+      start_node = get_start_node(name(current_node))
+      recall_sentence(start_node, context)       
+    current_node = next(current_node)
+  return ket("end of sequence")
+    
 
 # 10/10/2016
 # whats_next(sp)

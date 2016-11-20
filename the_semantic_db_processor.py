@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/11/2016
+# Update: 20/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -588,7 +588,10 @@ sp_context_table = {
   "have-in-common"    : "have_in_common",
   
 # 5/10/2016:
-  "follow-sequence"    : "follow_sequence",             
+  "follow-sequence"    : "follow_sequence",
+
+# 20/11/2016:
+  "recall-sentence"    : "recall_sentence",               
 } 
 
 def sanitize_op(op):

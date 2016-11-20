@@ -41968,3 +41968,201 @@
   .
   q
 
+2016-11-18
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 20: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  info off
+  recall-sentence |node 20: 1>
+  .
+  recall-sentence |node 20: 3>
+  .
+  q
+
+2016-11-20
+  load sequence-sentence.sw
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 20: 1>
+  info off
+  recall-sentence |node 20: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  
+  dump
+  reset
+  load sentence-sequence--multi-layer.sw
+  dump
+  follow-sequence pattern |node 200: 1>
+  follow-sequence pattern |node 100: 1>
+  recall-sentence |node 100: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  recall-sentence |node 101: 1>
+  .
+  .
+  .
+  recall-sentence |node 102: 1>
+  .
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 13: 1>
+  follow-sequence pattern |node 15: 1>
+  history
+  follow-sequence pattern |node 200: 1>
+  save history
+
+2016-11-20
+  load sequence-sentence.sw
+  load sentence-sequence.sw
+  dump
+  recall-sentence |node 20: 1>
+  info off
+  recall-sentence |node 20: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  
+  dump
+  reset
+  load sentence-sequence--multi-layer.sw
+  dump
+  follow-sequence pattern |node 200: 1>
+  follow-sequence pattern |node 100: 1>
+  recall-sentence |node 100: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  recall-sentence |node 101: 1>
+  .
+  .
+  .
+  recall-sentence |node 102: 1>
+  .
+  .
+  .
+  .
+  .
+  follow-sequence pattern |node 13: 1>
+  follow-sequence pattern |node 15: 1>
+  history
+  follow-sequence pattern |node 200: 1>
+  save history
+  recall-sentence |node 200: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  debug on
+  random-class-sequence |H>
+  debug off
+  recall-sentence |node 200: 1>
+  info off
+  recall-sentence |node 200: 1>
+  start-node |the: 1>
+  start-node |D: 1>
+  start-node |A: 1>
+  start-node |M: 1>
+  start-node |H: 1>
+  start-node |I: 1>
+  follow-sequence pattern |node 200: 1>
+  start-node |A>
+  start-node |A: 1>
+  start-node |M: 1>
+  q
+
+2016-11-20
+  load sentence-sequence--multi-layer.sw
+  dump
+  recall-sentence pattern |node 200: 1>
+  q
+
+2016-11-20
+  load sentence-sequence--multi-layer.sw
+  recall-sentence pattern |node 200: 1>
+  recall-sentence pattern |node 100: 1>
+  recall-sentence pattern |node 15: 1>
+  q
+
+2016-11-20
+  load sentence-sequence--multi-layer.sw
+  recall-sentence |node 15: 1>
+  recall-sentence |node 100: 1>
+  recall-sentence |node 200: 1>
+  dump
+  debug on
+  random-class-sequence |B>
+  dump
+  q
+
+2016-11-20
+  load sentence-sequence--multi-layer.sw
+  recall-sentence pattern |node 200: 1>
+  recall-sentence pattern |node 100: 1>
+  q
+
+2016-11-20
+  load sentence-sequence--multi-layer.sw
+  info off
+  recall-sentence pattern |node 200: 1>
+  .
+  recall-sentence pattern |node 102: 1>
+  .
+  .
+  .
+  .
+  .
+  q
+
+2016-11-20
+  load sentence-sequence--multi-layer.sw
+  dump
+  info off
+  print-sentence |node 200: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  q
+
