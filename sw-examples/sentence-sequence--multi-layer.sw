@@ -39,51 +39,51 @@ encode |N> => pick[10] full |range>
 
 
 -- empty sequence
-pattern |node 1: 1> => append-column[10] encode |end of sequence>
+pattern |node 1: 1> => random-column[10] encode |end of sequence>
 
 -- the
 pattern |node 2: 1> => random-column[10] encode |the>
-then |node 2: 1> => append-column[10] encode |end of sequence>
+then |node 2: 1> => random-column[10] encode |end of sequence>
 
 -- youngest
 pattern |node 3: 1> => random-column[10] encode |youngest>
-then |node 3: 1> => append-column[10] encode |end of sequence>
+then |node 3: 1> => random-column[10] encode |end of sequence>
 
 -- eldest
 pattern |node 4: 1> => random-column[10] encode |eldest>
-then |node 4: 1> => append-column[10] encode |end of sequence>
+then |node 4: 1> => random-column[10] encode |end of sequence>
 
 -- child
 pattern |node 5: 1> => random-column[10] encode |child>
-then |node 5: 1> => append-column[10] encode |end of sequence>
+then |node 5: 1> => random-column[10] encode |end of sequence>
 
 -- sibling
 pattern |node 6: 1> => random-column[10] encode |sibling>
-then |node 6: 1> => append-column[10] encode |end of sequence>
+then |node 6: 1> => random-column[10] encode |end of sequence>
 
 -- old
 pattern |node 7: 1> => random-column[10] encode |old>
-then |node 7: 1> => append-column[10] encode |end of sequence>
+then |node 7: 1> => random-column[10] encode |end of sequence>
 
 -- other
 pattern |node 8: 1> => random-column[10] encode |other>
-then |node 8: 1> => append-column[10] encode |end of sequence>
+then |node 8: 1> => random-column[10] encode |end of sequence>
 
 -- man
 pattern |node 9: 1> => random-column[10] encode |man>
-then |node 9: 1> => append-column[10] encode |end of sequence>
+then |node 9: 1> => random-column[10] encode |end of sequence>
 
 -- woman
 pattern |node 10: 1> => random-column[10] encode |woman>
-then |node 10: 1> => append-column[10] encode |end of sequence>
+then |node 10: 1> => random-column[10] encode |end of sequence>
 
 -- lady
 pattern |node 11: 1> => random-column[10] encode |lady>
-then |node 11: 1> => append-column[10] encode |end of sequence>
+then |node 11: 1> => random-column[10] encode |end of sequence>
 
 -- young
 pattern |node 12: 1> => random-column[10] encode |young>
-then |node 12: 1> => append-column[10] encode |end of sequence>
+then |node 12: 1> => random-column[10] encode |end of sequence>
 
 -- on, the, hill
 pattern |node 13: 1> => random-column[10] encode |on>
@@ -93,11 +93,11 @@ pattern |node 13: 2> => then |node 13: 1>
 then |node 13: 2> => random-column[10] encode |hill>
 
 pattern |node 13: 3> => then |node 13: 2>
-then |node 13: 3> => append-column[10] encode |end of sequence>
+then |node 13: 3> => random-column[10] encode |end of sequence>
 
 -- also
 pattern |node 14: 1> => random-column[10] encode |also>
-then |node 14: 1> => append-column[10] encode |end of sequence>
+then |node 14: 1> => random-column[10] encode |end of sequence>
 
 -- used, a, telescope
 pattern |node 15: 1> => random-column[10] encode |used>
@@ -107,7 +107,7 @@ pattern |node 15: 2> => then |node 15: 1>
 then |node 15: 2> => random-column[10] encode |telescope>
 
 pattern |node 15: 3> => then |node 15: 2>
-then |node 15: 3> => append-column[10] encode |end of sequence>
+then |node 15: 3> => random-column[10] encode |end of sequence>
 
 
 
@@ -154,21 +154,21 @@ pattern |node 100: 1> => random-column[10] encode |B>
 then |node 100: 1> => random-column[10] encode |C>
 
 pattern |node 100: 2> => then |node 100: 1>
-then |node 100: 2> => append-column[10] encode |end of sequence>
+then |node 100: 2> => random-column[10] encode |end of sequence>
 
 -- K: D, E
 pattern |node 101: 1> => random-column[10] encode |D>
 then |node 101: 1> => random-column[10] encode |E>
 
 pattern |node 101: 2> => then |node 101: 1>
-then |node 101: 2> => append-column[10] encode |end of sequence>
+then |node 101: 2> => random-column[10] encode |end of sequence>
 
 -- L: F, G
 pattern |node 102: 1> => random-column[10] encode |F>
 then |node 102: 1> => random-column[10] encode |G>
 
 pattern |node 102: 2> => then |node 102: 1>
-then |node 102: 2> => append-column[10] encode |end of sequence>
+then |node 102: 2> => random-column[10] encode |end of sequence>
 
 
 -- M: {J, K, L}
@@ -188,7 +188,7 @@ pattern |node 200: 3> => then |node 200: 2>
 then |node 200: 3> => random-column[10] encode |I>
 
 pattern |node 200: 4> => then |node 200: 3>
-then |node 200: 4> => append-column[10] encode |end of sequence>
+then |node 200: 4> => random-column[10] encode |end of sequence>
 
 
 -- operators:
