@@ -1,0 +1,17 @@
+A = {the}
+B = {{}, old, other}
+C = {man, woman, lady}
+D = {{}, young}
+E = {child}
+F = {youngest, eldest}
+G = {child, sibling}
+H = {{}, on.the.hill, also}
+I = {used.a.telescope}
+
+J = B.C
+K = D.E
+L = F.G
+
+M = {J, K, L}
+
+N = A.M.H.I

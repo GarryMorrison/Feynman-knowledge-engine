@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 20/11/2016
+# Update: 21/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4953,7 +4953,7 @@ def follow_sequence(one,context,op=None):
 # hrm... seems to work. Needs tidying though.
 #
 # Usage:
-# load load sentence-sequence--multi-layer.sw 
+# load sentence-sequence--multi-layer.sw 
 # print-sentence |*> #=> recall-sentence pattern |_self>
 # print-sentence |node 200: 1>
 #
@@ -4972,7 +4972,7 @@ def recall_sentence(one,context):
   def name(one):
     return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
   def has_start_node(one):                                            # check if one is a class
-    two = ket(one.the_label() + ": 1")
+    two = ket(one.the_label() + ": 1")                                # this breaks if you use: |A: 0> or |A: 1> for your first node. What is a tidy fix?
     return len(two.apply_op(context,"start-node")) > 0
 
 # python: x.apply_op(context,"append-colon").apply_fn(starts_with,context).pick_elt().apply_op(context,"start-node").apply_sp_fn(follow_sequence,context)

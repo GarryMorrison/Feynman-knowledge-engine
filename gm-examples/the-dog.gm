@@ -1,0 +1,4 @@
+A = {the.dog.wants}
+B = {the.ball, food}
+C = A . B
+

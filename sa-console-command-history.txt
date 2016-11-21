@@ -42166,3 +42166,333 @@
   .
   q
 
+2016-11-20
+  info off
+  load sentence-sequence--multi-layer.sw
+  dump
+  history
+  print-sentence |node 100: 1>
+  .
+  print-sentence |node 200: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  q
+
+2016-11-21
+  info off
+  load sentence-sequence--multi-layer.sw
+  dump
+  print-sentence |node 200: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  
+  .
+  print-sentence |node 200: 1>
+  .
+  .
+  dump
+  reset
+  load sentence-sequence--multi-layer-v2.sw
+  dump
+  print-sentence |node 200: 1>
+  .
+  reset
+  history
+  load sentence-sequence--multi-layer.sw
+  print-sentence |node 200: 1>
+  .
+  reset
+  load sentence-sequence--multi-layer-v2.sw
+  dump
+  print-sentence |node 200: 1>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  q
+
+2016-11-21
+  full |range> => range(|1>,|2048>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |the> => pick[10] full |range>
+  encode |dog> => pick[10] full |range>
+  encode |wants> => pick[10] full |range>
+  encode |ball> => pick[10] full |range>
+  encode |food> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  
+  -- encode sequence names:
+  encode |C> => pick[10] full |range>
+  
+  -- empty sequence
+  pattern |node 1: 1> => random-column[10] encode |end of sequence>
+  
+  -- the . dog . wants
+  pattern |node 0: 0> => random-column[10] encode |the>
+  then |node 0: 0> => random-column[10] encode |dog>
+  
+  pattern |node 0: 1> => then |node 0: 0>
+  then |node 0: 1> => random-column[10] encode |wants>
+  
+  pattern |node 0: 2> => then |node 0: 1>
+  then |node 0: 2> => random-column[10] encode |end of sequence>
+  
+  -- the . ball
+  pattern |node 1: 0> => random-column[10] encode |the>
+  then |node 1: 0> => random-column[10] encode |ball>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |end of sequence>
+  
+  -- food
+  pattern |node 2: 0> => random-column[10] encode |food>
+  then |node 2: 0> => random-column[10] encode |end of sequence>
+  dump
+  recall-sentence pattern |node 1: 1>
+  recall-sentence pattern |node 0: 0>
+  recall-sentence pattern |node 1: 0>
+  recall-sentence pattern |node 2: 0>
+  q
+
+2016-11-21
+  info off
+  load sentence-sequence.sw
+  print-sentence |node 20: 1>
+  .
+  .
+  q
+
+2016-11-21
+  full |range> => range(|1>,|2048>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |the> => pick[10] full |range>
+  encode |old> => pick[10] full |range>
+  encode |other> => pick[10] full |range>
+  encode |man> => pick[10] full |range>
+  encode |woman> => pick[10] full |range>
+  encode |lady> => pick[10] full |range>
+  encode |young> => pick[10] full |range>
+  encode |child> => pick[10] full |range>
+  encode |youngest> => pick[10] full |range>
+  encode |eldest> => pick[10] full |range>
+  encode |sibling> => pick[10] full |range>
+  encode |on> => pick[10] full |range>
+  encode |hill> => pick[10] full |range>
+  encode |also> => pick[10] full |range>
+  encode |used> => pick[10] full |range>
+  encode |a> => pick[10] full |range>
+  encode |telescope> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  encode |M> => pick[10] full |range>
+  
+  -- encode sequence names:
+  encode |J> => pick[10] full |range>
+  encode |K> => pick[10] full |range>
+  encode |L> => pick[10] full |range>
+  encode |N> => pick[10] full |range>
+  
+  -- empty sequence
+  pattern |node 0: 0> => random-column[10] encode |end of sequence>
+  
+  -- the
+  pattern |node 1: 0> => random-column[10] encode |the>
+  then |node 1: 0> => random-column[10] encode |end of sequence>
+  
+  -- old
+  pattern |node 2: 0> => random-column[10] encode |old>
+  then |node 2: 0> => random-column[10] encode |end of sequence>
+  
+  -- other
+  pattern |node 3: 0> => random-column[10] encode |other>
+  then |node 3: 0> => random-column[10] encode |end of sequence>
+  
+  -- man
+  pattern |node 4: 0> => random-column[10] encode |man>
+  then |node 4: 0> => random-column[10] encode |end of sequence>
+  
+  -- woman
+  pattern |node 5: 0> => random-column[10] encode |woman>
+  then |node 5: 0> => random-column[10] encode |end of sequence>
+  
+  -- lady
+  pattern |node 6: 0> => random-column[10] encode |lady>
+  then |node 6: 0> => random-column[10] encode |end of sequence>
+  
+  -- young
+  pattern |node 7: 0> => random-column[10] encode |young>
+  then |node 7: 0> => random-column[10] encode |end of sequence>
+  
+  -- child
+  pattern |node 8: 0> => random-column[10] encode |child>
+  then |node 8: 0> => random-column[10] encode |end of sequence>
+  
+  -- youngest
+  pattern |node 9: 0> => random-column[10] encode |youngest>
+  then |node 9: 0> => random-column[10] encode |end of sequence>
+  
+  -- eldest
+  pattern |node 10: 0> => random-column[10] encode |eldest>
+  then |node 10: 0> => random-column[10] encode |end of sequence>
+  
+  -- sibling
+  pattern |node 11: 0> => random-column[10] encode |sibling>
+  then |node 11: 0> => random-column[10] encode |end of sequence>
+  
+  -- on . the . hill
+  pattern |node 12: 0> => random-column[10] encode |on>
+  then |node 12: 0> => random-column[10] encode |the>
+  
+  pattern |node 12: 1> => then |node 12: 0>
+  then |node 12: 1> => random-column[10] encode |hill>
+  
+  pattern |node 12: 2> => then |node 12: 1>
+  then |node 12: 2> => random-column[10] encode |end of sequence>
+  
+  -- also
+  pattern |node 13: 0> => random-column[10] encode |also>
+  then |node 13: 0> => random-column[10] encode |end of sequence>
+  
+  -- used . a . telescope
+  pattern |node 14: 0> => random-column[10] encode |used>
+  then |node 14: 0> => random-column[10] encode |a>
+  
+  pattern |node 14: 1> => then |node 14: 0>
+  then |node 14: 1> => random-column[10] encode |telescope>
+  
+  pattern |node 14: 2> => then |node 14: 1>
+  then |node 14: 2> => random-column[10] encode |end of sequence>
+  
+  -- J = B.C
+  pattern |node 15: 0> => random-column[10] encode |B>
+  then |node 15: 0> => random-column[10] encode |C>
+  
+  pattern |node 15: 1> => then |node 15: 0>
+  then |node 15: 1> => random-column[10] encode |end of sequence>
+  
+  -- K = D.E
+  pattern |node 16: 0> => random-column[10] encode |D>
+  then |node 16: 0> => random-column[10] encode |E>
+  
+  pattern |node 16: 1> => then |node 16: 0>
+  then |node 16: 1> => random-column[10] encode |end of sequence>
+  
+  -- L = F.G
+  pattern |node 17: 0> => random-column[10] encode |F>
+  then |node 17: 0> => random-column[10] encode |G>
+  
+  pattern |node 17: 1> => then |node 17: 0>
+  then |node 17: 1> => random-column[10] encode |end of sequence>
+  
+  -- N = A.M.H.I
+  pattern |node 18: 0> => random-column[10] encode |A>
+  then |node 18: 0> => random-column[10] encode |M>
+  
+  pattern |node 18: 1> => then |node 18: 0>
+  then |node 18: 1> => random-column[10] encode |H>
+  
+  pattern |node 18: 2> => then |node 18: 1>
+  then |node 18: 2> => random-column[10] encode |I>
+  
+  pattern |node 18: 3> => then |node 18: 2>
+  then |node 18: 3> => random-column[10] encode |end of sequence>
+  
+  -- A = {the}
+  start-node |A: 0> => pattern |node 1: 0>
+  
+  -- B = {{}, old, other}
+  start-node |B: 0> => pattern |node 0: 0>
+  start-node |B: 1> => pattern |node 2: 0>
+  start-node |B: 2> => pattern |node 3: 0>
+  
+  -- C = {man, woman, lady}
+  start-node |C: 0> => pattern |node 4: 0>
+  start-node |C: 1> => pattern |node 5: 0>
+  start-node |C: 2> => pattern |node 6: 0>
+  
+  -- D = {{}, young}
+  start-node |D: 0> => pattern |node 0: 0>
+  start-node |D: 1> => pattern |node 7: 0>
+  
+  -- E = {child}
+  start-node |E: 0> => pattern |node 8: 0>
+  
+  -- F = {youngest, eldest}
+  start-node |F: 0> => pattern |node 9: 0>
+  start-node |F: 1> => pattern |node 10: 0>
+  
+  -- G = {child, sibling}
+  start-node |G: 0> => pattern |node 8: 0>
+  start-node |G: 1> => pattern |node 11: 0>
+  
+  -- H = {{}, on.the.hill, also}
+  start-node |H: 0> => pattern |node 0: 0>
+  start-node |H: 1> => pattern |node 12: 0>
+  start-node |H: 2> => pattern |node 13: 0>
+  
+  -- I = {used.a.telescope}
+  start-node |I: 0> => pattern |node 14: 0>
+  
+  -- M = {J, K, L}
+  start-node |M: 0> => pattern |node 15: 0>
+  start-node |M: 1> => pattern |node 16: 0>
+  start-node |M: 2> => pattern |node 17: 0>
+  
+  dump
+  recall-sentence pattern |node 18: 0>
+  .
+  q
+

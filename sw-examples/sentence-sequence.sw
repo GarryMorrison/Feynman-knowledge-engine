@@ -122,8 +122,8 @@ then |node 20: 5> => append-column[10] encode |end of sequence>
 append-colon |*> #=> merge-labels(|_self> + |: >)
 random-class-sequence |*> #=> follow-sequence start-node pick-elt starts-with append-colon |_self>
 random-sequence |*> #=> follow-sequence start-node pick-elt rel-kets[start-node] |>
-recall-sentence |*> #=> follow-sequence[random-class-sequence] pattern |_self>
+print-sentence |*> #=> follow-sequence[random-class-sequence] pattern |_self>
 
 -- usage:
--- sa: recall-sentence |node 20: 1>
+-- sa: print-sentence |node 20: 1>
 

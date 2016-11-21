@@ -111,59 +111,59 @@ then |node 15: 3> => random-column[10] encode |end of sequence>
 
 
 
--- A: {the}
+-- A = {the}
 start-node |A: 1> => pattern |node 2: 1>
 
--- B: {{}, old, other}
+-- B = {{}, old, other}
 start-node |B: 1> => pattern |node 1: 1>
 start-node |B: 2> => pattern |node 7: 1>
 start-node |B: 3> => pattern |node 8: 1>
 
--- C: {man, woman, lady}
+-- C = {man, woman, lady}
 start-node |C: 1> => pattern |node 9: 1>
 start-node |C: 2> => pattern |node 10: 1>
 start-node |C: 3> => pattern |node 11: 1>
 
--- D: {{}, young}
+-- D = {{}, young}
 start-node |D: 1> => pattern |node 1: 1> 
 start-node |D: 2> => pattern |node 12: 1> 
 
--- E: {child}
+-- E = {child}
 start-node |E: 1> => pattern |node 5: 1> 
  
--- F: {youngest, eldest}
+-- F = {youngest, eldest}
 start-node |F: 1> => pattern |node 3: 1> 
 start-node |F: 2> => pattern |node 4: 1> 
 
--- G: {child, sibling}
+-- G = {child, sibling}
 start-node |G: 1> => pattern |node 5: 1> 
 start-node |G: 2> => pattern |node 6: 1> 
 
--- H: {{}, on the hill, also}
+-- H = {{}, on the hill, also}
 start-node |H: 1> => pattern |node 1: 1>
 start-node |H: 2> => pattern |node 13: 1>
 start-node |H: 3> => pattern |node 14: 1>
 
--- I: {used a telescope}
+-- I = {used a telescope}
 start-node |I: 1> => pattern |node 15: 1>
 
 
 
--- J: B, C
+-- J = B.C
 pattern |node 100: 1> => random-column[10] encode |B>
 then |node 100: 1> => random-column[10] encode |C>
 
 pattern |node 100: 2> => then |node 100: 1>
 then |node 100: 2> => random-column[10] encode |end of sequence>
 
--- K: D, E
+-- K = D.E
 pattern |node 101: 1> => random-column[10] encode |D>
 then |node 101: 1> => random-column[10] encode |E>
 
 pattern |node 101: 2> => then |node 101: 1>
 then |node 101: 2> => random-column[10] encode |end of sequence>
 
--- L: F, G
+-- L = F.G
 pattern |node 102: 1> => random-column[10] encode |F>
 then |node 102: 1> => random-column[10] encode |G>
 
@@ -171,13 +171,13 @@ pattern |node 102: 2> => then |node 102: 1>
 then |node 102: 2> => random-column[10] encode |end of sequence>
 
 
--- M: {J, K, L}
+-- M = {J, K, L}
 start-node |M: 1> => pattern |node 100: 1>
 start-node |M: 2> => pattern |node 101: 1>
 start-node |M: 3> => pattern |node 102: 1>
 
 
--- N: A, M, H, I
+-- N = A.M.H.I
 pattern |node 200: 1> => random-column[10] encode |A>
 then |node 200: 1> => random-column[10] encode |M>
 
