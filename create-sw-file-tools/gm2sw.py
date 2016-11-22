@@ -7,12 +7,13 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-11-21
-# Update:
+# Update: 2016-11-22
 # Copyright: GPLv3
 #
 # Usage: ./gm2sw.py source-file.gm
 #
-# Bah! Ugly code for now.
+# Bah! Ugly code for now. But it seems to work.
+# maybe eventually implement in parsley?
 #
 #######################################################################
 
@@ -21,6 +22,7 @@ import sys
 from collections import OrderedDict
 
 size = 2048
+#size = 65536
 bits = 10
 column_size = 10
 
@@ -46,8 +48,6 @@ def process_sequence(s):
 
 def build_dictionary(filename):
   class_dict = OrderedDict()
-#  low_level_sequences = OrderedDict()
-  words = OrderedDict()
   sequence_dict = OrderedDict()
 
   with open(filename, 'r') as f:
@@ -59,22 +59,26 @@ def build_dictionary(filename):
           r = process_class(tail)
           if r is not None:                                 # class found
             class_dict[head] = r
-            for seq in r:                                   # tidy this bit later. Probably remove from here, and do it later.
-              for x in process_sequence(seq):
-                if x not in sequence_dict and x != '{}':    # filter out the empty sequence
-                  words[x] = True
           else:                                             # sequence found
             r = process_sequence(tail)
             sequence_dict[head] = r
         except:
           continue
-  return class_dict, words, sequence_dict
+  return class_dict, sequence_dict
 
-class_dict, words, sequence_dict = build_dictionary(filename)
-print("class:", class_dict)
-print("words:", words)
-print("sequence:", sequence_dict)
-print()
+class_dict, sequence_dict = build_dictionary(filename)
+
+words = OrderedDict()
+for key,value in class_dict.items():
+  for seq in value:
+    for x in process_sequence(seq):
+      if x != '{}' and x not in class_dict and x not in sequence_dict:
+        words[x] = True
+
+#print("class:", class_dict)
+#print("words:", words)
+#print("sequence:", sequence_dict)
+#print()
 
 def encode_sequence(node, sequence, name = None):
   if name is not None:
@@ -138,7 +142,8 @@ node = 1
 for class_name, class_value in class_dict.items():
   for seq in class_value:
     if seq not in sequences_node_table:
-      if seq not in sequence_dict and seq != '{}':
+#      if seq != '{}' and seq not in class_dict and seq not in sequence_dict:
+      if seq != '{}' and seq not in sequence_dict:
         r = process_sequence(seq)
         encode_sequence(node, r)
         sequences_node_table[seq] = node
@@ -154,6 +159,12 @@ for seq_name, seq_value in sequence_dict.items():
   node += 1  
 
 #print("node table:",sequences_node_table)
+
+# next, we label the sequences of classes:
+print("\n-- label the sentences:")
+for seq_name, seq_value in sequence_dict.items():
+  print("sentence |%s> => pattern |node %s: 0>" % (seq_name, sequences_node_table[seq_name]))
+print()
 
 # next, define the classes:
 print("\n-- define our classes:")

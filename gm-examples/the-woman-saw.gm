@@ -1,0 +1,22 @@
+A = {the.woman.saw}
+B = {through.the.telescope}
+C = {{}, young}
+D = {girl, boy}
+E = {{}, old, other}
+F = {man, woman, lady}
+G = E.F
+H = {the}
+I = H.C.D
+J = H.E.F
+K = {{},I,J}
+
+L = A.K.B
+
+M = {I,J}
+N = {saw}
+O = M.N.K.B
+
+P = {through.the}
+Q = {telescope, binoculars, night.vision.goggles}
+
+R = M.N.K.P.Q
