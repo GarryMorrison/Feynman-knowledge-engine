@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 20/11/2016
+# Update: 23/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -591,7 +591,11 @@ sp_context_table = {
   "follow-sequence"    : "follow_sequence",
 
 # 20/11/2016:
-  "recall-sentence"    : "recall_sentence",               
+  "recall-sentence"    : "recall_sentence",
+  
+# 23/11/2016:
+  "recall-sentence-v2"    : "recall_sentence_v2",
+                 
 } 
 
 def sanitize_op(op):

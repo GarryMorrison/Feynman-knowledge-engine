@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 21/11/2016
+# Update: 23/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4971,9 +4971,13 @@ def recall_sentence(one,context):
     return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
   def name(one):
     return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
-  def has_start_node(one):                                            # check if one is a class
+  def old_has_start_node(one):                                            # check if one is a class
     two = ket(one.the_label() + ": 1")                                # this breaks if you use: |A: 0> or |A: 1> for your first node. What is a tidy fix?
     return len(two.apply_op(context,"start-node")) > 0
+
+  def has_start_node(one):                                            # check if one is a class
+    two = ket(one.the_label() + ": ")                                 # see if this fixes the |A: 0> vs |A: 1> as first node bug.
+    return len(two.apply_fn(starts_with,context).select_range(1,1).apply_op(context,"start-node")) > 0
 
 # python: x.apply_op(context,"append-colon").apply_fn(starts_with,context).pick_elt().apply_op(context,"start-node").apply_sp_fn(follow_sequence,context)
   def get_start_node(one):
@@ -4990,6 +4994,37 @@ def recall_sentence(one,context):
     current_node = next(current_node)
   return ket("end of sequence")
     
+
+# 23/11/2016:
+# hopefully improved version of recall-sentence:
+# usage: recall-sentence-v2 sentence |R>
+#
+# one is a sp
+def recall_sentence_v2(one,context):
+  if len(one) == 0:
+    return one
+#  current_node = one
+  current_node = one.apply_op(context,"pattern")
+  if len(current_node) == 0:
+    return one
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+#  def has_start_node(one):                                            # check if one is a class
+#    return len(one.apply_op(context,"start-nodes")) > 0
+  def get_start_node(one):
+    return one.apply_op(context,"start-nodes").weighted_pick_elt()             # need clean?        
+ 
+  while name(current_node).the_label() != "end of sequence":
+    start_node = get_start_node(name(current_node))
+    if len(start_node) == 0:                                           # check if one is a class
+      print(name(current_node))
+    else:
+      recall_sentence_v2(start_node, context)       
+    current_node = next(current_node)
+  return ket("end of sequence")
 
 # 10/10/2016
 # whats_next(sp)

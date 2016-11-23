@@ -42496,3 +42496,431 @@
   .
   q
 
+2016-11-22
+  load first-sentence.sw
+  dump
+  rel-kets[sentence]
+  recall-sentence sentence |N>
+  history
+  save first-sentence--saved.sw
+  q
+
+2016-11-22
+  load first-sentence--big.sw
+  history
+  save first-sentence--big--saved.sw
+  q
+
+2016-11-22
+  info off
+  load first-sentence.sw
+  rel-kets[sentence]
+  recall-sentence sentence |N>
+  .
+  .
+  .
+  q
+
+2016-11-22
+  load the-woman-saw.sw
+  rel-kets[sentence]
+  info off
+  recall-sentence sentence |R>
+  .
+  .
+  .
+  .
+  .
+  .
+  recall-sentence pattern pick-elt rel-kets[pattern]
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  follow-sequence sentence |R>
+  follow-sequence start-node |M>
+  follow-sequence start-node |M: 0>
+  follow-sequence start-node |M: 1>
+  follow-sequence start-node |N: 0>
+  follow-sequence start-node |K: 0>
+  follow-sequence start-node |K: 1>
+  follow-sequence start-node |K: 2>
+  read |*> #=> recall-sentence sentence |_self>
+  read |R>
+  rel-kets[sentence]
+  history
+  recall-sentence sentence |R>
+  print |*> #=> recall-sentence sentence |_self>
+  print |R>
+  .
+  q
+
+2016-11-22
+  load the-woman-saw.sw
+  history
+  save the-woman-saw--saved.sw
+  history
+  q
+
+2016-11-22
+  load the-woman-saw.sw
+  save the-woman-saw--saved.sw
+  q
+
+2016-11-23
+  context context free grammar
+  r1 |*> #=> rewrite(|_self>, |S>, |x>)
+  r2 |*> #=> rewrite(|_self>, |S>, |y>)
+  r3 |*> #=> rewrite(|_self>, |S>, |z>)
+  r4 |*> #=> rewrite(|_self>, |S>, |S + S>)
+  r5 |*> #=> rewrite(|_self>, |S>, |S - S>)
+  r6 |*> #=> rewrite(|_self>, |S>, |S * S>)
+  r7 |*> #=> rewrite(|_self>, |S>, |S / S>)
+  r8 |*> #=> rewrite(|_self>, |S>, |(S)>)
+  
+  the-list-of |rules> => |op: r1> + |op: r2> + |op: r3> + |op: r4> + |op: r5> + |op: r6> + |op: r7> + |op: r8>
+  random-rule |*> #=> apply(pick-elt the-list-of |rules>, |_self>)
+  
+  dump
+  save context-free-grammar-example.sw
+  r5 |S>
+  r6 r5 |S>
+  random-rule^10 |S>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  q
+
+2016-11-23
+  context context free grammar
+  r1 |*> #=> rewrite(|_self>, |T>, |x>)
+  r2 |*> #=> rewrite(|_self>, |T>, |y>)
+  r3 |*> #=> rewrite(|_self>, |T>, |z>)
+  r4 |*> #=> rewrite(|_self>, |S>, |S + T>)
+  r5 |*> #=> rewrite(|_self>, |S>, |S - T>)
+  r6 |*> #=> rewrite(|_self>, |S>, |S * T>)
+  r7 |*> #=> rewrite(|_self>, |S>, |S / T>)
+  r8 |*> #=> rewrite(|_self>, |T>, |(S)>)
+  r9 |*> #=> rewrite(|_self>, |S>, |T>)
+  
+  the-list-of |rules> => |op: r1> + |op: r2> + |op: r3> + |op: r4> + |op: r5> + |op: r6> + |op: r7> + |op: r8> + |op: r9>
+  random-rule |*> #=> apply(pick-elt the-list-of |rules>, |_self>)
+  dump
+  random-rule |S>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  dump
+  random-rule^20 |S>
+  .
+  .
+  .
+  .
+  .
+  .
+  .
+  history
+  q
+
+2016-11-23
+  start-node |M> => |node 100: 1> + 
+  start-node |M> => |node 100: 1> + |node 101: 1> + |node 202: 1>
+  debug on
+  weighted-pick-elt start-node |M>
+  weighted-pick-elt start-node |N>
+  history
+  q
+
+2016-11-23
+  full |range> => range(|1>,|2048>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |the> => pick[10] full |range>
+  encode |woman> => pick[10] full |range>
+  encode |saw> => pick[10] full |range>
+  encode |through> => pick[10] full |range>
+  encode |telescope> => pick[10] full |range>
+  encode |young> => pick[10] full |range>
+  encode |girl> => pick[10] full |range>
+  encode |boy> => pick[10] full |range>
+  encode |old> => pick[10] full |range>
+  encode |other> => pick[10] full |range>
+  encode |man> => pick[10] full |range>
+  encode |lady> => pick[10] full |range>
+  encode |binoculars> => pick[10] full |range>
+  encode |night> => pick[10] full |range>
+  encode |vision> => pick[10] full |range>
+  encode |goggles> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |K> => pick[10] full |range>
+  encode |M> => pick[10] full |range>
+  encode |N> => pick[10] full |range>
+  encode |P> => pick[10] full |range>
+  encode |Q> => pick[10] full |range>
+  
+  -- encode sequence names:
+  encode |G> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  encode |J> => pick[10] full |range>
+  encode |L> => pick[10] full |range>
+  encode |O> => pick[10] full |range>
+  encode |R> => pick[10] full |range>
+  
+  -- encode low level sequences:
+  -- empty sequence
+  pattern |node 0: 0> => random-column[10] encode |end of sequence>
+  
+  -- the . woman . saw
+  pattern |node 1: 0> => random-column[10] encode |the>
+  then |node 1: 0> => random-column[10] encode |woman>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |saw>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> => random-column[10] encode |end of sequence>
+  
+  -- through . the . telescope
+  pattern |node 2: 0> => random-column[10] encode |through>
+  then |node 2: 0> => random-column[10] encode |the>
+  
+  pattern |node 2: 1> => then |node 2: 0>
+  then |node 2: 1> => random-column[10] encode |telescope>
+  
+  pattern |node 2: 2> => then |node 2: 1>
+  then |node 2: 2> => random-column[10] encode |end of sequence>
+  
+  -- young
+  pattern |node 3: 0> => random-column[10] encode |young>
+  then |node 3: 0> => random-column[10] encode |end of sequence>
+  
+  -- girl
+  pattern |node 4: 0> => random-column[10] encode |girl>
+  then |node 4: 0> => random-column[10] encode |end of sequence>
+  
+  -- boy
+  pattern |node 5: 0> => random-column[10] encode |boy>
+  then |node 5: 0> => random-column[10] encode |end of sequence>
+  
+  -- old
+  pattern |node 6: 0> => random-column[10] encode |old>
+  then |node 6: 0> => random-column[10] encode |end of sequence>
+  
+  -- other
+  pattern |node 7: 0> => random-column[10] encode |other>
+  then |node 7: 0> => random-column[10] encode |end of sequence>
+  
+  -- man
+  pattern |node 8: 0> => random-column[10] encode |man>
+  then |node 8: 0> => random-column[10] encode |end of sequence>
+  
+  -- woman
+  pattern |node 9: 0> => random-column[10] encode |woman>
+  then |node 9: 0> => random-column[10] encode |end of sequence>
+  
+  -- lady
+  pattern |node 10: 0> => random-column[10] encode |lady>
+  then |node 10: 0> => random-column[10] encode |end of sequence>
+  
+  -- the
+  pattern |node 11: 0> => random-column[10] encode |the>
+  then |node 11: 0> => random-column[10] encode |end of sequence>
+  
+  -- saw
+  pattern |node 12: 0> => random-column[10] encode |saw>
+  then |node 12: 0> => random-column[10] encode |end of sequence>
+  
+  -- through . the
+  pattern |node 13: 0> => random-column[10] encode |through>
+  then |node 13: 0> => random-column[10] encode |the>
+  
+  pattern |node 13: 1> => then |node 13: 0>
+  then |node 13: 1> => random-column[10] encode |end of sequence>
+  
+  -- telescope
+  pattern |node 14: 0> => random-column[10] encode |telescope>
+  then |node 14: 0> => random-column[10] encode |end of sequence>
+  
+  -- binoculars
+  pattern |node 15: 0> => random-column[10] encode |binoculars>
+  then |node 15: 0> => random-column[10] encode |end of sequence>
+  
+  -- night . vision . goggles
+  pattern |node 16: 0> => random-column[10] encode |night>
+  then |node 16: 0> => random-column[10] encode |vision>
+  
+  pattern |node 16: 1> => then |node 16: 0>
+  then |node 16: 1> => random-column[10] encode |goggles>
+  
+  pattern |node 16: 2> => then |node 16: 1>
+  then |node 16: 2> => random-column[10] encode |end of sequence>
+  
+  
+  -- encode the sequences of classes:
+  -- G = E.F
+  pattern |node 17: 0> => random-column[10] encode |E>
+  then |node 17: 0> => random-column[10] encode |F>
+  
+  pattern |node 17: 1> => then |node 17: 0>
+  then |node 17: 1> => random-column[10] encode |end of sequence>
+  
+  -- I = H.C.D
+  pattern |node 18: 0> => random-column[10] encode |H>
+  then |node 18: 0> => random-column[10] encode |C>
+  
+  pattern |node 18: 1> => then |node 18: 0>
+  then |node 18: 1> => random-column[10] encode |D>
+  
+  pattern |node 18: 2> => then |node 18: 1>
+  then |node 18: 2> => random-column[10] encode |end of sequence>
+  
+  -- J = H.E.F
+  pattern |node 19: 0> => random-column[10] encode |H>
+  then |node 19: 0> => random-column[10] encode |E>
+  
+  pattern |node 19: 1> => then |node 19: 0>
+  then |node 19: 1> => random-column[10] encode |F>
+  
+  pattern |node 19: 2> => then |node 19: 1>
+  then |node 19: 2> => random-column[10] encode |end of sequence>
+  
+  -- L = A.K.B
+  pattern |node 20: 0> => random-column[10] encode |A>
+  then |node 20: 0> => random-column[10] encode |K>
+  
+  pattern |node 20: 1> => then |node 20: 0>
+  then |node 20: 1> => random-column[10] encode |B>
+  
+  pattern |node 20: 2> => then |node 20: 1>
+  then |node 20: 2> => random-column[10] encode |end of sequence>
+  
+  -- O = M.N.K.B
+  pattern |node 21: 0> => random-column[10] encode |M>
+  then |node 21: 0> => random-column[10] encode |N>
+  
+  pattern |node 21: 1> => then |node 21: 0>
+  then |node 21: 1> => random-column[10] encode |K>
+  
+  pattern |node 21: 2> => then |node 21: 1>
+  then |node 21: 2> => random-column[10] encode |B>
+  
+  pattern |node 21: 3> => then |node 21: 2>
+  then |node 21: 3> => random-column[10] encode |end of sequence>
+  
+  -- R = M.N.K.P.Q
+  pattern |node 22: 0> => random-column[10] encode |M>
+  then |node 22: 0> => random-column[10] encode |N>
+  
+  pattern |node 22: 1> => then |node 22: 0>
+  then |node 22: 1> => random-column[10] encode |K>
+  
+  pattern |node 22: 2> => then |node 22: 1>
+  then |node 22: 2> => random-column[10] encode |P>
+  
+  pattern |node 22: 3> => then |node 22: 2>
+  then |node 22: 3> => random-column[10] encode |Q>
+  
+  pattern |node 22: 4> => then |node 22: 3>
+  then |node 22: 4> => random-column[10] encode |end of sequence>
+  
+  
+  -- label the sentences:
+  sentence |G> => |node 17: 0>
+  sentence |I> => |node 18: 0>
+  sentence |J> => |node 19: 0>
+  sentence |L> => |node 20: 0>
+  sentence |O> => |node 21: 0>
+  sentence |R> => |node 22: 0>
+  
+  
+  -- define our classes:
+  -- A = {the.woman.saw}
+  start-nodes |A> +=> |node 1: 0>
+  
+  -- B = {through.the.telescope}
+  start-nodes |B> +=> |node 2: 0>
+  
+  -- C = {{}, young}
+  start-nodes |C> +=> |node 0: 0>
+  start-nodes |C> +=> |node 3: 0>
+  
+  -- D = {girl, boy}
+  start-nodes |D> +=> |node 4: 0>
+  start-nodes |D> +=> |node 5: 0>
+  
+  -- E = {{}, old, other}
+  start-nodes |E> +=> |node 0: 0>
+  start-nodes |E> +=> |node 6: 0>
+  start-nodes |E> +=> |node 7: 0>
+  
+  -- F = {man, woman, lady}
+  start-nodes |F> +=> |node 8: 0>
+  start-nodes |F> +=> |node 9: 0>
+  start-nodes |F> +=> |node 10: 0>
+  
+  -- H = {the}
+  start-nodes |H> +=> |node 11: 0>
+  
+  -- K = {{}, I, J}
+  start-nodes |K> +=> |node 0: 0>
+  start-nodes |K> +=> |node 18: 0>
+  start-nodes |K> +=> |node 19: 0>
+  
+  -- M = {I, J}
+  start-nodes |M> +=> |node 18: 0>
+  start-nodes |M> +=> |node 19: 0>
+  
+  -- N = {saw}
+  start-nodes |N> +=> |node 12: 0>
+  
+  -- P = {through.the}
+  start-nodes |P> +=> |node 13: 0>
+  
+  -- Q = {telescope, binoculars, night.vision.goggles}
+  start-nodes |Q> +=> |node 14: 0>
+  start-nodes |Q> +=> |node 15: 0>
+  start-nodes |Q> +=> |node 16: 0>
+  sentence |R>
+  follow-sequence pattern sentence |R>
+  start-nodes |M>
+  history
+  recall-sentence-v2 sentence |R>
+  info off
+  history
+  rel-kets[sentence]
+  start-nodes |M>
+  rel-kets[start-nodes]
+  sentence |R>
+  start-nodes |A>
+  recall-sentece-v2 start-nodes |A>
+  recall-sentence-v2 start-nodes |A>
+  start-nodes |B>
+  start-nodes |D>
+  recall-sentence-v2 pick-elt start-nodes |D>
+  .
+  q
+
