@@ -81,6 +81,9 @@ for key,value in class_dict.items():
 #print()
 
 def encode_sequence(node, sequence, name = None):
+  if len(sequence) == 0:
+    return
+
   if name is not None:
     print("-- %s = %s" % (name, ".".join(sequence)))
   else:
@@ -153,9 +156,13 @@ for class_name, class_value in class_dict.items():
 #      if seq != '{}' and seq not in class_dict and seq not in sequence_dict:
       if seq != '{}' and seq not in sequence_dict:
         r = process_sequence(seq)
+        r = [x for x in r if x != '{}']
         encode_sequence(node, r)
-        sequences_node_table[seq] = node
-        node += 1
+        if len(r) == 0:
+          sequences_node_table[seq] = 0                # empty sequence has node 0
+        else:
+          sequences_node_table[seq] = node
+          node += 1
 
 # next the sequences of classes:
 print("\n-- encode the sequences of classes:")

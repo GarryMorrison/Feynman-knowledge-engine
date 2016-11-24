@@ -42924,3 +42924,323 @@
   .
   q
 
+2016-11-23
+  context Mary went sledding
+  went |Mary> => |went>
+  with |went> => |her family>
+  dot |went> => |sledding>
+  dump
+  with went |Mary>
+  dot went |Mary>
+  won |Mary> => |won>
+  against  |won> => |her brother>
+  to |won> => |the bottom>
+  dot |won> => |a race>
+  dump
+  against won |Mary>
+  to won |Mary>
+  dot won |Mary>
+  reset
+  context Mary went sledding
+  went |Mary> => |node 1>
+  |node 1> => |sledding>
+  with |node 1> => |her family>
+  dump
+  "" went |Mary>
+  won |Mary> => |node 2>
+  |node 2> => |a race>
+  against |node 2> => |her brother>
+  to |node 2> => |the bottom>
+  cheered |Mary> => |node 3>
+  because |node 3> => |node 4>
+  |node 4> => |her first time winning>
+  was |it> => |node 4>
+  "" was |it>
+  because cheered |Mary>
+  "" because cheered |Mary>
+  history
+  save history
+
+2016-11-23
+  context Mary went sledding
+  went |Mary> => |went>
+  with |went> => |her family>
+  dot |went> => |sledding>
+  dump
+  with went |Mary>
+  dot went |Mary>
+  won |Mary> => |won>
+  against  |won> => |her brother>
+  to |won> => |the bottom>
+  dot |won> => |a race>
+  dump
+  against won |Mary>
+  to won |Mary>
+  dot won |Mary>
+  reset
+  context Mary went sledding
+  went |Mary> => |node 1>
+  |node 1> => |sledding>
+  with |node 1> => |her family>
+  dump
+  "" went |Mary>
+  won |Mary> => |node 2>
+  |node 2> => |a race>
+  against |node 2> => |her brother>
+  to |node 2> => |the bottom>
+  cheered |Mary> => |node 3>
+  because |node 3> => |node 4>
+  |node 4> => |her first time winning>
+  was |it> => |node 4>
+  "" was |it>
+  because cheered |Mary>
+  "" because cheered |Mary>
+  history
+  save history
+  reset
+  context Mary went sledding
+  went |Mary> => |node 1>
+  with went |Mary> => |her family>
+  dump
+  reset
+  went |Mary> => |sledding>
+  with went |Mary> => |her family>
+  dump
+  with went |Mary>
+  went |Mary>
+  won |Mary> => |a race>
+  against won |Mary> => |her brother>
+  to won |Mary> => |the bottom>
+  dump
+  against won |Mary>
+  to won |Mary>
+  was |it> => |her first time winning>
+  dump
+  cheered |Mary> => |because>
+  because cheered |Mary> => |it was her first time winning>
+  dump
+  went |Mary>
+  info off
+  went |Mary>
+  won |Mary>
+  against won |Mary>
+  because cheered |Mary>
+  to won |Mary>
+  with went |Mary>
+  a-race-to won |Mary> => |the bottom>
+  dump
+  a-race-to won |Mary>
+  save history
+
+2016-11-23
+  context Mary went sledding
+  went |Mary> => |went>
+  with |went> => |her family>
+  dot |went> => |sledding>
+  dump
+  with went |Mary>
+  dot went |Mary>
+  won |Mary> => |won>
+  against  |won> => |her brother>
+  to |won> => |the bottom>
+  dot |won> => |a race>
+  dump
+  against won |Mary>
+  to won |Mary>
+  dot won |Mary>
+  reset
+  context Mary went sledding
+  went |Mary> => |node 1>
+  |node 1> => |sledding>
+  with |node 1> => |her family>
+  dump
+  "" went |Mary>
+  won |Mary> => |node 2>
+  |node 2> => |a race>
+  against |node 2> => |her brother>
+  to |node 2> => |the bottom>
+  cheered |Mary> => |node 3>
+  because |node 3> => |node 4>
+  |node 4> => |her first time winning>
+  was |it> => |node 4>
+  "" was |it>
+  because cheered |Mary>
+  "" because cheered |Mary>
+  history
+  save history
+  reset
+  context Mary went sledding
+  went |Mary> => |node 1>
+  with went |Mary> => |her family>
+  dump
+  reset
+  went |Mary> => |sledding>
+  with went |Mary> => |her family>
+  dump
+  with went |Mary>
+  went |Mary>
+  won |Mary> => |a race>
+  against won |Mary> => |her brother>
+  to won |Mary> => |the bottom>
+  dump
+  against won |Mary>
+  to won |Mary>
+  was |it> => |her first time winning>
+  dump
+  cheered |Mary> => |because>
+  because cheered |Mary> => |it was her first time winning>
+  dump
+  went |Mary>
+  info off
+  went |Mary>
+  won |Mary>
+  against won |Mary>
+  because cheered |Mary>
+  to won |Mary>
+  with went |Mary>
+  a-race-to won |Mary> => |the bottom>
+  dump
+  a-race-to won |Mary>
+  save history
+  history
+  cheered-because |Mary> => |it was her first time winning>
+  dump
+  it-was cheered-because |Mary> => |her first time winning>
+  dump
+  save history
+
+2016-11-24
+  split |a b c>
+  ket-simm(split|the man used a telescope>, split |the woman used a telescope>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  dump
+  info off
+  similar-input[pattern] append-column[10] encode |the>
+  similar-input[pattern] append-column[10] encode |a>
+  debug on
+  similar-input[pattern] append-column[10] encode |a>
+  history
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|a>)
+  predict-whats-next(|the>)
+  dump
+  predict-whats-next(|the>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|the>)
+  predict-whats-next(|a>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|a>)
+  predict-whats-next(|the>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  info off
+  predict-whats-next(|a>)
+  predict-whats-next(|the>)
+  -- it works
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|a>, |cat>)
+  dump
+  predict-whats-next(|the>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|the>,|dog>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|the>,|dog>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|the>,|dog>)
+  debug on
+  intn(|a>,|b>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|the>,|dog>)
+  q
+
+2016-11-24
+  predict-whats-next(|the>,|dog>)
+  load simple-sentences.sw
+  predict-whats-next(|the>,|dog>)
+  predict-whats-next(|a>,|cat>)
+  predict-whats-next(|a>)
+  predict-whats-next(|a>,|>)
+  predict-whats-next(|dog>)
+  predict-whats-next(|dog>,|wants>)
+  predict-whats-next(|dog>,|chased>)
+  predict-whats-next(|chased>,|the>)
+  save history
+
+2016-11-24
+  predict-whats-next(|the>,|dog>)
+  load simple-sentences.sw
+  predict-whats-next(|the>,|dog>)
+  predict-whats-next(|a>,|cat>)
+  predict-whats-next(|a>)
+  predict-whats-next(|a>,|>)
+  predict-whats-next(|dog>)
+  predict-whats-next(|dog>,|wants>)
+  predict-whats-next(|dog>,|chased>)
+  predict-whats-next(|chased>,|the>)
+  save history
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|dog>, |chased>)
+  follow-sequence pattern |node 2: 2>
+  follow-sequence pattern |node 2: 3>
+  debug on
+  follow-sequence pattern |node 2: 3>
+  
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|dog>, |chased>)
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|dog>, |chased>)
+  follow-sequence pattern |node 2: 2>
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|dog>, |chased>)
+  predict-whats-next(|a>, |cat>)
+  dump
+  q
+
+2016-11-24
+  load simple-sentences.sw
+  predict-whats-next(|a>, |cat>)
+  predict-whats-next(|the>, |dog>)
+  predict-whats-next(|dog>, |chased>)
+  save history
+

@@ -1358,6 +1358,16 @@ whitelist_table_4 = {
   "algebra"       : "algebra",
 }
 
+
+# new: 24/11/2016:
+# whitelisted functions that need context variable, and takes 1 extra parameter:
+# eg: predict_whats_next_one(context,sp1)
+context_whitelist_table_1 = {
+# 24/11/2016:
+  "predict-whats-next" : "predict_whats_next_one", 
+}
+
+
 # new: 10/11/2014:
 # whitelisted functions that need context variable, and takes 2 extra parameters:
 # eg: apply(context,sp1,sp2)
@@ -1369,8 +1379,11 @@ context_whitelist_table_2 = {
   "clone"    : "clone_ket",
 
 # 10/10/2016
-  "whats-next" : "whats_next_two",    
+  "whats-next" : "whats_next_two",
+  
+  "predict-whats-next" : "predict_whats_next_two",    
 }
+
 
 
 def old_process_brackets(C,line,left_label=None):
@@ -1496,6 +1509,12 @@ def process_brackets(C,line,left_label=None):
     if fn in whitelist_table_1:
       print("op in whitelist 1")
       code = whitelist_table_1[fn] + "(pieces[0])"
+      print("py:",code)
+      result = eval(code)
+      return result, rest
+    elif fn in context_whitelist_table_1:
+      print("op in context whitelist 1")
+      code = context_whitelist_table_1[fn] + "(C,pieces[0])"
       print("py:",code)
       result = eval(code)
       return result, rest
