@@ -1381,10 +1381,23 @@ context_whitelist_table_2 = {
 # 10/10/2016
   "whats-next" : "whats_next_two",
   
-  "predict-whats-next" : "predict_whats_next_two",    
+# 24/11/2016:
+  "predict-whats-next" : "predict_whats_next_two",
+
+# 25/11/2016:
+  "predict-whats-next-skip" : "predict_whats_next_skip_two",
+      
 }
 
+# new: 25/11/2016:
+# whitelisted functions that need context variable, and takes 3 extra parameters:
+# eg: predict_whats_next_three(context,one,two,three)
+context_whitelist_table_3 = {
+# 25/11/2016:
+  "predict-whats-next" : "predict_whats_next_three",
+  "predict-whats-next-skip" : "predict_whats_next_skip_three",
 
+}
 
 def old_process_brackets(C,line,left_label=None):
   print("inside process_brackets:",line)
@@ -1542,7 +1555,11 @@ def process_brackets(C,line,left_label=None):
       match = True
       print("op in whitelist 3")
       code = whitelist_table_3[main_fn] + "(pieces[0],pieces[1],pieces[2])"
-
+    elif main_fn in context_whitelist_table_3:
+      match = True
+      print("op in context whitelist 3")
+      code = context_whitelist_table_3[main_fn] + "(C,pieces[0],pieces[1],pieces[2])"
+      
   if match:
     print("py:",code)
     result = eval(code)

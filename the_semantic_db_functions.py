@@ -4947,6 +4947,30 @@ def follow_sequence(one,context,op=None):
     current_node = next(current_node)
   return ket("end of sequence")
   
+# 25/11/2016:
+# code to display a sequence in dot format. eg: |the> . |dog> . |sat>
+#
+# one is a sp
+def display_sequence(one,context,op=None):
+  if len(one) == 0:
+    return one
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)    
+    
+  current_node = one  
+  node_names = []
+  while name(current_node).the_label() != "end of sequence":
+    if op == None:
+      node_names.append(str(name(current_node)))      
+    else:
+      name(current_node).apply_op(context,op)
+    current_node = next(current_node)
+  print(" . ".join(node_names))
+  return ket("end of sequence")
+
 
 # 20/11/2016:
 # code to recall a sentence
@@ -5128,15 +5152,21 @@ def predict_whats_next_one(context,one):
     return one.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").drop_below(0.09)
   def then(one):
     return one.apply_op(context,"then")
+  def follow_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(follow_sequence,context)
 
   nodes_one = get_node(one)
   print("nodes:", nodes_one)
+  if len(nodes_one) == 1:
+    return follow_node_sequence(nodes_one)
+  
   r = superposition()
   for x in nodes_one:
     print(name(then(x)))
     r += name(then(x))
   return r
-  
+
+# 24/11/2016  
 # Given these three simple sentences:
 # "the dog wants food"
 # "the dog chased the ball"
@@ -5147,7 +5177,7 @@ def predict_whats_next_one(context,one):
 #
 # Cool, seems to work. Next up, the three word version.
 #
-# later, implement a sequence version
+# later, implement a sequence version. I guess by passing in the relevant node of a sequence. 
 #
 # one and two are sp's
 def predict_whats_next_two(context,one,two):
@@ -5188,7 +5218,194 @@ def predict_whats_next_two(context,one,two):
       r += name(then(x))
     return r
         
+# 25/11/2016
+# Given these three simple sentences:
+# "the dog wants food"
+# "the dog chased the ball"
+# "a cat sat on the mat"
+# Given three words, predict what word follows.
+# eg: predict-whats-next(|a>, |cat>, |sat>) == |on>
+# eg: predict-whats-next(|the>, |dog>, |wants>) == |food>
+#
+# Cool, seems to work. Next up, the sequence version. Probably by passing in the start node of a sequence.
+#
+# one, two and three are sp's
+def predict_whats_next_three(context,one,two,three):
+  if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
+    return one
+  if len(two) == 0:                                                      # if two == |> then feed it to the one word version of predict-whats-next() 
+    return predict_whats_next_one(context,one)
+  if len(three) == 0:
+    return predict_whats_next_two(context,one,two)
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  def get_node(one):
+    return one.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").drop_below(0.09)
+  def then(one):
+    return one.apply_op(context,"then")
+  def get_next_node(one):
+    return one.similar_input(context,"pattern").select_range(1,1)            # .apply_sigmoid(clean).apply_op(context,"then")
+  def follow_node_sequence(one):
+#    return one.apply_op(context,"pattern").apply_sp_fn(follow_sequence,context)
+    return one.apply_op(context,"then").apply_sp_fn(follow_sequence,context)
   
+  nodes_one = get_node(one)
+  print("nodes 1:", nodes_one)
+  nodes_two = get_node(two)
+  print("nodes 2:", nodes_two)
+  nodes_three = get_node(three)
+  print("nodes 3:", nodes_three)
+
+  next_nodes = superposition()
+  for x in nodes_one:
+    next_nodes += get_next_node(then(x))    
+  intersected_nodes = intersection(next_nodes, nodes_two)
+  print("intersected nodes:  ", intersected_nodes)
+  if len(intersected_nodes) == 1:
+    return follow_node_sequence(intersected_nodes)
+  
+  next_nodes2 = superposition()
+  for x in intersected_nodes:
+    next_nodes2 += get_next_node(then(x))    
+  intersected_nodes2 = intersection(next_nodes2, nodes_three)
+  print("intersected nodes 2:", intersected_nodes2)
+  if len(intersected_nodes2) == 1:
+    return follow_node_sequence(intersected_nodes2)
+          
+  r = superposition()
+  for x in intersected_nodes2:
+    print(name(then(x)))
+    r += name(then(x))
+  return r
+
+# 25/11/2016:
+# skip version. 
+# Given these three simple sentences:
+# "the dog wants food"
+# "the dog chased the ball"
+# "the very hungry dog wants some food"
+# predict-whats-next-skip(|the>, |dog>) == 2|wants> + |chased>
+# NB: the 2nd |wants> from the third sentence, where we skip "very hungry"
+#
+# seems to work.
+#
+# one and two are sp's
+def predict_whats_next_skip_two(context,one,two):
+  if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
+    return one
+  if len(two) == 0:                                                      # if two == |> then feed it to the one word version of predict-whats-next() 
+    return predict_whats_next_one(context,one)
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  def get_node(one):
+    return one.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").drop_below(0.09)
+  def then(one):
+    return one.apply_op(context,"then")
+  def get_next_node(one):
+    return one.similar_input(context,"pattern").select_range(1,1)            # .apply_sigmoid(clean).apply_op(context,"then")
+  def follow_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(follow_sequence,context)
+  def display_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(display_sequence,context)    
+  def get_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += get_next_node(then(x))
+    return r
+  def name_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += name(then(x))
+    return r
+  
+  nodes_one = get_node(one)
+  print("nodes 1:", nodes_one)
+  nodes_two = get_node(two)
+  print("nodes 2:", nodes_two)
+  next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
+  intersected_nodes = intersection(next_nodes, nodes_two)
+  print("intersected nodes:", intersected_nodes)
+#  if len(intersected_nodes) == 1:
+#    return follow_node_sequence(intersected_nodes)
+  for x in intersected_nodes:
+    display_node_sequence(x)    
+  return name_next_nodes(intersected_nodes)
+ 
+
+# 25/11/2016:
+# skip version. 
+# Given these three simple sentences:
+# "the dog wants food"
+# "the dog chased the ball"
+# "the very hungry dog wants some food"
+# predict-whats-next-skip(|the>, |dog>) == 2|wants> + |chased>
+# NB: the 2nd |wants> from the third sentence, where we skip "very hungry"
+#
+# seems to work.
+#
+# one, two and three are sp's
+def predict_whats_next_skip_three(context,one,two,three):
+  if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
+    return one
+  if len(two) == 0:                                                      # if two == |> then feed it to the one word version of predict-whats-next() 
+    return predict_whats_next_one(context,one)
+  if len(three) == 0:
+    return predict_whats_next_skip_two(context,one,two)
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  def get_node(one):
+    return one.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").drop_below(0.09)
+  def then(one):
+    return one.apply_op(context,"then")
+  def get_next_node(one):
+    return one.similar_input(context,"pattern").select_range(1,1)            # .apply_sigmoid(clean).apply_op(context,"then")
+  def follow_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(follow_sequence,context)
+  def display_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(display_sequence,context)
+  def get_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += get_next_node(then(x))
+    return r
+  def name_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += name(then(x))
+    return r
+  
+  nodes_one = get_node(one)
+  print("nodes 1:", nodes_one)
+  nodes_two = get_node(two)
+  print("nodes 2:", nodes_two)
+  nodes_three = get_node(three)
+  print("nodes 3:", nodes_three)
+  
+  next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
+  intersected_nodes = intersection(next_nodes, nodes_two)
+  print("intersected nodes  :", intersected_nodes)
+#  if len(intersected_nodes) == 1:                           # slight "stutter". Not sure how to best fix. If at all.
+#    return follow_node_sequence(intersected_nodes)          # eg: predict-whats-next-skip(|the>,|hungry>,|dog>) == |dog>.|wants>.|some>.|food>
+                                                             # also: predict-whats-next-skip(|the>,|hungry>,|fish>) == |dog>.|wants>.|some>.|food>
+  next_nodes2 = get_next_nodes(intersected_nodes) + get_next_nodes(get_next_nodes(intersected_nodes)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes)))  # improve later. Also has slight tolerance for order changes.
+  intersected_nodes2 = intersection(next_nodes2, nodes_three)                                                                                                              # bug or feature?
+  print("intersected nodes 2:", intersected_nodes2)
+#  if len(intersected_nodes2) == 1:                           # if len > 1, use pick-elt??
+#    return follow_node_sequence(intersected_nodes2)
+  for x in intersected_nodes2:
+    display_node_sequence(x)
+  return name_next_nodes(intersected_nodes2)
+     
+      
 # 5/11/2016:
 # vsa-mult(sp1,sp2)
 # eg:
