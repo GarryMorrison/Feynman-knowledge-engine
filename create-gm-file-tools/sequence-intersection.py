@@ -53,47 +53,21 @@ def align_sentences(s1, s2):
   len_difference = len(s1) - len(s2)
   max_score = 0
   max_sentence = []
-  if len_difference == 1:
-    for k in range(len(s1)):
-      s = s2[:]
-      s.insert(k, '{}')
-      score = simple_sentence_simm(s1,s)
-      print("s:",s)
-      print("score:", score)  
-      if score > max_score:
-        max_score = score
-        max_sentence = s
-
-  if len_difference == 2:
-    for indecies in combinations(range(len(s1)), 2):
-      s = s2[:]
-      for x in indecies:
-        s.insert(x, '{}')
-      score = simple_sentence_simm(s1,s)
-      print("s:",s)
-      print("score:", score)
-      if score > max_score:
-        max_score = score
-        max_sentence = s
+  for indecies in combinations(range(len(s1)), len_difference):
+    s = s2[:]
+    for x in indecies:
+      s.insert(x, '{}')
+    score = simple_sentence_simm(s1,s)
+    print("s:",s)
+    print("score:", score)
+    if score > max_score:
+      max_score = score
+      max_sentence = s
 
   return s1, max_sentence
 
-  if len_difference == 2:                         # hack for now, since I don't yet know how to do for general len_difference
-    for k1 in range(len(s1)):
-      for k2 in range(k1, len(s1)):
-        s = s2[:]
-        s.insert(k1, '{}')
-        s.insert(k2, '{}')
-        score = simple_sentence_simm(s1,s)
-        print("s:",s)
-        print("score:", score)
-        if score > max_score:
-          max_score = score
-          max_sentence = s
 
-  return s1, max_sentence
-
-def process_sentence_pair(s1,s2):
+def first_process_sentence_pair(s1,s2):
   class_dict = OrderedDict()
   prefix = "a"
   sentence_name = "B"
@@ -114,9 +88,48 @@ def process_sentence_pair(s1,s2):
     classes.append(class_name)
   print("%s = %s" % (sentence_name, ".".join(classes)))
 
+def process_sentence_pair(s1,s2):
+  class_dict = OrderedDict()
+  prefix = "a"
+  sentence_name = "B"
+  if len(s1) != len(s2):
+    s1,s2 = align_sentences(s1,s2)
+  classes = []
+#  for k in range(len(s1)):
+  k = 0
+  while k < len(s1):
+    if s1[k] == s2[k]:
+      class_value = s1[k]
+    elif s1[k] == '{}' or s2[k] == '{}':
+      buffer1 = []
+      buffer2 = []
+#      i = k
+      while s1[k] == '{}' or s2[k] == '{}':
+        buffer1.append(s1[k])
+        buffer2.append(s2[k])
+        k += 1
+      k -= 1
+      x = [".".join(buffer1), ".".join(buffer2)]
+      class_value = ", ".join(sorted(x))
+    elif s1[k] != s2[k]:
+      x = [s1[k], s2[k]]
+      class_value = ", ".join(sorted(x))
+    if class_value not in class_dict:
+      class_name = "%s%s" % (prefix, k)
+      class_dict[class_value] = class_name
+      print("%s = {%s}" % (class_name, class_value))
+    else:
+      class_name = class_dict[class_value]
+    classes.append(class_name)
+    k += 1
+  print("%s = %s" % (sentence_name, ".".join(classes)))
+
+
 process_sentence_pair(sentence1, sentence2)
 process_sentence_pair(sentence3, sentence4)
-align_sentences(sentence1, sentence7)
+#sys.exit(0)
+#align_sentences(sentence1, sentence7)
 process_sentence_pair(sentence1, sentence7)
 process_sentence_pair(sentence7, sentence8)
 process_sentence_pair(sentence3, sentence9)
+process_sentence_pair(sentence6, sentence9)
