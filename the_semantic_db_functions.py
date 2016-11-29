@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 23/11/2016
+# Update: 29/11/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4964,11 +4964,13 @@ def display_sequence(one,context,op=None):
   node_names = []
   while name(current_node).the_label() != "end of sequence":
     if op == None:
-      node_names.append(str(name(current_node)))      
+#      node_names.append(str(name(current_node)))
+      node_names.append(name(current_node).the_label())          
     else:
       name(current_node).apply_op(context,op)
     current_node = next(current_node)
-  print(" . ".join(node_names))
+#  print(" . ".join(node_names))
+  print("|%s>" % " . ".join(node_names))
   return ket("end of sequence")
 
 
@@ -5405,6 +5407,137 @@ def predict_whats_next_skip_three(context,one,two,three):
     display_node_sequence(x)
   return name_next_nodes(intersected_nodes2)
      
+# one, two, three and four are sp's
+def predict_whats_next_skip_four(context,one,two,three,four):
+  if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
+    return one
+  if len(two) == 0:                                                      # if two == |> then feed it to the one word version of predict-whats-next() 
+    return predict_whats_next_one(context,one)
+  if len(three) == 0:
+    return predict_whats_next_skip_two(context,one,two)
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  def get_node(one):
+    return one.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").drop_below(0.09)
+  def then(one):
+    return one.apply_op(context,"then")
+  def get_next_node(one):
+    return one.similar_input(context,"pattern").select_range(1,1)            # .apply_sigmoid(clean).apply_op(context,"then")
+  def follow_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(follow_sequence,context)
+  def display_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(display_sequence,context)
+  def get_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += get_next_node(then(x))
+    return r
+  def name_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += name(then(x))
+    return r
+  
+  nodes_one = get_node(one)
+  print("nodes 1:", nodes_one)
+  nodes_two = get_node(two)
+  print("nodes 2:", nodes_two)
+  nodes_three = get_node(three)
+  print("nodes 3:", nodes_three)
+  nodes_four = get_node(four)
+  print("nodes 4:", nodes_four)
+  
+  next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
+  intersected_nodes = intersection(next_nodes, nodes_two)
+  print("intersected nodes  :", intersected_nodes)
+  next_nodes2 = get_next_nodes(intersected_nodes) + get_next_nodes(get_next_nodes(intersected_nodes)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes)))  # improve later. Also has slight tolerance for order changes.
+  intersected_nodes2 = intersection(next_nodes2, nodes_three)                                                                                                              # bug or feature?
+  print("intersected nodes 2:", intersected_nodes2)
+
+  next_nodes3 = get_next_nodes(intersected_nodes2) + get_next_nodes(get_next_nodes(intersected_nodes2)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes2)))  # improve later. Also has slight tolerance for order changes.
+  intersected_nodes3 = intersection(next_nodes3, nodes_four)                                                                                                                  # bug or feature?
+  print("intersected nodes 3:", intersected_nodes3)
+
+  for x in intersected_nodes3:
+    display_node_sequence(x)
+  return name_next_nodes(intersected_nodes3)
+
+# 29/11/2016:
+# sequence version of  whats-next.
+# eg: next(|the . dog . chased>) == |the . ball>
+#
+# one is a sequence sp, eg |the . dog . chased>, or |the . mother . of . george . is>
+# sort of a hack until we make sequences first class objects, if we ever do.
+def sequence_predict_whats_next_skip(context,one):
+  if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
+    return one
+  incoming_sequence = [x.strip() for x in one.the_label().split('.')]
+  print("incoming_sequence:",incoming_sequence)
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)
+  def get_node(one):
+    return one.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").drop_below(0.09)
+  def then(one):
+    return one.apply_op(context,"then")
+  def get_next_node(one):
+    return one.similar_input(context,"pattern").select_range(1,1)            # .apply_sigmoid(clean).apply_op(context,"then")
+  def follow_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(follow_sequence,context)
+  def display_node_sequence(one):
+    return one.apply_op(context,"then").apply_sp_fn(display_sequence,context)
+  def get_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += get_next_node(then(x))
+    return r
+  def name_next_nodes(one):
+    r = superposition()
+    for x in one:
+      r += name(then(x))
+    return r
+  
+  nodes_one = get_node(ket(incoming_sequence[0]))
+  
+  for x in incoming_sequence[1:]:                                            # finish!
+    print("nodes 1:", nodes_one)
+    nodes_two = get_node(ket(x))
+    next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
+    intersected_nodes = intersection(next_nodes, nodes_two)
+    print("intersected nodes:", intersected_nodes)
+    nodes_one = intersected_nodes
+  for x in nodes_one:
+    display_node_sequence(x)
+  return name_next_nodes(nodes_one)
+    
+  
+  nodes_two = get_node(two)
+  print("nodes 2:", nodes_two)
+  nodes_three = get_node(three)
+  print("nodes 3:", nodes_three)
+  nodes_four = get_node(four)
+  print("nodes 4:", nodes_four)
+  
+  next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
+  intersected_nodes = intersection(next_nodes, nodes_two)
+  print("intersected nodes  :", intersected_nodes)
+  next_nodes2 = get_next_nodes(intersected_nodes) + get_next_nodes(get_next_nodes(intersected_nodes)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes)))  # improve later. Also has slight tolerance for order changes.
+  intersected_nodes2 = intersection(next_nodes2, nodes_three)                                                                                                              # bug or feature?
+  print("intersected nodes 2:", intersected_nodes2)
+
+  next_nodes3 = get_next_nodes(intersected_nodes2) + get_next_nodes(get_next_nodes(intersected_nodes2)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes2)))  # improve later. Also has slight tolerance for order changes.
+  intersected_nodes3 = intersection(next_nodes3, nodes_four)                                                                                                                  # bug or feature?
+  print("intersected nodes 3:", intersected_nodes3)
+
+  for x in intersected_nodes3:
+    display_node_sequence(x)
+  return name_next_nodes(intersected_nodes3)
+  
       
 # 5/11/2016:
 # vsa-mult(sp1,sp2)

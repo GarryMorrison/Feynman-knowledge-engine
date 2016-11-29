@@ -1364,7 +1364,10 @@ whitelist_table_4 = {
 # eg: predict_whats_next_one(context,sp1)
 context_whitelist_table_1 = {
 # 24/11/2016:
-  "predict-whats-next" : "predict_whats_next_one", 
+  "predict-whats-next" : "predict_whats_next_one",
+  
+# 29/11/2016:
+  "next"               : "sequence_predict_whats_next_skip",   
 }
 
 
@@ -1397,6 +1400,14 @@ context_whitelist_table_3 = {
   "predict-whats-next" : "predict_whats_next_three",
   "predict-whats-next-skip" : "predict_whats_next_skip_three",
 
+}
+# new: 27/11/2016:
+# whitelisted functions that need context variable, and takes 4 extra parameters:
+# eg: predict_whats_next_skip_four(context,one,two,three,four)
+context_whitelist_table_4 = {
+# 27/11/2016:
+#  "predict-whats-next" : "predict_whats_next_three",
+  "predict-whats-next-skip" : "predict_whats_next_skip_four",
 }
 
 def old_process_brackets(C,line,left_label=None):
@@ -1559,6 +1570,16 @@ def process_brackets(C,line,left_label=None):
       match = True
       print("op in context whitelist 3")
       code = context_whitelist_table_3[main_fn] + "(C,pieces[0],pieces[1],pieces[2])"
+  if len(pieces) == 4:
+    if main_fn in whitelist_table_4:
+      match = True
+      print("op in whitelist 4")
+      code = whitelist_table_4[main_fn] + "(pieces[0],pieces[1],pieces[2],pieces[3])"
+    elif main_fn in context_whitelist_table_4:
+      match = True
+      print("op in context whitelist 4")
+      code = context_whitelist_table_4[main_fn] + "(C,pieces[0],pieces[1],pieces[2],pieces[3])"
+
       
   if match:
     print("py:",code)
