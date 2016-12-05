@@ -25,6 +25,7 @@ size = 2048
 #size = 65536
 bits = 10
 column_size = 10
+enable_duplicate_sequences = False
 
 filename = sys.argv[1]
 
@@ -79,6 +80,7 @@ for key,value in class_dict.items():
 #print("words:", words)
 #print("sequence:", sequence_dict)
 #print()
+#sys.exit(0)
 
 def encode_sequence(node, sequence, name = None):
   if len(sequence) == 0:
@@ -152,7 +154,7 @@ sequences_node_table['{}'] = 0                          # hard wire in the empty
 node = 1
 for class_name, class_value in class_dict.items():
   for seq in class_value:
-    if seq not in sequences_node_table:
+    if seq not in sequences_node_table or enable_duplicate_sequences:
 #      if seq != '{}' and seq not in class_dict and seq not in sequence_dict:
       if seq != '{}' and seq not in sequence_dict:
         r = process_sequence(seq)

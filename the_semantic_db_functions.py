@@ -5471,7 +5471,8 @@ def predict_whats_next_skip_four(context,one,two,three,four):
 #
 # one is a sequence sp, eg |the . dog . chased>, or |the . mother . of . george . is>
 # sort of a hack until we make sequences first class objects, if we ever do.
-def sequence_predict_whats_next_skip(context,one):
+#def sequence_predict_whats_next_skip(context,one):
+def sequence_predict_whats_next_skip(one,context):
   if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
     return one
   incoming_sequence = [x.strip() for x in one.the_label().split('.')]
@@ -5507,7 +5508,7 @@ def sequence_predict_whats_next_skip(context,one):
   for x in incoming_sequence[1:]:                                            # finish!
     print("nodes 1:", nodes_one)
     nodes_two = get_node(ket(x))
-    next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
+    next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one))) + get_next_nodes(get_next_nodes(get_next_nodes(get_next_nodes(nodes_one))))
     intersected_nodes = intersection(next_nodes, nodes_two)
     print("intersected nodes:", intersected_nodes)
     nodes_one = intersected_nodes
@@ -5516,27 +5517,6 @@ def sequence_predict_whats_next_skip(context,one):
   return name_next_nodes(nodes_one)
     
   
-  nodes_two = get_node(two)
-  print("nodes 2:", nodes_two)
-  nodes_three = get_node(three)
-  print("nodes 3:", nodes_three)
-  nodes_four = get_node(four)
-  print("nodes 4:", nodes_four)
-  
-  next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one)))  # improve later.
-  intersected_nodes = intersection(next_nodes, nodes_two)
-  print("intersected nodes  :", intersected_nodes)
-  next_nodes2 = get_next_nodes(intersected_nodes) + get_next_nodes(get_next_nodes(intersected_nodes)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes)))  # improve later. Also has slight tolerance for order changes.
-  intersected_nodes2 = intersection(next_nodes2, nodes_three)                                                                                                              # bug or feature?
-  print("intersected nodes 2:", intersected_nodes2)
-
-  next_nodes3 = get_next_nodes(intersected_nodes2) + get_next_nodes(get_next_nodes(intersected_nodes2)) + get_next_nodes(get_next_nodes(get_next_nodes(intersected_nodes2)))  # improve later. Also has slight tolerance for order changes.
-  intersected_nodes3 = intersection(next_nodes3, nodes_four)                                                                                                                  # bug or feature?
-  print("intersected nodes 3:", intersected_nodes3)
-
-  for x in intersected_nodes3:
-    display_node_sequence(x)
-  return name_next_nodes(intersected_nodes3)
   
       
 # 5/11/2016:

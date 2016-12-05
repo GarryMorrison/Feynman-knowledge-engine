@@ -577,7 +577,10 @@ ket_context_table = {
   
   
 # 5/10/2016:
-#  "follow-sequence"    : "follow_sequence",            # nope! wrong spot!             
+#  "follow-sequence"    : "follow_sequence",            # nope! wrong spot!
+
+# 30/11/2016:
+  "next"                : "sequence_predict_whats_next_skip",             
 }
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.
@@ -1367,7 +1370,7 @@ context_whitelist_table_1 = {
   "predict-whats-next" : "predict_whats_next_one",
   
 # 29/11/2016:
-  "next"               : "sequence_predict_whats_next_skip",   
+#  "next"               : "sequence_predict_whats_next_skip",       # changed invoke from: next(|mary.went>) to next |mary.went>   
 }
 
 

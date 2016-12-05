@@ -43885,3 +43885,551 @@
   predict-whats-next-skip(|dog>,|chased>)
   q
 
+2016-11-30
+  load simple-sentences.sw
+  info off
+  next(|cat>)
+  next(|dog>)
+  next(|the>)
+  next(|mary>)
+   
+  next(|mary.won.a.race.to>)
+  next(|mary.won.a.race.brother>)
+  q
+
+2016-11-30
+  load simple-sentences.sw
+  next(|mary>)
+  info off
+  next(|mary.won.a.race.to>)
+  q
+
+2016-12-02
+  load simple-sentences.sw
+  info off
+  next |mary>
+  next |mary.won.a.race.to>
+  next |the>
+  q
+
+2016-12-02
+  load simple-sequences.sw
+  next |B.C>
+  info off
+  next |B.C>
+  next |A.B.C>
+  next |B.D>
+  q
+
+2016-12-02
+  load simple-sequences.sw
+  
+  history
+  next |A>
+  info off
+  next |A>
+  next |U>
+  next |B.C.D>
+  next |B.C>
+  q
+
+2016-12-02
+  load simple-sequences.sw
+  next |A.B.C>
+  info off
+  next |A.B.C>
+  next |W.B.C>
+  next |B.C.D.E>
+  next |B.C.D.X>
+  next |B.E>
+  next |B.X>
+  next |B.C.D>
+  q
+
+2016-12-02
+  load simple-sentences.sw
+  info off
+  next |the>
+  next |the.dog>
+  q
+
+2016-12-02
+  load george-gm.sw
+  info off
+  next |the>
+  next |the.mother.of>
+  next |the.age.of>
+  next |sibling.of>
+  next |father.george>
+  next |age.george>
+  q
+
+2016-12-04
+  load mindpixels.sw
+  info off
+  next |icecream . is>
+  next |it . is . hot . during>
+  next |chile . is . in>
+  next |Socrates . was>
+  next |the . langauge . in . france>
+  next |the . language . in . france>
+  next |abraham . lincoln . was>
+  q
+
+2016-12-04
+  full |range> => range(|1>,|65536>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |a1> => pick[10] full |range>
+  encode |a2> => pick[10] full |range>
+  encode |a3> => pick[10] full |range>
+  encode |b1> => pick[10] full |range>
+  
+  -- encode sequence names:
+  
+  -- encode low level sequences:
+  -- empty sequence
+  pattern |node 0: 0> => random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . G . H . I
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |G>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |H>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |I>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  similar-input[encode] extract-category pattern |node 1: 4>
+  similar-input[pattern] append-column[10] encode |A>
+  similar-input[pattern] append-column[10] encode |C>
+  next |G>
+  next |C.G>
+  next |H>
+  next |A>
+  info off
+  similar-input[pattern] append-column[10] encode |G>
+  get-node |*> #=> drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  get-node |A>
+  get-node |B>
+  get-node |C>
+  get-node |D>
+  get-node |G>
+  get-node |H>
+  get-node |I>
+  name-node |*> #=> similar-input[encode] extract-category pattern get-node |_self>
+  name-node |A>
+  name-node |B>
+  name-node |C>
+  name-node |D>
+  name-node |G>
+  shared-node |*> #=> similar-input[encode] extract-category pattern get-node |_self>
+  shared-node |E>
+  shared-node |H>
+  shared-node |F>
+  save history
+
+2016-12-04
+  full |range> => range(|1>,|65536>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |a1> => pick[10] full |range>
+  encode |a2> => pick[10] full |range>
+  encode |a3> => pick[10] full |range>
+  encode |b1> => pick[10] full |range>
+  
+  -- encode sequence names:
+  
+  -- encode low level sequences:
+  -- empty sequence
+  pattern |node 0: 0> => random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . G . H . I
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |G>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |H>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |I>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  similar-input[encode] extract-category pattern |node 1: 4>
+  similar-input[pattern] append-column[10] encode |A>
+  similar-input[pattern] append-column[10] encode |C>
+  next |G>
+  next |C.G>
+  next |H>
+  next |A>
+  info off
+  similar-input[pattern] append-column[10] encode |G>
+  get-node |*> #=> drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  get-node |A>
+  get-node |B>
+  get-node |C>
+  get-node |D>
+  get-node |G>
+  get-node |H>
+  get-node |I>
+  name-node |*> #=> similar-input[encode] extract-category pattern get-node |_self>
+  name-node |A>
+  name-node |B>
+  name-node |C>
+  name-node |D>
+  name-node |G>
+  shared-node |*> #=> similar-input[encode] extract-category pattern get-node |_self>
+  shared-node |E>
+  shared-node |H>
+  shared-node |F>
+  save history
+  encode |X>
+  encode |A>
+  encode |Y>
+  encode |B>
+  encode |C>
+  history 1000
+  
+  encode |X> => pick[10] full |range>
+  encode |Y> => pick[10] full |range>
+  
+  pattern |time: 1> +=> random-column[10] encode |A>
+  pattern |time: 2> +=> random-column[10] encode |B>
+  pattern |time: 3> +=> random-column[10] encode |C>
+  
+  pattern |time: 1> +=> random-column[10] encode |X>
+  pattern |time: 2> +=> random-column[10] encode |B>
+  pattern |time: 3> +=> random-column[10] encode |Y>
+  
+  name-pattern |time: *> #=> similar-input[encode] extract-category pattern |_self>
+  
+  
+  name-pattern |time: 1>
+  name-pattern |time: 2>
+  name-pattern |time: 3>
+  rand-encode |*> #=> random-column[10] encode |_self>
+  similar-input[encode] extract-category rand-encode split |A B C>
+  similar-input[encode] extract-category rand-encode normalize split |A B C>
+  similar-input[encode] extract-category rand-encode (2|A> + 30|B> + |C>)
+  normalize (2|A> + 30|B> + |C>)
+  save history
+
+2016-12-04
+  full |range> => range(|1>,|65536>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |a1> => pick[10] full |range>
+  encode |a2> => pick[10] full |range>
+  encode |a3> => pick[10] full |range>
+  encode |b1> => pick[10] full |range>
+  
+  -- encode sequence names:
+  
+  -- encode low level sequences:
+  -- empty sequence
+  pattern |node 0: 0> => random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  -- A . B . C . G . H . I
+  pattern |node 1: 0> +=> random-column[10] encode |A>
+  then |node 1: 0> +=> random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> +=> random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> +=> random-column[10] encode |G>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> +=> random-column[10] encode |H>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> +=> random-column[10] encode |I>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> +=> random-column[10] encode |end of sequence>
+  
+  similar-input[encode] extract-category pattern |node 1: 4>
+  similar-input[pattern] append-column[10] encode |A>
+  similar-input[pattern] append-column[10] encode |C>
+  next |G>
+  next |C.G>
+  next |H>
+  next |A>
+  info off
+  similar-input[pattern] append-column[10] encode |G>
+  get-node |*> #=> drop-below[0.09] similar-input[pattern] append-column[10] encode |_self>
+  get-node |A>
+  get-node |B>
+  get-node |C>
+  get-node |D>
+  get-node |G>
+  get-node |H>
+  get-node |I>
+  name-node |*> #=> similar-input[encode] extract-category pattern get-node |_self>
+  name-node |A>
+  name-node |B>
+  name-node |C>
+  name-node |D>
+  name-node |G>
+  shared-node |*> #=> similar-input[encode] extract-category pattern get-node |_self>
+  shared-node |E>
+  shared-node |H>
+  shared-node |F>
+  save history
+  encode |X>
+  encode |A>
+  encode |Y>
+  encode |B>
+  encode |C>
+  history 1000
+  
+  encode |X> => pick[10] full |range>
+  encode |Y> => pick[10] full |range>
+  
+  pattern |time: 1> +=> random-column[10] encode |A>
+  pattern |time: 2> +=> random-column[10] encode |B>
+  pattern |time: 3> +=> random-column[10] encode |C>
+  
+  pattern |time: 1> +=> random-column[10] encode |X>
+  pattern |time: 2> +=> random-column[10] encode |B>
+  pattern |time: 3> +=> random-column[10] encode |Y>
+  
+  name-pattern |time: *> #=> similar-input[encode] extract-category pattern |_self>
+  
+  
+  name-pattern |time: 1>
+  name-pattern |time: 2>
+  name-pattern |time: 3>
+  rand-encode |*> #=> random-column[10] encode |_self>
+  similar-input[encode] extract-category rand-encode split |A B C>
+  similar-input[encode] extract-category rand-encode normalize split |A B C>
+  similar-input[encode] extract-category rand-encode (2|A> + 30|B> + |C>)
+  normalize (2|A> + 30|B> + |C>)
+  save history
+  q
+
