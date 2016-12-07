@@ -17,12 +17,12 @@
 import os
 import sys
 from PIL import Image                 # if this line bugs out, you need to install Pillow, a python image library.
-import numpy as np
+import numpy
 
 
 enhance_factor = 40                  # image edge enhance factor
-k = 10                               # image tile size
-t = 0.4                              # average categorize threshold
+ngram_size = 10                      # image tile size
+threshold = 0.4                      # average categorize threshold
 #image_mode = "L"                    # switch between RGB and L mode
 image_mode = "RGB"
 saved_features_dir = "saved_average_categorize_features"
@@ -97,7 +97,7 @@ def edge_enhance(image,k):
 
 def rescaled_list_simm(f,g):
   the_len = min(len(f),len(g))
-  f = f[:the_len]
+  f = f[:the_len]                     # remove this step?
   g = g[:the_len]
 
 # rescale step, first find size:
@@ -114,10 +114,14 @@ def rescaled_list_simm(f,g):
 
 
 # average categorize the data:
+# maybe later replace with a better feature extractor?
+# I guess the question is, how well does average-categorize work?
+# in testing seems to work not too bad.
+#
 def list_average_categorize(data,t):
   out_list = []
   for r0 in data:
-    r = np.array(r0)
+    r = numpy.array(r0)
     if r.max() == 0:
       continue
     print("r:",r)
@@ -150,7 +154,8 @@ def image_to_list(image):
   print("data:",data)
   print("mode:",mode)
   if mode == "L":
-    return data
+    return numpy.array(data)
+#    return data
   if mode in ["RGB","RGBA"]:
     r = []
     for value in data:
@@ -158,7 +163,8 @@ def image_to_list(image):
       r.append(R)
       r.append(G)
       r.append(B)
-    return r
+    return numpy.array(r)
+#    return r
 
 def list_to_l_image(data, size):
   if len(data) != size*size:
@@ -193,15 +199,6 @@ def image_to_ngrams(im,k):
     return out_list
   return out_list
 
-def average_categorize_ngrams(filename, ngram_size, threshold):
-  im = Image.open(filename)
-  data = image_to_ngrams(im, ngram_size)
-  return list_average_categorize(data, threshold)
-
-def average_categorize_image_ngrams(im, ngram_size, threshold):
-  data = image_to_ngrams(im, ngram_size)
-  return list_average_categorize(data, threshold)
-
 def save_list_of_images(data, size, image_mode, destination_dir, file_prefix, ext):
   # check destination directory exists, if not create it:
   if not os.path.exists(destination_dir):
@@ -221,13 +218,79 @@ def save_list_of_images(data, size, image_mode, destination_dir, file_prefix, ex
       print("save_list_of_images exception reason:",e)
       continue
 
+
+def replace_with_feature(image_features, image_list):
+  best_match = image_list
+  best_score = 0
+  for feature in image_features:
+    similarity = rescaled_list_simm(feature, image_list)
+    if similarity > best_score:
+      best_match = feature
+      best_score = similarity
+  return best_match
+
+
+def phi_transform_image(im, image_features, image_mode, ngram_size):
+  try:
+    width, height = im.size
+    if image_mode == "L":
+      arr = numpy.zeros((height,width),numpy.float)
+    elif image_mode == "RGB":
+      arr = numpy.zeros((height,width,3),numpy.float)
+
+    count = 0                        # +1 or not to +1??
+    for h in range(0,height - ngram_size + 1):                            # yeah, we are effectively calculating image ngrams twice,
+      for w in range(0,width - ngram_size + 1):                           # once here, and once up above. fix?
+        count += 1
+        im2 = im.crop((w, h, w + ngram_size, h + ngram_size))
+        image_ngram = image_to_list(im2)
+
+        our_image = replace_with_feature(image_features, image_ngram)     # this is the whole point of this function!
+        our_image = rescale(our_image)                                    # rescale back to [0,255]
+
+        if image_mode == "L":
+          phi_im = list_to_l_image(our_image, ngram_size)
+          im3 = Image.new('L',(width,height),"white")
+        elif image_mode == "RGB":
+          phi_im = list_to_rgb_image(our_image, ngram_size)
+          im3 = Image.new('RGB',(width,height),"white")
+        im3.paste(phi_im, (w,h))
+        image_array = numpy.array(im3, dtype=numpy.float)
+        arr += image_array
+
+        # see what we have:
+#        phi_im.show()
+#        return im3
+        
+    arr = arr/count                   # average the final array
+    arr = rescale(arr)                # rescale to [0,255]
+    arr=numpy.array(numpy.round(arr),dtype=numpy.uint8) # Round values in array and cast to integer
+
+    # Generate final image
+    if image_mode == "L":
+      out=Image.fromarray(arr, mode="L")
+    elif image_mode == "RGB":
+      out=Image.fromarray(arr, mode="RGB")
+    return out
+  except Exception as e:
+    print("phi_transform_image exception reason:", e)
+
+
 # test what we have so far:
 # Yup, works!
-im = Image.open("220px-Lenna.png")
-im2 = edge_enhance(im,40)
+#im = Image.open("220px-Lenna.png")
+im = Image.open("angelina-jolie-5-800.jpg")
+im2 = edge_enhance(im, enhance_factor)
 im2.show()
 #data = image_to_ngrams(im, 20)
 #save_list_of_images(data, 20, "RGB", saved_features_dir, "small-lenna", "png")
 
-image_features = average_categorize_image_ngrams(im2, 10, 0.4)
-save_list_of_images(image_features, 10, "RGB", saved_features_dir, "small-lenna-features", "png")
+image_ngrams = image_to_ngrams(im2, ngram_size)
+image_features = list_average_categorize(image_ngrams, threshold)
+#save_list_of_images(image_features, ngram_size, "RGB", saved_features_dir, "small-lenna-features", "png")
+#sys.exit(0)
+
+phi_im = phi_transform_image(im2, image_features, image_mode, ngram_size)
+final_im = edge_enhance(phi_im, enhance_factor)
+final_im.show()
+
