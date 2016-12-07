@@ -1,16 +1,16 @@
 #!c:/Python34/python.exe
 
 #######################################################################
-# apply edge-enhance, phi-transform, then edge-enhance to an image
-# this should strongly highlight edges
+# apply edge-enhance, phi-transform, then phi-image to an image
+# this might work as a first layer in image recognition
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
-# Date: 2016-12-05
+# Date: 2016-12-7
 # Update: 2016-12-7
 # Copyright: GPLv3
 #
-# Usage: ./edge-transform.py image.{png,jpg}
+# Usage: ./phi-image.py image.{png,jpg}
 #
 #######################################################################
 
@@ -19,11 +19,15 @@ import sys
 from PIL import Image                 # if this line bugs out, you need to install Pillow, a python image library.
 import numpy
 
-filename = "child.png"
+#filename = "child.png"
+filename = "220px-Lenna.png"
+
 enhance_factor_pre = 40              # image edge enhance factor before phi-transform
 enhance_factor_post = 40             # image edge enhance factor after phi-transform
-ngram_size = 10                      # image tile size
-threshold = 0.4                      # average categorize threshold
+#ngram_size = 10                      # image tile size
+#threshold = 0.4                      # average categorize threshold
+ngram_size = 5
+threshold = 0.85
 #image_mode = "L"                    # switch between RGB and L mode
 image_mode = "RGB"
 saved_features_dir = "saved_average_categorize_features"
@@ -186,6 +190,11 @@ def list_to_rgb_image(data, size):
   im.putdata(im_data)
   return im
 
+def pixel_to_l_image(pix):
+  im = Image.new('L',(1,1))
+  im.putdata([pix])
+  return im
+
 def image_to_ngrams(im,k):
   out_list = []
   try:
@@ -230,73 +239,41 @@ def replace_with_feature(image_features, image_list):
       best_score = similarity
   return best_match
 
+def replace_with_feature_index(image_features, image_list):
+  best_k = 0
+  best_score = 0
+  for k, feature in enumerate(image_features):
+    similarity = rescaled_list_simm(feature, image_list)
+    if similarity > best_score:
+      best_k = k
+      best_score = similarity
+  return 255 - int( 255 * best_k / (len(image_features)-1) )            # shift to make_phi_image() later?
 
-# this function could do with a huge tidy!!
-def phi_transform_image(im, image_features, image_mode, ngram_size):
+
+def make_phi_image(im, image_features, ngram_size):
   try:
     width, height = im.size
-    if image_mode == "L":
-      arr = numpy.zeros((height,width),numpy.float)
-    elif image_mode == "RGB":
-      arr = numpy.zeros((height,width,3),numpy.float)
-
-    count = 0                        # +1 or not to +1??
+    im3 = Image.new('L',(width,height),"white")
+    pix = im3.load()
     for h in range(0,height - ngram_size + 1):                            # yeah, we are effectively calculating image ngrams twice,
       for w in range(0,width - ngram_size + 1):                           # once here, and once up above. fix?
-        count += 1
         im2 = im.crop((w, h, w + ngram_size, h + ngram_size))
         image_ngram = image_to_list(im2)
-
-        our_image = replace_with_feature(image_features, image_ngram)     # this is the whole point of this function!
-        our_image = rescale(our_image)                                    # rescale back to [0,255]
-
-        if image_mode == "L":
-          phi_im = list_to_l_image(our_image, ngram_size)
-          im3 = Image.new('L',(width,height),"white")
-        elif image_mode == "RGB":
-          phi_im = list_to_rgb_image(our_image, ngram_size)
-          im3 = Image.new('RGB',(width,height),"white")
-        im3.paste(phi_im, (w,h))
-        image_array = numpy.array(im3, dtype=numpy.float)
-        arr += image_array
-
-        # see what we have:
-#        phi_im.show()
-#        return im3
-        
-    arr = arr/count                   # average the final array
-    arr = rescale(arr)                # rescale to [0,255]
-    arr=numpy.array(numpy.round(arr),dtype=numpy.uint8) # Round values in array and cast to integer
-
-    # Generate final image
-    if image_mode == "L":
-      out=Image.fromarray(arr, mode="L")
-    elif image_mode == "RGB":
-      out=Image.fromarray(arr, mode="RGB")
-    return out
+        pixel = replace_with_feature_index(image_features, image_ngram)     # this is the whole point of this function!
+        pix[w, h] = pixel                                                   # currently assumes pixel is in [0,255]
+    return im3
   except Exception as e:
-    print("phi_transform_image exception reason:", e)
+    print("make_phi_image exception reason:", e)
+
+im = Image.open(filename)
+#im2 = edge_enhance(im, enhance_factor_pre)
+image_ngrams = image_to_ngrams(im, ngram_size)
+image_features = list_average_categorize(image_ngrams, threshold)
+phi_im = make_phi_image(im, image_features, ngram_size)
+phi_im.show()
 
 
-# test what we have so far:
-# Yup, works!
-#im = Image.open("220px-Lenna.png")
-#im = Image.open("angelina-jolie-5-800.jpg")
-#im2 = edge_enhance(im, enhance_factor)
-#im2.show()
-#data = image_to_ngrams(im, 20)
-#save_list_of_images(data, 20, "RGB", saved_features_dir, "small-lenna", "png")
-
-#image_ngrams = image_to_ngrams(im2, ngram_size)
-#image_features = list_average_categorize(image_ngrams, threshold)
-#save_list_of_images(image_features, ngram_size, "RGB", saved_features_dir, "angelina-features", "png")
-#sys.exit(0)
-
-#phi_im = phi_transform_image(im2, image_features, image_mode, ngram_size)
-#final_im = edge_enhance(phi_im, enhance_factor)
-#final_im.show()
-
-
+sys.exit(0)
 # edge-transform an image:
 def edge_transform(im, enhance_factor_pre, enhance_factor_post, ngram_size, threshold, image_mode, saved_features_dir):
   im2 = edge_enhance(im, enhance_factor_pre)
@@ -314,6 +291,6 @@ def edge_transform(im, enhance_factor_pre, enhance_factor_post, ngram_size, thre
   return final_im
 
 
-im = Image.open(filename)
-final_im = edge_transform(im, enhance_factor_pre, enhance_factor_post, ngram_size, threshold, image_mode, saved_features_dir)
+#im = Image.open(filename)
+#final_im = edge_transform(im, enhance_factor_pre, enhance_factor_post, ngram_size, threshold, image_mode, saved_features_dir)
 

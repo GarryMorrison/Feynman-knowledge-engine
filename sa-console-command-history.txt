@@ -44433,3 +44433,9 @@
   save history
   q
 
+2016-12-07
+  very |*> #=> 0.8 |_self>
+  hungry |*> #=> rewrite(|hungry X>, |X>, |_self>)
+  very hungry |dog>
+  q
+
