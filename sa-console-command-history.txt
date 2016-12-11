@@ -44439,3 +44439,85 @@
   very hungry |dog>
   q
 
+2016-12-09
+  random-frame[10,10,10]
+  .
+  .
+  q
+
+2016-12-09
+  random-frame[10,10,10]
+  display-frame[10,10] random-frame[10,10,10]
+  q
+
+2016-12-09
+  display-frame[10,10] random-frame[10,10,10]
+  q
+
+2016-12-09
+  display-frame[10,10] random-frame[10,10,10]
+  display-frame[3,20] random-frame[3,20,10]
+  q
+
+2016-12-09
+  display-frame[3,20] random-frame[3,20,10]
+  q
+
+2016-12-09
+  display-frame[3,20] random-frame[3,20,10]
+  q
+
+2016-12-09
+  display-frame[3,20] random-frame[3,20,10]
+  display-frame[10,10] random-frame[10,10,10]
+  display-frame[10,10] random-frame[10,10,3]
+  display-frame[10,10] random-frame[10,10,15]
+  display-frame[30,30] random-frame[30,30,20]
+  frame |1> => random-frame[30,30,20] |>
+  dump
+  frame |2> => random-frame[30,30,20] |>
+  dump
+  display-frame[40,40] frame |1>
+  history
+  display-frame[100,100] frame |2>
+  display-frame[5,5] frame |1>
+  q
+
+2016-12-09
+  load frame-sequences.sw
+  dump
+  display-frame[20,20] frame |1>
+  display-frame-sequence[20,20] start-node |seq 1>
+  display-frame-sequence[20,20] start-node |seq 2>
+  dump
+  
+  history
+  q
+
+2016-12-09
+  load frame-sequences.sw
+  display-frame-sequence[20,20] start-node |seq 1>
+  history
+  q
+
+2016-12-09
+    load frame-sequences.sw
+    display-frame-sequence[20,20] start-node |seq 1>
+  load frame-sequences.sw
+  history
+  display-frame-sequence[20,20] start-node |seq 1>
+  history
+  display-frame-sequence[20,20] start-node |seq 2>
+  display-frame-sequence[10,10] start-node |seq 1>
+  history
+  q
+
+2016-12-10
+  load frame-sequences.sw
+  dump
+  display-frame-sequence[10,10] start-node |seq 1>
+  history
+  display-frame-sequence[10,10] start-node |seq 2>
+  history
+  q
+

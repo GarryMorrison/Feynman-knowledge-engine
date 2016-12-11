@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 23/11/2016
+# Update: 9/12/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -521,7 +521,13 @@ compound_table = {
   "new-print-sequence"     : ".apply_fn(new_print_sequence,context,\"{0}\")",
   
 # 17/11/2016:
-  "follow-sequence"         : ".apply_sp_fn(follow_sequence,context,\"{0}\")",  
+  "follow-sequence"         : ".apply_sp_fn(follow_sequence,context,\"{0}\")",
+  
+# 9/12/2016:
+  "random-frame"            : ".apply_naked_fn(random_frame,\"{0}\")",
+  "display-frame"           : ".apply_sp_fn(display_frame,\"{0}\")",
+  "display-frame-sequence"  : ".apply_sp_fn(display_frame_sequence,context,\"{0}\")", 
+  
     
 }
 

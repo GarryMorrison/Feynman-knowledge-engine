@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 29/11/2016
+# Update: 9/12/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -5541,4 +5541,73 @@ def vsa_mult(one,two):
 #      new_pieces.sort()
       r += ket(": ".join(new_pieces))
   return r
-                                                                             
+
+import random
+from itertools import product
+# 9/12/2016:
+# random-frame[w,h,on-bits]
+# display-frame[w,h] frame |3>
+#
+def random_frame(parameters):
+  try:
+    w,h,bits = [int(x) for x in parameters.split(',')]
+    pixels = [x for x in product(range(w), range(h))]
+    on_pixels = random.sample(pixels, bits)
+    r = superposition()
+    for pair in on_pixels:
+      r += ket("%s: %s" % (pair[0], pair[1]))
+    return r
+  except Exception as e:
+    print("random_frame exception reason:",e)
+    return ket("")
+
+def display_frame(one,parameters):
+  try:
+    w,h = [int(x) for x in parameters.split(',')]
+    on_pixels = [x.label.split(": ") for x in one]
+    on_pixels = [(int(x),int(y)) for x,y in on_pixels]                         # tidy later?
+#    print("on-pixels: %s" % on_pixels)
+    for y in range(h):
+      for x in range(w):
+        if (x,y) in on_pixels:
+          print("#",end='')
+        else:
+          print(".",end='')
+      print()
+    print()  
+    return ket("display-frame")
+  except Exception as e:
+    print("display_frame exception reason:",e)
+    return ket("")
+    
+# display-frame-sequence[10,10] start-node |seq 1>
+#
+# one is a sp
+def display_frame_sequence(one, context, parameters):
+  if len(one) == 0:
+    return one
+
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"frame").select_range(1,1).apply_sigmoid(clean)
+  def display_our_frame(one, parameters):
+    display_frame(one.apply_fn(extract_category), parameters)      
+    
+  try:
+    current_node = one.apply_op(context,"pattern")  
+    while name(current_node).the_label() != "end of sequence":
+  #    print(name(current_node))
+  #    display_frame(name(current_node).apply_op(context,"frame"), parameters)
+      display_our_frame(current_node, parameters)
+      current_node = next(current_node)
+    return ket("end of sequence")
+    
+  except Exception as e:
+    print("display_frame_sequence exception reason:",e)
+    return ket("")
+
+   
+    
+  
+                                                                                       
