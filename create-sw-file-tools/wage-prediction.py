@@ -8,7 +8,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-12-11
-# Update:
+# Update: 2016-12-12
 # Copyright: GPLv3
 #
 # Usage: ./wage-prediction.py
@@ -281,23 +281,6 @@ def learn_data(filename, node_name):
         print("learn_data exception reason:", e)
   return data_dict, answer_dict
 
-# test it works:
-#data_dict, answer_dict = learn_data(sample_data, "sample")
-data_dict, answer_dict = learn_data(train_data, "train")
-#data_dict, answer_dict = learn_data(test_data, "test")
-
-#print_sw_dict(data_dict, "pattern")
-#print_sw_dict(answer_dict, "answer")
-#print("len data_dict:", len(data_dict))
-#print("len answer_dict:", len(answer_dict))
-
-#new_data_dict = reweight_dict(data_dict, weights)
-#print_sw_dict(data_dict, "pattern")
-#print_sw_dict(new_data_dict, "pattern")
-
-sample_data_dict = sample_dict(data_dict, 2000)
-#print_sw_dict(sample_data_dict, "pattern")
-
 
 def first_find_score(data_dict, answer_dict):
   number_of_results = 10
@@ -332,9 +315,6 @@ def first_find_score(data_dict, answer_dict):
   return [(str(k+1), label , float_to_int(100*value), str(answer_dict[label]) ) for k,(label,value) in enumerate(sorted_result) ]
 
 
-#result = first_find_score(data_dict, answer_dict)
-#print_table(result)
-
 
 def find_score(data_dict, answer_dict):
   count = 0
@@ -344,18 +324,109 @@ def find_score(data_dict, answer_dict):
     answer = answer_dict[label]
 
     # find matching patterns:
-#    result = pattern_recognition_list(data_dict, pattern)
+    result = pattern_recognition_list(data_dict, pattern)
 
     # sort the results:
-#    sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:2]
-#    result = sorted_result[1]
+    sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:2]
+    result = sorted_result[1]
 
-    result = pattern_recognition_best_match(data_dict, pattern)
+#    result = pattern_recognition_best_match(data_dict, pattern)
 #    if str(answer) == str(answer_dict[result[0]]):
     if answer == answer_dict[result[0]]:
       score += 1
-  print("%s / %s" % (score, count) )
+  print("%s / %s = %.3f" % (score, count, 100 * score / count) )
   return score / count
 
-score = find_score(sample_data_dict, answer_dict)
+
+def find_weights(data_dict, answer_dict, weights, weight_up, weight_down, trials):
+  print("weights:", weights)
+  best_score = find_score(data_dict, answer_dict)
+  sample_weights = weights[:]
+  for i in range(trials):
+    k = random.sample(range(len(weights)), 1)[0]
+    w = random.sample([weight_up, weight_down], 1)[0]
+    stored_weights = sample_weights[:]
+    sample_weights[k] *= w
+    print("%s:\tscore: %s\t k: %s\t w: %s\t weights: %s" % (i, 100*best_score, k, w, sample_weights))
+    sample_data_dict = reweight_dict(data_dict, sample_weights)
+    sample_score = find_score(sample_data_dict, answer_dict)
+    if sample_score >= best_score:
+      best_score = sample_score
+    else:                                            # no improvement, so don't keep weights changes
+      sample_weights = stored_weights
+  return sample_weights
+
+
+# test it works:
+#data_dict, answer_dict = learn_data(sample_data, "sample")
+#data_dict, answer_dict = learn_data(train_data, "train")
+#data_dict, answer_dict = learn_data(test_data, "test")
+
+#print_sw_dict(data_dict, "pattern")
+#print_sw_dict(answer_dict, "answer")
+#print("len data_dict:", len(data_dict))
+#print("len answer_dict:", len(answer_dict))
+
+#new_data_dict = reweight_dict(data_dict, weights)
+#print_sw_dict(data_dict, "pattern")
+#print_sw_dict(new_data_dict, "pattern")
+
+#sample_data_dict = sample_dict(data_dict, 200)
+#print_sw_dict(sample_data_dict, "pattern")
+#sys.exit(0)
+
+#result = first_find_score(data_dict, answer_dict)
+#print_table(result)
+
+#score1 = find_score(sample_data_dict, answer_dict)
+
+#weights = [1,1,0.00001,1,1,1,1,1,1,1,1,1,1,1]
+#new_data_dict = reweight_dict(sample_data_dict, weights)
+#score2 = find_score(new_data_dict, answer_dict)
+
+#weights = [0.75,1,0.000001,1,1,1,1,1,1,1,1,1,1,1]
+#new_data_dict = reweight_dict(sample_data_dict, weights)
+#print_sw_dict(new_data_dict, "pattern")
+#score3 = find_score(new_data_dict, answer_dict)
+
+#print("delta:", 100 * (score3 - score1) )
+
+#result = first_find_score(new_data_dict, answer_dict)
+#print_table(result)
+
+
+
+# put it to work:
+data_dict, answer_dict = learn_data(train_data, "train")
+sample_data_dict = sample_dict(data_dict, 500)
+new_weights = find_weights(sample_data_dict, answer_dict, weights, weight_up, weight_down, 300)
+
+sample_data_dict = sample_dict(data_dict, 500)
+new_weights = find_weights(sample_data_dict, answer_dict, new_weights, weight_up, weight_down, 200)
+
+sample_data_dict = sample_dict(data_dict, 500)
+new_weights = find_weights(sample_data_dict, answer_dict, new_weights, weight_up, weight_down, 200)
+
+
+
+new_data_dict = reweight_dict(sample_data_dict, new_weights)
+
+print("first result:")
+find_score(sample_data_dict, answer_dict)
+
+print("new_weights:", new_weights)
+print("final result:")
+find_score(new_data_dict, answer_dict)
+
+result = first_find_score(new_data_dict, answer_dict)
+print_table(result)
+
+print("---------------")
+sample_data_dict = sample_dict(data_dict, 2000)
+print("first full result:")
+find_score(sample_data_dict, answer_dict)
+
+new_data_dict = reweight_dict(sample_data_dict, new_weights)
+print("final full result:")
+find_score(new_data_dict, answer_dict)
 

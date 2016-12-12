@@ -44521,3 +44521,12 @@
   history
   q
 
+2016-12-11
+  load frame-sequences.sw
+  display-frame-sequence[10,10] start-node |seq 1>
+  info off
+  display-frame-sequence[10,10] start-node |seq 2>
+  
+  history
+  save history
+
