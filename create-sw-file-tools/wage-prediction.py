@@ -8,7 +8,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-12-11
-# Update: 2016-12-12
+# Update: 2016-12-14
 # Copyright: GPLv3
 #
 # Usage: ./wage-prediction.py
@@ -27,6 +27,8 @@ test_data = "data/adult/adult.test"
 weight_up = 1.5
 weight_down = 0.5
 weights = [1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+#weights = [0.01668548583984375, 0.0296630859375, 1.1444091796875e-05, 2.53125, 0.7119140625, 25.62890625, 2.1357421875, 0.0007821321487426758, 0.03167635202407837, 0.2109375, 0.10546875, 0.01318359375, 0.2373046875, 0.11865234375]
+good_weights = [0.01668548583984375, 0.0296630859375, 1.1444091796875e-05, 2.53125, 0.7119140625, 25.62890625, 2.1357421875, 0.0017597973346710205, 0.021117568016052246, 0.2109375, 0.10546875, 0.01318359375, 0.2373046875, 0.11865234375]
 sample_size = 100
 
 
@@ -317,25 +319,33 @@ def first_find_score(data_dict, answer_dict):
 
 
 def find_score(data_dict, answer_dict):
+  score_weights = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+#  score_weights = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   count = 0
+  simple_score = 0
   score = 0
   for label, pattern in data_dict.items():
     count += 1
     answer = answer_dict[label]
 
     # find matching patterns:
-    result = pattern_recognition_list(data_dict, pattern)
+#    result = pattern_recognition_best_match(data_dict, pattern)
+    result_list = pattern_recognition_list(data_dict, pattern)
 
     # sort the results:
-    sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:2]
-    result = sorted_result[1]
+    result = sorted(result_list, key = lambda x: float(x[1]), reverse = True)[1:10]
+    result = [x[0] for x in result]
 
-#    result = pattern_recognition_best_match(data_dict, pattern)
-#    if str(answer) == str(answer_dict[result[0]]):
     if answer == answer_dict[result[0]]:
-      score += 1
-  print("%s / %s = %.3f" % (score, count, 100 * score / count) )
-  return score / count
+      simple_score += 1
+    for k, result_label in enumerate(result):
+#      print("k: %s answer: %s" % (k, answer_dict[result_label]) )
+      if answer == answer_dict[result_label]:
+        score += score_weights[k]
+#        print("score_weight: %s" % score_weights[k] )
+#    break
+  print("%s / %s = %.3f" % (simple_score, count, 100 * simple_score / count) )
+  return score
 
 
 def find_weights(data_dict, answer_dict, weights, weight_up, weight_down, trials):
@@ -395,6 +405,11 @@ def find_weights(data_dict, answer_dict, weights, weight_up, weight_down, trials
 #print_table(result)
 
 
+#data_dict, answer_dict = learn_data(train_data, "train")
+#sample_data_dict = sample_dict(data_dict, 200)
+#print("score: %s" % find_score(sample_data_dict, answer_dict) )
+#sys.exit(0)
+
 
 # put it to work:
 data_dict, answer_dict = learn_data(train_data, "train")
@@ -422,7 +437,7 @@ result = first_find_score(new_data_dict, answer_dict)
 print_table(result)
 
 print("---------------")
-sample_data_dict = sample_dict(data_dict, 2000)
+sample_data_dict = sample_dict(data_dict, 10000)
 print("first full result:")
 find_score(sample_data_dict, answer_dict)
 
