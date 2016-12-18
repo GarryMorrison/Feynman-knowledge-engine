@@ -8,7 +8,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-12-11
-# Update: 2016-12-15
+# Update: 2016-12-18
 # Copyright: GPLv3
 #
 # Usage: ./wage-prediction.py
@@ -400,6 +400,47 @@ def find_weights(data_dict, answer_dict, weights, weight_up, weight_down, trials
   return sample_weights
 
 
+def find_final_results(train_data_dict, train_answer_dict, test_data_dict, test_answer_dict):
+  count = 0
+  score = 0
+  for label, pattern in test_data_dict.items():
+    count += 1                                        # use enumerate instead?
+    correct_answer = test_answer_dict[label]
+    
+    # find matching patterns:
+    result_list = pattern_recognition_list(train_data_dict, pattern)
+
+    # sort the results:
+    result = sorted(result_list, key = lambda x: float(x[1]), reverse = True)[:10]
+    result = [x[0] for x in result]
+    predicted_answers = [train_answer_dict[train_label] for train_label in result ]
+
+    # find score:
+    score_tally = 0
+    for predicted_answer in predicted_answers:
+      if correct_answer == predicted_answer:
+        score_tally += 1
+    if score_tally > 5:
+      score += 1
+    print("%s:\t%s\tcorrect: %s\tscore: %s\tscore_tally: %s\tpredicted: %s" % (count, label, correct_answer, score_tally > 5, score_tally, " ".join(predicted_answers) ))
+#    if count >= 500:
+#      break
+  print("%s / %s = %.3f" % (score, count, 100 * score / count) )
+  return score
+
+
+
+# find final result:
+train_data_dict, train_answer_dict = learn_data(train_data, "train")
+test_data_dict,  test_answer_dict = learn_data(test_data, "test")
+find_final_results(train_data_dict, train_answer_dict, test_data_dict, test_answer_dict)
+
+sys.exit(0)
+new_train_data_dict = reweight_dict(train_data_dict, good_weights)
+new_test_data_dict = reweight_dict(test_data_dict, good_weights)
+find_final_results(new_train_data_dict, train_answer_dict, new_test_data_dict, test_answer_dict)
+sys.exit(0)
+
 # test it works:
 #data_dict, answer_dict = learn_data(sample_data, "sample")
 #data_dict, answer_dict = learn_data(train_data, "train")
@@ -445,10 +486,18 @@ def find_weights(data_dict, answer_dict, weights, weight_up, weight_down, trials
 
 
 # test good_weights:
-data_dict, answer_dict = learn_data(train_data, "train")
+#data_dict, answer_dict = learn_data(train_data, "train")
+#sample_data_dict = sample_dict(data_dict, 32000)
+#print("first full result:")
+#find_final_score(sample_data_dict, answer_dict)
+#new_data_dict = reweight_dict(sample_data_dict, good_weights)
+#print("final full result:")
+#find_final_score(new_data_dict, answer_dict)
+
+data_dict, answer_dict = learn_data(test_data, "test")
 print("first full result:")
-find_final_score(sample_data_dict, answer_dict)
-new_data_dict = reweight_dict(sample_data_dict, good_weights)
+find_final_score(data_dict, answer_dict)
+new_data_dict = reweight_dict(data_dict, good_weights)
 print("final full result:")
 find_final_score(new_data_dict, answer_dict)
 sys.exit(0)
