@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/12/2016
+# Update: 19/12/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -528,7 +528,9 @@ compound_table = {
   "display-frame"           : ".apply_sp_fn(display_frame,\"{0}\")",
   "display-frame-sequence"  : ".apply_sp_fn(display_frame_sequence,context,\"{0}\")", 
   
-    
+# 19/12/2016:
+  "next"                : ".apply_fn(sequence_predict_whats_next_skip,context,\"{0}\")",    
+      
 }
 
 

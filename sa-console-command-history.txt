@@ -44530,3 +44530,58 @@
   history
   save history
 
+2016-12-19
+  load frame-sequences.sw
+  dump
+  display-frame[10,10] frame |1>
+  info off
+  display-frame[10,10] frame |1>
+  display-frame[20,20] frame |2>
+  display-frame-sequence[10,10] start-node |seq 1>
+  dump
+  q
+
+2016-12-19
+  load simple-sequences.sw
+  next |A>
+  info off
+  next |U>
+  next |B.C>
+  next |B.C.D>
+  next |B.E>
+  load george-gm.sw
+  next |the>
+  next |the.mother.of>
+  next |the.of>
+  q
+
+2016-12-19
+  load simple-sentences.sw
+  info off
+  next |the>
+  next[0] |the.dog>
+  next[0] |the.wants>
+  next[1] |the.wants>
+  next[1] |the.the>
+  next[2] |the.the>
+  next |the>
+  next[0] |the.dog>
+  next[1] |the.dog>
+  next[2] |the.dog>
+  next[2] |the.dog.wants>
+  next[2] |the.dog.some>
+  next[0] |the>
+  next |mary>
+  next[0] |mary.won.a.race.to>
+  next[1] |mary.won.a.race.to>
+  next[2] |mary.won.a.race.to>
+  next[3] |mary.won.a.race.to>
+  save history
+
+2016-12-19
+  display-frame[15,15] random-frame[15,15,10]
+  display-frame[3,10] random-frame[3,10,10]
+  random-frame[15,15,10]
+  display-frame[15,15] (|7: 7> + |6: 2> + |10: 8> + |4: 12> + |4: 5> + |13: 9> + |8: 8> + |12: 8> + |13: 0> + |12: 14>)
+  q
+

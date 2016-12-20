@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/12/2016
+# Update: 19/12/2016
 # Copyright: GPLv3
 #
 # Usage: 
@@ -5467,14 +5467,19 @@ def predict_whats_next_skip_four(context,one,two,three,four):
 
 # 29/11/2016:
 # sequence version of  whats-next.
-# eg: next(|the . dog . chased>) == |the . ball>
+# eg: next |the . dog . chased> == |the . ball>
 #
-# one is a sequence sp, eg |the . dog . chased>, or |the . mother . of . george . is>
+# one is a sequence ket, eg |the . dog . chased>, or |the . mother . of . george . is>
 # sort of a hack until we make sequences first class objects, if we ever do.
+#
 #def sequence_predict_whats_next_skip(context,one):
-def sequence_predict_whats_next_skip(one,context):
+def sequence_predict_whats_next_skip(one,context,parameters=None):
   if len(one) == 0:                                                      # if it is the empty sp, we can't do anything.
     return one
+  try:
+    k = int(parameters)
+  except:
+    k = 3
   incoming_sequence = [x.strip() for x in one.the_label().split('.')]
   print("incoming_sequence:",incoming_sequence)
     
@@ -5505,10 +5510,15 @@ def sequence_predict_whats_next_skip(one,context):
   
   nodes_one = get_node(ket(incoming_sequence[0]))
   
-  for x in incoming_sequence[1:]:                                            # finish!
+  for x in incoming_sequence[1:]:
     print("nodes 1:", nodes_one)
     nodes_two = get_node(ket(x))
-    next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one))) + get_next_nodes(get_next_nodes(get_next_nodes(get_next_nodes(nodes_one))))
+#    next_nodes = get_next_nodes(nodes_one) + get_next_nodes(get_next_nodes(nodes_one)) + get_next_nodes(get_next_nodes(get_next_nodes(nodes_one))) + get_next_nodes(get_next_nodes(get_next_nodes(get_next_nodes(nodes_one))))
+    next_nodes = get_next_nodes(nodes_one)
+    r = next_nodes
+    for _ in range(k):
+      r = get_next_nodes(r)
+      next_nodes += r
     intersected_nodes = intersection(next_nodes, nodes_two)
     print("intersected nodes:", intersected_nodes)
     nodes_one = intersected_nodes
