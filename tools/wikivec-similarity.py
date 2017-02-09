@@ -42,12 +42,22 @@ number_of_results = 30
 if len(sys.argv) == 3:
   number_of_results = int(sys.argv[2])
 
-op = "wikivec"
-source = "sw-examples/30k--wikivec.sw"
+#op = "wikivec"
+#op = "context"
+op = "position"
+
+#source = "sw-examples/30k--wikivec.sw"
+#source = "sw-examples/300k--wikivec.sw"
+#source = "sw-examples/word-context--procrasti.sw"
+#source = "sw-examples/word-context--rusty.sw"
+#source = "sw-examples/word-positions--sherlock.sw"
+source = "sw-examples/word-positions--rusty.sw"
+
+
 interactive = True
 #interactive = False
-use_guess_ket = True
-
+#use_guess_ket = True
+use_guess_ket = False
 
 # define our bare-bones superposition class:
 class superposition(object):
@@ -82,10 +92,11 @@ class superposition(object):
       return key, value
 
 
-# load a simple sw file, ie they are all literal superpositions, into a dictionary.
-# the parsing is a hack though, hence the need for well formed literal superpositions!
+# load a clean sw file, ie they are all clean literal superpositions, into a dictionary.
+# the parsing is a hack though, hence the need for well formed clean literal superpositions!
+# where 'clean' means all coeffs are 1.
 # 
-def load_simple_sw_into_dict(filename,op):
+def load_clean_sw_into_dict(filename,op):
   op_head = op + " |"
   sw_dict = {}
   with open(filename,'r') as f:
@@ -103,6 +114,34 @@ def load_simple_sw_into_dict(filename,op):
           print("Exception reason: %s" % e)
           continue
   return sw_dict        
+
+# load literal superpositions into a dictionary
+# Unlike the above, this one is slightly more general, and handles coeffs other than 1
+#
+def load_simple_sw_into_dict(filename,op):
+  op_head = op + " |"
+  sw_dict = {}
+  with open(filename,'r') as f:
+    for line in f:
+      line = line.strip()
+      if line.startswith(op_head):
+        try:
+          head,tail = line.split('> => ',1)
+          label = head.split(' |',1)[1]
+          sw_dict[label] = superposition()
+          for piece in tail[:-1].split('> + '):
+#            print("piece:",piece)
+            float_piece, string_piece = piece.split('|')
+            try:
+              float_piece = float(float_piece)
+            except:
+              float_piece = 1
+            sw_dict[label].add(string_piece,float_piece)
+        except Exception as e:
+          print("Exception reason: %s" % e)
+          continue
+  return sw_dict
+
 
 def process_string(s):
   def create_letter_n_grams(s,N):
@@ -270,7 +309,8 @@ def find_wikivec_similarity(sw_dict,guess_dict,wikipage,number_of_results):
   print("----------------")
 
   # find matching patterns:
-  result = faster_pattern_recognition(sw_dict,pattern)
+#  result = faster_pattern_recognition(sw_dict,pattern)     # maybe add switch to swap between faster and slower versions?
+  result = pattern_recognition(sw_dict,pattern)
 
   # sort the results:
   sorted_result = sorted(result, key = lambda x: float(x[1]), reverse = True)[:number_of_results]
