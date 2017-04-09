@@ -3,11 +3,12 @@
 #######################################################################
 # let's revist the MNIST problem, see if we can improve our results
 # last result was 5.4% error
+# not looking good so far ....
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-04-03
-# Update: 2017-4-6
+# Update: 2017-4-9
 # Copyright: GPLv3
 #
 # Usage: ./mnist-problem.py
@@ -40,6 +41,21 @@ weights = [2.25, 1, 1, 1.5, 3.375, 2.25, 1, 1, 1.5, 1, 1, 1, 1, 1, 1, 1, 1.5, 0.
 1, 0.5, 1.5, 1.5, 0.25, 1, 0.5, 1, 0.5, 1, 1.5, 1, 0.5, 1, 0.5, 0.5, 1, 0.5, 1, 0.5, 1, 1, 1, 1.5, 1, 1.5, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 0.5, 1, 1, 
 1.5, 1, 1.5, 0.5, 1, 1, 1, 1, 1, 2.25, 0.5, 0.5, 1, 1.5, 1.5, 1, 1, 0.5, 1, 1.5, 1, 1, 2.25, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5, 0.5, 1.5, 1.5, 0.75, 1, 
 1, 1.5, 1, 1, 1, 1, 0.5, 0.5, 0.375, 1.5, 0.5, 1, 1, 1.5, 0.75, 2.25, 1, 1, 1, 1.5, 0.5625, 0.75, 1, 1.5, 0.125, 0.25, 1.5, 1, 0.5, 1, 1.5, 1]
+
+weights = [4.271484375, 1, 1, 3.375, 3.375, 2.25, 1, 1, 3.375, 2.25, 1, 1, 1.5, 0.5, 1.5, 0.5, 2.25, 0.75, 0.5, 0.75, 1, 1.125, 0.125, 0.5, 0.5, 
+0.375, 0.75, 1, 1, 1, 1, 0.5, 1.125, 2.25, 1, 0.125, 3.375, 1.5, 0.5625, 1.5, 0.25, 1, 0.5, 0.5, 2.25, 1.5, 0.03125, 1, 0.375, 0.375, 0.5, 0.75, 1, 
+0.125, 1.5, 0.5, 1, 2.25, 0.125, 0.75, 1.5, 0.5, 0.5, 0.5, 1, 0.375, 0.5, 0.1875, 0.5, 0.375, 0.5, 1, 0.28125, 0.5, 2.25, 0.5, 0.5, 1, 0.5, 1.5, 
+1.5, 1.125, 0.5, 0.5, 0.5, 0.375, 1.125, 0.5, 1, 0.5625, 0.375, 0.375, 1, 1, 2.25, 0.5, 2.25, 0.5, 1.5, 1, 1.5, 0.75, 0.75, 1, 2.25, 
+0.0296630859375, 1.5, 2.25, 1.125, 0.5, 1, 1.5, 1, 1, 1, 1.5, 0.28125, 0.5625, 0.31640625, 1.6875, 0.75, 1.5, 1.5, 0.140625, 1.6875, 2.25, 0.1875, 
+1, 0.1875, 0.140625, 0.10546875, 0.375, 0.5, 0.94921875, 0.03515625, 0.84375, 7.59375, 0.375, 0.75, 1.5, 2.84765625, 0.75]
+
+weights = [1.3515243530273438, 1, 1, 3.375, 3.375, 2.25, 1.5, 1, 0.84375, 1.125, 0.375, 0.25, 2.25, 0.75, 1.5, 0.75, 1.6875, 0.75, 0.75, 0.75, 1, 
+1.125, 0.1875, 0.75, 0.75, 0.375, 1.6875, 1, 0.25, 1, 1, 0.5, 1.125, 3.375, 0.5, 0.28125, 5.0625, 2.25, 0.421875, 1.5, 0.125, 0.5, 0.5, 0.5, 2.25, 
+2.25, 0.046875, 1.5, 0.28125, 0.1875, 0.140625, 0.375, 1.5, 0.0625, 0.75, 0.5, 1, 2.25, 0.28125, 0.5625, 1.5, 0.5, 0.75, 0.5, 1, 0.375, 0.375, 0.1875, 
+0.25, 0.375, 0.25, 0.5, 0.28125, 0.75, 1.125, 0.5, 0.5, 1, 0.5, 2.25, 1.5, 1.125, 0.75, 0.5, 0.75, 1.265625, 0.421875, 0.25, 1, 0.10546875, 0.375, 
+0.28125, 1, 0.75, 2.25, 0.5, 1.6875, 0.5, 1.5, 0.75, 3.375, 0.1875, 0.1875, 0.5, 1.125, 0.03754234313964844, 2.25, 2.25, 0.28125, 0.75, 1, 1.5, 1.5, 
+0.75, 1, 2.25, 0.94921875, 0.6328125, 0.474609375, 0.6328125, 0.1875, 0.75, 3.375, 0.158203125, 1.6875, 2.25, 0.140625, 5.0625, 0.017578125, 
+0.10546875, 0.0098876953125, 0.84375, 0.5, 0.1001129150390625, 0.017578125, 1.8984375, 0.94921875, 0.052734375, 1.125, 1.5, 0.0889892578125, 1.125]
 
 
 # define our bare-bones superposition class:
@@ -80,6 +96,10 @@ class superposition(object):
       return self.dict[str]
     else:
       return 0
+
+  def get_label(self):                           # return first key label in the dictionary
+    for key in self.dict:
+      return key
 
   def rescale(self,t=1):
     if len(self.dict) == 0:
@@ -348,8 +368,16 @@ def print_score_table(train_data, test_data, train_labels, test_labels, table_si
     # verbose data:
     print("answer: %s\tpredictions: %s" % (correct_answer, " ".join(predicted_answers)))
 
-    # find score:
-    if correct_answer == predicted_answers[0]:
+#    # simple find score:
+#    if correct_answer == predicted_answers[0]:
+#      score += 1
+
+    # find top 10 score:
+    r = superposition()
+    for answer in predicted_answers:
+      r.add(answer)
+    prediction = r.coeff_sort().select_top(1).get_label()
+    if correct_answer == prediction:
       score += 1
 
     # print running result:
@@ -374,6 +402,7 @@ def test_superposition_reweight():
   print("r:",r)
   print("reweight r:",r.reweight(weights))
 
+
 # load up the data from our sw files:
 train_data = load_simple_sw_into_dict(train_data_file, "train-log-phi-sp")
 test_data = load_simple_sw_into_dict(test_data_file, "log-phi-sp")
@@ -384,10 +413,20 @@ test_labels = load_labels_into_dict(test_labels_file, "test-label")
 #print_score_table(train_data, test_data, train_labels, test_labels, 20)
 
 
-# put it to work:
-data_dict, answer_dict = train_data, train_labels
-sample_data_dict = sample_dict(data_dict, 400)
-new_weights = find_weights(sample_data_dict, answer_dict, weights, weight_up, weight_down, 1000)
+## put it to work to find new weights:
+#data_dict, answer_dict = train_data, train_labels
+#sample_data_dict = sample_dict(data_dict, 1000)
+#new_weights = find_weights(sample_data_dict, answer_dict, weights, weight_up, weight_down, 1000)
+
+#sys.exit(0)
+
+# reweight dictionaries:
+new_train_data = reweight_dict(train_data, weights)
+new_test_data = reweight_dict(test_data, weights)
+
+# print results:
+print_score_table(new_train_data, new_test_data, train_labels, test_labels, 20)
+
 
 sys.exit(0)
 sample_data_dict = sample_dict(data_dict, 500)
