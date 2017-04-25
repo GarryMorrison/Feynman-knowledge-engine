@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-12-05
-# Update: 2016-12-7
+# Update: 2017-4-25
 # Copyright: GPLv3
 #
 # Usage: ./edge-transform.py image.{png,jpg}
@@ -19,14 +19,19 @@ import sys
 from PIL import Image                 # if this line bugs out, you need to install Pillow, a python image library.
 import numpy
 
-filename = "child.png"
-enhance_factor_pre = 40              # image edge enhance factor before phi-transform
-enhance_factor_post = 40             # image edge enhance factor after phi-transform
+#filename = "child.png"
+#filename = "220px-Lenna.png"
+#filename = "angelina-jolie.jpg"
+#filename = "lena-headey.jpg"
+filename = "portman.jpg"
+
+enhance_factor_pre = 20              # image edge enhance factor before phi-transform
+enhance_factor_post = 20             # image edge enhance factor after phi-transform
 ngram_size = 10                      # image tile size
-threshold = 0.4                      # average categorize threshold
+threshold = 0.8                      # average categorize threshold
 #image_mode = "L"                    # switch between RGB and L mode
 image_mode = "RGB"
-saved_features_dir = "saved_average_categorize_features"
+saved_features_dir = "saved_average_categorize_features-edge"
 
 
 #base = os.path.basename(name)
@@ -133,6 +138,7 @@ def list_average_categorize(data,t):
       if similarity > best_simm:
         best_k = k
         best_simm = similarity
+    print("max k:", len(out_list))
     print("best k:",best_k)
     print("best simm:",best_simm)
 
@@ -315,5 +321,7 @@ def edge_transform(im, enhance_factor_pre, enhance_factor_post, ngram_size, thre
 
 
 im = Image.open(filename)
+im.thumbnail((300,300))
+im.show()
 final_im = edge_transform(im, enhance_factor_pre, enhance_factor_post, ngram_size, threshold, image_mode, saved_features_dir)
 

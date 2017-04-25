@@ -2,16 +2,18 @@
 
 #######################################################################
 # let's revist the MNIST problem, see if we can improve our results
+# by reweighting the features
 # last result was 5.4% error
 # not looking good so far ....
+# ok, couple of trials in, and both times 1% worse
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-04-03
-# Update: 2017-4-9
+# Update: 2017-4-25
 # Copyright: GPLv3
 #
-# Usage: ./mnist-problem.py
+# Usage: ./mnist-reweight.py
 #
 #######################################################################
 

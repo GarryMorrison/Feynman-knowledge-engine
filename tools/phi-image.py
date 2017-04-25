@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-12-7
-# Update: 2016-12-7
+# Update: 2017-4-25
 # Copyright: GPLv3
 #
 # Usage: ./phi-image.py image.{png,jpg}
@@ -20,17 +20,24 @@ from PIL import Image                 # if this line bugs out, you need to insta
 import numpy
 
 #filename = "child.png"
-filename = "220px-Lenna.png"
+#filename = "220px-Lenna.png"
+#filename = "portman.jpg"
+#filename = "work-on-handwritten-digits/phi-transformed-images-v2--10k-test--edge-enhanced-20/mnist-test-image-403--edge-enhanced-20.png"
+filename = "work-on-handwritten-digits/phi-transformed-images-v2--10k-test--edge-enhanced-20/mnist-test-image-396--edge-enhanced-20.png"
+#filename = "work-on-handwritten-digits/phi-transformed-images-v2--10k-test--edge-enhanced-20/mnist-test-image-394--edge-enhanced-20.png"
+filename = "work-on-handwritten-digits/phi-transformed-images-v2--10k-test--edge-enhanced-20/mnist-test-image-402--edge-enhanced-20.png"
+
 
 enhance_factor_pre = 40              # image edge enhance factor before phi-transform
 enhance_factor_post = 40             # image edge enhance factor after phi-transform
 #ngram_size = 10                      # image tile size
 #threshold = 0.4                      # average categorize threshold
-ngram_size = 5
-threshold = 0.85
-#image_mode = "L"                    # switch between RGB and L mode
-image_mode = "RGB"
-saved_features_dir = "saved_average_categorize_features"
+ngram_size = 4
+threshold = 0.9
+image_mode = "L"                    # switch between RGB and L mode
+#image_mode = "RGB"
+saved_features_dir = "saved_average_categorize_features-im"
+saved_features_dir2 = "saved_average_categorize_features2-im"
 
 
 #base = os.path.basename(name)
@@ -95,6 +102,54 @@ def edge_enhance(image,k):
       pixels[w,h] = (r,g,b)
 #  out_image.show()
   return out_image
+
+def edge_enhance_mode_L(image,k):
+  width,height = image.size
+  original_pixels = image.load()
+
+  # create an image with a 1*1 border:
+  border_image = image.crop((-1,-1,width + 1,height + 1))
+  border_pixels = border_image.load()
+
+  # load the border_image into a matrix:
+  Matrix = [[border_pixels[w,h] for w in range(width+2)] for h in range(height+2)]
+
+  def smooth_pixel(M,w,h):
+    r = M[h-1][w-1]/16 + M[h][w-1]/16 + M[h+1][w-1]/16 + M[h-1][w]/16 + M[h][w]/2 + M[h+1][w]/16 + M[h-1][w+1]/16 + M[h][w+1]/16 + M[h+1][w+1]/16
+    return r
+
+  # smooth our image matrix:
+  # NB: we have to work with matrices and not images because we need to preserve floats at each step of smooth. Otherwise it harms the algo.
+  # first, define a work-space matrix:
+  new_Matrix = [[0 for w in range(width+2)] for h in range(height+2)]
+
+  # smooth k times:
+  for _ in range(k):
+    for h in range(height):
+      for w in range(width):
+        new_Matrix[h+1][w+1] = smooth_pixel(Matrix,w+1,h+1)
+    Matrix = new_Matrix
+
+  def massage_pixel(x):
+    if x < 0:
+      x = 0
+    x *= 20
+    x = int(x)
+    if x > 255:
+      x = 255
+    return 255 - x
+
+  # output the final matrix into image form:
+  out_image = Image.new('L',(width,height))
+  pixels = out_image.load()
+  for h in range(height):
+    for w in range(width):
+      pix = massage_pixel(Matrix[h+1][w+1] - original_pixels[w,h])
+
+      pixels[w,h] = pix
+#  out_image.show()
+  return out_image
+
 
 #im2 = edge_enhance(im,enhance_factor)
 #im2.show()
@@ -199,8 +254,8 @@ def image_to_ngrams(im,k):
   out_list = []
   try:
     width,height = im.size
-    for h in range(0,height-k):
-      for w in range(0,width-k):
+    for h in range(0,height):
+      for w in range(0,width):
         im2 = im.crop((w,h,w + k,h + k))
         r = image_to_list(im2)
         out_list.append(r)
@@ -247,7 +302,11 @@ def replace_with_feature_index(image_features, image_list):
     if similarity > best_score:
       best_k = k
       best_score = similarity
-  return 255 - int( 255 * best_k / (len(image_features)-1) )            # shift to make_phi_image() later?
+#  return 255 - int( 255 * best_k / (len(image_features)-1) )            # shift to make_phi_image() later?
+#  if best_k == 255:
+#    print("##: len(image_features) %s" % len(image_features) )
+#  print("##: best_k %s" % best_k )
+  return best_k
 
 
 def make_phi_image(im, image_features, ngram_size):
@@ -255,22 +314,75 @@ def make_phi_image(im, image_features, ngram_size):
     width, height = im.size
     im3 = Image.new('L',(width,height),"white")
     pix = im3.load()
-    for h in range(0,height - ngram_size + 1):                            # yeah, we are effectively calculating image ngrams twice,
-      for w in range(0,width - ngram_size + 1):                           # once here, and once up above. fix?
+    for h in range(0, height):                            # yeah, we are effectively calculating image ngrams twice,
+      for w in range(0, width):                           # once here, and once up above. fix?
         im2 = im.crop((w, h, w + ngram_size, h + ngram_size))
         image_ngram = image_to_list(im2)
         pixel = replace_with_feature_index(image_features, image_ngram)     # this is the whole point of this function!
         pix[w, h] = pixel                                                   # currently assumes pixel is in [0,255]
+        print("##: pixel: %s" % pixel )
     return im3
   except Exception as e:
     print("make_phi_image exception reason:", e)
 
 im = Image.open(filename)
+im.show()
 #im2 = edge_enhance(im, enhance_factor_pre)
+#im2 = edge_enhance_mode_L(im, 10)
+#im2.show()
+#sys.exit(0)
+
 image_ngrams = image_to_ngrams(im, ngram_size)
 image_features = list_average_categorize(image_ngrams, threshold)
+save_list_of_images(image_features, ngram_size, image_mode, saved_features_dir, "features", "png")
 phi_im = make_phi_image(im, image_features, ngram_size)
 phi_im.show()
+#r1 = image_to_list(im)
+#r2 = image_to_list(phi_im)
+#print(r1)
+#print(r2)
+
+#sys.exit(0)
+#im2 = edge_enhance_mode_L(phi_im, 3)
+#im2.show()
+#r3 = image_to_list(im2)
+#print(r3)
+#sys.exit(0)
+
+image_ngrams2 = image_to_ngrams(phi_im, ngram_size)
+image_features2 = list_average_categorize(image_ngrams2, threshold)
+save_list_of_images(image_features2, ngram_size, 'L', saved_features_dir2, "features", "png")
+phi_im2 = make_phi_image(phi_im, image_features2, ngram_size)
+phi_im2.show()
+
+
+image_ngrams3 = image_to_ngrams(phi_im2, ngram_size)
+image_features3 = list_average_categorize(image_ngrams3, threshold)
+#save_list_of_images(image_features3, ngram_size, 'L', saved_features_dir3, "features", "png")
+phi_im3 = make_phi_image(phi_im2, image_features3, ngram_size)
+phi_im3.show()
+
+
+image_ngrams4 = image_to_ngrams(phi_im3, ngram_size)
+image_features4 = list_average_categorize(image_ngrams4, threshold)
+#save_list_of_images(image_features4, ngram_size, 'L', saved_features_dir4, "features", "png")
+phi_im4 = make_phi_image(phi_im3, image_features3, ngram_size)
+phi_im4.show()
+
+
+r1 = image_to_list(im)
+r2 = image_to_list(phi_im)
+r3 = image_to_list(phi_im2)
+r4 = image_to_list(phi_im3)
+r5 = image_to_list(phi_im4)
+print(r1)
+print(r2)
+print(r3)
+print(r4)
+print(r5)
+
+#final_im = edge_enhance(phi_im, 20)
+#final_im.show()
 
 
 sys.exit(0)
