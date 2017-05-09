@@ -241,9 +241,11 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
     # simple find score:
     if correct_answer == predicted_answers[0]:
       score += 1
-#      error_labels.append(label)
     else:
       error_labels.append(label)
+      im = list_to_l_image(pattern, 28)
+      im.save("%s/%s--%s.png" % (error_images_destination_dir, label, correct_answer)) # assumes dest_dir exists
+
 
 #    # find top 10 score:
 #    r = superposition()
@@ -257,9 +259,9 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
     #if count % 1 == 0:
     print("%s / %s = %.3f" % (score, count, 100 * score / count), flush = True )
 
-    # quit after finding 10 error images:
-    if len(error_labels) == 10:
-      return error_labels
+    # test code, quit after finding 10 error images:
+    #if len(error_labels) == 10:
+    #  return error_labels
 
 #  score = score_tally
   print("%s / %s = %.3f" % (score, count, 100 * score / count) )
@@ -336,8 +338,9 @@ def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_
   error_labels = print_score_table(train_images, test_images, train_labels, test_labels)
 
   # save a copy of error images so we can focus on them to improve results:
-  error_images = find_error_images(test_images, error_labels)
-  save_list_of_images(error_images, 28, 'L', error_images_destination_dir, None, 'png')
+  # now inside print_score function. So redundant.
+  #error_images = find_error_images(test_images, error_labels)
+  #save_list_of_images(error_images, 28, 'L', error_images_destination_dir, None, 'png')
 
 
 #experiment_1(digit_filename)
