@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-05-07
-# Update: 2017-5-8
+# Update: 2017-5-9
 # Copyright: GPLv3
 #
 # Usage: ./mnist-problem.py
@@ -28,6 +28,8 @@ digits_train_directory = "work-on-handwritten-digits/phi-transformed-images-v2--
 digits_test_labels = "work-on-handwritten-digits/mnist_test_labels.csv"
 digits_train_labels = "work-on-handwritten-digits/mnist_train_labels.csv"
 
+error_images_destination_dir = "work-on-handwritten-digits/error_images/"
+
 
 def image_to_list(image):
   data = list(image.getdata())
@@ -46,6 +48,34 @@ def image_to_list(image):
       r.append(B)
     return numpy.array(r)
 #    return r
+
+def list_to_l_image(data, size):
+  if len(data) != size*size:
+    return None
+  dim = (size, size)
+#  data = [int(x) for x in rescale(data)]
+  data = [int(x) for x in data]
+  im = Image.new('L',dim)
+  im.putdata(data)
+  return im
+
+def list_to_rgb_image(data, size):
+  if len(data) != 3*size*size:
+    return None
+  dim = (size, size)
+#  data = [int(x) for x in rescale(data)]
+  data = [int(x) for x in data]
+  im_data = [ (data[i],data[i+1],data[i+2]) for i in range(0,len(data),3) ]
+  im = Image.new('RGB',dim)
+  im.putdata(im_data)
+  return im
+
+def rescale(arr):
+  arr = arr - arr.min()
+  if arr.max() == 0:
+    return arr
+  arr = arr*255/arr.max()
+  return arr
 
 
 def guassian_blur_mode_L(image,k):
@@ -128,7 +158,8 @@ def load_labels_from_csv(label_file, image_type):
   return label_dict
 
 def load_images(digits_directory):
-  def extract_image_name_from_file_name(s):  # eg: 'mnist-train-image-137--edge-enhanced-20.png' => 'train-image-137'
+  # eg: 'mnist-train-image-137--edge-enhanced-20.png' => 'train-image-137'
+  def extract_image_name_from_file_name(s):
     s = os.path.basename(s)
     return s[6:-22]
 
@@ -187,6 +218,7 @@ def pattern_recognition_list(dict,pattern,t=0):
 
 # print out score table:
 def print_score_table(train_data, test_data, train_labels, test_labels):
+  error_labels = []
   count = 0
   score = 0
   for label, pattern in test_data.items():
@@ -204,11 +236,14 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
     predicted_answers = [train_labels[train_label] for train_label in result ]
 
     # verbose data:
-    print("answer: %s\tpredictions: %s" % (correct_answer, " ".join(predicted_answers)), flush=True)
+    print("answer: %s\tpredictions: %s" % (correct_answer, " ".join(predicted_answers)))
 
     # simple find score:
     if correct_answer == predicted_answers[0]:
       score += 1
+#      error_labels.append(label)
+    else:
+      error_labels.append(label)
 
 #    # find top 10 score:
 #    r = superposition()
@@ -219,12 +254,45 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
 #      score += 1
 
     # print running result:
-    if count % 1 == 0:
-      print("%s / %s = %.3f" % (score, count, 100 * score / count) )
+    #if count % 1 == 0:
+    print("%s / %s = %.3f" % (score, count, 100 * score / count), flush = True )
+
+    # quit after finding 10 error images:
+    if len(error_labels) == 10:
+      return error_labels
 
 #  score = score_tally
   print("%s / %s = %.3f" % (score, count, 100 * score / count) )
+  return error_labels
 
+
+# save images to disk:
+def save_list_of_images(data, size, image_mode, destination_dir, file_prefix, ext):
+  # check destination directory exists, if not create it:
+  if not os.path.exists(destination_dir):
+    print("Creating %s directory." % destination_dir)
+    os.makedirs(destination_dir)
+
+  count = 0
+  for label, image_list in data.items():
+    try:
+      if image_mode == "RGB":
+        im = list_to_rgb_image(image_list, size)
+      else:
+        im = list_to_l_image(image_list, size)
+      #im.save("%s/%s-%s.%s" % (destination_dir, file_prefix, count, ext))
+      im.save("%s/%s.%s" % (destination_dir, label, ext))
+      count += 1
+    except Exception as e:
+      print("save_list_of_images exception reason:",e)
+      continue
+
+def find_error_images(test_images, error_labels):
+  image_dict = {}
+  for label, image_list in test_images.items():
+    if label in error_labels:
+      image_dict[label] = image_list
+  return image_dict
 
 
 # first experiment, try Gaussian blur of a digit:
@@ -265,7 +333,12 @@ def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_
   #print(len(test_labels))
 
   # print score:
-  print_score_table(train_images, test_images, train_labels, test_labels)
+  error_labels = print_score_table(train_images, test_images, train_labels, test_labels)
+
+  # save a copy of error images so we can focus on them to improve results:
+  error_images = find_error_images(test_images, error_labels)
+  save_list_of_images(error_images, 28, 'L', error_images_destination_dir, None, 'png')
+
 
 #experiment_1(digit_filename)
 experiment_2(digits_train_directory, digits_train_labels, digits_test_directory, digits_test_labels)
