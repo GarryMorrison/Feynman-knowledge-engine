@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-05-07
-# Update: 2017-5-9
+# Update: 2017-5-15
 # Copyright: GPLv3
 #
 # Usage: ./mnist-problem.py
@@ -29,6 +29,10 @@ digits_test_labels = "work-on-handwritten-digits/mnist_test_labels.csv"
 digits_train_labels = "work-on-handwritten-digits/mnist_train_labels.csv"
 
 error_images_destination_dir = "work-on-handwritten-digits/error_images/"
+
+original_digits_test_directory = "work-on-handwritten-digits/test-images/"
+original_digits_train_directory = "work-on-handwritten-digits/train-images/"
+original_error_images_destination_dir = "work-on-handwritten-digits/original_error_images/"
 
 
 def image_to_list(image):
@@ -157,11 +161,17 @@ def load_labels_from_csv(label_file, image_type):
     label_dict[image_name] = label
   return label_dict
 
-def load_images(digits_directory):
+def load_images(digits_directory, filetype = 'png', extract_transformed_image_name = True):
   # eg: 'mnist-train-image-137--edge-enhanced-20.png' => 'train-image-137'
-  def extract_image_name_from_file_name(s):
+  def extract_transformed_image_name_from_file_name(s):
     s = os.path.basename(s)
     return s[6:-22]
+
+  # eg: 'mnist-test-image-36.bmp' => 'test-image-36'
+  def extract_image_name_from_file_name(s):
+    s = os.path.basename(s)
+    return s[6:-4]
+  
 
   # check destination directory exists, if not exit:
   if not os.path.exists(digits_directory):
@@ -170,8 +180,12 @@ def load_images(digits_directory):
   
   # load files from directory into dictionary:
   image_dict = {}
-  for file in glob.glob(digits_directory + "/*.png"):
-    image_name = extract_image_name_from_file_name(file)
+  for file in glob.glob("%s/*.%s" % (digits_directory, filetype)):
+    if extract_transformed_image_name:                                              # tidy this later!!
+      image_name = extract_transformed_image_name_from_file_name(file)
+    else:
+      image_name = extract_image_name_from_file_name(file)
+
     #print("file_name: %s, image_name: %s " % (file, image_name))
     im = Image.open(file)
     image_dict[image_name] = image_to_list(im)
@@ -217,7 +231,7 @@ def pattern_recognition_list(dict,pattern,t=0):
 
 
 # print out score table:
-def print_score_table(train_data, test_data, train_labels, test_labels):
+def print_score_table(train_data, test_data, train_labels, test_labels, error_images_destination_dir):
   error_labels = []
   count = 0
   score = 0
@@ -227,7 +241,7 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
     correct_answer = test_labels[label]
 
     # find matching patterns:
-    result_list = pattern_recognition_list(train_data, pattern)
+    result_list = pattern_recognition_list(train_data, pattern, 0.8)  # put in 80% threshold. If prediction has value lower than this, then ignore.
 
     # sort the results:
     result = sorted(result_list, key = lambda x: float(x[1]), reverse = True)[:10]    # [:k] later
@@ -238,10 +252,12 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
     # verbose data:
     print("answer: %s\tpredictions: %s" % (correct_answer, " ".join(predicted_answers)))
 
+    star = ' '
     # simple find score:
     if correct_answer == predicted_answers[0]:
       score += 1
     else:
+      star = '*'
       error_labels.append(label)
       im = list_to_l_image(pattern, 28)
       im.save("%s/%s--%s.png" % (error_images_destination_dir, label, correct_answer)) # assumes dest_dir exists
@@ -257,7 +273,7 @@ def print_score_table(train_data, test_data, train_labels, test_labels):
 
     # print running result:
     #if count % 1 == 0:
-    print("%s / %s = %.3f" % (score, count, 100 * score / count), flush = True )
+    print("%s\t%s / %s = %.3f" % (star, score, count, 100 * score / count), flush = True )
 
     # test code, quit after finding 10 error images:
     #if len(error_labels) == 10:
@@ -317,8 +333,13 @@ def experiment_1(filename):
 # load images into a dictionary of lists,
 # then with no processing, essentially, find MNIST score
 # I suspect it will be higher than anticipated.
+# Yup. After a week! of computation we have the answer:
+# 96.510 % or 3.49% error.
+# NB: this is for the phi-transformed/edge-enhanced images.
+# raw images almost certainly worse than this! Maybe test that next.
+# Also, optimization of this code would be nice.
 #
-def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_csv):
+def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_csv, error_images_destination_dir):
   # load images:
   train_images = load_images(train_directory)
   test_images = load_images(test_directory)
@@ -335,7 +356,7 @@ def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_
   #print(len(test_labels))
 
   # print score:
-  error_labels = print_score_table(train_images, test_images, train_labels, test_labels)
+  error_labels = print_score_table(train_images, test_images, train_labels, test_labels, error_images_destination_dir)
 
   # save a copy of error images so we can focus on them to improve results:
   # now inside print_score function. So redundant.
@@ -343,6 +364,34 @@ def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_
   #save_list_of_images(error_images, 28, 'L', error_images_destination_dir, None, 'png')
 
 
-#experiment_1(digit_filename)
-experiment_2(digits_train_directory, digits_train_labels, digits_test_directory, digits_test_labels)
+# load images into a dictionary of lists,
+# then with no processing, essentially, find MNIST score
+# this time, using the raw/original/untransformed digits.
+# I expect this to be significantly worse than experiment 2.
+#
+def experiment_3(train_directory, train_labels_csv, test_directory, test_labels_csv, error_images_destination_dir):
+  # load images:
+  train_images = load_images(train_directory, 'bmp', False)
+  test_images = load_images(test_directory, 'bmp', False)
 
+  # load labels:
+  train_labels = load_labels_from_csv(train_labels_csv, 'train')
+  test_labels = load_labels_from_csv(test_labels_csv, 'test')
+
+  # quick check loading works:
+  #print(train_images)
+  #print(train_labels)
+  #print(test_labels)
+  #print(len(train_labels))
+  #print(len(test_labels))
+
+  # print score:
+  print_score_table(train_images, test_images, train_labels, test_labels, error_images_destination_dir)
+
+  # print goodbye message:
+  print("That concludes experiment 3 ... ")
+
+#experiment_1(digit_filename)
+#experiment_2(digits_train_directory, digits_train_labels, digits_test_directory, digits_test_labels, error_images_destination_dir)
+
+experiment_3(original_digits_train_directory, digits_train_labels, original_digits_test_directory, digits_test_labels, original_error_images_destination_dir)
