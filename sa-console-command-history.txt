@@ -44585,3 +44585,1127 @@
   display-frame[15,15] (|7: 7> + |6: 2> + |10: 8> + |4: 12> + |4: 5> + |13: 9> + |8: 8> + |12: 8> + |13: 0> + |12: 14>)
   q
 
+2016-12-20
+  load frame-sequences.sw
+  info off
+  display-frame[10,10] frame |1>
+  display-frame[10,10] frame |2>
+  dump
+  display-frame-sequence[10,10] start-node |seq 1>
+  display-frame-sequence[10,10] start-node |seq 2>
+  dump
+  display-frame[10,10] extract-category |node 2: 0>
+  display-frame[10,10] extract-category pattern |node 2: 0>
+  display-frame[10,10] extract-category pattern |node 1: 0>
+  display-frame[10,10] extract-category then |node 1: 0>
+  history
+  q
+
+2016-12-22
+  full |range> => range(|1>,|2048>)
+  encode |end of sequence> => pick[10] full |range>
+  
+  -- encode words:
+  encode |A> => pick[10] full |range>
+  encode |B> => pick[10] full |range>
+  encode |C> => pick[10] full |range>
+  encode |D> => pick[10] full |range>
+  encode |E> => pick[10] full |range>
+  encode |F> => pick[10] full |range>
+  encode |G> => pick[10] full |range>
+  encode |H> => pick[10] full |range>
+  encode |I> => pick[10] full |range>
+  encode |J> => pick[10] full |range>
+  encode |K> => pick[10] full |range>
+  encode |L> => pick[10] full |range>
+  encode |M> => pick[10] full |range>
+  encode |N> => pick[10] full |range>
+  encode |O> => pick[10] full |range>
+  encode |P> => pick[10] full |range>
+  encode |Q> => pick[10] full |range>
+  encode |R> => pick[10] full |range>
+  encode |S> => pick[10] full |range>
+  encode |T> => pick[10] full |range>
+  encode |U> => pick[10] full |range>
+  encode |V> => pick[10] full |range>
+  encode |W> => pick[10] full |range>
+  encode |X> => pick[10] full |range>
+  encode |Y> => pick[10] full |range>
+  encode |Z> => pick[10] full |range>
+  
+  -- encode classes:
+  encode |a> => pick[10] full |range>
+  
+  -- encode sequence names:
+  
+  -- encode low level sequences:
+  -- empty sequence
+  pattern |node 0: 0> => random-column[10] encode |end of sequence>
+  
+  -- A . B . C . D . E . F . G . H . I . J . K . L . M . N . O . P . Q . R . S . T . U . V . W . X . Y . Z
+  pattern |node 1: 0> => random-column[10] encode |A>
+  then |node 1: 0> => random-column[10] encode |B>
+  
+  pattern |node 1: 1> => then |node 1: 0>
+  then |node 1: 1> => random-column[10] encode |C>
+  
+  pattern |node 1: 2> => then |node 1: 1>
+  then |node 1: 2> => random-column[10] encode |D>
+  
+  pattern |node 1: 3> => then |node 1: 2>
+  then |node 1: 3> => random-column[10] encode |E>
+  
+  pattern |node 1: 4> => then |node 1: 3>
+  then |node 1: 4> => random-column[10] encode |F>
+  
+  pattern |node 1: 5> => then |node 1: 4>
+  then |node 1: 5> => random-column[10] encode |G>
+  
+  pattern |node 1: 6> => then |node 1: 5>
+  then |node 1: 6> => random-column[10] encode |H>
+  
+  pattern |node 1: 7> => then |node 1: 6>
+  then |node 1: 7> => random-column[10] encode |I>
+  
+  pattern |node 1: 8> => then |node 1: 7>
+  then |node 1: 8> => random-column[10] encode |J>
+  
+  pattern |node 1: 9> => then |node 1: 8>
+  then |node 1: 9> => random-column[10] encode |K>
+  
+  pattern |node 1: 10> => then |node 1: 9>
+  then |node 1: 10> => random-column[10] encode |L>
+  
+  pattern |node 1: 11> => then |node 1: 10>
+  then |node 1: 11> => random-column[10] encode |M>
+  
+  pattern |node 1: 12> => then |node 1: 11>
+  then |node 1: 12> => random-column[10] encode |N>
+  
+  pattern |node 1: 13> => then |node 1: 12>
+  then |node 1: 13> => random-column[10] encode |O>
+  
+  pattern |node 1: 14> => then |node 1: 13>
+  then |node 1: 14> => random-column[10] encode |P>
+  
+  pattern |node 1: 15> => then |node 1: 14>
+  then |node 1: 15> => random-column[10] encode |Q>
+  
+  pattern |node 1: 16> => then |node 1: 15>
+  then |node 1: 16> => random-column[10] encode |R>
+  
+  pattern |node 1: 17> => then |node 1: 16>
+  then |node 1: 17> => random-column[10] encode |S>
+  
+  pattern |node 1: 18> => then |node 1: 17>
+  then |node 1: 18> => random-column[10] encode |T>
+  
+  pattern |node 1: 19> => then |node 1: 18>
+  then |node 1: 19> => random-column[10] encode |U>
+  
+  pattern |node 1: 20> => then |node 1: 19>
+  then |node 1: 20> => random-column[10] encode |V>
+  
+  pattern |node 1: 21> => then |node 1: 20>
+  then |node 1: 21> => random-column[10] encode |W>
+  
+  pattern |node 1: 22> => then |node 1: 21>
+  then |node 1: 22> => random-column[10] encode |X>
+  
+  pattern |node 1: 23> => then |node 1: 22>
+  then |node 1: 23> => random-column[10] encode |Y>
+  
+  pattern |node 1: 24> => then |node 1: 23>
+  then |node 1: 24> => random-column[10] encode |Z>
+  
+  pattern |node 1: 25> => then |node 1: 24>
+  then |node 1: 25> => random-column[10] encode |end of sequence>
+  
+  
+  -- encode the sequences of classes:
+  
+  -- label the sentences:
+  
+  
+  -- define our classes:
+  -- a = {A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q.R.S.T.U.V.W.X.Y.Z}
+  start-nodes |a> +=> |node 1: 0>
+  next |A>
+  info off
+  next[0] |A.C>
+  next[1] |A.C>
+  next[0] |A>
+  next[0] |A.E>
+  next[1] |A.E>
+  next[2] |A.E>
+  next[3] |A.E>
+  next[4] |A.E>
+  q
+
+2016-12-24
+  load karate-club.sw
+  categorize[link,0.9,result-0]
+  history
+  categorize[link,0.5,result-1]
+  history
+  dump
+  history
+  categorize[link,0.2,result-2]
+  dump
+  history
+  categorize[link,0.3,result-3]
+  dump
+  history
+  categorize[link,0.4,result-4]
+  dump
+  history
+  categorize[link,0.45,result-5]
+  dump
+  find-inverse[link]
+  dump
+  history
+  q
+
+2016-12-24
+  load simple-sentences.sw
+  info off
+  next |the>
+  next[0] |the.dog>
+  next[0] |the.wants>
+  next[1] |the.wants>
+  next[1] |the.the>
+  next[2] |the.the>
+  next |the>
+  next[0] |the.dog>
+  next[1] |the.dog>
+  next[2] |the.dog>
+  next[2] |the.dog.wants>
+  next[2] |the.dog.some>
+  next[0] |the>
+  next |mary>
+  next[0] |mary.won.a.race.to>
+  next[1] |mary.won.a.race.to>
+  next[2] |mary.won.a.race.to>
+  next[3] |mary.won.a.race.to>
+  save history
+  history
+  
+  q
+
+2016-12-24
+  load karate-club.sw
+  dump
+  link-2-op |*> #=> link^2 |_self>
+  map[link-2-op,link-2] rel-kets[link]
+  dump
+  history
+  categorize[link-2,0.9,result-0.9-2]
+  history
+  dump
+  history
+  categorize[link-2,0.5,result-0.5-2]
+  dump
+  categorize[link-2,0.7,result-0.7-2]
+  link-3-op |*> #=> link^3 |_self>
+  map[link-3-op,link-3] rel-kets[link]
+  dump
+  categorize[link-3,0.9,result-0.9-3]
+  categorize[link-3,0.5,result-0.5-3]
+  categorize[link-3,0.7,result-0.7-3]
+  categorize[link-3,0.8,result-0.8-3]
+  exp-max[link] |1>
+  coeff-sort exp-max[link] |1>
+  exp[link,3] |1>
+  coeff-sort exp[link,3] |1>
+  history
+  save history
+
+2016-12-24
+  load karate-club.sw
+  dump
+  link-2-op |*> #=> link^2 |_self>
+  map[link-2-op,link-2] rel-kets[link]
+  dump
+  history
+  categorize[link-2,0.9,result-0.9-2]
+  history
+  dump
+  history
+  categorize[link-2,0.5,result-0.5-2]
+  dump
+  categorize[link-2,0.7,result-0.7-2]
+  link-3-op |*> #=> link^3 |_self>
+  map[link-3-op,link-3] rel-kets[link]
+  dump
+  categorize[link-3,0.9,result-0.9-3]
+  categorize[link-3,0.5,result-0.5-3]
+  categorize[link-3,0.7,result-0.7-3]
+  categorize[link-3,0.8,result-0.8-3]
+  exp-max[link] |1>
+  coeff-sort exp-max[link] |1>
+  exp[link,3] |1>
+  coeff-sort exp[link,3] |1>
+  history
+  save history
+  coeff-sort exp[link,3] |34>
+  coeff-sort exp[link,3] |17>
+  select[1,7] coeff-sort exp[link,3] |17>
+  local |*> #=> select[1,7] coeff-sort exp[link,3] |_self>
+  local |1>
+  info off
+  local |1>
+  local |9>
+  local |15>
+  local |25>
+  map[local,local-nodes] rel-kets[link]
+  dump
+  
+  save history
+
+2016-12-24
+  load karate-club.sw
+  dump
+  link-2-op |*> #=> link^2 |_self>
+  map[link-2-op,link-2] rel-kets[link]
+  dump
+  history
+  categorize[link-2,0.9,result-0.9-2]
+  history
+  dump
+  history
+  categorize[link-2,0.5,result-0.5-2]
+  dump
+  categorize[link-2,0.7,result-0.7-2]
+  link-3-op |*> #=> link^3 |_self>
+  map[link-3-op,link-3] rel-kets[link]
+  dump
+  categorize[link-3,0.9,result-0.9-3]
+  categorize[link-3,0.5,result-0.5-3]
+  categorize[link-3,0.7,result-0.7-3]
+  categorize[link-3,0.8,result-0.8-3]
+  exp-max[link] |1>
+  coeff-sort exp-max[link] |1>
+  exp[link,3] |1>
+  coeff-sort exp[link,3] |1>
+  history
+  save history
+  coeff-sort exp[link,3] |34>
+  coeff-sort exp[link,3] |17>
+  select[1,7] coeff-sort exp[link,3] |17>
+  local |*> #=> select[1,7] coeff-sort exp[link,3] |_self>
+  local |1>
+  info off
+  local |1>
+  local |9>
+  local |15>
+  local |25>
+  map[local,local-nodes] rel-kets[link]
+  dump
+  
+  save history
+  categorize[local-nodes,0.8,local-result-0.8]
+  categorize[local-nodes,0.7,local-result-0.7]
+  categorize[local-nodes,0.75,local-result-0.75]
+  save history
+
+2016-12-24
+  load karate-club.sw
+  dump
+  link-2-op |*> #=> link^2 |_self>
+  map[link-2-op,link-2] rel-kets[link]
+  dump
+  history
+  categorize[link-2,0.9,result-0.9-2]
+  history
+  dump
+  history
+  categorize[link-2,0.5,result-0.5-2]
+  dump
+  categorize[link-2,0.7,result-0.7-2]
+  link-3-op |*> #=> link^3 |_self>
+  map[link-3-op,link-3] rel-kets[link]
+  dump
+  categorize[link-3,0.9,result-0.9-3]
+  categorize[link-3,0.5,result-0.5-3]
+  categorize[link-3,0.7,result-0.7-3]
+  categorize[link-3,0.8,result-0.8-3]
+  exp-max[link] |1>
+  coeff-sort exp-max[link] |1>
+  exp[link,3] |1>
+  coeff-sort exp[link,3] |1>
+  history
+  save history
+  coeff-sort exp[link,3] |34>
+  coeff-sort exp[link,3] |17>
+  select[1,7] coeff-sort exp[link,3] |17>
+  local |*> #=> select[1,7] coeff-sort exp[link,3] |_self>
+  local |1>
+  info off
+  local |1>
+  local |9>
+  local |15>
+  local |25>
+  map[local,local-nodes] rel-kets[link]
+  dump
+  
+  save history
+  categorize[local-nodes,0.8,local-result-0.8]
+  categorize[local-nodes,0.7,local-result-0.7]
+  categorize[local-nodes,0.75,local-result-0.75]
+  save history
+  history
+  dump
+  history
+  coeff-sort exp[link,4] |33>
+  full-exp[link,3] |33>
+  coeff-sort full-exp[link,3] |33>
+  coeff-sort full-exp[link,3] |1>
+  history
+  coeff-sort full-exp[link,3] |17>
+  coeff-sort full-exp[link,3] |5>
+  coeff-sort full-exp[link,3] |18>
+  history
+  new-local-op |*> #=> coeff-sort full-exp[link,3] |_self>
+  map[new-local-op,new-local] rel-kets[link]
+  dump
+  
+  history
+  categorize[new-local,0.75,new-local-result-0.75]
+  categorize[new-local,0.85,new-local-result-0.85]
+  save history
+
+2016-12-24
+  load karate-club.sw
+  dump
+  link-2-op |*> #=> link^2 |_self>
+  map[link-2-op,link-2] rel-kets[link]
+  dump
+  history
+  categorize[link-2,0.9,result-0.9-2]
+  history
+  dump
+  history
+  categorize[link-2,0.5,result-0.5-2]
+  dump
+  categorize[link-2,0.7,result-0.7-2]
+  link-3-op |*> #=> link^3 |_self>
+  map[link-3-op,link-3] rel-kets[link]
+  dump
+  categorize[link-3,0.9,result-0.9-3]
+  categorize[link-3,0.5,result-0.5-3]
+  categorize[link-3,0.7,result-0.7-3]
+  categorize[link-3,0.8,result-0.8-3]
+  exp-max[link] |1>
+  coeff-sort exp-max[link] |1>
+  exp[link,3] |1>
+  coeff-sort exp[link,3] |1>
+  history
+  save history
+  coeff-sort exp[link,3] |34>
+  coeff-sort exp[link,3] |17>
+  select[1,7] coeff-sort exp[link,3] |17>
+  local |*> #=> select[1,7] coeff-sort exp[link,3] |_self>
+  local |1>
+  info off
+  local |1>
+  local |9>
+  local |15>
+  local |25>
+  map[local,local-nodes] rel-kets[link]
+  dump
+  
+  save history
+  categorize[local-nodes,0.8,local-result-0.8]
+  categorize[local-nodes,0.7,local-result-0.7]
+  categorize[local-nodes,0.75,local-result-0.75]
+  save history
+  history
+  dump
+  history
+  coeff-sort exp[link,4] |33>
+  full-exp[link,3] |33>
+  coeff-sort full-exp[link,3] |33>
+  coeff-sort full-exp[link,3] |1>
+  history
+  coeff-sort full-exp[link,3] |17>
+  coeff-sort full-exp[link,3] |5>
+  coeff-sort full-exp[link,3] |18>
+  history
+  new-local-op |*> #=> coeff-sort full-exp[link,3] |_self>
+  map[new-local-op,new-local] rel-kets[link]
+  dump
+  
+  history
+  categorize[new-local,0.75,new-local-result-0.75]
+  categorize[new-local,0.85,new-local-result-0.85]
+  save history
+  categorize[new-local,0.9,new-local-result-0.9]
+  categorize[new-local,0.8,new-local-result-0.8]
+  history
+  categorize[new-local,0.83,new-local-result-0.83]
+  history
+  dump
+  history
+  save history
+
+2016-12-24
+  load karate-club.sw
+  dump
+  link-2-op |*> #=> link^2 |_self>
+  map[link-2-op,link-2] rel-kets[link]
+  dump
+  history
+  categorize[link-2,0.9,result-0.9-2]
+  history
+  dump
+  history
+  categorize[link-2,0.5,result-0.5-2]
+  dump
+  categorize[link-2,0.7,result-0.7-2]
+  link-3-op |*> #=> link^3 |_self>
+  map[link-3-op,link-3] rel-kets[link]
+  dump
+  categorize[link-3,0.9,result-0.9-3]
+  categorize[link-3,0.5,result-0.5-3]
+  categorize[link-3,0.7,result-0.7-3]
+  categorize[link-3,0.8,result-0.8-3]
+  exp-max[link] |1>
+  coeff-sort exp-max[link] |1>
+  exp[link,3] |1>
+  coeff-sort exp[link,3] |1>
+  history
+  save history
+  coeff-sort exp[link,3] |34>
+  coeff-sort exp[link,3] |17>
+  select[1,7] coeff-sort exp[link,3] |17>
+  local |*> #=> select[1,7] coeff-sort exp[link,3] |_self>
+  local |1>
+  info off
+  local |1>
+  local |9>
+  local |15>
+  local |25>
+  map[local,local-nodes] rel-kets[link]
+  dump
+  
+  save history
+  categorize[local-nodes,0.8,local-result-0.8]
+  categorize[local-nodes,0.7,local-result-0.7]
+  categorize[local-nodes,0.75,local-result-0.75]
+  save history
+  history
+  dump
+  history
+  coeff-sort exp[link,4] |33>
+  full-exp[link,3] |33>
+  coeff-sort full-exp[link,3] |33>
+  coeff-sort full-exp[link,3] |1>
+  history
+  coeff-sort full-exp[link,3] |17>
+  coeff-sort full-exp[link,3] |5>
+  coeff-sort full-exp[link,3] |18>
+  history
+  new-local-op |*> #=> coeff-sort full-exp[link,3] |_self>
+  map[new-local-op,new-local] rel-kets[link]
+  dump
+  
+  history
+  categorize[new-local,0.75,new-local-result-0.75]
+  categorize[new-local,0.85,new-local-result-0.85]
+  save history
+  categorize[new-local,0.9,new-local-result-0.9]
+  categorize[new-local,0.8,new-local-result-0.8]
+  history
+  categorize[new-local,0.83,new-local-result-0.83]
+  history
+  dump
+  history
+  save history
+  categorize[new-local,0.84,new-local-result-0.84]
+  history
+  new-local-op-2 |*> #=> coeff-sort full-exp[link,4] |_self>
+  map[new-local-op-2,new-local-2] rel-kets[link]
+  history
+  categorize[new-local-2,0.83,new-local-2-result-0.83]
+  categorize[new-local-2,0.85,new-local-2-result-0.85]
+  categorize[new-local-2,0.87,new-local-2-result-0.87]
+  categorize[new-local-2,0.9,new-local-2-result-0.9]
+  save history
+
+2016-12-27
+  load karate-club.sw
+  dump
+  norm-link-op |*> #=> normalize link |_self>
+  norm-link-op |1>
+  map[norm-link-op,norm-link] rel-kets[link]
+  dump
+  norm-link-exp-op |*> #=> coeff-sort exp[norm-link,4] |_self>
+  map[norm-link-exp-op,norm-link-exp] rel-kets[link]
+  dump
+  
+  history
+  categorize[norm-link-exp,0.9,nle-0.9-result]
+  history
+  categorize[norm-link-exp,0.5,nle-0.5-result]
+  history
+  categorize[norm-link-exp,0.7,nle-0.5-result]
+  dump
+  history
+  categorize[norm-link-exp,0.8,nle-0.8-result]
+  history
+  categorize[norm-link-exp,0.6,nle-0.6-result]
+  history
+  categorize[norm-link-exp,0.65,nle-0.65-result]
+  save history
+
+2017-04-05
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load mnist-test-labels--edge-enhanced.sw
+  load mnist-train-labels--edge-enhanced.sw
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 3>
+  select[1,10] rel-kets[similarity]
+  table[image] select[1,10] rel-kets[similarity]
+  table[image,test-label,h] select[1,10] rel-kets[similarity]
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  history
+  table[image,test-label,prediction] select[1,10] rel-kets[similarity]
+  is-equal? |*> #=> equal(test-label |_self>,prediction |_self>)
+  history
+  table[image,test-label,prediction,is-equal?] select[1,10] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,prediction,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  predictions |*> #=> coeff-sort train-label select[1,10] similarity |_self>
+  history
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  save history
+
+2017-04-05
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load mnist-test-labels--edge-enhanced.sw
+  load mnist-train-labels--edge-enhanced.sw
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 3>
+  select[1,10] rel-kets[similarity]
+  table[image] select[1,10] rel-kets[similarity]
+  table[image,test-label,h] select[1,10] rel-kets[similarity]
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  history
+  table[image,test-label,prediction] select[1,10] rel-kets[similarity]
+  is-equal? |*> #=> equal(test-label |_self>,prediction |_self>)
+  history
+  table[image,test-label,prediction,is-equal?] select[1,10] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,prediction,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  predictions |*> #=> coeff-sort train-label select[1,10] similarity |_self>
+  history
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  save history
+  history
+  predictions |*> #=> normalize coeff-sort train-label select[1,10] similarity |_self>
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,predictions,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  prediction |image: mnist-test-image-21--edge-enhanced-20>
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  prediction |image: mnist-test-image-21--edge-enhanced-20>
+  table[image,test-label,predictions,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  save history
+
+2017-04-05
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load mnist-test-labels--edge-enhanced.sw
+  load mnist-train-labels--edge-enhanced.sw
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 3>
+  select[1,10] rel-kets[similarity]
+  table[image] select[1,10] rel-kets[similarity]
+  table[image,test-label,h] select[1,10] rel-kets[similarity]
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  history
+  table[image,test-label,prediction] select[1,10] rel-kets[similarity]
+  is-equal? |*> #=> equal(test-label |_self>,prediction |_self>)
+  history
+  table[image,test-label,prediction,is-equal?] select[1,10] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,prediction,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  predictions |*> #=> coeff-sort train-label select[1,10] similarity |_self>
+  history
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  save history
+  history
+  predictions |*> #=> normalize coeff-sort train-label select[1,10] similarity |_self>
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,predictions,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  prediction |image: mnist-test-image-21--edge-enhanced-20>
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  prediction |image: mnist-test-image-21--edge-enhanced-20>
+  table[image,test-label,predictions,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  save history
+  history
+  history 1000
+    equal? |*> #=> equal(test-label |_self>,h |_self>)
+    h |*> #=> normalize select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+    score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  -- display the score:
+    score |top 10>
+    prediction |*> #=> normalize select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+    predictions |*> #=> normalize coeff-sort train-label select[1,10] similarity |_self>
+    is-equal? |*> #=> equal(test-label |_self>,prediction |_self>)
+    table[image,test-label,predictions,is-equal?] select[1,100] ket-sort rel-kets[similarity]
+  history
+  save history
+
+2017-04-07
+  load image-phi-superpositions--test-10k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load image-phi-superpositions--train-60k--using-edge-enhanced-features--k_5--t_0_4.sw
+  load mnist-test-labels--edge-enhanced.sw
+  load mnist-train-labels--edge-enhanced.sw
+  simm-op |*> #=> 100 select[1,40] similar-input[train-log-phi-sp] log-phi-sp |_self>
+  map[simm-op,similarity] rel-kets[log-phi-sp]
+  equal? |*> #=> equal(100 test-label |_self>,h |_self>)
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  score |top 1> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 1>
+  h |*> #=> normalize[100] select[1,1] coeff-sort train-label select[1,3] similarity |_self>
+  score |top 3> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  score |top 3>
+  select[1,10] rel-kets[similarity]
+  table[image] select[1,10] rel-kets[similarity]
+  table[image,test-label,h] select[1,10] rel-kets[similarity]
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,1] similarity |_self>
+  history
+  table[image,test-label,prediction] select[1,10] rel-kets[similarity]
+  is-equal? |*> #=> equal(test-label |_self>,prediction |_self>)
+  history
+  table[image,test-label,prediction,is-equal?] select[1,10] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,prediction,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  predictions |*> #=> coeff-sort train-label select[1,10] similarity |_self>
+  history
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  save history
+  history
+  predictions |*> #=> normalize coeff-sort train-label select[1,10] similarity |_self>
+  table[image,test-label,predictions] select[1,20] ket-sort rel-kets[similarity]
+  history
+  table[image,test-label,predictions,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  prediction |image: mnist-test-image-21--edge-enhanced-20>
+  prediction |*> #=> normalize[1] select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+  prediction |image: mnist-test-image-21--edge-enhanced-20>
+  table[image,test-label,predictions,is-equal?] select[1,50] ket-sort rel-kets[similarity]
+  save history
+  history
+  history 1000
+    equal? |*> #=> equal(test-label |_self>,h |_self>)
+    h |*> #=> normalize select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+    score |top 10> => 0.01 equal? ket-sort rel-kets[similarity] |>
+  
+  -- display the score:
+    score |top 10>
+    prediction |*> #=> normalize select[1,1] coeff-sort train-label select[1,10] similarity |_self>
+    predictions |*> #=> normalize coeff-sort train-label select[1,10] similarity |_self>
+    is-equal? |*> #=> equal(test-label |_self>,prediction |_self>)
+    table[image,test-label,predictions,is-equal?] select[1,100] ket-sort rel-kets[similarity]
+  history
+  save history
+  
+  is-equal? |*> #=> equal(test-label |_self>, select[1,1] predictions |_self>)
+    table[image,test-label,predictions,is-equal?] select[1,100] ket-sort rel-kets[similarity]
+  
+  ket-sort log-phi-sp |mnist-test-image-100--edge-enhanced-20>
+  ket-sort log-phi-sp |image: mnist-test-image-100--edge-enhanced-20>
+  count log-phi-sp |image: mnist-test-image-100--edge-enhanced-20>
+  q
+
+2017-04-20
+  context encoder
+  links |A> +=> |B>
+  links |A> +=> |C>
+  links |B> +=> |A>
+  links |B> +=> |D>
+  links |E> +=> |F>
+  links |F> +=> |G>
+  links |F> +=> |H>
+  links |F> +=> |D>
+  links |F> +=> |A>
+  links |C> +=> |B>
+  links |C> +=> |H>
+  links |C> +=> |E>
+  links |E> +=> |H>
+  links |H> +=> |A>
+  links |H> +=> |G>
+  links |G> +=> |C>
+  links |D> +=> |B>
+  
+  dump
+  find-inverse[links]
+  dump
+  similar-links |*> #=> similar-input[links] links |_self>
+  table[node,similar-links] rel-kets[links]
+  similar-inverse-links |*> #=> similar-input[inverse-links] inverse-links |_self>
+  table[node,similar-links,similar-input-links] rel-kets[links]
+  history
+  table[node,similar-links,similar-inverse-links] rel-kets[links]
+  dump
+  context encoder graph
+  links |A> +=> |B>
+  links |A> +=> |C>
+  links |B> +=> |A>
+  links |B> +=> |D>
+  links |E> +=> |F>
+  links |F> +=> |G>
+  links |F> +=> |H>
+  links |F> +=> |D>
+  links |F> +=> |A>
+  links |C> +=> |B>
+  links |C> +=> |H>
+  links |C> +=> |E>
+  links |E> +=> |H>
+  links |H> +=> |A>
+  links |H> +=> |G>
+  links |G> +=> |C>
+  links |D> +=> |B>
+  
+  dump
+  save encoder-graph.sw
+  history
+  q
+
+2017-06-05
+  smooth[0.1]^10 |7>
+  q
+
+2017-06-05
+  load scalar-encode-sequence-learn.sw
+  dump
+  name-most-similar |3.2>
+  name-most-similar |3.5>
+  name-most-similar |3.6>
+  name-most-similar |7>
+  name-most-similar |10>
+  name-most-similar |8>
+  name-most-similar |7.2>
+  name-most-similar |6.8>
+  history
+  save history
+
+2017-06-05
+  load scalar-encode-sequence-learn.sw
+  dump
+  name-most-similar |3.2>
+  name-most-similar |3.5>
+  name-most-similar |3.6>
+  name-most-similar |7>
+  name-most-similar |10>
+  name-most-similar |8>
+  name-most-similar |7.2>
+  name-most-similar |6.8>
+  history
+  save history
+  name-most-similar |3.2>
+  name-most-similar |6.8>
+  name-most-similar |0>
+  name-similar |*> #=> select[1,5] similar-input[encode] extract-category pattern most-similar |_self>
+  name-similar |3>
+  name-similar |3.4>
+  name-similar |3.5>
+  name-similar |*> #=> select[1,5] similar-input[encode] extract-category pattern simpat |_self>
+  name-similar |3>
+  name-similar |3.5>
+  name-similar |1.3>
+  name-similar |7>
+  history
+  save history
+
+2017-06-05
+  full |range> => range(|1>,|65536>)
+  encode |3> => pick[10] full |range>
+  encode |1> => pick[10] full |range>
+  encode |4> => pick[10] full |range>
+  encode |5> => pick[10] full |range>
+  encode |end of sequence> => pick[10] full |range>
+  
+  pattern |node: 1: 1> => random-column[10] encode |3>
+  then |node: 1: 1> => random-column[10] encode |1>
+  
+  pattern |node: 1: 2> => then |node: 1: 1>
+  then |node: 1: 2> => random-column[10] encode |4>
+  
+  pattern |node: 1: 3> => then |node: 1: 2>
+  then |node: 1: 3> => random-column[10] encode |1>
+  
+  pattern |node: 1: 4> => then |node: 1: 3>
+  then |node: 1: 4> => random-column[10] encode |5>
+  
+  pattern |node: 1: 5> => then |node: 1: 4>
+  then |node: 1: 5> => random-column[10] encode |end of sequence>
+  
+  
+  dump
+  similar-input[pattern] encode |3>
+  similar-input[pattern] append-column[10] encode |3>
+  simpat |*> #=> similar-input[pattern] append-column[10] encode |_self>
+  simpat |3>
+  simpat |1>
+  simpat |4>
+  simpat |5>
+  dump simpat
+  dump simpat |*> 
+  dump
+  dump |*>
+  smooth[0.1]^10 |x>
+  smooth[0.1]^10 |7>
+  smooth[0.1] |x: 3>
+  history
+  save history
+
+2017-06-05
+  load scalar-encode-sequence-learn.sw
+  dump
+  name-most-similar |3.2>
+  name-most-similar |3.5>
+  name-most-similar |3.6>
+  name-most-similar |7>
+  name-most-similar |10>
+  name-most-similar |8>
+  name-most-similar |7.2>
+  name-most-similar |6.8>
+  history
+  save history
+  name-most-similar |3.2>
+  name-most-similar |6.8>
+  name-most-similar |0>
+  name-similar |*> #=> select[1,5] similar-input[encode] extract-category pattern most-similar |_self>
+  name-similar |3>
+  name-similar |3.4>
+  name-similar |3.5>
+  name-similar |*> #=> select[1,5] similar-input[encode] extract-category pattern simpat |_self>
+  name-similar |3>
+  name-similar |3.5>
+  name-similar |1.3>
+  name-similar |7>
+  history
+  save history
+  name-similar |end of sequence>
+  simpat |3.2>
+  simpat |1.3>
+  sequence-name |node: 1: *> => |sequence 1>
+  sequence-name simpat |1.3>
+  save history
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  dump
+  name-most-similar |3.2>
+  name-most-similar |3.5>
+  name-most-similar |3.6>
+  name-most-similar |7>
+  name-most-similar |10>
+  name-most-similar |8>
+  name-most-similar |7.2>
+  name-most-similar |6.8>
+  history
+  save history
+  name-most-similar |3.2>
+  name-most-similar |6.8>
+  name-most-similar |0>
+  name-similar |*> #=> select[1,5] similar-input[encode] extract-category pattern most-similar |_self>
+  name-similar |3>
+  name-similar |3.4>
+  name-similar |3.5>
+  name-similar |*> #=> select[1,5] similar-input[encode] extract-category pattern simpat |_self>
+  name-similar |3>
+  name-similar |3.5>
+  name-similar |1.3>
+  name-similar |7>
+  history
+  save history
+  name-similar |end of sequence>
+  simpat |3.2>
+  simpat |1.3>
+  sequence-name |node: 1: *> => |sequence 1>
+  sequence-name simpat |1.3>
+  save history
+  dump
+  name-similar |3.5>
+  similar-input[encode] encode |3.5>
+  similar-input[encode] encode |8>
+  debug on
+  simpat |3.3>
+  history
+  q
+
+2017-06-06
+  float-sequence |3.2>
+  float-sequence[7] |3.2>
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3.2>
+  float-sequence |6>
+  history
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequnece |3.2>
+  float-sequence |3.2>
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3.2>
+  history
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3.2>
+  float-sequence |0.8>
+  float-sequence |7>
+  history
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3.1>
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3.1>
+  float-sequence |1.3>
+  info off
+  float-sequence |1.7>
+  history
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3>
+  info off
+  float-sequence |3>
+  reset
+  load pi-e-sequences.sw
+  dump
+  float-sequence |3>
+  reset
+  load pi-e-sequences.sw
+  dump
+  float-sequence |2>
+  float-sequence |3.1>
+  history
+  q
+
+2017-06-06
+  load scalar-encode-sequence-learn.sw
+  float-sequence |3.2 . 1.3 . 4>
+  info off
+  float-sequence |3.2 . 1.3 . 4>
+  reset
+  load pi-e-sequences.sw
+  history
+  float-sequence |3.2 . 1.3 . 4>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  float-sequence |3.2 . 1.3>
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  float-sequence |3.0 . 1>
+  info off
+  float-sequence |3.0 . 1>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  float-sequence |3 . 1 . 4>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  info off
+  float-sequence |3.1>
+  float-sequence |3 . 1>
+  float-sequence |3 . 1 . 4>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  info off
+  float-sequence |3.7>
+  float-sequence |3.7 . 1>
+  float-sequence |3.7 . 1 . 4>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  float-sequence |3 . 1 . 4 . 1>
+  info off
+  float-sequence |3.7>
+  float-sequence |3.7 . 1>
+  float-sequence |3.7 . 1 . 4>
+  float-sequence |2>
+  float-sequence |2 . 7 . 1>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  float-sequence |7>
+  float-sequence |7 . 7 . 7>
+  info off
+  float-sequence |7 . 11 . 11 . 13 . 17>
+  history
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  info off
+  float-sequences |3.2 . 1.3 . 4>
+  float-sequences |3.2>
+  q
+
+2017-06-06
+  load pi-e-sequences.sw
+  info off
+  float-sequence |3.2>
+  float-sequence |3.2 . 1.3 . 4>
+  q
+

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 19/12/2016
+# Update: 6/6/2017
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1701,8 +1701,9 @@ def smooth(one,dx):
   except:
 #    return ket(one.label,one.value)    # possible alternative
     return ket("",0)
-  return ket(label + str(x - dx),coeff/4) + ket(label + str(x),coeff/2) + ket(label + str(x + dx),coeff/4) 
+#  return ket(label + str(x - dx),coeff/4) + ket(label + str(x),coeff/2) + ket(label + str(x + dx),coeff/4) 
   # hrmm... in float world, not guaranteed to work as expected ....
+  return ket(label + float_to_int(x - dx),coeff/4) + ket(label + float_to_int(x),coeff/2) + ket(label + float_to_int(x + dx),coeff/4)  
 
 
 # we need this for read_letters, and read_words, maybe other things in the future too.
@@ -5620,4 +5621,131 @@ def display_frame_sequence(one, context, parameters):
    
     
   
-                                                                                       
+# 6/6/2017:
+# Given we have learnt this sequence: 
+# |3> . |1> . |4> . |1> . |5>
+# we want this output:
+# sa: float-sequence |3.2>
+# 0.992 |3> . |1> . |4> . |1> . |5>
+# 0.191 |4> . |1> . |5>
+#
+# sa: float-sequence |1.3>
+# 0.928 |1> . |4> . |1> . |5>
+# 0.928 |1> . |5>
+# 0.0   |3> . |1> . |4> . |1> . |5>
+#
+# Improved, so now handles sequence-names, and input sequences longer than 1:
+# sa: load pi-e-sequences.sw
+# sa: float-sequence |3.3 . 1 . 4.2>
+# Pi  0.664  |3> . |1> . |4> . |1> . |5> . |9> . |2> . |6> . |5> . |3> . |5>
+# Pi  0.078  |4> . |1> . |5> . |9> . |2> . |6> . |5> . |3> . |5>
+# Pi  0.0    |5> . |3> . |5>
+#
+# sa: float-sequence |2 . 8 . 2>
+# e  0.071  |1> . |8> . |2> . |8> . |1> . |8> . |2> . |8> . |4>
+# e  0.071  |1> . |8> . |2> . |8> . |4>
+# e  0.027  |2> . |8> . |1> . |8> . |2> . |8> . |4>
+# e  0.027  |2> . |7> . |1> . |8> . |2> . |8> . |1> . |8> . |2> . |8> . |4>
+# e  0.0    |2> . |8> . |4>
+#
+# NB: important for float_sequence to work that we have an appropriate "encode" operator defined.
+# eg: encode |*> #=> rescale smooth[0.1]^10 |_self> 
+#
+# Now, the approximate mathematics this is doing:
+# Given input sequence |v1> . |v2> . |v3>
+# find x such that f(x) approx-eq v1 and f(x + delta) approx-eq  v2 and f(x + 2*delta) approx-eq v3
+# where the exact meaning of "a approx-eq b" is a consequence of how you define your encode operator
+#
+def float_sequence(one, context, parameters=None):
+  def similar_pattern(x, context):
+    return x.apply_op(context,"encode").apply_fn(append_column,"10").similar_input(context,"pattern").multiply(10)
+  
+  def filter_working_table(table, element, position):
+    #print("%s: %s" % (position, element))
+    element_pattern = ket(element).apply_op(context, "encode")
+    new_table = []
+    for name, coeff, seq in table:
+      try:
+        seq_element = seq[position]
+        seq_element_pattern = seq_element.apply_op(context, "encode")
+        #print("seq_element:",seq_element)
+        #print("seq_element_pattern:",seq_element_pattern)
+        similarity = fast_simm(element_pattern, seq_element_pattern)
+        #print("simm:",similarity)
+        new_coeff = min(coeff, similarity)
+        if new_coeff > 0:
+          new_table.append([name, new_coeff, seq])
+      except:
+        continue
+    return new_table
+
+  def format_output_table(working_table):
+    # first, sort the table:
+    sorted_working_table = sorted(working_table, key = lambda x: x[1], reverse = True)
+
+    # now format it:
+    table = []
+    for name, coeff, seq in sorted_working_table:
+      coeff_str = float_to_int(coeff)
+      seq_str = " . ".join(str(x) for x in seq)
+      table.append([name, coeff_str, seq_str])
+    return table
+  
+  # handle: float-sequence |3.2 . 1.3 . 4>:
+  input_sequence = one.the_label().split(' . ')
+  logger.info("input sequence: " + str(input_sequence))
+  one = ket(input_sequence[0])
+  
+  # generate working_table:
+  r = similar_pattern(one, context)
+  working_table = []
+  for x in r:
+    name = x.apply_op(context, "sequence-name").the_label()
+    coeff = x.value
+    seq = sequence_to_list(x, context)
+    working_table.append([name, coeff, seq])
+    
+  # filter working_table using the rest of our input sequence:
+  for k, element in enumerate(input_sequence[1:]):
+    working_table = filter_working_table(working_table, element, k + 1)       
+
+  # don't format and print an empty table:
+  if len(working_table) == 0:
+    return ket("")
+    
+  # format and print output table:
+  print_table(format_output_table(working_table))
+  return ket("float-sequence")
+
+def sequence_to_list(one, context, length = None):
+  if len(one) == 0:
+    return one
+    
+  def next(one):
+    return one.similar_input(context,"pattern").select_range(1,1).apply_sigmoid(clean).apply_op(context,"then")
+  def name(one):
+    return one.apply_fn(extract_category).similar_input(context,"encode").select_range(1,1).apply_sigmoid(clean)    
+    
+  current_pattern = one.apply_op(context, "pattern")  
+  node_names = []
+#  print("one:",one)
+#  print("current_pattern:", current_pattern)
+#  print("name current_pattern:", name(current_pattern))
+  while name(current_pattern).the_label() != "end of sequence":
+#    node_names.append(str(name(current_pattern)))
+    node_names.append(name(current_pattern))
+    current_pattern = next(current_pattern)
+  return node_names
+
+# pretty print a table:
+# table print tweaked from here: http://stackoverflow.com/questions/25403249/print-a-list-of-tuples-as-table
+def print_table(table):
+  max_length_column = []
+  tuple_len = len(table[0])     # assume entire table has the same shape as the first row
+  for i in range(tuple_len):
+    max_length_column.append(max(len(e[i])+2 for e in table))
+  for e in table:
+    for i in range(tuple_len):
+      print(e[i].ljust(max_length_column[i]), end='')
+    print()
+                                                                                          

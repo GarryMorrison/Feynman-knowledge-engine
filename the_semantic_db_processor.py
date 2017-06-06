@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 19/12/2016
+# Update: 6/6/2017
 # Copyright: GPLv3
 #
 # Usage: 
@@ -529,7 +529,11 @@ compound_table = {
   "display-frame-sequence"  : ".apply_sp_fn(display_frame_sequence,context,\"{0}\")", 
   
 # 19/12/2016:
-  "next"                : ".apply_fn(sequence_predict_whats_next_skip,context,\"{0}\")",    
+  "next"                   : ".apply_fn(sequence_predict_whats_next_skip,context,\"{0}\")",
+  
+# 6/6/2017:
+  "float-sequence"         : ".apply_fn(float_sequence,context,\"{0}\")",                       # buggy ...
+      
       
 }
 
@@ -588,7 +592,10 @@ ket_context_table = {
 #  "follow-sequence"    : "follow_sequence",            # nope! wrong spot!
 
 # 30/11/2016:
-  "next"                : "sequence_predict_whats_next_skip",             
+  "next"                : "sequence_predict_whats_next_skip",
+  
+# 6/6/2017:
+  "float-sequence"      : "float_sequence",               
 }
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.

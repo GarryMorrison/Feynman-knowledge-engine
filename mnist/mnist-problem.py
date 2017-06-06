@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-05-07
-# Update: 2017-5-15
+# Update: 2017-5-18
 # Copyright: GPLv3
 #
 # Usage: ./mnist-problem.py
@@ -368,6 +368,7 @@ def experiment_2(train_directory, train_labels_csv, test_directory, test_labels_
 # then with no processing, essentially, find MNIST score
 # this time, using the raw/original/untransformed digits.
 # I expect this to be significantly worse than experiment 2.
+# Result in: 95.250% success, or 4.75% error.
 #
 def experiment_3(train_directory, train_labels_csv, test_directory, test_labels_csv, error_images_destination_dir):
   # load images:
@@ -391,7 +392,7 @@ def experiment_3(train_directory, train_labels_csv, test_directory, test_labels_
   # print goodbye message:
   print("That concludes experiment 3 ... ")
 
-#experiment_1(digit_filename)
+experiment_1(digit_filename)
 #experiment_2(digits_train_directory, digits_train_labels, digits_test_directory, digits_test_labels, error_images_destination_dir)
 
-experiment_3(original_digits_train_directory, digits_train_labels, original_digits_test_directory, digits_test_labels, original_error_images_destination_dir)
+#experiment_3(original_digits_train_directory, digits_train_labels, original_digits_test_directory, digits_test_labels, original_error_images_destination_dir)
