@@ -22,10 +22,13 @@ import random
 
 
 # define our named-lists:
+# first element is treated as sequence name
+# the sequences may contain int's, float's or strings, including a mixture.
 Pi = ['Pi', 3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9]
 e = ['e', 2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4]
 boys = ['boy sentence', 'boys', 'eat', 'many', 'cakes']
 girls = ['girl sentence', 'girls', 'eat', 'many', 'pies']
+
 
 # define our collection of named-lists:
 #data = [Pi]
@@ -33,6 +36,7 @@ girls = ['girl sentence', 'girls', 'eat', 'many', 'pies']
 data = [Pi, e, boys, girls]
 
 
+# if possible, convert a string to a float:
 def str_to_float(s):
   try:
     x = float(s)
@@ -63,7 +67,9 @@ class sequence(object):
   def __len__(self):
     return len(self.data)
 
-#  def __str__(self):                   # is there a clean way to display a sequence of superpositions?
+  def display(self):                   # print out a sequence class
+    for k,x in enumerate(self.data):
+      print("seq |%s: %s> => %s" % (self.name, str(k), x))
    
   def add(self, sp):
     self.data.append(sp)
@@ -109,7 +115,7 @@ class superposition(object):
     for key,value in self.dict.items():         # presuming not using an OrderedDict
       return key, value
 
-  def pick(self, n):
+  def pick(self, n):                            # randomly pick and return n elements from the superposition
     r = superposition()
     for key in random.sample(list(self.dict), n):
       value = self.dict[key]
@@ -226,7 +232,7 @@ def gaussian_scalar_encoder(n):
   r = superposition()
   for a in np.arange(n - w, n + w + dx, dx):
     value = guassian(n, a, sigma)
-    #print(a, value)
+    #print(a, value)                         # this line is helpful when tuning our Gaussian paramters: w,dx,sigma.
     r.add(str(a), value)
   return r
 
@@ -249,9 +255,9 @@ def first_full_encoder(x):
     r = random_encoder(10)
   return r
 
-def full_encoder(encode_dict, x):                 # this is where the magic happens.
+def full_encoder(encode_dict, x):                 # this is where the magic happens!
   if x in encode_dict:                            # converts input into encoded input.
-    return encode_dict[x]
+    return encode_dict[x]                         # if you implement more interesting encoders, this is where you would use them.
   if type(x) in [int, float]:
     r = gaussian_scalar_encoder(x)
   else:
@@ -259,7 +265,7 @@ def full_encoder(encode_dict, x):                 # this is where the magic happ
   encode_dict[x] = r
   return r
 
-def map_named_list_to_encoded_sequence(input_list):
+def map_named_list_to_encoded_sequence_v1(input_list):
   seq = sequence(input_list[0])                     # learn the name of the sequence
   for x in input_list[1:]:
     sp = gaussian_scalar_encoder(x)
@@ -277,7 +283,7 @@ def map_named_list_to_encoded_sequence_v2(encode_dict, input_list):
     seq.add(sp)
   return encode_dict, seq
 
-def map_named_list_to_encoded_sequence_v3(encode_dict, input_list):
+def map_named_list_to_encoded_sequence(encode_dict, input_list):
   seq = sequence(input_list[0])                     # learn the name of the sequence
   for x in input_list[1:]:
     sp = full_encoder(encode_dict, x)
@@ -307,8 +313,8 @@ def test_code():
 
   print_sw_dict(encode_dict, 'encode')
 
-  seq = map_named_list_to_encoded_sequence(Pi)
-  three = gaussian_scalar_encoder(3)
+  seq = map_named_list_to_encoded_sequence_v1(Pi) # currently broken, since Pi named-list now contains '.'
+  three = gaussian_scalar_encoder(3)              # not important though, since the rest of the code works.
   r4 = seq.similar_index(three)
   print("r4:",r4)
 
@@ -342,6 +348,7 @@ def float_sequence(input_seq, data):
         similarity = simm(element_pattern, seq_element_pattern)
         #print("simm:",similarity)
         new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
+        #new_coeff = (coeff + similarity)/2
         if new_coeff > 0:
           new_table.append([name, new_coeff, seq_list])
       except:
@@ -357,7 +364,7 @@ def float_sequence(input_seq, data):
     for name, coeff, seq in sorted_working_table:
       coeff_str = float_to_int(coeff)
 #      seq_str = " . ".join(str(x) for x in seq)
-      seq_str = " ".join(str(x) for x in seq)
+      seq_str = " ".join(str(x) for x in seq)              # I think this is much prettier than the . version.
       table.append([name, coeff_str, seq_str])
     return table
 
@@ -367,13 +374,13 @@ def float_sequence(input_seq, data):
   input_pattern = full_encoder(encode_dict, one)
 
   # generate encoded_seq:
-#  encoded_seq = [ map_named_list_to_encoded_sequence(x) for x in data]
-  encoded_seq = [ map_named_list_to_encoded_sequence_v3(encode_dict, x) for x in data]
+  encoded_seq = [ map_named_list_to_encoded_sequence(encode_dict, x) for x in data]
 
 
   # generate working_table:                    # maybe make into own function.
   working_table = []
   for k, seq in enumerate(encoded_seq):
+    #seq.display()                             # print out our sequences of superpositions
     name = seq.name
     similar_index = seq.similar_index(input_pattern)
     #print(name, similar_index)
@@ -396,5 +403,7 @@ def float_sequence(input_seq, data):
   # print out the encode_dict:
   #print_sw_dict(encode_dict, 'encode')
 
+
+# invoke it!
 float_sequence(input_seq, data)
 
