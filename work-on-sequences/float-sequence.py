@@ -29,12 +29,22 @@ e = ['e', 2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4]
 boys = ['boy sentence', 'boys', 'eat', 'many', 'cakes']
 girls = ['girl sentence', 'girls', 'eat', 'many', 'pies']
 
+zero = ['zero', 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+square = ['square', 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
+triangle = ['triangle', 0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04]
+sin = ['sin', 0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
+0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
+-0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
+-0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083]
+
 
 # define our collection of named-lists:
 #data = [Pi]
 #data = [Pi, e]
-data = [Pi, e, boys, girls]
+data = [Pi, e, boys, girls, zero, square, triangle, sin]
 
+# max length of sequence prediction. eg 5 or 10 is good.
+max_len = 6
 
 # if possible, convert a string to a float:
 def str_to_float(s):
@@ -233,7 +243,7 @@ def gaussian_scalar_encoder(n):
   for a in np.arange(n - w, n + w + dx, dx):
     value = guassian(n, a, sigma)
     #print(a, value)                         # this line is helpful when tuning our Gaussian paramters: w,dx,sigma.
-    r.add(str(a), value)
+    r.add(float_to_int(a,1), value)
   return r
 
 def first_random_encoder(n):
@@ -334,7 +344,7 @@ def print_table(table):
     print()
 
 
-def float_sequence(input_seq, data):
+def float_sequence(input_seq, data, max_len):
   def filter_working_table(encode_dict, table, element, position):
     #print("%s: %s" % (position, element))
     element_pattern = full_encoder(encode_dict, element)
@@ -355,7 +365,7 @@ def float_sequence(input_seq, data):
         continue
     return new_table
 
-  def format_output_table(working_table):
+  def format_output_table(working_table, max_len):
     # first, sort the table:
     sorted_working_table = sorted(working_table, key = lambda x: x[1], reverse = True)
 
@@ -364,7 +374,7 @@ def float_sequence(input_seq, data):
     for name, coeff, seq in sorted_working_table:
       coeff_str = float_to_int(coeff)
 #      seq_str = " . ".join(str(x) for x in seq)
-      seq_str = " ".join(str(x) for x in seq)              # I think this is much prettier than the . version.
+      seq_str = " ".join(str(x) for x in seq[:max_len])              # I think this is much prettier than the . version.
       table.append([name, coeff_str, seq_str])
     return table
 
@@ -398,12 +408,12 @@ def float_sequence(input_seq, data):
     return
 
   # format and print output table:
-  print_table(format_output_table(working_table))
+  print_table(format_output_table(working_table, max_len))
 
   # print out the encode_dict:
   #print_sw_dict(encode_dict, 'encode')
 
 
 # invoke it!
-float_sequence(input_seq, data)
+float_sequence(input_seq, data, max_len)
 
