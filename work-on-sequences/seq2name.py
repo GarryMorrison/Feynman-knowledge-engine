@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-06-19
-# Update:
+# Update: 2017-6-20
 # Copyright: GPLv3
 #
 # Usage: ./seq2name.py
@@ -20,6 +20,17 @@ import math
 from collections import OrderedDict
 import random
 
+# seq2name, either print all matches, or best match only (much easier to read)
+print_best_match_only = True
+
+# seq2name, only print name when it changes from one step to the next:
+print_delta_only = False
+
+
+Pi = ['Pi', 3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9]
+e = ['e', 2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4]
+boys = ['boy sentence', 'boys', 'eat', 'many', 'cakes']
+girls = ['girl sentence', 'girls', 'eat', 'many', 'pies']
 
 zero = ['zero', 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 square = ['square', 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
@@ -29,18 +40,14 @@ sin = ['sin', 0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.89
 -0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
 -0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083]
 
-data = [zero, square, triangle, sin]
+data = [Pi, e, boys, girls, zero, square, triangle, sin]
 
 # max length of sequence prediction. eg 5 or 10 is good.
-max_len = 10
+max_output_len = 10
 
+# max length of input sequence (ie, how far back does our sequence memory go). eg 5 or 6 is good.
+max_input_len = 6
 
-# first test input-sequence. More interesting ones later. eg with added noise.
-input_seq = [1,1,1]
-#input_seq = zero[1:] + square[1:] + triangle[1:] + sin[1:] 
-#print(input_seq)
-#for x in input_seq:
-#  print(x)
 
 # if possible, convert a string to a float:
 def str_to_float(s):
@@ -54,8 +61,15 @@ def str_to_float(s):
 if len(sys.argv) > 1:
   input_seq = [str_to_float(x) for x in sys.argv[1:] ]
 else:
-  input_seq = [0.1, 0.2, 0.3]
-
+  #input_seq = [0.1, 0.2, 0.3]
+  clean_input_seq = zero[1:] + square[1:] + triangle[1:] + sin[1:] + [7,7,7,7,7,7,7,7,7] + triangle[1:] + square[1:] + zero[1:]
+  #input_seq = triangle[1:]
+  #input_seq = square[1:]
+  #input_seq = sin[1:]
+  # add noise:
+  npdata = np.asarray(clean_input_seq)
+  input_seq = npdata + np.random.normal(0,0.01,npdata.shape)       # spits out ANOMALY. fix it.
+  input_seq = clean_input_seq
 
 # pretty print a float:
 def float_to_int(x,t=4):
@@ -86,12 +100,12 @@ def generate_triangle_curve(w, h, dx):
     value = foo2(a)
     curve.append(value)
   curve = [ round(x, 3) for x in curve ]
-#  for x in curve:
-#    print(x)
-  print(curve)
+  for x in curve:
+    print(x)
+#  print(curve)
 
 
-# auto-generate our data:
+# auto-generate our data:                      # ./seq2name.py | sed 's/$/,/g' | tr -d '\n'
 #generate_triangle_curve(25, 1, 1)
 #generate_sine_curve(0,2*math.pi, 0.1)
 
@@ -316,10 +330,6 @@ def map_named_list_to_encoded_sequence(encode_dict, input_list):
   return seq
 
 
-# just some testing code. Remove later!
-def test_code():
-  return
-
 
 # pretty print a table:
 # table print tweaked from here: http://stackoverflow.com/questions/25403249/print-a-list-of-tuples-as-table
@@ -404,8 +414,10 @@ def float_sequence(input_seq, data, max_len):
   #print_sw_dict(encode_dict, 'encode')
 
 
-def seq2name(input_seq, data):
+# rather expensive for now. But usable.
+def single_seq2name(input_seq, encode_dict, data, encoded_seq):
   def filter_working_table(encode_dict, table, element, position):
+    #print("%s: %s" % (position, element))
     element_pattern = full_encoder(encode_dict, element)
     new_table = []
     for name, coeff, seq_list in table:
@@ -421,52 +433,78 @@ def seq2name(input_seq, data):
         continue
     return new_table
 
-  def print_scores(working_table):
+
+  def generate_working_table(encode_dict, encoded_seq, element):
+    input_pattern = full_encoder(encode_dict, element)
+    working_table = []
+    for k, seq in enumerate(encoded_seq):
+      #seq.display()                              # print out our sequences of superpositions
+      name = seq.name
+      similar_index = seq.similar_index(input_pattern)
+      #print(name, similar_index)
+      for idx, coeff in similar_index:
+        #print("idx: %s, coeff: %s" % (idx, coeff))
+        seq_list = data[k][int(idx) + 1:]
+        working_table.append([name, coeff, seq_list])
+    return working_table 
+
+
+  def find_scores(working_table):
     if len(working_table) == 0:
-      print("ANOMALY!")
-      return
+      return "ANOMALY"
 
     # find a score for each sequence. Improve later! 
     r = superposition()
     for name, coeff, seq in working_table:
       r.max_add(name, coeff)
-    print(r.coeff_sort().display())
+    if print_best_match_only:
+      return r.coeff_sort().select_top(1).display()
+    else:
+      return r.coeff_sort().display()
 
-
+  # generate working_table:
   one = input_seq[0]
-  encode_dict = {}
-  input_pattern = full_encoder(encode_dict, one)
+  working_table = generate_working_table(encode_dict, encoded_seq, one)
 
-  # generate encoded_seq:
-  encoded_seq = [ map_named_list_to_encoded_sequence(encode_dict, x) for x in data]
-
-
-  # generate working_table:                    # maybe make into own function.
-  working_table = []
-#  r = superposition()
-  for k, seq in enumerate(encoded_seq):
-    #seq.display()                              # print out our sequences of superpositions
-    name = seq.name
-    similar_index = seq.similar_index(input_pattern)
-    #print(name, similar_index)
-#    r.add(name, similar_index.select_top(1).the_value())
-    for idx, coeff in similar_index:
-      #print("idx: %s, coeff: %s" % (idx, coeff))
-      seq_list = data[k][int(idx) + 1:]
-      working_table.append([name, coeff, seq_list])
-
-#  print(r.coeff_sort().display())
-  print_scores(working_table)
+  #print_scores(working_table)
 
   # filter working_table using the rest of our input sequence:
-  for k, element in enumerate(input_seq[1:]):
-    working_table = filter_working_table(encode_dict, working_table, element, k + 1)
-    print_scores(working_table)
+  for k,element in enumerate(input_seq[1:]):
+  #  if len(working_table) == 0:             # if hit anomaly, reset working_table. Doesn't quite work yet!! :(
+  #    working_table = generate_working_table(encode_dict, encoded_seq, element)
+  #    print_scores(working_table)
+  #    continue
 
+    working_table = filter_working_table(encode_dict, working_table, element, k + 1)
+    #print_scores(working_table)
+
+  return find_scores(working_table)
   # print out the encode_dict:
   #print_sw_dict(encode_dict, 'encode')
 
 
+def full_seq2name(input_seq, data, max_input_len):
+  def generate_ngrams(s,p):
+    for i in range(min(len(s)+1,p) - 1):
+      yield s[0:i+1]
+    for i in range(len(s) - p + 1):
+      yield s[i:i+p]
+
+  # generate encoded_seq:
+  encode_dict = {}
+  encoded_seq = [ map_named_list_to_encoded_sequence(encode_dict, x) for x in data]
+
+  previous_value = ''
+  for seq_fragment in generate_ngrams(input_seq, max_input_len):
+    #print(seq_fragment)
+    value = single_seq2name(seq_fragment, encode_dict, data, encoded_seq)
+    if previous_value != value or not print_delta_only:
+      print(value)
+      previous_value = value
+
+
 # invoke it!
-float_sequence(input_seq, data, max_len)
-seq2name(input_seq, data)
+#float_sequence(input_seq, data, max_output_len)
+#seq2name(input_seq, data)
+full_seq2name(input_seq, data, max_input_len)
+
