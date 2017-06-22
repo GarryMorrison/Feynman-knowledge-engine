@@ -31,22 +31,31 @@ Pi = ['Pi', 3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9]
 e = ['e', 2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4]
 boys = ['boy sentence', 'boys', 'eat', 'many', 'cakes']
 girls = ['girl sentence', 'girls', 'eat', 'many', 'pies']
+alphabet = ['alphabet', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 zero = ['zero', 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-square = ['square', 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
+#square = ['square', 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
+square = ['square', 0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0]
 triangle = ['triangle', 0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04]
 sin = ['sin', 0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
 0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
 -0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
 -0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083]
 
-data = [Pi, e, boys, girls, zero, square, triangle, sin]
+data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin]
+#data = [Pi, e, boys, girls, alphabet, zero, square, sin]                    # dropped triangle, since triangle looks like first half of sin.
 
 # max length of sequence prediction. eg 5 or 10 is good.
 max_output_len = 10
 
 # max length of input sequence (ie, how far back does our sequence memory go). eg 5 or 6 is good.
-max_input_len = 6
+max_input_len = 5
+
+# number of smooth iterations, 0 for off:
+# NB: the smaller max_input_len is, the smaller smooth_count should be.
+# Likewise, the larger max_input_len is, the larger smooth_count should be.
+# don't know good values for this yet. Maybe 0. ie, off!
+smooth_count = 0
 
 
 # if possible, convert a string to a float:
@@ -67,9 +76,14 @@ else:
   #input_seq = square[1:]
   #input_seq = sin[1:]
   # add noise:
-  npdata = np.asarray(clean_input_seq)
-  input_seq = npdata + np.random.normal(0,0.01,npdata.shape)       # spits out ANOMALY. fix it.
+  npdata = np.asarray(clean_input_seq).reshape((len(clean_input_seq)))
+  input_seq = npdata + np.random.normal(0,0.5,npdata.shape)       # spits out ANOMALY. fix it.
+  #input_seq = npdata + np.random.uniform(size=npdata.shape)
   input_seq = clean_input_seq
+
+#for x in input_seq:
+#  print(x)
+#sys.exit(0)
 
 # pretty print a float:
 def float_to_int(x,t=4):
@@ -314,7 +328,7 @@ def random_encoder(n):
 def full_encoder(encode_dict, x):                 # this is where the magic happens!
   if x in encode_dict:                            # converts input into encoded input.
     return encode_dict[x]                         # if you implement more interesting encoders, this is where you would use them.
-  if type(x) in [int, float]:
+  if type(x) in [int, float, np.float64]:
     r = gaussian_scalar_encoder(x)
   else:
     r = random_encoder(10)
@@ -483,12 +497,27 @@ def single_seq2name(input_seq, encode_dict, data, encoded_seq):
   #print_sw_dict(encode_dict, 'encode')
 
 
-def full_seq2name(input_seq, data, max_input_len):
+def full_seq2name(input_seq, data, max_input_len, smooth_count):
   def generate_ngrams(s,p):
     for i in range(min(len(s)+1,p) - 1):
       yield s[0:i+1]
     for i in range(len(s) - p + 1):
       yield s[i:i+p]
+
+  def smooth_1d(array, k):                               # what happens when array is not all ints/floats?
+    try:
+      working_array = [float(x) for x in array]          # this is my fix for now.
+    except:
+      return array
+    working_array = [working_array[0]] + working_array + [working_array[-1]]
+
+    for _ in range(k):
+      new_array = working_array
+      for i in range(len(array)):
+        new_array[i+1] = working_array[i-1]/4 + working_array[i]/2 + working_array[i+1]/4
+      working_array = new_array
+    return working_array[1:-1]
+
 
   # generate encoded_seq:
   encode_dict = {}
@@ -497,7 +526,10 @@ def full_seq2name(input_seq, data, max_input_len):
   previous_value = ''
   for seq_fragment in generate_ngrams(input_seq, max_input_len):
     #print(seq_fragment)
-    value = single_seq2name(seq_fragment, encode_dict, data, encoded_seq)
+    #for x in seq_fragment:
+    #  print(x)
+    seq_fragment = smooth_1d(seq_fragment, smooth_count)           # smooth seq_fragment? Would that improve things?
+    value = single_seq2name(seq_fragment, encode_dict, data, encoded_seq) # bah! What about sequences that aren't ints/floats??
     if previous_value != value or not print_delta_only:
       print(value)
       previous_value = value
@@ -506,5 +538,5 @@ def full_seq2name(input_seq, data, max_input_len):
 # invoke it!
 #float_sequence(input_seq, data, max_output_len)
 #seq2name(input_seq, data)
-full_seq2name(input_seq, data, max_input_len)
+full_seq2name(input_seq, data, max_input_len, smooth_count)
 
