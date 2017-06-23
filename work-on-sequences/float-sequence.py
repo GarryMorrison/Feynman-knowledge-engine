@@ -6,10 +6,10 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-06-18
-# Update:
+# Update: 2017-6-19
 # Copyright: GPLv3
 #
-# Usage: ./float-sequence.py [float1 float2 ... ]
+# Usage: ./float-sequence.py float1 float2 ... 
 #
 #######################################################################
 
@@ -44,7 +44,7 @@ sin = ['sin', 0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.89
 data = [Pi, e, boys, girls, zero, square, triangle, sin]
 
 # max length of sequence prediction. eg 5 or 10 is good.
-max_len = 6
+max_len = 10
 
 # if possible, convert a string to a float:
 def str_to_float(s):

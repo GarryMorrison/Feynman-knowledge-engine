@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 #######################################################################
-# given an input sequence, guess its' name
+# given an input sequence, guess its name
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-06-19
-# Update: 2017-6-20
+# Update: 2017-6-23
 # Copyright: GPLv3
 #
 # Usage: ./seq2name.py
@@ -21,12 +21,15 @@ from collections import OrderedDict
 import random
 
 # seq2name, either print all matches, or best match only (much easier to read)
-print_best_match_only = True
+print_best_match_only = False
 
 # seq2name, only print name when it changes from one step to the next:
 print_delta_only = False
 
 
+# learn and name some sequences.
+# floats, ints, and strings are all acceptable.
+# other types would be too, if you define an appropriate encoder. See: full_encoder()
 Pi = ['Pi', 3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9]
 e = ['e', 2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4]
 boys = ['boy sentence', 'boys', 'eat', 'many', 'cakes']
@@ -52,10 +55,11 @@ max_output_len = 10
 max_input_len = 5
 
 # number of smooth iterations, 0 for off:
-# NB: the smaller max_input_len is, the smaller smooth_count should be.
+# the smaller max_input_len is, the smaller smooth_count should be.
 # Likewise, the larger max_input_len is, the larger smooth_count should be.
 # don't know good values for this yet. Maybe 0. ie, off!
 smooth_count = 0
+
 
 
 # if possible, convert a string to a float:
@@ -77,12 +81,15 @@ else:
   #input_seq = sin[1:]
   # add noise:
   npdata = np.asarray(clean_input_seq).reshape((len(clean_input_seq)))
-  input_seq = npdata + np.random.normal(0,0.5,npdata.shape)       # spits out ANOMALY. fix it.
+  input_seq = npdata + np.random.normal(0,0.1,npdata.shape)       # spits out ANOMALY. fix it.
   #input_seq = npdata + np.random.uniform(size=npdata.shape)
   input_seq = clean_input_seq
 
-#for x in input_seq:
-#  print(x)
+# print our sequence so we can plot it in a spreadsheet:
+def print_seq(seq):
+  for x in seq:
+    print(x)
+#print_seq(input_seq)
 #sys.exit(0)
 
 # pretty print a float:
@@ -122,6 +129,7 @@ def generate_triangle_curve(w, h, dx):
 # auto-generate our data:                      # ./seq2name.py | sed 's/$/,/g' | tr -d '\n'
 #generate_triangle_curve(25, 1, 1)
 #generate_sine_curve(0,2*math.pi, 0.1)
+#sys.exit(0)
 
 
 class sequence(object):
@@ -187,7 +195,7 @@ class superposition(object):
     for key,value in self.dict.items():
       s = "%s %s" % (float_to_int(value), key)
       list_of_pairs.append(s)
-    return ", ".join(list_of_pairs)
+    return ",\t".join(list_of_pairs)
 
   def pair(self):                               # if the dict is longer than 1 elt, this returns a random pair
     for key,value in self.dict.items():         # presuming not using an OrderedDict
@@ -475,24 +483,18 @@ def single_seq2name(input_seq, encode_dict, data, encoded_seq):
       return r.coeff_sort().select_top(1).display()
     else:
       return r.coeff_sort().display()
-
+      #return str(r.coeff_sort())             # return superposition notation. Hints at how we would layer multiple of these together.
+                                              # ie, sequences of sequences, or sequences of sequences of sequences. 
   # generate working_table:
   one = input_seq[0]
   working_table = generate_working_table(encode_dict, encoded_seq, one)
 
-  #print_scores(working_table)
-
   # filter working_table using the rest of our input sequence:
   for k,element in enumerate(input_seq[1:]):
-  #  if len(working_table) == 0:             # if hit anomaly, reset working_table. Doesn't quite work yet!! :(
-  #    working_table = generate_working_table(encode_dict, encoded_seq, element)
-  #    print_scores(working_table)
-  #    continue
-
     working_table = filter_working_table(encode_dict, working_table, element, k + 1)
-    #print_scores(working_table)
 
   return find_scores(working_table)
+
   # print out the encode_dict:
   #print_sw_dict(encode_dict, 'encode')
 
@@ -528,8 +530,8 @@ def full_seq2name(input_seq, data, max_input_len, smooth_count):
     #print(seq_fragment)
     #for x in seq_fragment:
     #  print(x)
-    seq_fragment = smooth_1d(seq_fragment, smooth_count)           # smooth seq_fragment? Would that improve things?
-    value = single_seq2name(seq_fragment, encode_dict, data, encoded_seq) # bah! What about sequences that aren't ints/floats??
+    seq_fragment = smooth_1d(seq_fragment, smooth_count)                  # smooth seq_fragment? Would that improve things?
+    value = single_seq2name(seq_fragment, encode_dict, data, encoded_seq) # but what about sequences that aren't ints/floats??
     if previous_value != value or not print_delta_only:
       print(value)
       previous_value = value
