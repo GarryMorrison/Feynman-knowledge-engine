@@ -2,14 +2,15 @@
 
 #######################################################################
 # given an input sequence, guess its name
+# try to tidy and merge smooth, and generate_ngrams into sequence class
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
-# Date: 2017-06-19
-# Update: 2017-6-23
+# Date: 2017-06-25
+# Update: 
 # Copyright: GPLv3
 #
-# Usage: ./seq2name.py
+# Usage: ./seq2name-v2.py
 #
 #######################################################################
 
@@ -58,7 +59,7 @@ max_input_len = 5
 # the smaller max_input_len is, the smaller smooth_count should be.
 # Likewise, the larger max_input_len is, the larger smooth_count should be.
 # don't know good values for this yet. Maybe 0. ie, off!
-smooth_count = 1
+smooth_count = 0
 
 
 
@@ -132,13 +133,47 @@ def generate_triangle_curve(w, h, dx):
 #sys.exit(0)
 
 
+# define our encoders:
+def gaussian_scalar_encoder(n):
+  def guassian(x, a, sigma):
+    return math.exp(-(x - a)**2 / 2 * sigma**2)
+  w = 1                                     # hard wire in our Gaussian parameters. Feel free to tweak. Especially sigma.
+  dx = 0.1
+  sigma = 3.5
+  r = superposition()
+  for a in np.arange(n - w, n + w + dx, dx):
+    value = guassian(n, a, sigma)
+    #print(a, value)                         # this line is helpful when tuning our Gaussian paramters: w,dx,sigma.
+    r.add(float_to_int(a,1), value)          # may need to tweak the float_to_int() size to 2 say.
+  return r
+
+def random_encoder(n):
+  r = superposition()
+  for key in random.sample(range(65536), n):
+    r.add(str(key + 1))
+  return r
+
+def full_encoder(encode_dict, x):                 # this is where the magic happens!
+  if x in encode_dict:                            # converts input into encoded input.
+    return encode_dict[x]                         # if you implement more interesting encoders, this is where you would use them.
+  if type(x) in [int, float, np.float64]:
+    r = gaussian_scalar_encoder(x)
+  else:
+    r = random_encoder(10)
+  encode_dict[x] = r
+  return r
+
+
 class sequence(object):
-  def __init__(self, name=''):
+  def __init__(self, name='', data = []):
     self.name = name
-    self.data = []
+    self.data = data
 
   def __len__(self):
     return len(self.data)
+
+  def __getitem__(self, key):
+    return self.data[key]
 
   def display(self):                   # print out a sequence class
     for k,x in enumerate(self.data):
@@ -154,6 +189,65 @@ class sequence(object):
       if similarity > 0:
         r.add(str(k), similarity)
     return r.coeff_sort()
+
+  def ngrams(self, p):
+    seq = sequence(self.name)
+    for i in range(min(len(self.data)+1,p) - 1):
+      seq.data = self.data[0:i+1]
+      yield seq
+    for i in range(len(self.data) - p + 1):
+      seq.data = self.data[i:i+p]
+      yield seq
+
+  def encode(self, encode_dict):
+    seq = sequence(self.name, [])
+    for x in self.data:
+      sp = full_encoder(encode_dict, x)
+      seq.add(sp)
+    return seq
+
+  def noise(self, t):
+    seq = sequence(self.name, [])
+    for x in self.data:
+      try:
+        value = x + np.random.normal(0, t)
+      except:
+        value = x
+      seq.add(value)
+    return seq
+
+  def smooth_1d(self, k):
+    arr = [self.data[0]] + self.data + [self.data[-1]]
+    for _ in range(k):
+      new_arr = arr[:]
+      print("new_arr: %s" % new_arr)
+      for i in range(len(self.data)):
+        new_arr[i+1] = arr[i]/4 + arr[i+1]/2 + arr[i+2]/4
+
+        print("arr[i-1]: %s" % arr[i-1])
+        #print("arr[i-1]/4: %f" % arr[i-1]/4)
+        #print("arr[i]/2: %f" % arr[i]/2)
+        #print("arr[i+1]/4: %f" % arr[i+1]/4)
+        #print("new_arr[i+1]: %f" % new_arr[i+1])
+
+      arr = new_arr[:]
+    seq = sequence(self.name, [])
+    seq.data = arr[1:-1]
+    return seq
+
+#  def smooth_1d(array, k):                               # what happens when array is not all ints/floats?
+#    try:
+#      working_array = [float(x) for x in array]          # this is my fix for now.
+#    except:
+#      return array
+#    working_array = [working_array[0]] + working_array + [working_array[-1]]
+#
+#    for _ in range(k):
+#      new_array = working_array
+#      for i in range(len(array)):
+#        new_array[i+1] = working_array[i-1]/4 + working_array[i]/2 + working_array[i+1]/4
+#      working_array = new_array
+#    return working_array[1:-1]
 
 
 class superposition(object):
@@ -312,6 +406,43 @@ def simm(A,B):
 def print_sw_dict(dict, op=''):
   for label,sp in dict.items():
     print("%s |%s> => %s" % (op, label, sp))
+
+
+def test_code():
+  seq = sequence('test sequence ngrams', [1,2,3,4,5,6,7])
+  seq.add('a')
+  seq.add('b')
+  seq.add('c')
+  seq.add('d')
+  seq.display()
+  print('--------')
+  for x in seq.ngrams(3):
+    x.display()
+    print()
+
+  Pi = sequence('Pi', [3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9])
+  Pi.display()
+  print(Pi[4])
+
+  encode_dict = {}
+  new_Pi = Pi.encode(encode_dict)
+  new_Pi.display()
+
+  new_seq = seq.encode(encode_dict)
+  print("-----------")
+  new_seq.display()
+  print("+++++++++++")
+  seq.display()
+
+  seq.noise(0.2).encode(encode_dict).display()           # why does this work??
+
+  float_seq = sequence('float seq', [1,2,3,4,5,6,7,8,9,10])
+  float_seq.display()
+  float_seq.smooth_1d(1).display()
+  
+
+test_code()
+sys.exit(0)
 
 
 def gaussian_scalar_encoder(n):
@@ -499,7 +630,7 @@ def single_seq2name(input_seq, encode_dict, data, encoded_seq):
   #print_sw_dict(encode_dict, 'encode')
 
 
-def full_seq2name(input_seq, data, max_input_len, smooth_count):
+def full_seq2name_v1(input_seq, data, max_input_len, smooth_count):
   def generate_ngrams(s,p):
     for i in range(min(len(s)+1,p) - 1):
       yield s[0:i+1]
@@ -516,7 +647,7 @@ def full_seq2name(input_seq, data, max_input_len, smooth_count):
     for _ in range(k):
       new_array = working_array
       for i in range(len(array)):
-        new_array[i+1] = working_array[i]/4 + working_array[i+1]/2 + working_array[i+2]/4
+        new_array[i+1] = working_array[i-1]/4 + working_array[i]/2 + working_array[i+1]/4
       working_array = new_array
     return working_array[1:-1]
 
