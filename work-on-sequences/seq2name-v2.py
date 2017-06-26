@@ -7,47 +7,26 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-06-25
-# Update: 
+# Update: 2017-6-26
 # Copyright: GPLv3
 #
 # Usage: ./seq2name-v2.py
 #
 #######################################################################
 
-
 import sys
 import numpy as np
 import math
 from collections import OrderedDict
 import random
+import copy
+
 
 # seq2name, either print all matches, or best match only (much easier to read)
 print_best_match_only = False
 
 # seq2name, only print name when it changes from one step to the next:
 print_delta_only = False
-
-
-# learn and name some sequences.
-# floats, ints, and strings are all acceptable.
-# other types would be too, if you define an appropriate encoder. See: full_encoder()
-Pi = ['Pi', 3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9]
-e = ['e', 2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4]
-boys = ['boy sentence', 'boys', 'eat', 'many', 'cakes']
-girls = ['girl sentence', 'girls', 'eat', 'many', 'pies']
-alphabet = ['alphabet', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-
-zero = ['zero', 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-#square = ['square', 0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0]
-square = ['square', 0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0]
-triangle = ['triangle', 0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04]
-sin = ['sin', 0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
-0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
--0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
--0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083]
-
-data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin]
-#data = [Pi, e, boys, girls, alphabet, zero, square, sin]                    # dropped triangle, since triangle looks like first half of sin.
 
 # max length of sequence prediction. eg 5 or 10 is good.
 max_output_len = 10
@@ -63,75 +42,12 @@ smooth_count = 0
 
 
 
-# if possible, convert a string to a float:
-def str_to_float(s):
-  try:
-    x = float(s)
-  except:
-    x = s
-  return x
-
-# define our input-sequence:
-if len(sys.argv) > 1:
-  input_seq = [str_to_float(x) for x in sys.argv[1:] ]
-else:
-  #input_seq = [0.1, 0.2, 0.3]
-  clean_input_seq = zero[1:] + square[1:] + triangle[1:] + sin[1:] + [7,7,7,7,7,7,7,7,7] + triangle[1:] + square[1:] + zero[1:]
-  #input_seq = triangle[1:]
-  #input_seq = square[1:]
-  #input_seq = sin[1:]
-  # add noise:
-  npdata = np.asarray(clean_input_seq).reshape((len(clean_input_seq)))
-  input_seq = npdata + np.random.normal(0,0.1,npdata.shape)
-  #input_seq = npdata + np.random.uniform(size=npdata.shape)
-  #input_seq = clean_input_seq
-
-# print our sequence so we can plot it in a spreadsheet:
-def print_seq(seq):
-  for x in seq:
-    print(x)
-#print_seq(input_seq)
-#sys.exit(0)
 
 # pretty print a float:
 def float_to_int(x,t=4):
   if float(x).is_integer():
     return str(int(x))
   return str(round(x,t))
-
-
-def generate_sine_curve(start, finish, dx):
-  curve = []
-  for a in np.arange(start, finish, dx):
-    value = math.sin(a)
-    curve.append(value)
-  curve = [ round(x, 3) for x in curve]
-  for x in curve:
-    print(x)
-
-def generate_triangle_curve(w, h, dx):
-  def foo1(x):
-    return 2*h*x/w
-  def foo2(x):
-    return -2*h*x/w + 2*h
-  curve = []
-  for a in np.arange(0, w/2 + dx, dx):
-    value = foo1(a)
-    curve.append(value)
-  for a in np.arange(w/2 + dx, w, dx):
-    value = foo2(a)
-    curve.append(value)
-  curve = [ round(x, 3) for x in curve ]
-  for x in curve:
-    print(x)
-#  print(curve)
-
-
-# auto-generate our data:                      # ./seq2name.py | sed 's/$/,/g' | tr -d '\n'
-#generate_triangle_curve(25, 1, 1)
-#generate_sine_curve(0,2*math.pi, 0.1)
-#sys.exit(0)
-
 
 # define our encoders:
 def gaussian_scalar_encoder(n):
@@ -175,12 +91,28 @@ class sequence(object):
   def __getitem__(self, key):
     return self.data[key]
 
+  def __add__(self, seq):              # tidy later!
+    if type(seq) in [sequence]:
+      r = copy.deepcopy(self)
+      r.data += seq.data
+      return r
+    if type(seq) in [list]:
+      r = copy.deepcopy(self)
+      r.data += seq
+      return r
+    else:
+      return NotImplemented
+
   def display(self):                   # print out a sequence class
     for k,x in enumerate(self.data):
       print("seq |%s: %s> => %s" % (self.name, str(k), x))
 
-  def add(self, sp):
-    self.data.append(sp)
+  def display_minimalist(self):
+    for x in self.data:
+      print(x)
+
+  def add(self, seq):
+    self.data.append(seq)
 
   def similar_index(self, sp):
     r = superposition()
@@ -216,38 +148,17 @@ class sequence(object):
       seq.add(value)
     return seq
 
-  def smooth_1d(self, k):
+  def smooth(self, k):
     arr = [self.data[0]] + self.data + [self.data[-1]]
     for _ in range(k):
       new_arr = arr[:]
-      print("new_arr: %s" % new_arr)
+      #print("new_arr: %s" % new_arr)
       for i in range(len(self.data)):
         new_arr[i+1] = arr[i]/4 + arr[i+1]/2 + arr[i+2]/4
-
-        print("arr[i-1]: %s" % arr[i-1])
-        #print("arr[i-1]/4: %f" % arr[i-1]/4)
-        #print("arr[i]/2: %f" % arr[i]/2)
-        #print("arr[i+1]/4: %f" % arr[i+1]/4)
-        #print("new_arr[i+1]: %f" % new_arr[i+1])
-
-      arr = new_arr[:]
+      arr = new_arr
     seq = sequence(self.name, [])
     seq.data = arr[1:-1]
     return seq
-
-#  def smooth_1d(array, k):                               # what happens when array is not all ints/floats?
-#    try:
-#      working_array = [float(x) for x in array]          # this is my fix for now.
-#    except:
-#      return array
-#    working_array = [working_array[0]] + working_array + [working_array[-1]]
-#
-#    for _ in range(k):
-#      new_array = working_array
-#      for i in range(len(array)):
-#        new_array[i+1] = working_array[i-1]/4 + working_array[i]/2 + working_array[i+1]/4
-#      working_array = new_array
-#    return working_array[1:-1]
 
 
 class superposition(object):
@@ -271,6 +182,24 @@ class superposition(object):
 
   def __len__(self):
     return len(self.dict)
+
+  def __truediv__(self, divisor):
+    if type(divisor) in [int, float]:
+      r = superposition()
+      for key,value in self.dict.items():
+        r.dict[key] = value/divisor
+      return r
+    else:
+      return NotImplemented
+
+  def __add__(self, sp):
+    if type(sp) in [superposition]:
+      r = copy.deepcopy(self)
+      for key,value in sp.dict.items():
+        r.add(key, value)
+      return r
+    else:
+      return NotImplemented
 
   def add(self,str,value=1):
     if str in self.dict:
@@ -306,7 +235,7 @@ class superposition(object):
     if str in self.dict:
       return self.dict[str]
     else:
-      return 0
+      return 0                                 # maybe return None?
 
   def the_value(self):                         # if the dict is longer than 1 elt, this returns a random value
     for key,value in self.dict.items():
@@ -438,41 +367,54 @@ def test_code():
 
   float_seq = sequence('float seq', [1,2,3,4,5,6,7,8,9,10])
   float_seq.display()
-  float_seq.smooth_1d(1).display()
+  float_seq.smooth(1).display()
   
+  a = superposition()
+  a.add('a')
+  print(a)
 
-test_code()
-sys.exit(0)
+  b = a/4
+  print(b)
+
+  c = a + b
+  print(c)
+
+  x = superposition()
+  x.add('x',3)
+  y = superposition()
+  y.add('y', 5)
+  z = superposition()
+  z.add('z', 0.333)
+  r = x + y + z
+  print(r)
+
+  a = superposition()
+  a.add('a')
+  b = superposition()
+  b.add('b')
+  c = superposition()
+  c.add('c')
+  d = superposition()
+  d.add('d')
+  e = superposition()
+  e.add('e')
 
 
-def gaussian_scalar_encoder(n):
-  def guassian(x, a, sigma):
-    return math.exp(-(x - a)**2 / 2 * sigma**2)
-  w = 1                                     # hard wire in our Gaussian parameters. Feel free to tweak. Especially sigma.
-  dx = 0.1
-  sigma = 3.5
-  r = superposition()
-  for a in np.arange(n - w, n + w + dx, dx):
-    value = guassian(n, a, sigma)
-    #print(a, value)                         # this line is helpful when tuning our Gaussian paramters: w,dx,sigma.
-    r.add(float_to_int(a,1), value)          # may need to tweak the float_to_int() size to 2 say.
-  return r
+  sp_seq = sequence('sp seq', [a,b,c,d,e])
+  sp_seq.display()
+  sp_seq.smooth(1).display()
 
-def random_encoder(n):
-  r = superposition()
-  for key in random.sample(range(65536), n):
-    r.add(str(key + 1))
-  return r
+  Pi_digits = sequence('Pi', [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9])
 
-def full_encoder(encode_dict, x):                 # this is where the magic happens!
-  if x in encode_dict:                            # converts input into encoded input.
-    return encode_dict[x]                         # if you implement more interesting encoders, this is where you would use them.
-  if type(x) in [int, float, np.float64]:
-    r = gaussian_scalar_encoder(x)
-  else:
-    r = random_encoder(10)
-  encode_dict[x] = r
-  return r
+  new_seq = sequence('new seq') + Pi + seq + [13,13,13,17,19,23] + sp_seq
+  new_seq.display()
+#  new_seq.smooth(1).display()          # can't smooth sequence that mixes types. Maybe fix definition of smooth()?
+  
+  a_seq = sequence('a seq') + Pi_digits + [13,13,13,17,19,23,2]
+  a_seq.smooth(1).noise(0.1).display()
+
+#test_code()
+#sys.exit(0)
 
 
 def map_named_list_to_encoded_sequence(encode_dict, input_list):
@@ -481,7 +423,6 @@ def map_named_list_to_encoded_sequence(encode_dict, input_list):
     sp = full_encoder(encode_dict, x)
     seq.add(sp)
   return seq
-
 
 
 # pretty print a table:
@@ -568,7 +509,7 @@ def float_sequence(input_seq, data, max_len):
 
 
 # rather expensive for now. But usable.
-def single_seq2name(input_seq, encode_dict, data, encoded_seq):
+def single_seq2name_v1(input_seq, encode_dict, data, encoded_seq):
   def filter_working_table(encode_dict, table, element, position):
     #print("%s: %s" % (position, element))
     element_pattern = full_encoder(encode_dict, element)
@@ -668,8 +609,97 @@ def full_seq2name_v1(input_seq, data, max_input_len, smooth_count):
       previous_value = value
 
 
+def full_seq2name1(input_seq, data, max_input_len, smooth_count):
+  # generate encoded_seq:
+  encode_dict = {}
+  encoded_seq = [x.encode(encode_dict) for x in data]
+
+  for seq_fragment in input_seq.ngrams(max_input_len):
+    seq_fragment = seq_fragment.smooth(smooth_count)
+    value = single_seq2name(seq_fragment, encode_dict, data, encoded_seq)
+    if previous_value != value or not print_delta_only:
+      print(value)
+      previous_value = value
+
+
+# generate some curves:
+def generate_sine_curve(start, finish, dx):
+  curve = []
+  for a in np.arange(start, finish, dx):
+    value = math.sin(a)
+    curve.append(value)
+  curve = [ round(x, 3) for x in curve]
+  for x in curve:
+    print(x)
+
+def generate_triangle_curve(w, h, dx):
+  def foo1(x):
+    return 2*h*x/w
+  def foo2(x):
+    return -2*h*x/w + 2*h
+  curve = []
+  for a in np.arange(0, w/2 + dx, dx):
+    value = foo1(a)
+    curve.append(value)
+  for a in np.arange(w/2 + dx, w, dx):
+    value = foo2(a)
+    curve.append(value)
+  curve = [ round(x, 3) for x in curve ]
+  for x in curve:
+    print(x)
+
+
+# auto-generate our data:                      # ./seq2name.py | sed 's/$/,/g' | tr -d '\n'
+#generate_triangle_curve(25, 1, 1)
+#generate_sine_curve(0,2*math.pi, 0.1)
+#sys.exit(0)
+
+
+# learn and name some sequences:
+# floats, ints, and strings are all acceptable.
+# other types would be too, if you define an appropriate encoder. See: full_encoder()
+Pi = sequence('Pi', [3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9])
+e = sequence('e', [2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4])
+boys = sequence('boy sentence', ['boys', 'eat', 'many', 'cakes'])
+girls = sequence('girl sentence', ['girls', 'eat', 'many', 'pies'])
+alphabet = sequence('alphabet', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
+
+zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+#square = sequence('square', [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0])
+square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
+triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
+sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
+0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
+-0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
+-0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083])
+
+data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin]
+#data = [Pi, e, boys, girls, alphabet, zero, square, sin]                    # dropped triangle, since triangle looks like first half of sin.
+
+
+# if possible, convert a string to a float:
+def str_to_float(s):
+  try:
+    x = float(s)
+  except:
+    x = s
+  return x
+
+# define our input-sequence:
+if len(sys.argv) > 1:
+  input_seq = sequence('input seq', [str_to_float(x) for x in sys.argv[1:] ])
+else:
+  #input_seq = sequence('input seq', [0.1, 0.2, 0.3])
+  input_seq = sequence('input seq') + zero + square + triangle + sin + [7,7,7,7,7,7,7,7,7] + triangle + square + zero
+  input_seq = Pi
+  #input_seq = triangle
+  #input_seq = square
+  #input_seq = sin
+  #input_seq = input_seq.noise(0.1)               # add noise to our input sequence
+
+
 # invoke it!
 #float_sequence(input_seq, data, max_output_len)
 #seq2name(input_seq, data)
+#full_seq2name_v1(input_seq, data, max_input_len, smooth_count)
 full_seq2name(input_seq, data, max_input_len, smooth_count)
-
