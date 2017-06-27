@@ -12,6 +12,12 @@
 #
 # Usage: ./seq2name-v2.py [a b c d e ... ]
 #
+# eg: detect Fibonacci, despite a couple of typo's:
+# ./seq2name-v2.py 1 1 2 3 5 7 13 21 36
+#
+# eg: detect the alphabet, despite a gap:
+# ./seq2name-v2.py a b c g h i j k l m
+#
 #######################################################################
 
 import sys
@@ -29,34 +35,47 @@ print_best_match_only = False
 print_delta_only = False
 
 # max length of sequence prediction. eg 5 or 10 is good.
-max_output_len = 10
+max_output_len = 20
 
 # max length of input sequence (ie, how far back does our sequence memory go). eg 5 or 6 is good.
 max_input_len = 5
+#max_input_len = 10
 
 # number of smooth iterations, 0 for off:
 # the smaller max_input_len is, the smaller smooth_count_frag should be.
 # Likewise, the larger max_input_len is, the larger smooth_count_frag should be.
-
-# smooth count for full input sequence:
 # NB: breaks integer sequence detection. eg, Pi: 1 4 1 5 9. In which case set it to 0.
 # NB: if a sequence contains a string element, smooth_count is swithced off.
+
+# smooth count for full input sequence:
 #smooth_count_full = 5
 smooth_count_full = 0
 
 # smooth count for ngram fragment of input sequence:
 smooth_count_frag = 0
 
+# smooth count for final sequence:
+smooth_count_final = 0
+
+# switch on/off strict similarity:
+# ie, new_coeff = min(coeff, similarity)
+# vs: new_coeff = (coeff + similarity)/2
+strict_similarity = False
+
+# ignore answers below this noise threshold, in percent:
+noise_threshold = 0.1
+
 
 
 
 # pretty print a float:
-def float_to_int(x,t=4):
+def float_to_int(x,t=3):
   if float(x).is_integer():
     return str(int(x))
   return str(round(x,t))
 
 # define our encoders:
+# the plan is to add more as needed.
 def gaussian_scalar_encoder(x):
   def guassian(x, a, sigma):
     return math.exp(-(x - a)**2 / 2 * sigma**2)
@@ -97,7 +116,7 @@ def gaussian_3d_encoder(x,y,z):             # this thing spits out quite large s
         r.add(float_to_int(a,1) + ": " + float_to_int(b,1) + ": " + float_to_int(c,1), value)  # may need to tweak the float_to_int() size to 2 say.
   return r
 
-def gaussian_tuple_encoder(t):
+def gaussian_tuple_encoder(t):                   # hrmm.... need to handle if tuple elements are not int or float.
   if len(t) == 2:
     return gaussian_2d_encoder(t[0],t[1])
   if len(t) == 3:
@@ -194,7 +213,7 @@ class sequence(object):
     seq = sequence(self.name, [])
     for x in self.data:
       try:
-        value = x + np.random.normal(0, t)
+        value = x + np.random.normal(0, t)               # enable adding noise to superpositions??
       except:
         value = x
       seq.add(value)
@@ -215,7 +234,7 @@ class sequence(object):
       return self
     
 
-
+# a superposition is a collection of float,string pairs:
 class superposition(object):
   def __init__(self):
 #    self.dict = {}                     # faster and cheaper than OrderedDict() if you don't need to preserve order
@@ -688,7 +707,7 @@ def full_seq2name_v1(input_seq, data, max_input_len, smooth_count):
 
 
 # I think this code is correct .... kind of hard to tell :(
-def float_sequence(input_seq, data, max_len):
+def float_sequence(input_seq, data, max_output_len):
   def generate_working_table(data, encoded_sequences, input_pattern):
     working_table = []
     for k, seq in enumerate(encoded_sequences):
@@ -698,7 +717,6 @@ def float_sequence(input_seq, data, max_len):
       #print(name, similar_index)
       for idx, coeff in similar_index:
         #print("idx: %s, coeff: %s" % (idx, coeff))
-        #seq_list = data[k][int(idx) + 1:]                             # NB: something weird going on here.
         seq_list = data[k][int(idx):]
         working_table.append([name, coeff, seq_list])
     return working_table
@@ -715,23 +733,26 @@ def float_sequence(input_seq, data, max_len):
         #print("seq_element_pattern:",seq_element_pattern)
         similarity = simm(element_pattern, seq_element_pattern)
         #print("simm:",similarity)
-        new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
-        #new_coeff = (coeff + similarity)/2
-        if new_coeff > 0:
+        if strict_similarity:
+          new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
+        else:
+          new_coeff = (coeff + similarity)/2
+        if new_coeff >= noise_threshold/100:                 # convert noise_threshold back from percent
           new_table.append([name, new_coeff, seq_list])
       except:
         continue
     return new_table
 
-  def format_output_table(working_table, max_len):
+  def format_output_table(working_table, max_output_len):
     # first, sort the table:
     sorted_working_table = sorted(working_table, key = lambda x: x[1], reverse = True)
 
     # now format it:
-    table = []
+    table = [['name', 'similarity', 'prediction']]
+    table.append(['----', '----------', '----------'])
     for name, coeff, seq in sorted_working_table:
-      coeff_str = float_to_int(coeff)
-      seq_str = " ".join(str(x) for x in seq[:max_len])
+      coeff_str = float_to_int(100 * coeff)                       # NB: converted to percent
+      seq_str = " ".join(str(x) for x in seq[:max_output_len])    # tweak later. For long input sequences, and short max_output_len, predictions are not visible.
       table.append([name, coeff_str, seq_str])
     return table
 
@@ -751,7 +772,10 @@ def float_sequence(input_seq, data, max_len):
     working_table = filter_working_table(encode_dict, working_table, element, k + 1)
 
   # format and print output table:
-  print_table(format_output_table(working_table, max_len))
+  print_table(format_output_table(working_table, max_output_len))
+
+  # print out the encode_dict:
+  #print_sw_dict(encode_dict, 'encode')
 
 
 def single_seq2name(input_seq, encoded_sequences):
@@ -775,9 +799,11 @@ def single_seq2name(input_seq, encoded_sequences):
         seq_element_pattern = seq_list[position]
         similarity = simm(element_pattern, seq_element_pattern)
         #print("simm:",similarity)
-        new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
-        #new_coeff = (coeff + similarity)/2
-        if new_coeff > 0:
+        if strict_similarity:
+          new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
+        else:
+          new_coeff = (coeff + similarity)/2
+        if new_coeff >= noise_threshold/100:                 # convert noise_threshold back from percent
           new_table.append([name, new_coeff, seq_list])
       except Exception as e:
         #print("filter_working_table exception reason: %s" % e)
@@ -806,7 +832,7 @@ def single_seq2name(input_seq, encoded_sequences):
     # find a score for each sequence. Improve later! 
     r = superposition()
     for name, coeff, seq in working_table:
-      r.max_add(name, coeff)
+      r.max_add(name, 100 * coeff)                                  # maybe there are better options than this simple thing? Also, converted to percent.
     return r.coeff_sort()
 
 
@@ -829,7 +855,7 @@ def single_seq2name(input_seq, encoded_sequences):
 
 def full_seq2name(input_seq, data, max_input_len, smooth_count_full, smooth_count_frag):
   # store a copy of the final sequence:
-  seq = sequence('final sequence')
+  seq = sequence('seq2name sequence')
 
   # encode sequences:
   encode_dict = {}
@@ -889,12 +915,20 @@ def generate_triangle_curve(w, h, dx):
 # learn and name some sequences:
 # floats, ints, and strings are all acceptable.
 # other types would be too, if you define an appropriate encoder. See: full_encoder()
+# start with some integer sequences:
 Pi = sequence('Pi', [3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5, 0])
 e = sequence('e', [2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4])
+Fib = sequence('Fibonacci', [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987])
+factorial = sequence('factorial', [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800])
+counting_numbers = sequence('counting', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25])
+
+
+# now some string sequences:
 boys = sequence('boy sentence', ['boys', 'eat', 'many', 'cakes'])
 girls = sequence('girl sentence', ['girls', 'eat', 'many', 'pies'])
 alphabet = sequence('alphabet', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
 
+# now some float sequences:
 zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 #square = sequence('square', [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0])
 square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
@@ -904,8 +938,9 @@ sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0
 -0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
 -0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083])
 
+# learn our known sequences:
 #data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin]
-data = [Pi, e, boys, girls, alphabet, zero, square, sin]                    # dropped triangle, since triangle looks like first half of sin.
+data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                    # dropped triangle, since triangle looks like first half of sin.
 
 
 # if possible, convert a string to a float:
@@ -934,11 +969,16 @@ print("float_sequence:")
 float_sequence(input_seq, data, max_output_len)
 
 print("-----------------------\nseq2name:")
-seq = full_seq2name(input_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
+second_seq = full_seq2name(input_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
 
 # print superposition version of the full results:
-print("----------------------\nfull seq in superposition notation:")
-seq.display_minimalist()
-#seq.smooth(3).display_minimalist()
+print("----------------------\nseq2name in superposition notation:")
+#second_seq.display_minimalist()
+second_seq.smooth(smooth_count_final).display_minimalist()
 
+# 2nd order sequence naming: (this is potentially interesting!)
+data.append(second_seq)                  # learn a new sequence, in this case second_seq
+#print("-----------------------\n2nd order seq2name:")
+#seq2 = full_seq2name(second_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
+#second_seq.display()
 
