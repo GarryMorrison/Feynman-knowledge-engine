@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!c:/Python34/python.exe
 
 #######################################################################
 # given an input sequence, guess its name
@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-06-25
-# Update: 2017-6-27
+# Update: 2017-6-29
 # Copyright: GPLv3
 #
 # Usage: ./seq2name-v2.py [a b c d e ... ]
@@ -18,6 +18,9 @@
 # eg: detect the alphabet, despite a gap:
 # ./seq2name-v2.py a b c g h i j k l m
 #
+# eg: detect a pathway:
+# ./seq2name-v2.py '(1,1)' '(1,2)' '(1,3)' '(1,4)'
+#
 #######################################################################
 
 import sys
@@ -26,6 +29,8 @@ import math
 from collections import OrderedDict
 import random
 import copy
+from ast import literal_eval
+import matplotlib.pyplot as plt
 
 
 # either print all matches, or best match only (much easier to read)
@@ -62,9 +67,16 @@ smooth_count_final = 0
 # vs: new_coeff = (coeff + similarity)/2
 strict_similarity = False
 
+
 # ignore answers below this noise threshold, in percent:
 noise_threshold = 0.1
+#noise_threshold = 0
 
+# max number of predictions to return from float_sequence:
+max_number_of_predictions_to_return = 3
+
+# max plot length:
+max_plot_len = 30
 
 
 
@@ -86,7 +98,7 @@ def gaussian_scalar_encoder(x):
   for a in np.arange(x - w, x + w + dx, dx):
     value = guassian(x, a, sigma)
     #print(a, value)                         # this line is helpful when tuning our Gaussian paramters: w,dx,sigma.
-    r.add(float_to_int(a,1), value)          # may need to tweak the float_to_int() size to 2 say.
+    r.add(float_to_int(a,1), value)          # may need to tweak the float_to_int() size to 2 say. Nah. Would make superpositions too large.
   return r
 
 def gaussian_2d_encoder(x,y):
@@ -145,6 +157,10 @@ def full_encoder(encode_dict, x):                 # this is where the magic happ
   return r
 
 
+# define our plot functions:
+def plot_float_sequence(seq):
+  return  
+
 class sequence(object):
   def __init__(self, name='', data = []):
     self.name = name
@@ -202,6 +218,13 @@ class sequence(object):
       seq.data = self.data[i:i+p]
       yield seq
 
+  def pure_ngrams(self, p):
+    seq = sequence(self.name)
+    for i in range(len(self.data) - p + 1):
+      seq.data = self.data[i:i+p]
+      yield seq
+
+
   def encode(self, encode_dict):
     seq = sequence(self.name, [])
     for x in self.data:
@@ -233,6 +256,11 @@ class sequence(object):
     except:
       return self
     
+  def seq2sp(self):                                      # needs more thinking. Also, only works for sequences of superpositions.
+    r = superposition()                                  # don't even know if useful yet.
+    for x in self.data:
+      r += x
+    return r
 
 # a superposition is a collection of float,string pairs:
 class superposition(object):
@@ -411,7 +439,7 @@ def simm(A,B):
 
 def print_sw_dict(dict, op=''):
   for label,sp in dict.items():
-    print("%s |%s> => %s" % (op, label, sp))
+    print("%s |%s> => %s" % (op, label, sp))         # add coeff_sort() if sp is superposition?
 
 
 def test_code():
@@ -748,13 +776,18 @@ def float_sequence(input_seq, data, max_output_len):
     sorted_working_table = sorted(working_table, key = lambda x: x[1], reverse = True)
 
     # now format it:
+    sequences = []
+
     table = [['name', 'similarity', 'prediction']]
     table.append(['----', '----------', '----------'])
     for name, coeff, seq in sorted_working_table:
       coeff_str = float_to_int(100 * coeff)                       # NB: converted to percent
       seq_str = " ".join(str(x) for x in seq[:max_output_len])    # tweak later. For long input sequences, and short max_output_len, predictions are not visible.
       table.append([name, coeff_str, seq_str])
-    return table
+
+      predicted_seq = sequence(coeff_str + " " + name, seq)
+      sequences.append(predicted_seq)
+    return sequences, table
 
   # print input sequence:
   print("input sequence: %s" % input_seq[:] )      # hack to convert sequence type to list.
@@ -771,11 +804,18 @@ def float_sequence(input_seq, data, max_output_len):
   for k, element in enumerate(input_seq[1:]):
     working_table = filter_working_table(encode_dict, working_table, element, k + 1)
 
+  # now sort the table:
+  #sorted_working_table = sorted(working_table, key = lambda x: x[1], reverse = True)
+
   # format and print output table:
-  print_table(format_output_table(working_table, max_output_len))
+  #print_table(format_output_table(sorted_working_table, max_output_len))
+  sequences, table = format_output_table(working_table, max_output_len)
+  print_table(table)
 
   # print out the encode_dict:
   #print_sw_dict(encode_dict, 'encode')
+
+  return sequences[:max_number_of_predictions_to_return]
 
 
 def single_seq2name(input_seq, encoded_sequences):
@@ -916,10 +956,10 @@ def generate_triangle_curve(w, h, dx):
 # floats, ints, and strings are all acceptable.
 # other types would be too, if you define an appropriate encoder. See: full_encoder()
 # start with some integer sequences:
-Pi = sequence('Pi', [3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5, 0])
+Pi = sequence('Pi', [3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5])
 e = sequence('e', [2, '.', 7, 1, 8, 2, 8, 1, 8, 2, 8, 4])
-Fib = sequence('Fibonacci', [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987])
-factorial = sequence('factorial', [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800])
+Fib = sequence('Fibonacci', [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987]) # Fib, and factorial tend to ruin our plots!
+factorial = sequence('factorial', [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800])  # so maybe comment them out.
 counting_numbers = sequence('counting', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25])
 
 
@@ -938,9 +978,84 @@ sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0
 -0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
 -0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083])
 
+# now some tuple sequences:
+path_a = sequence('path a', [(1,1), (1,2), (1,3), (2,4), (3,4), (3,5), (3,6), (4,6), (5,6), (6,6), (7,6)])
+path_b = sequence('path b', [(1,1), (2,1), (3,1), (4,1), (5,1), (6,1), (6,2), (5,3), (5,4), (5,5), (6,5), (7,6)])
+
+
 # learn our known sequences:
+# NB: having tuple sequences in your list of known sequences really slows things down.
+# so if you don't need them, please omit them! Though tweaks to 2d-gaussian could speed them up.
 #data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin]
-data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                    # dropped triangle, since triangle looks like first half of sin.
+data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin, path_a, path_b]   # dropped triangle, since triangle looks like first half of sin.
+#data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                    # dropped paths
+
+
+def force_str_to_float(s):
+  try:
+    x = float(s)
+  except:
+    x = 0
+  return x
+
+def plot_float_sequence(seq):
+  data = [force_str_to_float(x) for x in seq]
+  plt.plot(data)
+  plt.show()
+
+def plot_2tuple_sequence(seq):
+  for pair in seq.pure_ngrams(2):
+    x0,y0 = pair[0]
+    x1,y1 = pair[1]
+    plt.plot([x0,x1], [y0,y1], 'k-')
+  plt.show()    
+
+def plot_2tuple_sequences(sequences):               # improve later!
+  colours = 'bgrcmyk'
+  colour_index = 0
+  for seq in sequences:
+    my_label = seq.name
+    my_linewidth = 1.0
+    if my_label == 'input seq':
+      my_linewidth = 5.0
+    for pair in seq.pure_ngrams(2):
+      #pair.display()
+      #print()
+      x0,y0 = pair[0]
+      x1,y1 = pair[1]
+      plt.plot([x0,x1], [y0,y1], c=colours[colour_index], label=my_label, linewidth=my_linewidth)
+      my_label = '__nolegend__'
+    colour_index = (colour_index + 1) % 7
+  plt.legend(loc='upper right')
+  plt.show()
+
+
+def plot_float_sequences(sequences, max_plot_len):
+  for seq in sequences:
+    my_label = seq.name
+    my_linewidth = 1.0
+    if my_label == 'input seq':
+      my_linewidth = 5.0
+    data = [force_str_to_float(x) for x in seq[:max_plot_len] ]
+    plt.plot(data, label=my_label, linewidth=my_linewidth)
+  plt.legend(loc='upper right')
+  plt.show()
+
+def plot_sequences(sequences, max_plot_len = 20):
+  first_elt = sequences[0][0]
+  if type(first_elt) in [tuple] and len(first_elt) == 2:  # assume if the first element in the first sequence is a 2-tuple, so are the rest.
+    plot_2tuple_sequences(sequences)
+  else:
+    plot_float_sequences(sequences, max_plot_len)
+    
+
+#test_plot_code()
+#plot_float_sequences([zero, square, triangle, sin])
+#plot_2tuple_sequences([path_a, path_b])
+
+#plot_sequences([path_a, path_b])
+#plot_sequences([zero, square, triangle, sin])
+#sys.exit(0)
 
 
 # if possible, convert a string to a float:
@@ -951,34 +1066,51 @@ def str_to_float(s):
     x = s
   return x
 
-# define our input-sequence:
-if len(sys.argv) > 1:
-  input_seq = sequence('input seq', [str_to_float(x) for x in sys.argv[1:] ])
-else:
-  #input_seq = sequence('input seq', [0.1, 0.2, 0.3])
-  input_seq = sequence('input seq') + zero + square + triangle + sin + [7,7,7,7,7,7,7,7,7] + triangle + square + zero
-  #input_seq = Pi
-  #input_seq = triangle
-  #input_seq = square
-  #input_seq = sin
-  #input_seq = input_seq.noise(0.1)               # add noise to our input sequence
+# if possible, convert a string to a float, or a tuple:
+def str_to_float_tuple(s):
+  try:
+    x = literal_eval(s)
+  except:
+    x = s
+  return x
 
 
 # invoke it!
-print("float_sequence:")
-float_sequence(input_seq, data, max_output_len)
+if __name__ == '__main__':
 
-print("-----------------------\nseq2name:")
-second_seq = full_seq2name(input_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
+  # define our input-sequence:
+  if len(sys.argv) > 1:
+    input_seq = sequence('input seq', [str_to_float_tuple(x) for x in sys.argv[1:] ])
+  else:
+    #input_seq = sequence('input seq', [0.1, 0.2, 0.3])
+    input_seq = sequence('input seq') + zero + square + triangle + sin + [7,7,7,7,7,7,7,7,7] + triangle + square + zero
+    #input_seq = Pi
+    #input_seq = triangle
+    #input_seq = square
+    #input_seq = sin
+    #input_seq = input_seq.noise(0.1)               # add noise to our input sequence
 
-# print superposition version of the full results:
-print("----------------------\nseq2name in superposition notation:")
-#second_seq.display_minimalist()
-second_seq.smooth(smooth_count_final).display_minimalist()
+  # plot input sequence
+  #plot_sequences([input_seq], 1000)
+  #sys.exit(0)
 
-# 2nd order sequence naming: (this is potentially interesting!)
-data.append(second_seq)                  # learn a new sequence, in this case second_seq
-#print("-----------------------\n2nd order seq2name:")
-#seq2 = full_seq2name(second_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
-#second_seq.display()
+  # invoke it!
+  print("float_sequence:")
+  predicted_sequences = float_sequence(input_seq, data, max_output_len)
+  if len(predicted_sequences) > 0:
+    plot_sequences([input_seq] + predicted_sequences, max_plot_len)
+
+  print("-----------------------\nseq2name:")
+  second_seq = full_seq2name(input_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
+
+  # print superposition version of the full results:
+  print("----------------------\nseq2name in superposition notation:")
+  #second_seq.display_minimalist()
+  second_seq.smooth(smooth_count_final).display_minimalist()
+
+  # 2nd order sequence naming: (this is potentially interesting!)
+  data.append(second_seq)                  # learn a new sequence, in this case second_seq
+  #print("-----------------------\n2nd order seq2name:")
+  #seq2 = full_seq2name(second_seq, data, max_input_len, smooth_count_full, smooth_count_frag)
+  #second_seq.display()
 
