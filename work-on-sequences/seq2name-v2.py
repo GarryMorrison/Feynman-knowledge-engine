@@ -22,7 +22,7 @@
 # ./seq2name-v2.py 0 0 2 2 2 2
 # 
 # set max_number_of_predictions_to_return to 7 then:
-# $ ./seq2name-v2.py 0 0 2 2 1.5 1.5 1.6 1.7 1.4 1.5 1.1 1.1 1.1
+# ./seq2name-v2.py 0 0 2 2 1.5 1.5 1.6 1.7 1.4 1.5 1.1 1.1 1.1
 #
 # eg: detect a pathway:
 # ./seq2name-v2.py '(1,1)' '(1,2)' '(1,3)' '(1,4)'
@@ -150,6 +150,20 @@ def gaussian_tuple_encoder(t):                   # hrmm.... need to handle if tu
   else:
     return random_encoder(10)
 
+def ngram_str_encoder(s):                         # simple string encoder. 
+  r = superposition()
+  seq = sequence('ngram encoder', list(s))
+  for x in seq.pure_ngrams(1):
+    ngram = x[0]
+    r.add(ngram)                                   # maybe give different ngram sizes different weights?
+  for x in seq.pure_ngrams(2):
+    ngram = "".join(x)
+    r.add(ngram)
+  for x in seq.pure_ngrams(3):
+    ngram = "".join(x)
+    r.add(ngram)
+  return r
+
 def random_encoder(n):
   r = superposition()
   for key in random.sample(range(65536), n):      # even at 65,536 there are still occasional "collisions".
@@ -165,8 +179,10 @@ def full_encoder(encode_dict, x):                 # this is where the magic happ
     r = gaussian_scalar_encoder(x)
   elif type(x) in [tuple]:
     r = gaussian_tuple_encoder(x)
+  elif type(x) in [str]:
+    r = ngram_str_encoder(x)                       # this is a string similarity encoder. A semantic similarity encoder would be more fun!
   else:
-    r = random_encoder(10)
+    r = random_encoder(10)                         # random encoder desgined to not have similarity with anything else.
   encode_dict[x] = r
   return r
 
@@ -200,6 +216,12 @@ def force_str_to_float(s):
     x = 0
   return x
 
+def all_sequences_of_same_type(sequences, my_type):
+  for seq in sequences:
+    if not all(type(x) == my_type for x in seq):
+      return False
+  return True
+
 def plot_float_sequences(sequences, max_plot_len):
   for seq in sequences:
     my_label = seq.name
@@ -208,7 +230,7 @@ def plot_float_sequences(sequences, max_plot_len):
       my_linewidth = 5.0
     data = [force_str_to_float(x) for x in seq[:max_plot_len] ]
     plt.plot(data, label=my_label, linewidth=my_linewidth)
-#  plt.legend(loc='upper right')
+  #plt.legend(loc='upper right')
   plt.legend(loc='best')
   plt.show()
 
@@ -216,6 +238,8 @@ def plot_sequences(sequences, max_plot_len = 30):
   first_elt = sequences[0][0]
   if type(first_elt) in [tuple] and len(first_elt) == 2:  # assume if the first element in the first sequence is a 2-tuple, so are the rest.
     plot_2tuple_sequences(sequences)
+  elif all_sequences_of_same_type(sequences, str):        # do we really need to walk all our sequences? Does it matter?
+    pass
   else:
     plot_float_sequences(sequences, max_plot_len)
 
@@ -528,7 +552,7 @@ def test_code():
   print("+++++++++++")
   seq.display()
 
-  seq.noise(0.2).encode(encode_dict).display()           # why does this work??
+  seq.noise(0.2).encode(encode_dict).display()
 
   float_seq = sequence('float seq', [1,2,3,4,5,6,7,8,9,10])
   float_seq.display()
@@ -594,6 +618,9 @@ def test_code():
   tuple_seq = sequence('tuple seq', [(3,5), (2,7), (3,5,7)])
   tuple_seq.display()
   tuple_seq.encode(encode_dict).display()
+
+  str_seq = sequence('string seq', ['fish', 'a', 'ab', 'xyz', 'basket'])
+  str_seq.encode(encode_dict).display()
  
 #test_code()
 #sys.exit(0)
@@ -868,7 +895,11 @@ data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin, path_a, path_
 #data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin, path_a, path_b]   # dropped triangle, since triangle looks like first half of sin.
 #data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                    # dropped paths
 #data = [zero, square, triangle, sin]                   # 'curves' only
-data = [zero, square, triangle, sin, path_a, path_b]    # curves and paths only
+#data = [zero, square, triangle, sin, path_a, path_b]   # curves and paths only
+#data = [boys, girls]                                    # sentences only
+
+# quick plot of our curves:
+#plot_sequences([zero, square, triangle, sin], 200)
 
 
 # if possible, convert a string to a float:
@@ -902,7 +933,7 @@ if __name__ == '__main__':
     #input_seq = square
     #input_seq = sin
     #input_seq = input_seq.noise(0.1)               # add noise to our input sequence
-    input_seq = input_seq.noise(0.2)
+    #input_seq = input_seq.noise(0.2)
 
 
   # plot input sequence
