@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-06-25
-# Update: 2017-6-29
+# Update: 2017-6-30
 # Copyright: GPLv3
 #
 # Usage: ./seq2name-v2.py [a b c d e ... ]
@@ -23,6 +23,7 @@
 # 
 # set max_number_of_predictions_to_return to 7 then:
 # ./seq2name-v2.py 0 0 2 2 1.5 1.5 1.6 1.7 1.4 1.5 1.1 1.1 1.1
+# ./seq2name-v2.py 0 0 2 2 1.5 1.5 1.6 1.7 1.4 1.5 1.1 1.1 1.1 1.3 1.2 1.9 1.7 1.7 1.6 1.5 1.8
 #
 # eg: detect a pathway:
 # ./seq2name-v2.py '(1,1)' '(1,2)' '(1,3)' '(1,4)'
@@ -150,7 +151,7 @@ def gaussian_tuple_encoder(t):                   # hrmm.... need to handle if tu
   else:
     return random_encoder(10)
 
-def ngram_str_encoder(s):                         # simple string encoder. 
+def ngram_str_encoder(s):                         # simple string similarity encoder. 
   r = superposition()
   seq = sequence('ngram encoder', list(s))
   for x in seq.pure_ngrams(1):
@@ -233,6 +234,7 @@ def plot_float_sequences(sequences, max_plot_len):
   #plt.legend(loc='upper right')
   plt.legend(loc='best')
   plt.show()
+
 
 def plot_sequences(sequences, max_plot_len = 30):
   first_elt = sequences[0][0]
@@ -338,6 +340,20 @@ class sequence(object):
       return seq
     except:
       return self
+
+  def delta(self, dx = 1):                           # how do we handle sequences of 2tuples?
+    try:
+      arr = self.data + [self.data[-1]]              # how do we want to handle boundaries?
+      new_arr = arr                                  # do we need [:]?
+      #for i in range(len(self.data)):
+      for i in range(len(self.data) - 1):            # how do we want to handle boudaries?
+        new_arr[i] = (arr[i+1] - arr[i])/dx
+      seq = sequence(self.name, [])
+      seq.data = new_arr[:-1]
+      return seq
+    except Exception as e:
+      #print("delta exception:", e)
+      return self
     
   def seq2sp(self):                                      # needs more thinking. Also, only works for sequences of superpositions.
     r = superposition()                                  # don't even know if useful yet.
@@ -382,6 +398,15 @@ class superposition(object):
       r = copy.deepcopy(self)
       for key,value in sp.dict.items():
         r.add(key, value)
+      return r
+    else:
+      return NotImplemented
+
+  def __sub__(self, sp):
+    if type(sp) in [superposition]:
+      r = copy.deepcopy(self)
+      for key,value in sp.dict.items():
+        r.add(key, - value)
       return r
     else:
       return NotImplemented
@@ -621,6 +646,12 @@ def test_code():
 
   str_seq = sequence('string seq', ['fish', 'a', 'ab', 'xyz', 'basket'])
   str_seq.encode(encode_dict).display()
+
+
+  sp_seq = sequence('sp seq', [a,b,c,d,e])
+  sp_seq.display()
+  sp_seq.delta().display()
+
  
 #test_code()
 #sys.exit(0)
@@ -888,18 +919,31 @@ sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0
 # so if you don't need them, please omit them! Though tweaks to 2d-gaussian could speed them up.
 path_a = sequence('path a', [(1,1), (1,2), (1,3), (2,4), (3,4), (3,5), (3,6), (4,6), (5,6), (6,6), (7,6)])
 path_b = sequence('path b', [(1,1), (2,1), (3,1), (4,1), (5,1), (6,1), (6,2), (5,3), (5,4), (5,5), (6,5), (7,6)])
+path_c = sequence('path c', [(1,1), (1,-1), (0,-0.7), (-2.5,3.2), (-4,2.1), (-5,5), (-7,3), (-8,0)])
 
 
 # learn our known sequences:
-data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin, path_a, path_b]
-#data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin, path_a, path_b]   # dropped triangle, since triangle looks like first half of sin.
-#data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                    # dropped paths
-#data = [zero, square, triangle, sin]                   # 'curves' only
-#data = [zero, square, triangle, sin, path_a, path_b]   # curves and paths only
-#data = [boys, girls]                                    # sentences only
+#data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin, path_a, path_b, path_c]
+#data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin, path_a, path_b, path_c]   # dropped triangle, since triangle looks like first half of sin.
+#data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                           # dropped paths
+data = [Pi, e, Fib, factorial, counting_numbers]                       # sequences only
+#data = [zero, square, triangle, sin]                                  # curves only
+#data = [zero, square, triangle, sin, path_a, path_b, path_c]          # curves and paths only
+#data = [boys, girls]                                                  # sentences only
+#data = [zero.delta(), square.delta(), triangle.delta(), sin.delta()]   # delta curves only
 
 # quick plot of our curves:
 #plot_sequences([zero, square, triangle, sin], 200)
+
+# quick plot of our delta curves:
+#plot_sequences([zero.delta()], 200)
+#plot_sequences([square.delta()], 200)
+#plot_sequences([triangle.delta()], 200)
+#plot_sequences([sin.delta(0.1)], 200)        # this is the only interesting one, in my opinion
+
+# quick plot of our paths:
+#plot_sequences([path_a, path_b, path_c])
+#sys.exit(0)
 
 
 # if possible, convert a string to a float:
@@ -934,12 +978,14 @@ if __name__ == '__main__':
     #input_seq = sin
     #input_seq = input_seq.noise(0.1)               # add noise to our input sequence
     #input_seq = input_seq.noise(0.2)
+    #input_seq = input_seq.delta()                  # convert seq to delta sequence
 
 
   # plot input sequence
   #plot_sequences([input_seq], 1000)
   #plot_sequences([input_seq.smooth(5)], 1000)
   #plot_sequences([input_seq.smooth(10)], 1000)
+  #plot_sequences([input_seq.delta(0.1)], 1000)
   #sys.exit(0)
 
   # invoke it!
