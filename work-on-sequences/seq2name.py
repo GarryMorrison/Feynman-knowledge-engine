@@ -91,7 +91,8 @@ noise_threshold = 0.1
 max_number_of_predictions_to_return = 7
 
 # max plot length:
-max_plot_len = 30
+#max_plot_len = 30
+max_plot_len = 50
 
 
 
@@ -174,14 +175,14 @@ def random_encoder(n):
 def full_encoder(encode_dict, x):                 # this is where the magic happens!
   if x in encode_dict:                            # converts input into encoded input.
     return encode_dict[x]                         # if you implement more interesting encoders, this is where you would use them.
-  if type(x) in [superposition]:                  # don't encode something that is already encoded. May delete this line later.
+  if type(x) in [superposition]:                  # don't encode something that is already encoded.
     return x
   if type(x) in [int, float, np.float64]:
     r = gaussian_scalar_encoder(x)
   elif type(x) in [tuple]:
     r = gaussian_tuple_encoder(x)
   elif type(x) in [str]:
-    r = ngram_str_encoder(x)                       # this is a string similarity encoder. A semantic similarity encoder would be more fun!
+    r = ngram_str_encoder(x)                       # this is a string similarity encoder. A semantic similarity encoder would be cooler!
   else:
     r = random_encoder(10)                         # random encoder desgined to not have similarity with anything else.
   encode_dict[x] = r
@@ -445,7 +446,7 @@ class superposition(object):
       r.add(key,value)
     return r
 
-  def get_value(self,str):
+  def get_value(self,str):                      # maybe convert to  __getitem__
     if str in self.dict:
       return self.dict[str]
     else:
@@ -674,7 +675,6 @@ def print_table(table):
     print()
 
 
-# I think this code is correct .... kind of hard to tell :(
 def float_sequence(input_seq, data, max_output_len):
   def generate_working_table(data, encoded_sequences, input_pattern):
     working_table = []
@@ -702,7 +702,7 @@ def float_sequence(input_seq, data, max_output_len):
         similarity = simm(element_pattern, seq_element_pattern)
         #print("simm:",similarity)
         if strict_similarity:
-          new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
+          new_coeff = min(coeff, similarity)
         else:
           new_coeff = (coeff + similarity)/2
         if new_coeff >= noise_threshold/100:                 # convert noise_threshold back from percent
@@ -723,14 +723,14 @@ def float_sequence(input_seq, data, max_output_len):
     for name, coeff, seq in sorted_working_table:
       coeff_str = float_to_int(100 * coeff)                       # NB: converted to percent
       seq_str = " ".join(str(x) for x in seq[:max_output_len])    # tweak later. For long input sequences, and short max_output_len, predictions are not visible.
-      table.append([name, coeff_str, seq_str])
-
+      table.append([name, coeff_str, seq_str])                    # maybe use something like: seq[input_len:input_len + max_output_len] ?
+                                                                  # but then can't see beginning of prediction. so maybe: seq[:input_len + max_output_len]
       predicted_seq = sequence(coeff_str + " " + name, seq)
       sequences.append(predicted_seq)
     return sequences, table
 
   # print input sequence:
-  print("input sequence: %s" % input_seq[:] )      # hack to convert sequence type to list.
+  print("input sequence: %s" % input_seq[:] )      # convert sequence type to list
 
   # generate encoded_sequences:
   encode_dict = {}
@@ -776,7 +776,7 @@ def single_seq2name(input_seq, encoded_sequences):
         similarity = simm(element_pattern, seq_element_pattern)
         #print("simm:",similarity)
         if strict_similarity:
-          new_coeff = min(coeff, similarity)                 # perhaps an alternative more tolerant version would be: new_coeff = (coeff + similarity)/2
+          new_coeff = min(coeff, similarity)
         else:
           new_coeff = (coeff + similarity)/2
         if new_coeff >= noise_threshold/100:                 # convert noise_threshold back from percent
@@ -883,14 +883,14 @@ def generate_triangle_curve(w, h, dx):
     print(x)
 
 
-# auto-generate our data:                      # ./seq2name-v2.py | sed 's/$/,/g' | tr -d '\n'
+# auto-generate our data:                      # ./seq2name.py | sed 's/$/,/g' | tr -d '\n'
 #generate_triangle_curve(25, 1, 1)
 #generate_sine_curve(0,2*math.pi, 0.1)
 #sys.exit(0)
 
 
 # learn and name some sequences:
-# floats, ints, and strings are all acceptable.
+# floats, ints, strings and tuples are all acceptable.
 # other types would be too, if you define an appropriate encoder. See: full_encoder()
 # start with some integer sequences:
 Pi = sequence('Pi', [3, '.', 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5])
@@ -900,10 +900,12 @@ factorial = sequence('factorial', [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880
 counting_numbers = sequence('counting', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25])
 
 
-# now some string sequences:
-boys = sequence('boy sentence', ['boys', 'eat', 'many', 'cakes'])
-girls = sequence('girl sentence', ['girls', 'eat', 'many', 'pies'])
-alphabet = sequence('alphabet', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
+# now some simple string sequences:
+# in practice you would have large numbers of these.
+boys = sequence('boy sentence', 'boys eat many cakes'.split(' '))
+girls = sequence('girl sentence', 'girls eat many pies'.split(' '))
+alphabet = sequence('alphabet', 'a b c d e f g h i j k l m n o p q r s t u v w x y z'.split(' '))
+
 
 # now some float sequences:
 zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
@@ -925,11 +927,11 @@ path_c = sequence('path c', [(1,1), (1,-1), (0,-0.7), (-2.5,3.2), (-4,2.1), (-5,
 
 # learn our known sequences:
 #data = [Pi, e, boys, girls, alphabet, zero, square, triangle, sin, path_a, path_b, path_c]
-#data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin, path_a, path_b, path_c]   # dropped triangle, since triangle looks like first half of sin.
+data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin, path_a, path_b, path_c]   # dropped triangle, since triangle looks like first half of sin.
 #data = [Pi, e, Fib, factorial, counting_numbers, boys, girls, alphabet, zero, square, sin]                           # dropped paths
 #data = [Pi, e, Fib, factorial, counting_numbers]                       # sequences only
 #data = [zero, square, triangle, sin]                                  # curves only
-data = [zero, square, triangle, sin, path_a, path_b, path_c]          # curves and paths only
+#data = [zero, square, triangle, sin, path_a, path_b, path_c]          # curves and paths only
 #data = [boys, girls]                                                  # sentences only
 #data = [zero.delta(), square.delta(), triangle.delta(), sin.delta()]   # delta curves only
 
