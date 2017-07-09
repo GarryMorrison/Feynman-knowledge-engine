@@ -2,11 +2,12 @@
 
 #######################################################################
 # given a sequence with repeating subsequences, learn those subsequences
+# not even sure this idea will work neatly ....
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-07-08
-# Update:
+# Update: 2017-7-9
 # Copyright: GPLv3
 #
 # Usage: ./subseqlearn.py
@@ -22,6 +23,7 @@ from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
 
+np.set_printoptions(linewidth=180)
 
 
 # pretty print a float:
@@ -155,6 +157,7 @@ def all_sequences_of_same_type(sequences, my_type):
 def plot_float_sequences(sequences, max_plot_len):
   for seq in sequences:
     my_label = seq.name
+    my_label = '__nolegend__'
     my_linewidth = 1.0
     if my_label == 'input seq':
       my_linewidth = 5.0
@@ -215,6 +218,11 @@ class sequence(object):
   def add(self, seq):
     self.data.append(seq)
 
+  def shift_left(self, w=1):
+    seq = copy.deepcopy(self)
+    seq.data = seq.data[w:]
+    return seq
+
   def similar_index(self, sp):
     r = superposition()
     for k, elt in enumerate(self.data):
@@ -223,20 +231,30 @@ class sequence(object):
         r.add(str(k), similarity)
     return r.coeff_sort()
 
+  def similar_sequence_offset(self, seq):
+    p = len(seq)
+    r = superposition()
+    for k, elt in enumerate(self.pure_ngrams(p)):
+      similarity = seq_simm(elt, seq)                 # list_simm instead??
+      if similarity > 0:
+        r.add(str(k), similarity)
+    return r.coeff_sort()
+
+
   def ngrams(self, p):
     seq = sequence(self.name)
     for i in range(min(len(self.data)+1,p) - 1):
       seq.data = self.data[0:i+1]
-      yield seq
+      yield copy.deepcopy(seq)
     for i in range(len(self.data) - p + 1):
       seq.data = self.data[i:i+p]
-      yield seq
+      yield copy.deepcopy(seq)
 
   def pure_ngrams(self, p):
     seq = sequence(self.name)
     for i in range(len(self.data) - p + 1):
       seq.data = self.data[i:i+p]
-      yield seq
+      yield copy.deepcopy(seq)                         # yeah, need this for list(seq.pure_ngrams(k)) to work.
 
   def encode(self, encode_dict):
     seq = sequence(self.name, [])
@@ -492,10 +510,70 @@ def seq_simm(A, B, strict=True):
   return similarity
 
 
+def rescaled_list_simm(f,g):
+  if len(f) != len(g):
+    return 0
+  the_len = len(f)
+
+# rescale step, first find size:
+  s1 = sum(abs(f[k]) for k in range(the_len))
+  s2 = sum(abs(g[k]) for k in range(the_len))
+
+# if s1 == 0, or s2 == 0, we can't rescale:
+  if s1 == 0 or s2 == 0:
+    return 0
+
+  wfg = sum(abs(f[k]/s1 - g[k]/s2) for k in range(the_len))
+
+  return 1 - wfg/2
+
+
+# input is a list of sequences,
+# currently output is a list of lists. Tweak later.
+#
+def average_categorize_seq_fragments(data,t):
+  out_list = []
+  for r0 in data:
+    r = np.array(r0[:])                                # convert a sequence to a numpy array
+    if r.max() == 0:
+      continue
+    print("r:",r)
+    best_k = -1
+    best_simm = 0
+    for k,sp in enumerate(out_list):
+      similarity = rescaled_list_simm(r,sp[1])
+      if similarity > best_simm:
+        best_k = k
+        best_simm = similarity
+    print("max k:", len(out_list))
+    print("best k:",best_k)
+    print("best simm:",best_simm)
+
+    if best_k == -1 or best_simm < t:
+      out_list.append([1,r])
+    else:
+      out_list[best_k][0] += 1
+      out_list[best_k][1] = out_list[best_k][1] + r*best_simm       # this line is why we cast r to np array.
+  sequences = []                                              # convert to list comprehension later.
+  for k,r in enumerate(out_list):
+    seq = sequence('ave seq: ' + str(k), r[1])
+    sequences.append(seq) 
+    r_sum = np.sum(r[1])
+    r_count = r[0]
+    print("count: %s\tsum: %s\tr: %s " % (r_count, r_sum, r[1]))
+  return sequences
+
 
 def print_sw_dict(dict, op=''):
   for label,sp in dict.items():
     print("%s |%s> => %s" % (op, label, sp))         # add coeff_sort() if sp is superposition?
+
+# assumes input_seq is a sequence of ints or floats, for now
+#
+def average_categorize_sequence(input_seq, ngram_size, threshold):
+  seq_ngrams = list(input_seq.pure_ngrams(ngram_size))
+  ave_seq_ngrams = average_categorize_seq_fragments(seq_ngrams, threshold)
+  return ave_seq_ngrams
 
 
 # testing our code, delete later
@@ -510,9 +588,17 @@ def test_code():
   d.add('d')
   e = superposition()
   e.add('e')
+  f = superposition()
+  f.add('f')
+  g = superposition()
+  g.add('g')
+  h = superposition()
+  h.add('h')
+  i = superposition()
+  i.add('i')
 
 
-  sp_seq = sequence('sp seq', [a,b,c,d,e])
+  sp_seq = sequence('sp seq', [a,b,c,d,e,f,g,h,i])
   sp_seq.display()
 
   sp_seq2 = sequence('sp seq1', [a,c,b,d,e])
@@ -523,4 +609,77 @@ def test_code():
   print("strict similarity:", strict_similarity)
   print("similarity:", similarity)
 
+  seq_frag = sequence('seq frag', [c,d,e,f])
+  r = sp_seq.similar_sequence_offset(seq_frag)
+  print("r:",r)
+
+  seq_frag = sequence('seq frag', [f,g,h])
+  r = sp_seq.similar_sequence_offset(seq_frag)
+  print("r:",r)
+
+
+  full_seq = sequence('full seq', [a,b,c,d,e,f,g,h,i, b,c,d, h,i,b, a,b,c,d])
+  def learn_subsequences(full_seq):                                            # ugly mess, fix later!!!
+    full_seq.display()
+
+    start = 0
+    n = len(full_seq)
+    subsequences = []
+    previous_x = sequence('empty seq')
+    working_seq = full_seq
+    while len(working_seq) > 0:
+      len_previous_r = 0
+      for x in working_seq.ngrams(n):
+        x.display()
+        r = full_seq.similar_sequence_offset(x)
+        print("r: %s\n" % r)      
+        if len(x) == 1 and len(r) == 1:
+          break
+        #if len(r) < len_previous_r:
+        if len(r) != len_previous_r and len(x) > 1:
+        #if len(r) == 1 and len(r) < len_previous_r:
+          subsequences.append(previous_x)
+          print("subsequence:")
+          previous_x.display()
+          print("-----------")
+          break
+        previous_x = x
+        len_previous_r = len(r)
+      working_seq = working_seq.shift_left(len(previous_x))
+    print("=================")
+    for seq in subsequences:
+      print("\nsubsequence:")
+      seq.display()
+    
+
+  #full_seq.shift_left().display()
+  learn_subsequences(full_seq)
+  return
+
+  triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
+  the_len = len(triangle)
+  input_seq = sequence('input seq') + triangle + triangle + triangle + triangle + triangle + triangle + triangle
+  plot_sequences([input_seq], 5*the_len) 
+  working_sequences = average_categorize_sequence(input_seq, the_len, 0.98)
+  plot_sequences(working_sequences, 6*the_len)
+
+  square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
+  the_len = len(square)
+  input_seq = sequence('input seq') + square + square + square + square + square
+  working_sequences = average_categorize_sequence(input_seq, the_len, 0.98)
+  plot_sequences(working_sequences, 6*the_len)
+  
+
 test_code()
+
+# learn some float sequences:
+zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+#square = sequence('square', [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0])
+square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
+triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
+sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
+0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
+-0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
+-0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083])
+
+
