@@ -500,6 +500,8 @@ def simm(A,B):
 def seq_simm(A, B, strict=True):
   if len(A) != len(B):
     return 0
+  if len(A) == 0:
+    return 0
   similarity = 1
   for k in range(len(A)):
     value_simm = simm(A[k], B[k])                    # using simm on elements in the sequences, so it must be a sequence of superpositions
@@ -575,6 +577,84 @@ def average_categorize_sequence(input_seq, ngram_size, threshold):
   ave_seq_ngrams = average_categorize_seq_fragments(seq_ngrams, threshold)
   return ave_seq_ngrams
 
+def learn_subsequences_v1(full_seq):                                            # ugly mess, fix later!!!
+  full_seq.display()
+
+  start = 0
+  n = len(full_seq)
+  subsequences = []
+  previous_x = sequence('empty seq')
+  working_seq = full_seq
+  while len(working_seq) > 0:
+    len_previous_r = 0
+    for x in working_seq.ngrams(n):
+      x.display()
+      r = full_seq.similar_sequence_offset(x)
+      print("r: %s\n" % r)
+      if len(x) == 1 and len(r) == 1:
+        break
+      #if len(r) < len_previous_r:
+      if len(r) != len_previous_r and len(x) > 1:
+      #if len(r) == 1 and len(r) < len_previous_r:
+        subsequences.append(previous_x)
+        print("subsequence:")
+        previous_x.display()
+        print("-----------")
+        break
+      previous_x = x
+      len_previous_r = len(r)
+    working_seq = working_seq.shift_left(len(previous_x))
+  print("=================")
+  for seq in subsequences:
+    print("\nsubsequence:")
+    seq.display()
+
+def similar_sequence_offset(full_seq, seq_frag):
+  p = len(seq_frag)
+  r = superposition()
+  for k, elt in enumerate(self.pure_ngrams(p)):
+    similarity = seq_simm(elt, seq_frag)                 # list_simm instead??
+    if similarity > 0:
+      r.add(str(k), similarity)
+  return r.coeff_sort()
+
+
+def learn_subsequences(full_seq):
+  end_marker = superposition()
+  end_marker.add("end of seq")
+  full_seq += [end_marker]
+  full_seq.display()
+  working_seq = full_seq[:]
+  start = 0
+  n = len(full_seq)
+  subsequences = []
+  partition_points = []
+  while start < n:
+    previous_seq = []
+    previous_r = superposition()
+    for i in range(n - 1):
+      print("i: %s, start: %s" % (i, start))
+      seq = working_seq[start:start + i + 1]
+      print("seq:", ", ".join(str(x) for x in seq))
+      #if seq in subsequences:
+      #  start += len(seq)
+      #  break
+      r = full_seq.similar_sequence_offset(seq)
+      print("r: %s\n" % r)
+      if len(seq) == 1 and len(r) == 1:
+        start += 1
+        break
+      if len(r) < len(previous_r):
+        if previous_seq not in subsequences:
+          subsequences.append(previous_seq)
+          print("***** sub seq:", ", ".join(str(x) for x in previous_seq))
+        break
+      previous_seq = seq
+      previous_r = r
+    start += len(previous_seq)
+  for seq in subsequences:
+    print("seq:", ", ".join(str(x) for x in seq))  
+
 
 # testing our code, delete later
 def test_code():
@@ -619,40 +699,9 @@ def test_code():
 
 
   full_seq = sequence('full seq', [a,b,c,d,e,f,g,h,i, b,c,d, h,i,b, a,b,c,d])
-  def learn_subsequences(full_seq):                                            # ugly mess, fix later!!!
-    full_seq.display()
+  learn_subsequences_v1(full_seq)
 
-    start = 0
-    n = len(full_seq)
-    subsequences = []
-    previous_x = sequence('empty seq')
-    working_seq = full_seq
-    while len(working_seq) > 0:
-      len_previous_r = 0
-      for x in working_seq.ngrams(n):
-        x.display()
-        r = full_seq.similar_sequence_offset(x)
-        print("r: %s\n" % r)      
-        if len(x) == 1 and len(r) == 1:
-          break
-        #if len(r) < len_previous_r:
-        if len(r) != len_previous_r and len(x) > 1:
-        #if len(r) == 1 and len(r) < len_previous_r:
-          subsequences.append(previous_x)
-          print("subsequence:")
-          previous_x.display()
-          print("-----------")
-          break
-        previous_x = x
-        len_previous_r = len(r)
-      working_seq = working_seq.shift_left(len(previous_x))
-    print("=================")
-    for seq in subsequences:
-      print("\nsubsequence:")
-      seq.display()
-    
-
-  #full_seq.shift_left().display()
+  full_seq2 = sequence('full seq 2', [a,b,c,d,e,f,g,h,i, a,b,c,d, h,i,b, a,b,c,d])
   learn_subsequences(full_seq)
   return
 
@@ -660,13 +709,13 @@ def test_code():
   the_len = len(triangle)
   input_seq = sequence('input seq') + triangle + triangle + triangle + triangle + triangle + triangle + triangle
   plot_sequences([input_seq], 5*the_len) 
-  working_sequences = average_categorize_sequence(input_seq, the_len, 0.98)
+  working_sequences = average_categorize_sequence(input_seq, the_len, 0.4)     # 0.98
   plot_sequences(working_sequences, 6*the_len)
 
   square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
   the_len = len(square)
   input_seq = sequence('input seq') + square + square + square + square + square
-  working_sequences = average_categorize_sequence(input_seq, the_len, 0.98)
+  working_sequences = average_categorize_sequence(input_seq, the_len, 0.7)    # 0.98
   plot_sequences(working_sequences, 6*the_len)
   
 
