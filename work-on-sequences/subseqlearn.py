@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-07-08
-# Update: 2017-7-9
+# Update: 2017-7-11
 # Copyright: GPLv3
 #
 # Usage: ./subseqlearn.py
@@ -186,6 +186,18 @@ class sequence(object):
   def __len__(self):
     return len(self.data)
 
+  def __iter__(self):
+    for x in self.data:
+      yield x
+
+  def test__getitem__(self, key):          # hrmm... if key is a slice, do we want to return a seq object??
+    seq = copy.deepcopy(self)          # hrmm... what if it is just a single index?
+    if isinstance(key, slice):
+      seq.data = seq.data[key.start:key.stop:key.step]
+    else:
+      seq.data = [seq.data[key]]
+    return seq
+
   def __getitem__(self, key):
     return self.data[key]
 
@@ -201,7 +213,7 @@ class sequence(object):
     else:
       return NotImplemented
 
-  def display(self):                   # print out a sequence class
+  def display(self):                   # print out a sequence class. Should we use __str__ instead??
     for k,x in enumerate(self.data):
       if type(x) in [superposition]:
         print("seq |%s: %s> => %s" % (self.name, str(k), x.coeff_sort())) # not super happy with this.
@@ -340,6 +352,25 @@ class superposition(object):
     else:
       return NotImplemented
 
+  def __mul__(self, n):
+    if type(n) in [int, float]:
+      r = superposition()
+      for key,value in self.dict.items():
+        r.dict[key] = value*n
+      return r
+    else:
+      return NotImplemented
+
+  def __rmul__(self, n):
+    if type(n) in [int, float]:
+      r = superposition()
+      for key,value in self.dict.items():
+        r.dict[key] = n*value
+      return r
+    else:
+      return NotImplemented
+
+
   def __add__(self, sp):
     if type(sp) in [superposition]:
       r = copy.deepcopy(self)
@@ -434,6 +465,13 @@ class superposition(object):
       r.add(key,value)
       if i + 1 >= k:
         break
+    return r
+
+  def drop_below(self, k):
+    r = superposition()
+    for key,value in self.dict.items():
+      if value >= k:
+        r.add(key,value)
     return r
 
   def reweight(self, weights):
@@ -738,7 +776,7 @@ def fragment_sequence(full_seq, partition_points):
       subsequences.append(sub_seq)
   for seq in subsequences:
     print("seq:", ", ".join(str(x) for x in seq))
-
+  return subsequences
     
 
 
@@ -769,6 +807,19 @@ def test_code():
   z = superposition()
   z.add('z')
 
+  fish = superposition() + a + b + c + b + b + c*3.7 + 5.2*d
+  print(list(fish))
+  print(list(fish.drop_below(2)))
+
+  int_seq = sequence('int seq', [3,1,4,1,5,9,2,6,5])
+  print(list(int_seq))
+  for x in int_seq:
+    print(x)
+  int_seq.display()
+  #int_seq[2:4].display()
+  #int_seq[5].display()
+
+  return
 
 
   sp_seq = sequence('sp seq', [a,b,c,d,e,f,g,h,i])
@@ -795,7 +846,9 @@ def test_code():
   learn_subsequences(full_seq)
   partition_points = [(0, 3), (7, 9), (10, 11), (12, 14), (15, 18)]
   fragment_sequence(full_seq, partition_points)
+  return
 
+  
   full_seq2 = sequence('full seq 2', [a,b,c,d,e,f,g,h,i, a,b,c,d, h,i,b, a,b,c,d])
   learn_subsequences(full_seq2)
   partition_points2 = [(0, 3), (7, 8), (9, 12), (13, 14), (16, 19)]
@@ -849,16 +902,17 @@ def test_code():
   plot_sequences(working_sequences, 6*the_len)
   
 
-test_code()
+#test_code()
 
 # learn some float sequences:
-zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+# not ready for these yet!
+#zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 #square = sequence('square', [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0])
-square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
-triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
-sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
-0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
--0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
--0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083])
+#square = sequence('square', [0,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,0])
+#triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
+#sin = sequence('sin', [0.0,0.1,0.199,0.296,0.389,0.479,0.565,0.644,0.717,0.783,0.841,0.891,0.932,0.964,0.985,0.997,1.0,
+#0.992,0.974,0.946,0.909,0.863,0.808,0.746,0.675,0.598,0.516,0.427,0.335,0.239,0.141,0.042,-0.058,-0.158,-0.256,
+#-0.351,-0.443,-0.53,-0.612,-0.688,-0.757,-0.818,-0.872,-0.916,-0.952,-0.978,-0.994,-1.0,-0.996,-0.982,-0.959,
+#-0.926,-0.883,-0.832,-0.773,-0.706,-0.631,-0.551,-0.465,-0.374,-0.279,-0.182,-0.083])
 
 
