@@ -681,7 +681,6 @@ def learn_subsequences(full_seq):
   end_marker.add("end of seq")
   full_seq += [end_marker]
 
-  working_seq = full_seq[:]
   n = len(full_seq)
   partition_points = []
   subsequences = []
@@ -689,15 +688,17 @@ def learn_subsequences(full_seq):
   while start < n:
     previous_r3 = []
     for i in range(n):
-      print("\ni: %s, start: %s" % (i, start))
-      seq = working_seq[start:start + i + 1]
-      print("seq:", ", ".join(str(x) for x in seq))
+      seq = full_seq[start:start + i + 1]
       r = full_seq.similar_sequence_offset(seq)                     # really shouldn't be using this every iteration!
-      print("r: %s" % r)
       r2 = list(r.dict)
-      print("r2: %s" % r2)
       r3 = filter(r2)
+
+      print("\ni: %s, start: %s" % (i, start))
+      print("seq:", ", ".join(str(x) for x in seq))
+      print("r: %s" % r)
+      print("r2: %s" % r2)
       print("r3: %s" % r3)
+
       if i == 1 and len(r3) == 1:
         break
       if len(r3) < len(previous_r3) and i > 1:
@@ -713,6 +714,32 @@ def learn_subsequences(full_seq):
     print("seq:", ", ".join(str(x) for x in seq))
   print("partition points:", partition_points)
   full_seq.display()
+  return partition_points
+
+def fragment_sequence(full_seq, partition_points):
+  points = [x for l in partition_points for x in l] + [len(full_seq)]
+  print(points)
+  subsequences = []
+    
+  p0 = 0
+  on = True
+  for p1 in points:
+    if on:
+      sub_seq = full_seq[p0:p1]
+      print((p0,p1))
+      p0 = p1
+      on = False
+    else:
+      sub_seq = full_seq[p0:p1+1]
+      print((p0,p1+1))
+      p0 = p1 + 1
+      on = True
+    if len(sub_seq) > 0:
+      subsequences.append(sub_seq)
+  for seq in subsequences:
+    print("seq:", ", ".join(str(x) for x in seq))
+
+    
 
 
 # testing our code, delete later
@@ -766,22 +793,45 @@ def test_code():
 
   full_seq = sequence('full seq', [a,b,c,d,e,f,g,h,i, b,c,d, h,i,b, a,b,c,d])
   learn_subsequences(full_seq)
+  partition_points = [(0, 3), (7, 9), (10, 11), (12, 14), (15, 18)]
+  fragment_sequence(full_seq, partition_points)
 
   full_seq2 = sequence('full seq 2', [a,b,c,d,e,f,g,h,i, a,b,c,d, h,i,b, a,b,c,d])
-  learn_subsequences(full_seq)
+  learn_subsequences(full_seq2)
+  partition_points2 = [(0, 3), (7, 8), (9, 12), (13, 14), (16, 19)]
+  full_seq2.display_minimalist()
+  fragment_sequence(full_seq2, partition_points2)
 
   full_seq3 = sequence('full seq 3', [a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
   learn_subsequences(full_seq3)
+  partition_points3 = [(0, 3), (4, 7), (8, 11), (12, 15), (20, 22), (23, 25), (26, 28), (29, 31), (32, 34)]
+  full_seq3.display_minimalist()
+  fragment_sequence(full_seq3, partition_points3)
 
-  #full_seq4 = sequence('full seq 4', [e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  full_seq4 = sequence('full seq 4', [e,h,h,e,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,h,d, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  learn_subsequences(full_seq4)
+
+  full_seq4a = sequence('full seq 4a', [e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
+  full_seq4b = sequence('full seq 4b', [e,h,h,e,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,h,d, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
+  partition_points_4a = learn_subsequences(full_seq4a)
+  fragment_sequence(full_seq4a, partition_points_4a)
+
+  partition_points_4b = learn_subsequences(full_seq4b)
+  fragment_sequence(full_seq4b, partition_points_4b)
+
 
   full_seq5 = sequence('full seq 5', [x,x,x,x,x, e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  learn_subsequences(full_seq5)
+  partition_points_5 = learn_subsequences(full_seq5)
+  fragment_sequence(full_seq5, partition_points_5)
 
   full_seq6 = sequence('full seq 6', [x,x,x,x,x, e,h,h,e,e,e, x,x,x,x, a,b,c,d])
-  learn_subsequences(full_seq6)
+  partition_points_6 = learn_subsequences(full_seq6)
+  fragment_sequence(full_seq6, partition_points_6)
+
+
+  #partition_points5 = [(6, 7), (10, 13), (14, 17), (18, 21), (22, 25), (29, 30), (31, 32), (33, 35), (36, 38), (39, 41), (42, 44)]
+  #fragment_sequence(full_seq5, partition_points5)
+
+  #partition_points6 = [(0, 3), (11, 14)]
+  #fragment_sequence(full_seq6, partition_points6)
 
   return
 
