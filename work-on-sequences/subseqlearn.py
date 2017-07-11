@@ -619,7 +619,7 @@ def similar_sequence_offset(full_seq, seq_frag):
   return r.coeff_sort()
 
 
-def learn_subsequences(full_seq):
+def learn_subsequences_v2(full_seq):
   end_marker = superposition()
   end_marker.add("end of seq")
   full_seq += [end_marker]
@@ -632,7 +632,10 @@ def learn_subsequences(full_seq):
   while start < n:
     previous_seq = []
     previous_r = superposition()
-    for i in range(n - 1):
+    for i in range(0, n - 1):
+      #if i == 0:
+      #  start += 1
+      #  break
       print("i: %s, start: %s" % (i, start))
       seq = working_seq[start:start + i + 1]
       print("seq:", ", ".join(str(x) for x in seq))
@@ -641,19 +644,75 @@ def learn_subsequences(full_seq):
       #  break
       r = full_seq.similar_sequence_offset(seq)
       print("r: %s\n" % r)
-      if len(seq) == 1 and len(r) == 1:
-        start += 1
+      if i == 1 and len(r) == 1:
+        #start += 1
         break
-      if len(r) < len(previous_r):
-        if previous_seq not in subsequences:
-          subsequences.append(previous_seq)
-          print("***** sub seq:", ", ".join(str(x) for x in previous_seq))
+#      if simm(seq[-1], seq[-2]) > 0.8:                # hack!
+#        break
+      #if len(r) < len(previous_r):
+      #  print("len(previous_seq): %s" % len(previous_seq))
+      if len(r) < len(previous_r) and i > 1:
+      #if len(r) == 1:
+        #if previous_seq not in subsequences:
+        subsequences.append(previous_seq)
+        print("***** sub seq:", ", ".join(str(x) for x in previous_seq))
+        partition_points.append((start, start + i - 1))
+        print("***** partition points: %s %s" % (start, start + i -1))
         break
       previous_seq = seq
       previous_r = r
-    start += len(previous_seq)
+    #start += len(previous_seq)
+    start += i
   for seq in subsequences:
     print("seq:", ", ".join(str(x) for x in seq))  
+  print("partition points:", partition_points)
+  full_seq.display()
+
+def learn_subsequences(full_seq):
+  def filter(r):
+    r2 = [r[0]]
+    for k in range(1,len(r)):
+      if int(r[k]) == int(r[k-1]) + 1:
+        continue
+      r2.append(r[k])
+    return r2
+
+  end_marker = superposition()
+  end_marker.add("end of seq")
+  full_seq += [end_marker]
+
+  working_seq = full_seq[:]
+  n = len(full_seq)
+  partition_points = []
+  subsequences = []
+  start = 0
+  while start < n:
+    previous_r3 = []
+    for i in range(n):
+      print("\ni: %s, start: %s" % (i, start))
+      seq = working_seq[start:start + i + 1]
+      print("seq:", ", ".join(str(x) for x in seq))
+      r = full_seq.similar_sequence_offset(seq)                     # really shouldn't be using this every iteration!
+      print("r: %s" % r)
+      r2 = list(r.dict)
+      print("r2: %s" % r2)
+      r3 = filter(r2)
+      print("r3: %s" % r3)
+      if i == 1 and len(r3) == 1:
+        break
+      if len(r3) < len(previous_r3) and i > 1:
+        partition_points.append((start, start + i - 1))
+        sub_seq = full_seq[start:start + i]
+        subsequences.append(sub_seq)
+        print("***** sub seq:", ", ".join(str(x) for x in sub_seq))
+        print("***** partition points: %s %s" % (start, start + i -1))
+        break
+      previous_r3 = r3
+    start += i
+  for seq in subsequences:
+    print("seq:", ", ".join(str(x) for x in seq))
+  print("partition points:", partition_points)
+  full_seq.display()
 
 
 # testing our code, delete later
@@ -676,6 +735,13 @@ def test_code():
   h.add('h')
   i = superposition()
   i.add('i')
+  x = superposition()
+  x.add('x')
+  y = superposition()
+  y.add('y')
+  z = superposition()
+  z.add('z')
+
 
 
   sp_seq = sequence('sp seq', [a,b,c,d,e,f,g,h,i])
@@ -699,10 +765,24 @@ def test_code():
 
 
   full_seq = sequence('full seq', [a,b,c,d,e,f,g,h,i, b,c,d, h,i,b, a,b,c,d])
-  learn_subsequences_v1(full_seq)
+  learn_subsequences(full_seq)
 
   full_seq2 = sequence('full seq 2', [a,b,c,d,e,f,g,h,i, a,b,c,d, h,i,b, a,b,c,d])
   learn_subsequences(full_seq)
+
+  full_seq3 = sequence('full seq 3', [a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
+  learn_subsequences(full_seq3)
+
+  #full_seq4 = sequence('full seq 4', [e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
+  full_seq4 = sequence('full seq 4', [e,h,h,e,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,h,d, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
+  learn_subsequences(full_seq4)
+
+  full_seq5 = sequence('full seq 5', [x,x,x,x,x, e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
+  learn_subsequences(full_seq5)
+
+  full_seq6 = sequence('full seq 6', [x,x,x,x,x, e,h,h,e,e,e, x,x,x,x, a,b,c,d])
+  learn_subsequences(full_seq6)
+
   return
 
   triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
