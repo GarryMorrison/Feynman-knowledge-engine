@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-07-08
-# Update: 2017-7-11
+# Update: 2017-7-12
 # Copyright: GPLv3
 #
 # Usage: ./subseqlearn.py
@@ -19,6 +19,7 @@ import sys
 import random
 import copy
 import math
+import re
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -96,6 +97,11 @@ def ngram_str_encoder(s):                         # simple string similarity enc
     r.add(ngram)
   return r
 
+def trivial_str_encoder(s):
+  r = superposition()
+  r.add(s)
+  return r
+
 def random_encoder(n):
   r = superposition()
   for key in random.sample(range(65536), n):      # even at 65,536 there are still occasional "collisions".
@@ -112,7 +118,8 @@ def full_encoder(encode_dict, x):                 # this is where the magic happ
   elif type(x) in [tuple]:
     r = gaussian_tuple_encoder(x)
   elif type(x) in [str]:
-    r = ngram_str_encoder(x)                       # this is a string similarity encoder. A semantic similarity encoder would be cooler!
+    r = trivial_str_encoder(x)
+    #r = ngram_str_encoder(x)                       # this is a string similarity encoder. A semantic similarity encoder would be cooler!
   else:
     r = random_encoder(10)                         # random encoder desgined to not have similarity with anything else.
   encode_dict[x] = r
@@ -320,6 +327,22 @@ class sequence(object):
       r += x
     return r
 
+
+# put this here for now:
+# http://stackoverflow.com/questions/4836710/does-python-have-a-built-in-function-for-string-natural-sort
+# 6/8/2014: Doh! There is a bug in sorting things like 0 vs 00 vs 000.
+def natural_sorted(list, key=lambda s:s):
+    """
+    Sort the list into natural alphanumeric order.
+    """
+    def get_alphanum_key_func(key):
+        convert = lambda text: int(text) if text.isdigit() else text
+        return lambda s: [convert(c) for c in re.split('([0-9]+)', key(s))]
+    sort_key = get_alphanum_key_func(key)
+#    list.sort(key=sort_key)
+    return sorted(list,key=sort_key)
+
+
 # a superposition is a collection of float,string pairs, displayed using ket notation.
 class superposition(object):
   def __init__(self):
@@ -458,6 +481,15 @@ class superposition(object):
     for key,value in sorted(self.dict.items(), key=lambda x: x[1], reverse=True):
       r.add(key,value)
     return r
+
+# natural_sorted(self.data, key=lambda x: x.label.lower())
+
+  def ket_sort(self):
+    r = superposition()
+    for key,value in natural_sorted(self.dict.items(), key=lambda x: x[0].lower()):
+      r.add(key,value)
+    return r
+
 
   def select_top(self,k):
     r = superposition()
@@ -706,7 +738,7 @@ def learn_subsequences_v2(full_seq):
   print("partition points:", partition_points)
   full_seq.display()
 
-def learn_subsequences(full_seq):
+def learn_subsequences(full_seq):                                      # now that it is working, and I have test cases, we need to speed this thing up!!
   def filter(r):
     r2 = [r[0]]
     for k in range(1,len(r)):
@@ -727,7 +759,7 @@ def learn_subsequences(full_seq):
     previous_r3 = []
     for i in range(n):
       seq = full_seq[start:start + i + 1]
-      r = full_seq.similar_sequence_offset(seq)                     # really shouldn't be using this every iteration!
+      r = full_seq.similar_sequence_offset(seq).drop_below(0.8).ket_sort()  # really shouldn't be using this every iteration! Tweak drop_below threshold later.
       r2 = list(r.dict)
       r3 = filter(r2)
 
@@ -758,12 +790,11 @@ def fragment_sequence(full_seq, partition_points):
   points = [x for l in partition_points for x in l] + [len(full_seq)]
   print(points)
   subsequences = []
-    
   p0 = 0
   on = True
   for p1 in points:
     if on:
-      sub_seq = full_seq[p0:p1]
+      sub_seq = full_seq[p0:p1]                                # our "subsequences" are actually of type list. Do we want to change this?
       print((p0,p1))
       p0 = p1
       on = False
@@ -819,72 +850,10 @@ def test_code():
   #int_seq[2:4].display()
   #int_seq[5].display()
 
-  return
-
-
-  sp_seq = sequence('sp seq', [a,b,c,d,e,f,g,h,i])
-  sp_seq.display()
-
-  sp_seq2 = sequence('sp seq1', [a,c,b,d,e])
-  sp_seq2.display()
-
-  strict_similarity = seq_simm(sp_seq, sp_seq2)
-  similarity = seq_simm(sp_seq, sp_seq2, False)
-  print("strict similarity:", strict_similarity)
-  print("similarity:", similarity)
-
-  seq_frag = sequence('seq frag', [c,d,e,f])
-  r = sp_seq.similar_sequence_offset(seq_frag)
-  print("r:",r)
-
-  seq_frag = sequence('seq frag', [f,g,h])
-  r = sp_seq.similar_sequence_offset(seq_frag)
-  print("r:",r)
-
-
-  full_seq = sequence('full seq', [a,b,c,d,e,f,g,h,i, b,c,d, h,i,b, a,b,c,d])
-  learn_subsequences(full_seq)
-  partition_points = [(0, 3), (7, 9), (10, 11), (12, 14), (15, 18)]
-  fragment_sequence(full_seq, partition_points)
-  return
-
-  
-  full_seq2 = sequence('full seq 2', [a,b,c,d,e,f,g,h,i, a,b,c,d, h,i,b, a,b,c,d])
-  learn_subsequences(full_seq2)
-  partition_points2 = [(0, 3), (7, 8), (9, 12), (13, 14), (16, 19)]
-  full_seq2.display_minimalist()
-  fragment_sequence(full_seq2, partition_points2)
-
-  full_seq3 = sequence('full seq 3', [a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  learn_subsequences(full_seq3)
-  partition_points3 = [(0, 3), (4, 7), (8, 11), (12, 15), (20, 22), (23, 25), (26, 28), (29, 31), (32, 34)]
-  full_seq3.display_minimalist()
-  fragment_sequence(full_seq3, partition_points3)
-
-
-  full_seq4a = sequence('full seq 4a', [e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  full_seq4b = sequence('full seq 4b', [e,h,h,e,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,h,d, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  partition_points_4a = learn_subsequences(full_seq4a)
-  fragment_sequence(full_seq4a, partition_points_4a)
-
-  partition_points_4b = learn_subsequences(full_seq4b)
-  fragment_sequence(full_seq4b, partition_points_4b)
-
-
-  full_seq5 = sequence('full seq 5', [x,x,x,x,x, e,h,h,e,e, a,b,c,d, a,b,c,d, a,b,c,d, a,b,c,d, f,f,f,h, h,i,b, e,f,g, e,f,g, e,f,g, h,i,b])
-  partition_points_5 = learn_subsequences(full_seq5)
-  fragment_sequence(full_seq5, partition_points_5)
-
-  full_seq6 = sequence('full seq 6', [x,x,x,x,x, e,h,h,e,e,e, x,x,x,x, a,b,c,d])
-  partition_points_6 = learn_subsequences(full_seq6)
-  fragment_sequence(full_seq6, partition_points_6)
-
-
-  #partition_points5 = [(6, 7), (10, 13), (14, 17), (18, 21), (22, 25), (29, 30), (31, 32), (33, 35), (36, 38), (39, 41), (42, 44)]
-  #fragment_sequence(full_seq5, partition_points5)
-
-  #partition_points6 = [(0, 3), (11, 14)]
-  #fragment_sequence(full_seq6, partition_points6)
+  alpha_seq = sequence('alpha seq', ['a','b','c','d'])
+  alpha_seq.display()
+  encode_dict = {}
+  alpha_seq.encode(encode_dict).display()
 
   return
 
