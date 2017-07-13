@@ -21,6 +21,7 @@ import random
 import copy
 import math
 import re
+import hashlib
 from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
@@ -791,10 +792,13 @@ def learn_subsequences_v3(full_seq, drop_threshold=0.98):
   full_seq.display()
   return partition_points
 
+def seq_hash(seq):                                # do we need to make this faster?
+  s = ", ".join(str(x) for x in seq)
+  return hashlib.sha1(s.encode('utf-8')).hexdigest()
 
 # faster, but fails some test cases. Not sure why yet ....
 #def learn_subsequences_v4(full_seq, drop_threshold=0.98):
-def learn_subsequences(full_seq, drop_threshold=0.98):
+def learn_subsequences(full_seq, drop_threshold=0.98, short = True, memoize=True):
   def filter(r):
     r2 = [r[0]]
     for k in range(1,len(r)):
@@ -810,14 +814,24 @@ def learn_subsequences(full_seq, drop_threshold=0.98):
   n = len(full_seq)
   partition_points = []
   subsequences = []
+  seq_offset_dict = {}
   start = 0
   while start < n:
     previous_r3 = []
     for i in range(n):
       seq = full_seq[start:start + i + 1]
       if i == 0:
-        r = full_seq.similar_sequence_offset(seq).drop_below(drop_threshold).ket_sort()  # really shouldn't be using this every iteration!
-        r2 = list(r.dict)
+        if memoize:
+          seq_id = seq_hash(seq)
+          if seq_id in seq_offset_dict:
+            r2 = seq_offset_dict[seq_id]
+          else:
+            r = full_seq.similar_sequence_offset(seq).drop_below(drop_threshold).ket_sort()
+            r2 = list(r.dict)
+            seq_offset_dict[seq_id] = r2
+        else:
+          r = full_seq.similar_sequence_offset(seq).drop_below(drop_threshold).ket_sort()
+          r2 = list(r.dict)
         r3 = filter(r2)
       else:
         r4 = []
@@ -831,14 +845,15 @@ def learn_subsequences(full_seq, drop_threshold=0.98):
 
       print("\ni: %s, start: %s" % (i, start))
       print("seq:", ", ".join(str(x) for x in seq))
-      print("r: %s" % r)
-      print("r2: %s" % r2)
+#      print("r: %s" % r)
+#      print("r2: %s" % r2)
       print("r3: %s" % r3)
+      print("len full seq: %s, len(r2): %s, delta: %s" % (len(full_seq), len(r2), len(full_seq) - len(r2)))  # a measure of the speed-up.
 
       if i == 1 and len(r3) <= 1:
         break
-      if len(r3) < len(previous_r3) and i > 1:
-      #if len(r3) <= 1 and i > 1:
+      #if len(r3) < len(previous_r3) and i > 1:                                  # find short repeated sequences, maybe make into a parameter.
+      if len(r3) <= 1 and i > 1:                                                 # find long repeated sequences
         partition_points.append((start, start + i - 1))
         sub_seq = full_seq[start:start + i]
         subsequences.append(sub_seq)
