@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-07-11
-# Update:
+# Update: 2017-7-13
 # Copyright: GPLv3
 #
 # Usage: py.text -v test_subseqlearn.py
@@ -117,6 +117,9 @@ def test_fragment_sequence_v2():
 def test_learn_subsequences_v3():
   partition_points3 = learn_subsequences(full_seq3)
   assert partition_points3 == [(0, 3), (4, 7), (8, 11), (12, 15), (20, 22), (23, 25), (26, 28), (29, 31), (32, 34)]
+#  assert str(partition_points3) == ''
+# [(0, 3), (4, 7), (8, 11), (12, 15), (21, 22), (23, 25), (26, 28), (29, 31), (33, 34)]
+
 
 def test_fragment_sequence_v3():
   partition_points3 = [(0, 3), (4, 7), (8, 11), (12, 15), (20, 22), (23, 25), (26, 28), (29, 31), (32, 34)]
@@ -157,47 +160,91 @@ def test_learn_and_fragment_sequence_v8():
   assert subsequences == [['a', 'b', 'c', 'd', 'e', 'f', 'g']]
 
 
-encode_dict = {}
+
+def test_fragment_positive_sequence_v1():
+  partition_points = learn_subsequences(full_seq1)
+  subsequences = fragment_positive_sequence(raw_seq1, partition_points)
+  assert subsequences == [['a', 'b', 'c', 'd'], ['h', 'i', 'b'], ['c', 'd'], ['h', 'i', 'b'], ['a', 'b', 'c', 'd']]
+
+def test_fragment_positive_sequence_v2():
+  partition_points = learn_subsequences(full_seq2)
+  subsequences = fragment_positive_sequence(raw_seq2, partition_points)
+  assert subsequences == [['a', 'b', 'c', 'd'], ['h', 'i'], ['a', 'b', 'c', 'd'], ['h', 'i'], ['a', 'b', 'c', 'd']]
+
+def test_fragment_positive_sequence_v3():
+  partition_points = learn_subsequences(full_seq3)
+  subsequences = fragment_positive_sequence(raw_seq3, partition_points)
+  assert subsequences == [['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], 
+  ['h', 'i', 'b'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['h', 'i', 'b']]
+
+def test_fragment_positive_sequence_v4():
+  partition_points = learn_subsequences(full_seq4)
+  subsequences = fragment_positive_sequence(raw_seq4, partition_points)
+  assert subsequences == [['h', 'h'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], 
+  ['h', 'h'], ['i', 'b'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['h', 'i', 'b']]
+
+def test_fragment_positive_sequence_v5():
+  partition_points = learn_subsequences(full_seq5)
+  subsequences = fragment_positive_sequence(raw_seq5, partition_points)
+  assert subsequences == [['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], 
+  ['h', 'i', 'b'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['h', 'i', 'b']]
+
+def test_fragment_positive_sequence_v6():
+  partition_points = learn_subsequences(full_seq6)
+  subsequences = fragment_positive_sequence(raw_seq6, partition_points)
+  assert subsequences == [['h', 'h'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], 
+  ['h', 'h'], ['i', 'b'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['e', 'f', 'g'], ['h', 'i', 'b']]
+
+def test_fragment_positive_sequence_v7():
+  partition_points = learn_subsequences(full_seq7)
+  subsequences = fragment_positive_sequence(raw_seq7, partition_points)
+  assert subsequences == [['x', 'x', 'x', 'x'], ['x', 'x', 'x', 'x']]
+
+def test_fragment_positive_sequence_v8():
+  partition_points = learn_subsequences(full_seq8)
+  subsequences = fragment_positive_sequence(raw_seq8, partition_points)
+  assert subsequences == []
+
+  
+
+
 square = sequence('square', [0,2,2,2,2,2,2,0])
-encoded_square = square.encode(encode_dict)
-
 triangle = sequence('triangle', [0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,0.92,0.84,0.76,0.68,0.6,0.52,0.44,0.36,0.28,0.2,0.12,0.04])
-encoded_triangle = triangle.encode(encode_dict)
-
-two_tri = sequence('two triangle') + triangle + triangle
-encoded_two_tri = two_tri.encode(encode_dict)
-
 zero = sequence('zero', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
+two_tri = sequence('two triangle') + triangle + triangle
 mixed_seq = sequence('mixed seq') + triangle + zero + square + zero + triangle
+
+encode_dict = {}
+encoded_square = square.encode(encode_dict)
+encoded_triangle = triangle.encode(encode_dict)
+encoded_two_tri = two_tri.encode(encode_dict)
 encoded_mixed = mixed_seq.encode(encode_dict)
 
 
 def test_learn_and_fragment_float_sequence_v1():
-  partition_points = learn_subsequences(encoded_square)
+  partition_points = learn_subsequences(encoded_square, 0.98)
   subsequences = fragment_sequence(square, partition_points)
   assert subsequences == [[0, 2, 2, 2, 2, 2, 2, 0]]
 
 def test_learn_and_fragment_float_sequence_v2():
-  partition_points = learn_subsequences(encoded_triangle)
+  partition_points = learn_subsequences(encoded_triangle, 0.98)
   subsequences = fragment_sequence(triangle, partition_points)
   assert subsequences == [[0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 0.92, 0.84, 0.76, 0.68, 0.6, 0.52, 0.44, 0.36, 0.28, 0.2, 0.12, 0.04]]
 
 def test_learn_and_fragment_float_sequence_v3():
-  partition_points = learn_subsequences(encoded_two_tri)
+  partition_points = learn_subsequences(encoded_two_tri, 0.98)
   subsequences = fragment_sequence(two_tri, partition_points)
   assert subsequences == [[0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 0.92, 0.84, 0.76, 0.68, 0.6, 0.52, 0.44, 0.36, 0.28, 0.2, 0.12, 0.04], 
   [0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 0.92, 0.84, 0.76, 0.68, 0.6, 0.52, 0.44, 0.36, 0.28, 0.2, 0.12, 0.04]]
 
 def test_learn_and_fragment_float_sequence_v3():
-  partition_points = learn_subsequences(encoded_mixed)
+  partition_points = learn_subsequences(encoded_mixed, 0.98)
   subsequences = fragment_sequence(mixed_seq, partition_points)
   assert subsequences == [[0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 0.92, 0.84, 0.76, 0.68, 0.6, 0.52, 0.44, 0.36, 0.28, 0.2, 0.12, 0.04], 
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
   [2, 2, 2, 2, 2, 2], 
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-  [0.0, 0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 0.92, 0.84, 0.76, 0.68, 0.6, 0.52, 0.44, 0.36, 0.28, 0.2, 0.12, 0.04]]
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0], 
+  [0.08, 0.16, 0.24, 0.32, 0.4, 0.48, 0.56, 0.64, 0.72, 0.8, 0.88, 0.96, 1.04, 0.92, 0.84, 0.76, 0.68, 0.6, 0.52, 0.44, 0.36, 0.28, 0.2, 0.12, 0.04]]
 
-# assert str(subsequences) == ''
-# assert subsequences ==
 

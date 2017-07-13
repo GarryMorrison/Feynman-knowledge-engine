@@ -3,11 +3,12 @@
 #######################################################################
 # given a sequence with repeating subsequences, learn those subsequences
 # not even sure this idea will work neatly ....
+# hrm... looking like it might ...
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-07-08
-# Update: 2017-7-12
+# Update: 2017-7-13
 # Copyright: GPLv3
 #
 # Usage: ./subseqlearn.py
@@ -738,7 +739,10 @@ def learn_subsequences_v2(full_seq):
   print("partition points:", partition_points)
   full_seq.display()
 
-def learn_subsequences(full_seq):                                      # now that it is working, and I have test cases, we need to speed this thing up!!
+
+
+def learn_subsequences_v3(full_seq, drop_threshold=0.98):
+#def learn_subsequences(full_seq, drop_threshold=0.98):                                      # now that it is working, and I have test cases, we need to speed this thing up!!
   def filter(r):
     r2 = [r[0]]
     for k in range(1,len(r)):
@@ -759,7 +763,7 @@ def learn_subsequences(full_seq):                                      # now tha
     previous_r3 = []
     for i in range(n):
       seq = full_seq[start:start + i + 1]
-      r = full_seq.similar_sequence_offset(seq).drop_below(0.8).ket_sort()  # really shouldn't be using this every iteration! Tweak drop_below threshold later.
+      r = full_seq.similar_sequence_offset(seq).drop_below(drop_threshold).ket_sort()  # really shouldn't be using this every iteration!
       r2 = list(r.dict)
       r3 = filter(r2)
 
@@ -771,7 +775,8 @@ def learn_subsequences(full_seq):                                      # now tha
 
       if i == 1 and len(r3) == 1:
         break
-      if len(r3) < len(previous_r3) and i > 1:
+      if len(r3) < len(previous_r3) and i > 1:                                     # find short repeated sequences
+      #if len(r3) == 1 and i > 1:                                                  # find long repeated sequences
         partition_points.append((start, start + i - 1))
         sub_seq = full_seq[start:start + i]
         subsequences.append(sub_seq)
@@ -785,6 +790,69 @@ def learn_subsequences(full_seq):                                      # now tha
   print("partition points:", partition_points)
   full_seq.display()
   return partition_points
+
+
+# faster, but fails some test cases. Not sure why yet ....
+#def learn_subsequences_v4(full_seq, drop_threshold=0.98):
+def learn_subsequences(full_seq, drop_threshold=0.98):
+  def filter(r):
+    r2 = [r[0]]
+    for k in range(1,len(r)):
+      if int(r[k]) == int(r[k-1]) + 1:
+        continue
+      r2.append(r[k])
+    return r2
+
+  end_marker = superposition()
+  end_marker.add("end of seq")
+  full_seq += [end_marker]
+
+  n = len(full_seq)
+  partition_points = []
+  subsequences = []
+  start = 0
+  while start < n:
+    previous_r3 = []
+    for i in range(n):
+      seq = full_seq[start:start + i + 1]
+      if i == 0:
+        r = full_seq.similar_sequence_offset(seq).drop_below(drop_threshold).ket_sort()  # really shouldn't be using this every iteration!
+        r2 = list(r.dict)
+        r3 = filter(r2)
+      else:
+        r4 = []
+        for pos in r2:
+          p = int(pos)
+          test_seq = full_seq[p:p + i + 1]
+          similarity = seq_simm(seq, test_seq)
+          if similarity >= drop_threshold:
+            r4.append(pos)
+        r3 = filter(r4)
+
+      print("\ni: %s, start: %s" % (i, start))
+      print("seq:", ", ".join(str(x) for x in seq))
+      print("r: %s" % r)
+      print("r2: %s" % r2)
+      print("r3: %s" % r3)
+
+      if i == 1 and len(r3) <= 1:
+        break
+      if len(r3) < len(previous_r3) and i > 1:
+      #if len(r3) <= 1 and i > 1:
+        partition_points.append((start, start + i - 1))
+        sub_seq = full_seq[start:start + i]
+        subsequences.append(sub_seq)
+        print("***** sub seq:", ", ".join(str(x) for x in sub_seq))
+        print("***** partition points: %s %s" % (start, start + i -1))
+        break
+      previous_r3 = r3
+    start += i
+  for seq in subsequences:
+    print("seq:", ", ".join(str(x) for x in seq))
+  print("partition points:", partition_points)
+  full_seq.display()
+  return partition_points
+
 
 def fragment_sequence(full_seq, partition_points):
   points = [x for l in partition_points for x in l] + [len(full_seq)]
@@ -808,7 +876,14 @@ def fragment_sequence(full_seq, partition_points):
   for seq in subsequences:
     print("seq:", ", ".join(str(x) for x in seq))
   return subsequences
-    
+
+def fragment_positive_sequence(full_seq, partition_points):
+  subsequences = []
+  for x,y in partition_points:
+    sub_seq = full_seq[x:y+1]
+    if len(sub_seq) > 0:
+      subsequences.append(sub_seq)
+  return subsequences
 
 
 # testing our code, delete later
@@ -854,6 +929,9 @@ def test_code():
   alpha_seq.display()
   encode_dict = {}
   alpha_seq.encode(encode_dict).display()
+
+  seq = sequence('sample seq', [a,b,c,b,c,d])
+  partition_points = learn_subsequences(seq)
 
   return
 
