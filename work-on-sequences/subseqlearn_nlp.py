@@ -43,30 +43,57 @@ others. Domesticated dogs often view their owner as the alpha male."""
 
 
 source_file = 'text/WP-Adelaide.txt'
-#with open(source_file, 'r') as f:
-#  sentence = f.read()
+source_file = 'text/WP-Australia.txt'
+source_file = 'text/ebook-Asimov_Isaac_-_I_Robot.txt'
+#source_file = 'text/ebook-Tom_Sawyer_74.txt'
+
+
+with open(source_file, 'r') as f:
+  sentence = f.read()
 #print(sentence)
 #sys.exit(0)
 
-merged_sentence = sentence.replace(' ', '').replace('\n', '')
-print(merged_sentence)
-#sys.exit(0)
 
-seq_sentence = sequence('sentence', list(merged_sentence))
-#seq_sentence.display()
+def save_sp(dest_file, op, ket_name, sp):
+  s = "%s |%s> => %s" % (op, ket_name, sp)
+  with open(dest_file, 'w') as f:
+    f.write(s)
 
-encode_dict = {}
-encoded_sentence = seq_sentence.encode(encode_dict)
 
-partition_points = learn_subsequences(encoded_sentence)
-subsequences = fragment_positive_sequence(seq_sentence, partition_points)
-#subsequences = fragment_sequence(seq_sentence, partition_points)
+def merged_string_to_fragments(s, name):
+  merged_sentence = s.replace(' ', '').replace('\n', '')
+  #print(merged_sentence)
+  #return
 
-r = superposition()
-for seq in subsequences:
-  s = "".join(seq)
-  print(s)
-  r.add(s)
-print(r.coeff_sort())
+  seq_sentence = sequence('sentence', list(merged_sentence))
+  #seq_sentence = sequence('sentence', s.replace('\n', ' ').split(' '))
+  #seq_sentence.display()
 
+  encode_dict = {}
+  encoded_sentence = seq_sentence.encode(encode_dict)
+
+  partition_points = learn_subsequences(encoded_sentence)
+  subsequences = fragment_positive_sequence(seq_sentence, partition_points)
+  #subsequences = fragment_sequence(seq_sentence, partition_points)
+
+
+  r = superposition()
+  for seq in subsequences:
+    s = "".join(seq)
+    print(s)
+    r.add(s)
+  print(r.coeff_sort())
+  save_sp('sw-examples/subseqlearn-nlp--%s--raw.sw' % name, 'subseq', name, r)
+
+  # now count them:                                     # bah, seems to make things worse!
+  r2 = superposition()
+  for word,coeff in r:
+    count = merged_sentence.count(word)
+    r2.add(word, count)
+  #print(r2.coeff_sort())
+  save_sp('sw-examples/subseqlearn-nlp--%s.sw' % name, 'subseq', name, r2)
+
+
+#merged_string_to_fragments(sentence, 'wp-australia-split')
+merged_string_to_fragments(sentence, 'I-robot')
 

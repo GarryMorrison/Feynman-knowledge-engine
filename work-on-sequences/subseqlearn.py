@@ -838,7 +838,7 @@ def learn_subsequences(full_seq, drop_threshold=0.98, short = True, memoize=True
         for pos in r2:
           p = int(pos)
           test_seq = full_seq[p:p + i + 1]
-          similarity = seq_simm(seq, test_seq)
+          similarity = seq_simm(seq, test_seq)                                  # move memoize to seq_simm()??
           if similarity >= drop_threshold:
             r4.append(pos)
         r3 = filter(r4)
@@ -847,18 +847,22 @@ def learn_subsequences(full_seq, drop_threshold=0.98, short = True, memoize=True
       print("seq:", ", ".join(str(x) for x in seq))
 #      print("r: %s" % r)
 #      print("r2: %s" % r2)
-      print("r3: %s" % r3)
+      if len(r3) < 20:
+        print("r3: %s" % r3)
       print("len full seq: %s, len(r2): %s, delta: %s" % (len(full_seq), len(r2), len(full_seq) - len(r2)))  # a measure of the speed-up.
 
       if i == 1 and len(r3) <= 1:
         break
       #if len(r3) < len(previous_r3) and i > 1:                                  # find short repeated sequences, maybe make into a parameter.
-      if len(r3) <= 1 and i > 1:                                                 # find long repeated sequences
-        partition_points.append((start, start + i - 1))
-        sub_seq = full_seq[start:start + i]
-        subsequences.append(sub_seq)
-        print("***** sub seq:", ", ".join(str(x) for x in sub_seq))
-        print("***** partition points: %s %s" % (start, start + i -1))
+      #if len(r3) <= 1 and i > 1:                                                 # find long repeated sequences
+      #if len(r3) <= 1 and len(previous_r3) > 2 and i > 1:
+      if len(r3) <= 1 and i > 1:
+        if len(previous_r3) > 2:
+          partition_points.append((start, start + i - 1))
+          sub_seq = full_seq[start:start + i]
+          subsequences.append(sub_seq)
+          print("***** sub seq:", ", ".join(str(x) for x in sub_seq))
+          print("***** partition points: %s %s" % (start, start + i -1), flush=True)
         break
       previous_r3 = r3
     start += i
