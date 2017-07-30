@@ -8,7 +8,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2017-07-08
-# Update: 2017-7-13
+# Update: 2017-7-27
 # Copyright: GPLv3
 #
 # Usage: ./subseqlearn.py
@@ -579,6 +579,8 @@ def seq_simm(A, B, strict=True):
     value_simm = simm(A[k], B[k])                    # using simm on elements in the sequences, so it must be a sequence of superpositions
     if strict:
       similarity = min(similarity, value_simm)
+      if similarity == 0:                            # break from loop if similarity is zero.
+        return 0
     else:
       similarity = (similarity + value_simm)/2
   return similarity

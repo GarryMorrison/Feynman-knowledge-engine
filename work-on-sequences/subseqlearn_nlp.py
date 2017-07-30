@@ -5,6 +5,7 @@
 # the hope is it auto finds words.
 # just testing an idea, not guaranteed to work
 # doesn't look like it will work ...
+# seems to partly work. Now trying to find way to improve on that ...
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
@@ -46,6 +47,7 @@ source_file = 'text/WP-Adelaide.txt'
 source_file = 'text/WP-Australia.txt'
 source_file = 'text/ebook-Asimov_Isaac_-_I_Robot.txt'
 #source_file = 'text/ebook-Tom_Sawyer_74.txt'
+source_file = 'text/ebook-Sherlock-Holmes.txt'
 
 
 with open(source_file, 'r') as f:
@@ -93,7 +95,95 @@ def merged_string_to_fragments(s, name):
   #print(r2.coeff_sort())
   save_sp('sw-examples/subseqlearn-nlp--%s.sw' % name, 'subseq', name, r2)
 
+def post_process_word_v1(s, word):
+  merged_sentence = s.replace(' ', '').replace('\n', '')
+  #print(merged_sentence)
+  seq_sentence = sequence('sentence', list(merged_sentence))
+  seq_word = sequence('word', list(word))
+
+  encode_dict = {}
+  encoded_sentence = seq_sentence.encode(encode_dict)
+  encoded_word = seq_word.encode(encode_dict)
+
+  r = superposition()
+  r2 = encoded_sentence.similar_sequence_offset(encoded_word)
+  print("r2:", r2)
+  for pos, coeff in r2:
+    p = int(pos)
+    k = len(word)
+    w = "".join(seq_sentence[p - 2:p + k + 2])
+    r.add(w)
+  print("r:",r)
 
 #merged_string_to_fragments(sentence, 'wp-australia-split')
-merged_string_to_fragments(sentence, 'I-robot')
+#merged_string_to_fragments(sentence, 'I-robot')
+merged_string_to_fragments(sentence, 'Sherlock')
 
+#post_process_word_v1(sentence, 'kull')
+
+# r2: |20225> + |21172> + |33958> + |85403> + |100054> + |139360> + |154998> + |156753> + |158744> + |208275>
+# r: |napproachedhi> + |,approachedca> + |eapproachedhi> + |eapproached.A> + |tapproachedso> + |napproachedth> + |yapproachedHe> + |eapproachedth> + 
+# |dapproachedwi> + |sapproachedus>
+# post_process_word_v1(sentence, 'pproached')
+
+# r2: |14276> + |29902> + |54768> + |56621> + |86189> + |97019> + |101619> + |177494> + |182153> + |251433> + |251690> + |252930> + |295175>
+# r: |rstandingpe> + |estandingto> + |sstandingin> + |dstandingfo> + |sstandinggu> + |sstandingbe> + |tstandingst> + |rstandingth> + |rstanding.A> + 
+# |nstandingDo> + |nstanding,w> + |nstanding,y> + |lstanding,a>
+#post_process_word_v1(sentence, 'tanding')
+
+#post_process_word_v1(sentence, 'ertain')
+
+# r2: |76319> + |197897> + |211975>
+# r: |heabilitytoru> + |heabilitytode> + |inabilitytofa>
+#post_process_word_v1(sentence, 'abilityto')
+
+# r2: |84920> + |178612> + |215669>
+# r: |ousomething,my> + |insomething,bu> + |ldsomething,if>
+# post_process_word_v1(sentence, 'something,')
+
+# r2: |136465> + |167698> + |167773> + |168859> + |170493> + |171620> + |173633> + |180383> + |180689> + |183241> + |183467> + |183847> + |187191> + |189418> 
+# + |195559> + |197616> + |198446> + |205738>
+# r: |asmodifiedto> + |hamodifiedFi> + |s;modifiedme> + 2|semodifiedro> + |asmodified,e> + 3|hemodifiedNe> + |lymodified.A> + 2|ermodifiedNe> + |hamodifiedro> 
+# + |famodifiedro> + |hemodifiedFi> + |hemodifiedNS> + |ofmodifiedro> + |semodifiedNe>
+# post_process_word_v1(sentence, 'modified')
+
+
+#post_process_word_v1(sentence, 'roboticists')
+
+
+def post_process_word_v2(s, words):
+  merged_sentence = s.replace(' ', '').replace('\n', '')
+  #print(merged_sentence)
+  seq_sentence = sequence('sentence', list(merged_sentence))
+
+  encode_dict = {}
+  encoded_sentence = seq_sentence.encode(encode_dict)
+
+  for word in words:
+    seq_word = sequence('word', list(word))
+    encoded_word = seq_word.encode(encode_dict)
+
+    r1 = encoded_sentence.similar_sequence_offset(encoded_word)
+    r2 = superposition()
+    r3 = superposition()
+    r4 = superposition()
+    for pos, coeff in r1:
+      p = int(pos)
+      k = len(word)
+      w2 = "".join(seq_sentence[p - 2:p + k + 2])
+      w3 = seq_sentence[p-1:p][0]
+      w4 = seq_sentence[p + k:p + k + 1][0]
+
+      r2.add(w2)
+#      print("w3:",w3)
+#      print("w4:",w4)
+      r3.add(w3)
+      r4.add(w4)
+    print(word)
+    print("r1:", r1)
+    print("r2:",r2)
+    print("r3:",r3.coeff_sort())
+    print("r4:",r4.coeff_sort())
+    print(flush=True)
+
+#post_process_word_v2(sentence, ['kull', 'pproached', 'tanding', 'ertain', 'abilityto', 'something,', 'modified', 'roboticists', 'nowand', 'Butthey', 'Dr.Calvins'])
