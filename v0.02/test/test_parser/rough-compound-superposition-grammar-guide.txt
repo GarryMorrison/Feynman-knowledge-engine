@@ -1,0 +1,195 @@
+op |x>
+op3 op2 op1 |x>  -- op-sequence-ket
+op4^3 op (|x> + 7|y> + 2|z>)
+op4^3 op (|x> + 7|y> - 2|z>) + op5 |u> + op7^2 op6 |v>
+
+op-sequence (CS)  -- op-sequence-bracket-sp
+
+foo-1 (CS)        -- 1-param-fn
+foo-2 (CS,CS)     -- 2-param-fn
+foo-3 (CS,CS,CS)  -- 3-param-fn
+
+(1 + op - op^2 + op3^5) |x>   -- bracket-ops-ket
+|x> + op|x> -op^2 |x> + op3^5 |x>
+
+(1 + op + op^2 op9 op8 + op3^5) (2|x> + |y>) -- bracket-ops-bracket-sp
+(2|x> + |y>) + op (2|x> + |y>) + op^2 op9 op8 (2|x> + |y>) + op3^5 (2|x> + |y>)
+
+<y| (1 + op + op^2 + op3^5) |x>
+<y| (1 + op + op^2 + op3^5) |x>|z> -- ???
+|z><y| (1 + op + op^2 + op3^5) |x>
+
+float-simm (CS,CS) |g>  -- 2-param-float-fn
+|g> float-simm (CS,CS)
+
+3|z>
+|z>3
+
+3<z|
+<z|3
+
+(<y| + <x|3 + <z|2)
+
+(<y| + 3<x| + 2<z|) (1 + op + op^2 op9 op8 + op3^5) (2|x> + |y>)
+bra-like operator-like ket-like
+transpose(SP)
+
+ket-like
+operator-like ket-like
+ket-like bra-like ket-like
+bra-like ket-like ket-like
+ket-like bra-like operator-like ket-like
+bra-like operator-like ket-like ket-like
+projection-like ket-like
+projection-like operator-like ket-like
+
+projection_transpose(SP)
+(|y><y| + 3|x><x| + 2|z><z|) (1 + op + op^2 op9 op8 + op3^5) (2|x> + |y>)
+projection-sp
+
+
+(1 + op + op^2 op9 op8 + op3^5) (CS,CS)  -- this one is strange!!
+(fn-1 + fn-2) (CS,CS)    -- valid?? No for now.
+
+
+
+|x>  -- ket
+|x> + |y> + |z> -- clean-sp
+2|x> + |y> +3.27|z> -- literal-sp
+|x> _ |y> _ |z> -- merge-ket-labels
+op3 op2 op1 -- op-sequence
+(2|x> + |y>) -- bracket-sp
+(CS) -- 1-bracket-sp
+(CS,CS) -- 2-bracket-sp
+(CS,CS,CS) -- 3-bracket-sp
+(CS,CS,CS,CS) -- 4-bracket-sp
+(1 + op - op^2 + op3^5) -- bracket-ops
+<y| -- bra
+3|z> -- float-ket
+|z>3 -- ket-float
+<y|CS|x> -- bra-op-ket
+<y|CS (|x> + 3|y>) -- bra-op-sp
+foo-1 (CS)        -- 1-param-fn
+foo-2 (CS,CS)     -- 2-param-fn
+foo-3 (CS,CS,CS)  -- 3-param-fn
+float-simm (CS,CS) |x>  -- 2-param-float-fn
+op3 op2 op1 foo-2 (CS,CS)
+
+# []
+def test_op_op_sequence_space():
+  x = op_grammar("  ").op_sequence()
+  assert str(x) == "[]"
+
+# ['foo', 'bah', ['fish', 'x', 'y', '13.2'], (['select', '1', '3'], 2)]
+def test_op_op_sequence_one():
+  x = op_grammar("  foo bah fish[x,y,13.2] select[1,3]^2   ").op_sequence()
+  assert str(x) == "['foo', 'bah', ['fish', 'x', 'y', '13.2'], (['select', '1', '3'], 2)]"
+
+# ['33.2', '""', ['fish', 'foo'], ('3.14', 3), 'some-op', '-13.572']
+def test_op_op_sequence_two():
+  x = op_grammar(" 33.2  \"\" fish[foo] 3.14^3 some-op -13.572 ").op_sequence()
+  print(x)
+  assert str(x) == "['33.2', '\"\"', ['fish', 'foo'], ('3.14', 3), 'some-op', '-13.572']"
+
+
+operator-like object
+-- superposotion-like object
+ket-like object
+bra-like object
+
+
+A potential example of literal operators with parameters:
+
+equal[k]? |*> #=> equal(100 test-label |_self>,h[_k] |_self>)
+h[k] |*> #=> normalize[100] select[1,1] coeff-sort test-label select[1,_k] similarity |_self>
+score |top 1> => 0.05 equal[1]? ket-sort rel-kets[similarity] |>
+score |top 2> => 0.05 equal[2]? ket-sort rel-kets[similarity] |>
+score |top 3> => 0.05 equal[3]? ket-sort rel-kets[similarity] |>
+score |top 4> => 0.05 equal[4]? ket-sort rel-kets[similarity] |>
+score |top 5> => 0.05 equal[5]? ket-sort rel-kets[similarity] |>
+
+
+
+|x>                     -- ket
+|x> + |y> + |z>         -- clean-sp
+2|x> + |y> +3.27|z>     -- literal-sp
+|x> _ |y> _ |z>         -- merge-ket-labels
+op3 op2 op1             -- op-sequence
+(2|x> + |y>)            -- bracket-sp
+(CS)                    -- 1-bracket-sp
+(CS,CS)                 -- 2-bracket-sp
+(CS,CS,CS)              -- 3-bracket-sp
+(CS,CS,CS,CS)           -- 4-bracket-sp
+(1 + op - op^2 + op3^5) -- bracket-ops
+foo-1 (CS)              -- 1-param-fn
+foo-2 (CS,CS)           -- 2-param-fn
+foo-3 (CS,CS,CS)        -- 3-param-fn
+float-simm (CS,CS) |x>  -- 2-param-float-fn
+op3 op2 op1 foo-2 (CS,CS)
+
+literal-sp + ECS
+(literal-sp) + ECS
+op-sequence ket + ECS
+op-sequence (literal-sp) + ECS
+bracket-ops ket + ECS
+bracket-ops (literal-sp) + ECS
+bracket-ops (ECS) + ECS
+op-sequence (ECS) + ECS
+op-sequence foo-1 (ECS) + ECS
+op-sequence foo-2 (ECS,ECS) + ECS
+op-sequence foo-3 (ECS,ECS,ECS) + ECS
+op-sequence foo-4 (ECS,ECS,ECS,ECS) + ECS
+bracket-ops foo-1 (ECS) + ECS
+bracket-ops foo-2 (ECS,ECS) + ECS
+bracket-ops foo-3 (ECS,ECS,ECS) + ECS
+bracket-ops foo-4 (ECS,ECS,ECS,ECS) + ECS
+
+
+rhs-ket-like = coeff-ket | (ECS) | foo-1 (ECS) | foo-2 (ECS,ECS) | foo-3 (ECS,ECS,ECS) | foo-4 (ECS,ECS,ECS,ECS)
+op-like = S0 | bracket-ops | op-sequence
+
+ECS = <op-like>* rhs-ket-like + ECS
+
+
+
+rhs-ket-like = coeff-ket | (ECS)
+foo-like = foo-1 (ECS) | foo-2 (ECS,ECS) | foo-3 (ECS,ECS,ECS) | foo-4 (ECS,ECS,ECS,ECS)
+op-like = bracket-ops | op-sequence | S0
+
+rhs-ket-like
+op-like rhs-ket-like
+op-like foo-like
+
+op-like op-like rhs-ket-like            # this we can do
+op-like op-like foo-like                # this has me stumped!
+
+op-like^k rhs-ket-like
+op-like^k foo-like
+
+op-sequence^2 is still an op-sequence
+
+(1 + op - op^2 + op3^5)^3    ??
+op5 op4  op3 op2 op1
+
+how far down the rabbit hole do I want to go???????
+
+op2 op1 (1 + op3 + op5^2)^7 (op6 + op7) op8 op9 foo-2 (ECS,ECS) + ECS
+
+op-strings
+terminals: op_start_char S0 ( + - _ ^ ) [ ] , 
+
+start_chars:
+ket
+coeff_ket
+op_string
+bracket
+
+follow ket&coeff_ket:
+ + ECS
+ -
+ _
+EOL
+
+follow op_string:
+op-sequence
+
