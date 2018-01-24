@@ -39,7 +39,6 @@ def natural_sorted(list, key=lambda s:s):
 #    list.sort(key=sort_key)
     return sorted(list,key=sort_key)
 
-# 4/3/2015: I hate when integers are displayed as floats. Sorry, pet peeve. 
 # convert float to int if possible:
 def float_to_int(x,t=3):
   if float(x).is_integer():
@@ -50,7 +49,7 @@ def float_to_int(x,t=3):
 
 # need to think on how we want |> and <| to behave.
 # eg, currently <*||> returns 1. May want 0.
-def labels_match(label_1,label_2):
+def labels_match(label_1,label_2):                                               # TODO. Is this even used anywhere anymore?? Can we delete it?
   logger.debug("label_1: " + label_1)
   logger.debug("label_2: " + label_2)
 
@@ -84,7 +83,6 @@ def labels_match(label_1,label_2):
       return not truth_var
   return not truth_var
 
-# 25/3/2014 added label_descent()
 # Pretty sure it is correct.
 def label_descent(x):                           # can we optimize this at all? Does it matter?
   logger.info("ket: " + x)
@@ -101,15 +99,14 @@ def label_descent(x):                           # can we optimize this at all? D
       result.append("*")
       return result
 
-# 14/1/2016:
-def list_2_sp(one):
+def list2sp(one):
   r = superposition()
   if type(one) == list:
     for x in one:                                # what do we want to do if type(x) is not int, float or string?
       if type(x) == int or type(x) == float:
-        r += ket("number: " + str(x))
+        r.add("number: " + str(x))
       elif type(x) == str:
-        r += ket(x)
+        r.add(x)
   return r
     
 
@@ -132,7 +129,10 @@ class ket(object):
     return self.label == other.label and self.value == other.value
 
   def __iter__(self):
-    yield self.label, self.value                          # to be consistant with the superposition class, we yield a pair, not a ket
+    yield ket(self.label, self.value)
+
+  def items(self):
+    yield self.label, self.value
 
   def display(self,exact=False):
     if self.value == 1:
@@ -156,7 +156,7 @@ class ket(object):
       return self.label
     else:
       if self.value.is_integer():
-        return "{0:.0f} {1}".format(self.value,self.label) # not consistant style with display() and long_display().
+        return "{0:.0f} {1}".format(self.value,self.label) # not consistant style with display() and long_display().FIX.
       return "{0:.2f} {1}".format(self.value,self.label)      
         
   def __add__(self,x):
@@ -164,12 +164,41 @@ class ket(object):
 
   def __sub__(self,x):
     return superposition(self) - x
-
-# deleted clean_add(self,x) and self_add(self,x). I don't know what they are meant to do, or where they are used. 
-# Add back in later if they turn out to be important! 
     
+  def merge(self, x):                                      # |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f> == |a> + 2.1|b> + |cd> + |e> + |f>  
+    label = self.label + x.select_elt(1).label             # assumes select_elt(k) returns a single ket, even for sp class.
+    return ket(label)    
+
+  def seq_merge(self, x):                                  # ket('x').seq_merge(ket('y')) == |x> . |y>
+    return NotImplemented
+
+# deleted clean_add(self,x) and self_add(self,x). I don't know what they are meant to do, or where they are used. In new_context, I think ....  
+# Add back in later if they turn out to be important!
+# I still want to delete them, but left them in for now.  
+#  def clean_add(self,x):
+#    r = superposition(self)
+#    r.clean_add(x)      
+#    return r
+#
+#  def self_add(self,x):
+#    logger.debug("inside ket self_add")
+#    logger.debug("self: " + str(self))
+#    logger.debug("x: " + str(x))
+#    r = superposition(self) + x 
+#    return r
+
+  def add(self, label, value=1):
+    r = superposition(self)
+    r.add(label, value)
+    return r
+    
+  def add_sp(self, sp):
+    r = superposition(self)
+    r.add_sp(sp)
+    return r
+      
   def apply_fn(self,fn,t1=None,t2=None):                   # should be able to improve this, so we don't need the if statements!
-    if t1 == None:
+    if t1 == None:                                         # maybe this: https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python
       r = fn(self)
     elif t2 == None:
       r = fn(self,t1)
@@ -177,34 +206,31 @@ class ket(object):
       r = fn(self,t1,t2)
     return superposition(r)
 
+  def apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
+    if t1 == None:
+      return fn(self)
+    elif t2 == None:
+      return fn(self,t1)
+    elif t3 == None:
+      return fn(self,t1,t2)
+    elif t4 == None:
+      return fn(self,t1,t2,t3)
+    else:
+      return fn(self,t1,t2,t3,t4)
 
-# Don't know what the next 2 functions are meant to do! Go see the op tables in the processor. I think answer is in there. 
-#  def apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
-#    if t1 == None:
-#      return fn(self)
-#    elif t2 == None:
-#      return fn(self,t1)
-#    elif t3 == None:
-#      return fn(self,t1,t2)
-#    elif t4 == None:
-#      return fn(self,t1,t2,t3)
-#    else:
-#      return fn(self,t1,t2,t3,t4)
-#
-## need to check this works.     # seems to.
-#  def apply_naked_fn(self,fn,t1=None,t2=None,t3=None):
-#    if t1 == None:
-#      return fn()
-#    elif t2 == None:
-#      return fn(t1)
-#    elif t3 == None:
-#      return fn(t1,t2)
-#    else:
-#      return fn(t1,t2,t3)
+  def apply_naked_fn(self,fn,t1=None,t2=None,t3=None):                  # TODO, test later.
+    if t1 == None:
+      return fn()
+    elif t2 == None:
+      return fn(t1)
+    elif t3 == None:
+      return fn(t1,t2)
+    else:
+      return fn(t1,t2,t3)
 
 # sp_recall(self,op,sp,active=False)
 
-  def apply_op(self,context,op):
+  def apply_op(self,context,op):                                        # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
     logger.debug("inside ket apply_op")
     r = context.sp_recall(op,self,True)       # this is broken! Not sure why, yet. I think I fixed it.  
     logger.debug("inside ket apply_op, sp: " + str(r))
@@ -213,26 +239,17 @@ class ket(object):
     logger.debug("leaving ket apply_op")
     return r
 
-# I don't think we need it anymore. Just use op^k. 
-# apply the same op more than once.
-# especially useful for networks.
-#  def apply_op_multi(self,context,op,n):
-#    result = copy.deepcopy(self)
-#    for k in range(n):
-#      result = result.apply_op(context,op)
-#    return result
-
   def select_elt(self,k):
     if k != 1 and k != -1:
-      return ket("",0)
+      return ket()
     else:
-      return ket(self.label,self.value)
+      return ket(self.label, self.value)
           
 # 5/2/2015: eg: without this: select[1,5] "" |bah> bugs out if "" |bah> is not defined.
   def select_range(self,a,b):      
     if a <= 1 <= b:
-      return ket(self.label,self.value)
-    return ket("",0)
+      return ket(self.label, self.value)
+    return ket()
     
 # 24/9/2015:
 # top[5] SP, should return the top 5 kets in the superposition, without changing the order
@@ -246,20 +263,14 @@ class ket(object):
 # Here is fixed version:
   def top(self,k):
     if k == 0:
-      return ket("",0)
+      return ket()
     return ket(self.label,self.value)
 
-# 13/10/2015:
-  def inhibition(self,t):
-    return ket(self.label,self.value)        
-
-    
-# 6/8/2015:
   def index_split(self,k):                      # OK. Now need to test it. Maybe improve for k other than {1,-1}.
-    if k == 1:
-      return ket(self.label,self.value), ket("")
+    if k == 1:                                  # do we need it anymore? Isn't it just in the parser to help with |x> _ |y>??
+      return ket(self.label,self.value), ket()
     if k == -1:
-      return ket(""), ket(self.label,self.value) 
+      return ket(), ket(self.label,self.value) 
   
   def pick_elt(self):
     return ket(self.label,self.value)
@@ -267,46 +278,44 @@ class ket(object):
   def weighted_pick_elt(self):
     return ket(self.label,self.value)      
 
-  def find_index(self,one):
-    label = one.label if type(one) == ket else one
-    if self.label == label:
-      return 1
-    return 0
-
-  def find_value(self,one):
-    label = one.label if type(one) == ket else one
-    if self.label == label:
-      return self.value
-    return 0
-
-  def find_max_coeff(self):
-    return self.value
-
-  def find_min_coeff(self):
-    return self.value
+#  def find_index(self,one):
+#    label = one.label if type(one) == ket else one
+#    if self.label == label:
+#      return 1
+#    return 0
+#
+#  def find_value(self,one):
+#    label = one.label if type(one) == ket else one
+#    if self.label == label:
+#      return self.value
+#    return 0
+#
+#  def find_max_coeff(self):
+#    return self.value
+#
+#  def find_min_coeff(self):
+#    return self.value
 
   def normalize(self,t=1):
-    result = copy.deepcopy(self)
-    if result.value > 0:
-      result.value = t
-    return result
+    r = ket(self.label, self.value)
+    if r.value > 0:
+      r.value = t
+    return r
 
-# 15/12/2015:
   def softmax(self):
     return ket(self.label,1)
 
   def rescale(self,t=1):
-    result = copy.deepcopy(self)
-    if result.value > 0:
-      result.value = t
-    return result
+    r = ket(self.label, self.value) 
+    if r.value > 0:
+      r.value = t
+    return r
 
   def multiply(self,t):
     return ket(self.label,self.value*t)
     
-# 14/1/2016:
-  def add(self,t):
-    return ket(self.label,self.value + t)
+#  def add(self,t):                                        # Nope. Deleted for now. Conflicts with x.add(key,value)
+#    return ket(self.label,self.value + t)
     
 
 # 6/1/2015: hrmm... maybe abs, absolute_noise, and relative_noise should be sigmoids!
@@ -332,11 +341,11 @@ class ket(object):
   def ket_sort(self):
     return ket(self.label,self.value)
 
-  def find_max_coeff(self):
-    return self.value
-
-  def find_min_coeff(self):
-    return self.value
+#  def find_max_coeff(self):                                 # where are these used? find-topic??
+#    return self.value
+#
+#  def find_min_coeff(self):
+#    return self.value
 
   def number_find_max_coeff(self):
     return ket("number: " + str(self.value))
@@ -344,34 +353,34 @@ class ket(object):
   def number_find_min_coeff(self):
     return ket("number: " + str(self.value))
     
-  def old_discrimination(self):
-    return ket(" ",self.value)
-
-  def discrimination(self):
-    if self.label == "":
-      return ket("discrimination",0)
-    return ket("discrimination")
+#  def old_discrimination(self):
+#    return ket(" ",self.value)
+#
+#  def discrimination(self):
+#    if self.label == "":
+#      return ket("discrimination",0)
+#    return ket("discrimination")
     
 
 # 24/2/2015:
 # implements discrim-drop[t] SP
 # ie: if discrim is > t return |>, else return value.
 # don't know how I want this to work! 
-  def discrimination_drop(self,t):
-    return ket(self.label,self.value)    
+#  def discrimination_drop(self,t):
+#    return ket(self.label,self.value)    
     
 
 
 # sigmoids apply to the values of kets, and leave ket labels alone.
   def apply_sigmoid(self,sigmoid,t1=None,t2=None):
-    result = copy.deepcopy(self)
+    r = ket(self.label, self.value)
     if t1 == None:
-      result.value = sigmoid(result.value)
+      r.value = sigmoid(r.value)
     elif t2 == None:
-      result.value = sigmoid(result.value,t1)
+      r.value = sigmoid(r.value,t1)
     else:
-      result.value = sigmoid(result.value,t1,t2)
-    return result
+      r.value = sigmoid(r.value,t1,t2)
+    return r
 
 # do we need a superposition version of this? Probably...
 # implements: similar[op] |x>
@@ -440,18 +449,7 @@ class ket(object):
       r = intersection(r,sp)
     return r.normalize(100).coeff_sort()
          
-
-# implement op3 op2 op1 |x>                  # this is actaully also "matrix multiplication", of sorts.
-  def merged_apply_op(self,context,ops):
-    result = copy.deepcopy(self)
-    for op in ops.split()[::-1]:
-#      print("op:",op)
-      result = result.apply_op(context,op)
-    return result
-
-  def count(self):
-#    return 1
-# 4/1/2015 tweak:
+  def count(self):                                                # duplicates len(x), but keep it anyway, because of its brother count_sum().
     if self.label == "":
       return 0
     return 1
@@ -460,8 +458,6 @@ class ket(object):
     return self.value
 
   def number_count(self):
-#    return ket("number: 1")
-# 4/1/2015 tweak:
     if self.label == "":
       return ket("number: 0")
     return ket("number: 1")
@@ -471,54 +467,50 @@ class ket(object):
 
   def drop(self):
     if self.value > 0:
-      return ket(self.label,self.value)
+      return ket(self.label, self.value)
     else:
-      return ket("",0)
+      return ket()
 
   def drop_below(self,t):
     if self.value >= t:
       return ket(self.label,self.value)
     else:
-      return ket("",0)
+      return ket()
   
   def drop_above(self,t):
     if self.value <= t:
       return ket(self.label,self.value)
     else:
-      return ket("",0)
+      return ket()
       
-# 26/3/2016:
-  def drop_zero(self):
+  def drop_zero(self):                                        # don't know where we use this.
     if abs(x.value) > 0.0001:
       return ket(self.label,self.value)
     else: 
       return ket("",0)
     
-    
-
 # I'm using this in show_range, arithemetic etc, so can feed in sp or ket.
 # deprecated. Now use x.the_label()
 # usage: X.ket()
 # the other half is in superposition.
-  def ket(self):
-    return ket(self.label,self.value)
+#  def ket(self):
+#    return ket(self.label,self.value)
+#
+#  def the_label(self):
+#    return self.label
+#  
+#  def the_value(self):
+#    return self.value
 
-  def the_label(self):
-    return self.label
-  
-  def the_value(self):
-    return self.value
+  def is_not_empty(self):
+    if self.label == "":
+      return ket("no")
+    return ket("yes")
 
   def activate(self,context=None,op=None,self_label=None):
     return ket(self.label,self.value)            # not sure if we need this:
     #return self                                 # or if this will suffice.
 
-# 4/1/2015:
-  def is_not_empty(self):
-    #logger.debug("ket is-not-empty: " + str(self))              # not sure if we need this.
-    if self.label == "":
-      return ket("no")
-    return ket("yes")
 
 
 # a superposition is a collection of float,string pairs, displayed using ket notation. 
@@ -531,11 +523,13 @@ class superposition(object):
       if type(first) in [str]:                           # this is ugly! Mixing and matching string vs superposition? Maybe we should keep a ket class?? Also, ket is quicker to type!
         self.dict[first] = value                         # r1 = superposition('fred')
       elif type(first) in [ket, superposition]:          # r2 = superposition('fred',3.2)
-        for key,value in first:                          # r4 = superposition(ket('fred'))
+        for key,value in first.items():                  # r4 = superposition(ket('fred'))
           if key != '':                                  # r5 = superposition(another-sp)
             self.dict[key] = value                         
 
   def __str__(self):
+    if len(self.dict) == 0:
+      return '|>'
     list_of_kets = []
     for key,value in self.dict.items():
       if value == 1:
@@ -547,10 +541,29 @@ class superposition(object):
 
   def __iter__(self):
     for key,value in self.dict.items():
+      yield ket(key, value)
+
+  def items(self):
+    for key,value in self.dict.items():
       yield key, value
 
   def __len__(self):
     return len(self.dict)
+
+  def __getattr__(self, name):
+    if name == 'label':
+      if len(self.dict) == 0:
+        return ""
+      for key,value in self.dict.items():                      # NB. For a sp with more than 1 element, sp.label and sp.value returns label and value of the first element only.
+        return key
+    if name == 'value':
+      if len(self.dict) == 0:
+        return ""
+      for key,value in self.dict.items():
+        return value
+    else:
+      raise AttributeError
+    
 
   def __truediv__(self, divisor):
     if type(divisor) in [int, float]:
@@ -564,7 +577,7 @@ class superposition(object):
   def __add__(self, sp):
     if type(sp) in [ket, superposition]:
       r = copy.deepcopy(self)
-      for key,value in sp:
+      for key,value in sp.items():
         r.add(key, value)
       return r
     else:
@@ -573,13 +586,13 @@ class superposition(object):
   def __sub__(self, sp):
     if type(sp) in [ket, superposition]:
       r = copy.deepcopy(self)
-      for key,value in sp:
+      for key,value in sp.items():
         r.add(key, - value)
       return r
     else:
       return NotImplemented
 
-  def add(self,str,value=1):          # what about adding a superposition?
+  def add(self,str,value=1):          # what about adding a superposition? r.add(some-sp). Or r.add_sp(some-sp)? Yeah, and r.add_sp(some-ket)
     if str == '':                     # |x> + 3.72|> == |x>
       return
     if str in self.dict:
@@ -587,13 +600,23 @@ class superposition(object):
     else:
       self.dict[str] = float(value)
 
+  def add_sp(self, sp):                      # handles r.add_sp(some-ket) and r.add_sp(some-sp)
+    for key,value in sp.items():
+      self.add(key, value)
+
   def max_add(self, str, value = 1):
+    if str == '':
+      return
     if str in self.dict:
       self.dict[str] = max(self.dict[str], float(value))
     else:
       self.dict[str] = float(value)
+      
+#  def clean_add(self,one):                                    # I don't know where this is used. Maybe remove since it duplicates add_sp().
+#    for key,value in one.items():
+#      self.add(key,value)      
 
-  def display(self):
+  def old_display(self):
     list_of_pairs = []
     for key,value in self.dict.items():
       if value == 1.0:
@@ -602,7 +625,17 @@ class superposition(object):
         s = "%s %s" % (float_to_int(value), key)
       list_of_pairs.append(s)
     return ",\t".join(list_of_pairs)
+    
+  def display(self,exact=False):
+    if len(self.dict) == 0:
+      return '|>'
+    return " + ".join(x.display(exact) for x in self)     # 1) get ket class to do the display. 2) need something better if we mix + - _ .  
 
+  def readable_display(self):
+    if len(self.dict) == 0:
+      return ""
+    return ", ".join(x.readable_display() for x in self)
+       
   def pair(self):                               # if the dict is longer than 1 elt, this returns a random pair
     for key,value in self.dict.items():         # presuming not using an OrderedDict
       return key, value
@@ -614,16 +647,37 @@ class superposition(object):
       r.add(key,value)
     return r
 
+  def pick_elt(self):
+    if len(self) == 0:
+      return ket()
+    key = random.choice(list(self.dict))
+    value = self.dict[key]
+    return ket(key, value)
+
+  def weighted_pick_elt(self):                    # quick test in the console, looks to be roughly right.
+    if len(self) == 0:
+      return ket()
+    total = sum(x.value for x in self)
+    r = random.uniform(0,total)
+    upto = 0
+    for x in self:
+      w = x.value
+      if upto + w > r:
+        return x
+      upto += w
+    assert False, "Shouldn't get here"    
+    
+
   def get_value(self,str):                      # maybe convert to  __getitem__
     if str in self.dict:
       return self.dict[str]
     else:
       return 0                                 # maybe return None?
 
-  def the_value(self):                         # if the dict is longer than 1 elt, this returns a random value
-    for key,value in self.dict.items():
-      return value
-    return 0
+#  def the_value(self):                         # if the dict is longer than 1 elt, this returns a random value
+#    for key,value in self.dict.items():
+#      return value
+#    return 0
 
   def rescale(self,t=1):
     if len(self.dict) == 0:
@@ -631,7 +685,7 @@ class superposition(object):
     the_max = max(value for key,value in self.dict.items())
     result = superposition()
     if the_max > 0:
-      for key,value in self:
+      for key,value in self.dict.items():
         result.dict[key] = t*self.dict[key]/the_max
     return result
 
@@ -641,14 +695,64 @@ class superposition(object):
     the_sum = sum(value for key,value in self.dict.items())
     result = superposition()
     if the_sum > 0:
-      for key,value in self:
+      for key,value in self.dict.items():
         result.dict[key] = t*self.dict[key]/the_sum
     return result
 
-  def coeff_sort(self):                                    # implement ket_sort() too?
+  def softmax(self):
+    if len(self) == 0:
+      return ket()
     r = superposition()
-    for key,value in sorted(self.dict.items(), key=lambda x: x[1], reverse=True):
+    the_sum = sum(math.exp(value) for (key, value) in self.dict.items())
+    for key, value in self.dict.items():
+      r.add(key, math.exp(value)/the_sum)
+    return r
+
+  def multiply(self,t):
+    r = superposition()
+    for key,value in self.dict.items():
+      r.add(key, value*t)
+    return r
+    return result
+
+# add noise to the ket/sp in range [0,t]
+  def absolute_noise(self,t):
+    r = superposition()
+    for key, value in self.dict.items():
+      r.add(key, value + random.uniform(0,t))
+    return r
+        
+# add noise to ket/sp in range [0,t*max_coeff]
+  def relative_noise(self,t):
+    max_coeff = self.find_max_coeff()
+    r = superposition()
+    for key, value in self.dict.items():
+      r.add(key, value + random.uniform(0, t * max_coeff))
+    return r
+       
+
+  def coeff_sort(self):                                                           # Nope. Doesn't seem to work.
+    r = superposition()
+    for key,value in sorted(self.dict.items(), key=lambda x: x[1], reverse=True): # 3|a> + 2|b> + |c> or |c> + 2|b> + 3|c>?
       r.add(key,value)
+    return r
+    
+  def ket_sort(self):
+    r = superposition()
+    for key,value in natural_sorted(self.dict.items(), key=lambda x: x[0].lower()):
+      r.add(key,value)
+    return r
+    
+  def reverse(self):
+    r = superposition()
+    r.dict = OrderedDict(reversed(list(self.dict.items())))
+    return r
+    
+  def shuffle(self):
+    r = superposition()
+    items = list(self.dict.items())
+    random.shuffle(items)
+    r.dict = OrderedDict(items)
     return r
 
   def select_top(self,k):
@@ -659,12 +763,257 @@ class superposition(object):
         break
     return r
 
-  def reweight(self, weights):
+# NB: we use: 1 <= k <= len, not 0 <= k < len to access ket objects.
+# NB: though we still use -1 for the last element, -2 for the second last element, etc.
+  def select_elt(self,k):
+    if k >= 1 and k <= len(self.dict):
+      label, value = list(self.dict.items())[k-1]      # is there a better way to do this! Mapping entire sp to list, just to keep 1 element!!
+      return ket(label, value)                         # perhaps, https://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict 
+    elif k < 0:                                        # import itertools
+      label, value = list(self.dict.items())[k]        # next(itertools.islice(d.values(), 0, 1))
+      return ket(label, value)                         # next(itertools.islice(d.values(), 1, 2))
+    else:
+      return ket("",0)
+
+  def select_range(self,a,b):
+    a = max(1,a) - 1
+    b = min(b,len(self.dict))
     r = superposition()
-    for k, (key, value) in enumerate(self.dict.items()):
-      r.add(key, value * weights[k] )
+    for label, value in list(self.dict.items())[a:b]:
+      r.add(label, value)
+    return r
+
+  def top(self,k):
+    if k == 0:
+      return ket()
+    value = self.coeff_sort().select_range(k,k).value
+    return self.drop_below(value)      
+
+  def delete_elt(self,k):
+    r = superposition()
+    for i, (key, value) in enumerate(self.items()):
+      if i != k - 1:
+        r.add(key, value)
+    return r
+
+  def delete_elt_v2(self, k):
+    r = copy.deepcopy(self)
+    label, value = list(self.dict.items())[k-1]
+    r.add(label, -value)                              # return r.drop() ??
+    return r
+
+  def delete_elt_v3(self, k):
+    label, value = list(self.dict.items())[k-1]
+    r = copy.deepcopy(self)
+    del r.dict[label]
+    return r
+
+  def find_index(self,one):
+    label = one.label if type(one) == ket else one
+    for k,(key,value) in enumerate(self.dict.items()):
+      if key == label:
+        return k + 1
+    return 0
+
+  def find_value(self,one):
+    label = one.label if type(one) == ket else one
+    if label in self.dict:
+      return self.dict[label]
+    return 0
+
+  def find_max_coeff(self):
+    if len(self) == 0:
+      return 0
+    return max(x.value for x in self)
+
+  def find_min_coeff(self):
+    if len(self) == 0:
+      return 0
+    return min(x.value for x in self)
+
+  def number_find_max_coeff(self):
+    if len(self) == 0:
+      value = 0
+    else:
+      value = max(x.value for x in self)
+    return ket("number: " + str(value))
+
+  def number_find_min_coeff(self):
+    if len(self) == 0:
+      value = 0
+    else:
+      value = min(x.value for x in self)
+    return ket("number: " + str(value))
+
+
+  def find_max_elt(self):
+    if len(self) == 0:
+      return ket()
+    the_max = max(x.value for x in self)
+    for key, value in self.dict.items():
+      if value == the_max:
+        return ket(key, value)
+    logger.warning("I shouldn't be here in find_max_elt.")
+
+  def find_min_elt(self):
+    if len(self) == 0:
+      return ket()
+    the_min = min(x.value for x in self)
+    for key, value in self.dict.items():
+      if value == the_min:
+        return ket(key, value)
+    logger.warning("I shouldn't be here in find_min_elt.")
+
+  def find_max(self):
+    if len(self) == 0:
+      return superposition()
+    the_max = max(x.value for x in self)
+    r = superposition()
+    for key, value in self.dict.items():
+      if value == the_max:
+        r.add(key, value)
+    return r
+
+  def find_min(self):
+    if len(self) == 0:
+      return superposition()
+    the_min = min(x.value for x in self)
+    r = superposition()
+    for key, value in self.dict.items():
+      if value == the_min:
+        r.add(key, value)
+    return r
+
+  def delete_ket(self,one):        # do we need a delete_sp() too?
+    label = one.label if type(one) == ket else one
+    r = copy.deepcopy(self)
+    del r.dict[label]
     return r
     
+
+  def drop(self):
+    r = superposition()
+    for key, value in self.dict.items():
+      if value > 0:
+        r.add(key, value)
+    return r
+
+  def drop_below(self,t):
+    r = superposition()
+    for key, value in self.dict.items():
+      if value >= t:
+        r.add(key, value)
+    return r
+
+  def drop_above(self,t):
+    r = superposition()
+    for key, value in self.dict.items():
+      if value <= t:
+        r.add(key, value)
+    return r
+
+  def count(self):
+    return len(self)
+
+  def count_sum(self):
+    return sum(x.value for x in self)
+
+  def number_count(self):
+    result = len(self)
+    return ket("number: " + str(result))
+
+  def number_count_sum(self):  
+    result = sum(x.value for x in self)
+    return ket("number: " + float_to_int(result))
+
+  def product(self):                          # need to put these in ket now.
+    r = 1
+    for x in self:
+      r *= x.value
+    return r
+
+  def number_product(self):
+    r = 1
+    for x in self:
+      r *= x.value
+    return ket("number: " + str(r))
+    
+  
+#  def reweight(self, weights):
+#    r = superposition()
+#    for k, (key, value) in enumerate(self.dict.items()):
+#      r.add(key, value * weights[k] )
+#    return r
+
+  def apply_fn(self,fn,t1=None,t2=None):
+    result = superposition()
+    for x in self:
+      if t1 == None:
+        r = fn(x)
+      elif t2 == None:
+        r = fn(x,t1)
+      else:
+        r = fn(x,t1,t2)
+      result += r
+    return result
+
+
+# define a function that maps sp -> sp, instead of ket -> ket/sp.
+# now we need to 1) add it to ket class, and 2) wire it into the processor.
+# 5/2/2015: starting to wonder if there is a tidier way to do this!!
+  def apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
+    if t1 == None:
+      return fn(self)
+    elif t2 == None:
+      return fn(self,t1)
+    elif t3 == None:
+      return fn(self,t1,t2)
+    elif t4 == None:
+      return fn(self,t1,t2,t3)
+    else:
+      return fn(self,t1,t2,t3,t4)
+
+# need to check this works!
+# 27/6/2014: hrmm... so let me get this right, a sp_fn applies to the applied superposition.
+# and naked_fn ignores any passed in superpositions.
+  def apply_naked_fn(self,fn,t1=None,t2=None,t3=None):
+    if t1 == None:
+      return fn()
+    elif t2 == None:
+      return fn(t1)
+    elif t3 == None:
+      return fn(t1,t2)
+    else:
+      return fn(t1,t2,t3)
+
+  def apply_op(self,context,op):
+    logger.debug("inside sp apply_op")
+    r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
+    if len(r) == 0:
+      r = superposition()
+      for x in self:
+        r += context.recall(op,x,True) # should this be apply_op() instead? Nah, don't think so.
+    logger.debug("sp apply_op: " + str(r))
+    return r
+
+  def apply_sigmoid(self, sigmoid, t1=None, t2=None):
+    r = superposition()
+    if t1 == None:
+      for key,value in self.dict.items():
+        value = sigmoid(value)
+        r.add(key,value)
+    elif t2 == None:
+      for key,value in self.dict.items():
+        value = sigmoid(value, t1)
+        r.add(key,value)
+    else:
+      for key,value in self.dict.items():
+        value = sigmoid(value, t1, t2)
+        r.add(key,value)
+    return r
+           
+  def activate(self,context=None,op=None,self_label=None):
+    return self
 
 
 # some sigmoids:
@@ -1198,7 +1547,8 @@ class new_context(object):
     if label not in self.ket_rules_dict:
       self.ket_rules_dict[label] = OrderedDict()
       self.ket_rules_dict[label]["supported-ops"] = superposition()
-    self.ket_rules_dict[label]["supported-ops"].clean_add(ket("op: " + op))  # this is probably a speed bump now.
+    #self.ket_rules_dict[label]["supported-ops"].clean_add(ket("op: " + op))  # this is probably a speed bump now.
+    self.ket_rules_dict[label]["supported-ops"].add("op: " + op)              # this is probably a speed bump now.
                                                                              # but if we merge over to fast_sp, that should fix itself.
     if not add_learn:
       self.ket_rules_dict[label][op] = rule

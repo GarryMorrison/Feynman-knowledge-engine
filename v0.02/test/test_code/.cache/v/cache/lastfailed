@@ -1,1 +1,8 @@
-{}
+{
+  "test_code.py::test_ket_seq_merge": true,
+  "test_code.py::test_sp_absolute_noise": true,
+  "test_code.py::test_sp_pick_elt": true,
+  "test_code.py::test_sp_relative_noise": true,
+  "test_code.py::test_sp_shuffle": true,
+  "test_code.py::test_sp_weighted_pick_elt": true
+}

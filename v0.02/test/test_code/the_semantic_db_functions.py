@@ -30,18 +30,8 @@ from the_semantic_db_code import *
 # the value function
 # eg: value |price: _x> => _x |_self>
 # provided _x is convertable to float, else return |_self>
-def old_apply_value(a_ket):
-# not sure if want this long term, but cast sp to ket:
-  a_ket = a_ket.ket()
-  cat, value = extract_category_value(a_ket.label)
-  try:
-    x = float(value)
-  except ValueError:
-    return ket(a_ket.label,a_ket.value)
-  return ket(a_ket.label,x * a_ket.value)
-
 def apply_value(one):
-  cat, value = extract_category_value(one.label)
+  cat, value = one.label.rsplit(': ', 1)
   try:
     x = float(value)
   except ValueError:
@@ -50,15 +40,15 @@ def apply_value(one):
 
 # the extract category function
 # eg: extract-category |animal: fish> => |animal>
-def extract_category(a_ket):
-  cat, value = extract_category_value(a_ket.label)
-  return ket(cat,a_ket.value)
+def extract_category(one):
+  cat, value = one.label.rsplit(': ', 1)  
+  return ket(cat,one.value)
 
 # the extract value function
 # eg: extract-value |animal: fish> => |fish>
-def extract_value(a_ket):
-  cat, value = extract_category_value(a_ket.label)
-  return ket(value,a_ket.value)
+def extract_value(one):
+  cat, value = one.label.rsplit(': ', 1)
+  return ket(value,one.value)
 
 # 28/8/2015:
 # remove-leading-category |a: b: c: d> == |b: c: d>
@@ -218,15 +208,15 @@ def show_range(start,finish,step="n: 1"):
 # fixed, I hope.
 #
 def arithmetic(x,operator,y):
-  x_label = x if type(x) == str else x.the_label()
-  op_label = operator if type(operator) == str else operator.the_label()
-  y_label = y if type(y) == str else y.the_label()
+  x_label = x if type(x) == str else x.label
+  op_label = operator if type(operator) == str else operator.label
+  y_label = y if type(y) == str else y.label
 
-  cat1, v1 = extract_category_value(x_label)
-  name, op = extract_category_value(op_label)
-  cat2, v2 = extract_category_value(y_label)
+  cat1, v1 = x_label.rsplit(': ', 1)
+  name, op = op_label.rsplit(': ', 1)
+  cat2, v2 = y_label.rsplit(': ', 1)
   if cat1 != cat2 or op not in ['+','-','*','/','%','^']:
-    return ket("")
+    return ket()
   try:
     x = int(v1)
     y = int(v2)
@@ -235,7 +225,7 @@ def arithmetic(x,operator,y):
       x = float(v1)
       y = float(v2)
     except ValueError:
-      return ket("")
+      return ket()
   label = ""
   if len(cat1) > 0:
     label = cat1 + ": "      
@@ -247,14 +237,14 @@ def arithmetic(x,operator,y):
     return ket(label + str(x * y))
   elif op == '/':
     if y == 0:         # prevent div by zero
-      return ket("",0)
+      return ket()
     return ket(label + str(x / y))
   elif op == '%':
     return ket(label + str(x % y))
   elif op == '^':
     return ket(label + str(x ** y))
   else:
-    return ket("")   # presumably this should never be reached.
+    return ket()                       # presumably this should never be reached.
 
 
 
@@ -343,7 +333,8 @@ def intersection_fn(foo,one,two):
 
     value = foo(v1,v2)
 #    result += ket(label,value)
-    result.data.append(ket(key,value))
+#    result.data.append(ket(key,value))
+    result.add(key, value)
   return result
 
 # 24/1/2015: let's write the intersection_fn version that uses the fast_sp as a backend.
@@ -2003,17 +1994,6 @@ def weighted_bko_if(condition,one,two):
 # or indirectly
 # |list> => |Fred> + |Sam> + |Charles> 
 # common[friends] "" |list>
-def old_common(one,context,op):
-  logger.debug("inside common[op]")
-  if one.count() <= 1:                         # this should also neatly filter out kets, I presume.
-    return one.apply_op(context,op)
-  
-  r = one.data[0].apply_op(context,op)
-  for k in range(1,one.count()):
-    sp = one.data[k].apply_op(context,op)      # fast_sp_fix. Need to re-write this when swap in fast_superposition class.
-    r = intersection(r,sp)
-  return r
-
 def common(one,context,op):
   if len(one) == 0:
     return ket("",0)
@@ -2572,10 +2552,17 @@ def long_display(one):
 # split |word1 word2 word3 word4> => |word1> + |word2> + |word3> + |word4>
 # saves typing in some cases. eg, find-topic[words] split |word1 word2 word3>
 # assumes one is a ket
-def split_ket(one):
+def old_split_ket(one):
   result = superposition()
   result.data = [ket(w,one.the_value()) for w in one.the_label().split() ]        # Buggy? eg, anything with duplicates. eg: split |a a b a b a a c a>
   return result                                                   # superficially it seems to work, because elsewhere tidies up our mess (probably the extract_compound_superposition code)
+
+def split_ket(one):
+  r = superposition()
+  for key,value in one.items():
+    for label in key.split():
+      r.add(label, value)
+  return r
 
 # 29/8/2015:
 # clean-split |word1 word2 word3> => |word1> + |word2> + |word3>
@@ -3834,11 +3821,10 @@ def apply_weights(one,weights):
 #
 # one is a superposition
 def rank(one):
-  result = superposition()
-  result.data = []
-  for k,x in enumerate(one):
-    result.data.append(ket(x.label,k+1))
-  return result
+  r = superposition()
+  for k, (label, value) in enumerate(one.items()):
+    r.add(label, k+1)
+  return r
 
 
 # lower-case, upper-case, sentence-case
