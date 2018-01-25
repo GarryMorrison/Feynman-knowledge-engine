@@ -45,7 +45,7 @@ exponent = ('e' | 'E') ('+' | '-')? digits
 
 # my parsley code:
 
-valid_ket_chars = :x ?(x not in '<|>') -> x
+valid_ket_chars = :x ?(x not in '<|>')
 naked_ket = '|' <valid_ket_chars*>:x '>' -> x
 coeff_ket = (number | -> 1):value ws naked_ket:label -> (label, value)
 signed_ket = ('-' | -> ''):sign ws (number | -> 1):value ws naked_ket:label -> (label, float(sign + str(value))) 
@@ -57,6 +57,36 @@ seq_ket = ws '.' ws coeff_ket:k -> ('.', k)
 ket_ops = (add_ket | sub_ket | merge_ket | seq_ket)
 
 literal_sequence = ws signed_ket:left ws ket_ops*:right ws -> ket_calculate(left, right)
+
+
+positive_int = <digit+>:n -> int(n)
+#S0 = ' '*
+S1 = ' '+
+op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
+op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.')
+valid_op_name = op_start_char:first <op_char*>:rest -> first + rest
+simple_op = valid_op_name:s -> s
+#parameters = (number | simple_op | '\"\"' | '*'):p -> p
+parameters = (number | simple_op | '\"\"' | '*'):p -> str(p)
+
+compound_op = simple_op:the_op '[' parameters:first (',' ws parameters)*:rest ']' -> [the_op] + [first] + rest
+general_op = (compound_op | simple_op | number | '\"\"' ):the_op -> the_op
+powered_op = general_op:the_op '^' positive_int:power -> (the_op,power)
+op = (powered_op | general_op):the_op -> the_op
+op_sequence = (ws op:first (S1 op)*:rest ws -> [first] + rest)
+              | ws -> []
+
+add_op_sequence = ws '+' ws op_sequence:seq -> ('+', seq)
+sub_op_sequence = ws '-' ws op_sequence:seq -> ('-', seq)
+merge_op_sequence = ws '_' ws op_sequence:seq -> ('_', seq)
+seq_op_sequence = ws '.' ws op_sequence:seq -> ('.', seq)
+op_sequence_ops = (add_op_sequence | sub_op_sequence | merge_op_sequence | seq_op_sequence)
+#bracket_ops = ws '(' op_sequence:first ws (op_sequence_ops+:rest ws ')' ws -> [('+', first)] + rest
+#                                          | ')' ws -> [('+', first)] )
+op_symbol = ('+' | '-' | '_' | '.')
+bracket_ops = ws '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws (op_sequence_ops+:rest ws ')' ws -> [(symbol, first)] + rest
+                                          | ')' ws -> [(symbol, first)] )
+
 """
 
 
@@ -131,3 +161,65 @@ def test_seq_add_multi():
   x = op_grammar(' |a> - 2.1|b> + 3|c> _ 7.9|d> . 29.9|e> + |f> . |fish> . |soup> + 13.2|pasta> ').literal_sequence()
   x.display()
   assert True
+
+
+# test operator parsing:
+def test_simple_op():
+  s = op_grammar('!equal-2?').simple_op()
+  assert s == '!equal-2?'
+
+def test_compound_op():
+  x = op_grammar('fish[a,3.7,99]').compound_op()
+  assert x == ['fish', 'a', '3.7', '99']
+
+def test_compound_op_spaces():
+  x = op_grammar('fish[a, 3.7, 99]').compound_op()
+  assert x == ['fish', 'a', '3.7', '99']
+
+def test_compound_op_spaces():
+  x = op_grammar('fish[a, 3.7, 99]^7').powered_op()
+  assert x == (['fish', 'a', '3.7', '99'], 7)
+
+def test_op_sequence_space():
+  x = op_grammar("  ").op_sequence()
+  assert x == []
+
+def test_op_sequence_simple_sequence():
+  x = op_grammar(" foo bah fish ").op_sequence()
+  assert x == ['foo', 'bah', 'fish']
+
+# ['foo', 'bah', ['fish', 'x', 'y', '13.2'], (['select', '1', '3'], 2)]
+def test_op_sequence_one():
+  x = op_grammar("  foo bah fish[x,y,13.2] select[1,3]^2   ").op_sequence()
+  assert x == ['foo', 'bah', ['fish', 'x', 'y', '13.2'], (['select', '1', '3'], 2)]
+
+# ['33.2', '""', ['fish', 'foo'], ('3.14', 3), 'some-op', '-13.572']
+def test_op_sequence_two():
+  x = op_grammar(" 33.2  \"\" fish[foo] 3.14^3 some-op -13.572 ").op_sequence()
+  assert x == [33.2, '""', ['fish', 'foo'], (3.14, 3), 'some-op', -13.572]
+
+def test_bracket_ops_empty():
+  x = op_grammar(' ( ) ').bracket_ops()
+  assert x == [('+', [])]
+
+def test_bracket_ops_simple():
+  x = op_grammar(' (op2 - 2 op1) ').bracket_ops()
+  assert x == [('+', ['op2']), ('-', [2, 'op1'])]
+
+def test_bracket_ops_complex():
+  x = op_grammar(' (op6^3 op5 + op4 op3[fish]^2 op2 - 2 op1) ').bracket_ops()
+  assert x == [('+', [('op6', 3), 'op5']), ('+', ['op4', (['op3', 'fish'], 2), 'op2']), ('-', [2, 'op1'])]
+
+def test_bracket_ops_merge_and_seq():
+  x = op_grammar(' ( op6 op5 _ op4 . op3 op2 + op1 op - foo1^7 ) ').bracket_ops()
+  assert x == [('+', ['op6', 'op5']), ('_', ['op4']), ('.', ['op3', 'op2']), ('+', ['op1', 'op']), ('-', [('foo1', 7)])]
+
+def test_op_subtraction_1():
+  x = op_grammar(' (op2 - 2 op1 )').bracket_ops()
+  assert x == [('+', ['op2']), ('-', [2, 'op1'])]
+
+def test_op_subtraction_2():
+  x = op_grammar(' (-op2 + 2 op1)').bracket_ops()
+  assert x == [('-', ['op2']), ('+', [2, 'op1'])]
+
+
