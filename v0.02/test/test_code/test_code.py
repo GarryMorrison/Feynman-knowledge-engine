@@ -624,3 +624,11 @@ def test_sequence_sp_addition():
   y = sequence() + x + x + x
   assert str(y) == '|x> + 2.7|y> + 93|z> . |x> + 2.7|y> + 93|z> . |x> + 2.7|y> + 93|z>'
 
+
+# needs more test cases!
+def test_superposition_merge():
+  x = ket('a') + ket('b',2.1) + ket('c',3)
+  y = ket('d',7.9) + ket('e') + ket('f')
+  z = x.merge(y)
+  assert str(z) == '|a> + 2.1|b> + |cd> + |e> + |f>'
+

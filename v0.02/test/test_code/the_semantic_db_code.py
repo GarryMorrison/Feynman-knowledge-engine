@@ -181,22 +181,31 @@ class ket(object):
 #    r.clean_add(x)      
 #    return r
 #
-  def self_add(self,x):
-#    logger.debug("inside ket self_add")
-#    logger.debug("self: " + str(self))
-#    logger.debug("x: " + str(x))
-    r = superposition(self) + x 
-    return r
+#  def self_add(self,x):                                        # self_add(), add(), add_sp(), sub(), sub_sp() don't work the way you want them to! FIX! Or, delete.
+##    logger.debug("inside ket self_add")
+##    logger.debug("self: " + str(self))
+##    logger.debug("x: " + str(x))
+#    r = superposition(self) + x 
+#    return r
 
-  def add(self, label, value=1):
-    r = superposition(self)
-    r.add(label, value)
-    return r
+#  def add(self, label, value=1):
+#    r = superposition(self)
+#    r.add(label, value)
+#    return r
     
-  def add_sp(self, sp):
-    r = superposition(self)
-    r.add_sp(sp)
-    return r
+#  def add_sp(self, sp):
+#    r = superposition(self)
+#    r.add_sp(sp)
+#    return r
+
+#  def sub(self, label, value = 1):
+#    r = superposition(self)
+#    r.sub(label, value)
+    
+#  def sub_sp(self, sp):
+#    r = superposition(self)
+#    r.sub_sp(sp)
+#    return r
       
   def apply_fn(self,fn,t1=None,t2=None):                   # should be able to improve this, so we don't need the if statements!
     if t1 == None:                                         # maybe this: https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python
@@ -593,17 +602,29 @@ class superposition(object):
     else:
       return NotImplemented
 
-  def add(self,str,value=1):          # what about adding a superposition? r.add(some-sp). Or r.add_sp(some-sp)? Yeah, and r.add_sp(some-ket)
-    if str == '':                     # |x> + 3.72|> == |x>
+  def add(self,s, value=1):          # what about adding a superposition? r.add(some-sp). Or r.add_sp(some-sp)? Yeah, and r.add_sp(some-ket)
+    if s == '':                     # |x> + 3.72|> == |x>
       return
-    if str in self.dict:
-      self.dict[str] += float(value)
+    if s in self.dict:
+      self.dict[s] += float(value)
     else:
-      self.dict[str] = float(value)
+      self.dict[s] = float(value)
+
+  def sub(self, s, value=1 ):
+    if s == '':
+      return
+    if s in self.dict:
+      self.dict[s] -= float(value)
+    else:
+      self.dict[s] = - float(value)
 
   def add_sp(self, sp):                      # handles r.add_sp(some-ket) and r.add_sp(some-sp). Breaks if sp is a stored_rule or a memoizing_rule. How fix?
     for key,value in sp.items():
       self.add(key, value)
+      
+  def sub_sp(self, sp):
+    for key,value in sp.items():
+      self.sub(key, value)
 
   def max_add(self, str, value = 1):
     if str == '':
@@ -617,9 +638,27 @@ class superposition(object):
     for key, value in sp.items():
       self.max_add(key, value)
 
-  def seq_add(self, x):
+  def seq_add(self, x):                                        # this probably doesn't work the way you want either. y = sp1.seq_add(sp2) works. sp1.seq_add(sp2) does not.
     r = sequence(self) + x
     return r
+
+  def merge(self, x):                                      # |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f> == |a> + 2.1|b> + |cd> + |e> + |f>  
+    head = superposition()                                 # is there a better way to do this??
+    tail = superposition()
+    for k, (key, value) in enumerate(self.items()):
+      if k != len(self.dict) - 1:
+        head.add(key, value)
+      else:
+        tail.add(key, value)
+    x_head = superposition()
+    x_tail = superposition()
+    for k, (key, value) in enumerate(x.items()):
+      if k == 0:
+        x_head.add(key, value)
+      else:
+        x_tail.add(key, value)
+    result = head + ket(tail.label + x_head.label) + x_tail
+    return result
 
 
 #  def clean_add(self,one):                                    # I don't know where this is used. Maybe remove since it duplicates add_sp().
@@ -1269,6 +1308,7 @@ class sequence(object):
   def __init__(self, data = []):
 #  def __init__(self, name='', data = []):
 #    self.name = name
+    print('sequence data: %s' % data)
     if type(data) in [list]:
       self.data = data
     if type(data) in [ket, superposition]:
@@ -1299,12 +1339,20 @@ class sequence(object):
     else:
       return NotImplemented
 
-  def display(self):                   # print out a sequence class
+  def old_display(self):                   # print out a sequence class
     for k,x in enumerate(self.data):
       if type(x) in [superposition]:
         print("seq |%s: %s> => %s" % (self.name, str(k), x.coeff_sort())) # not super happy with this.
       else:
         print("seq |%s: %s> => %s" % (self.name, str(k), x))
+
+  def display(self):                   # print out a sequence class
+    for k,x in enumerate(self.data):
+      if type(x) in [superposition] and False:
+        print("seq |%s> => %s" % (k, x.coeff_sort()))
+      else:
+        print("seq |%s> => %s" % (k, x))
+
 
   def display_minimalist(self):
     for x in self.data:
@@ -1314,7 +1362,7 @@ class sequence(object):
         print(x)
 
   def add(self, seq):
-    self.data.append(seq)
+    self.data.append(copy.deepcopy(seq))
 
   def similar_index(self, sp):
     r = superposition()

@@ -1,0 +1,5 @@
+2018-01-25
+  load fred-sam-friends.sw
+  ket-simm(friends |Fred> , friends |Sam>)
+  q
+

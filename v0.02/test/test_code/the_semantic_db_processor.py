@@ -1606,7 +1606,7 @@ def process_brackets(C,line,left_label=None):
     result = eval(code)
 
   if not match:
-    result = ket("",0)
+    result = ket()
 
 # not sure I want to keep this code block.
 # maybe simm should return v|simm> instead of just a float. Now implemented this as ket_simm().
