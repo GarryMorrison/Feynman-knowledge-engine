@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-1-23
+# Update: 2018-1-25
 # Copyright: GPLv3
 #
 # Usage: 
@@ -169,8 +169,9 @@ class ket(object):
     label = self.label + x.select_elt(1).label             # assumes select_elt(k) returns a single ket, even for sp class.
     return ket(label)    
 
-  def seq_merge(self, x):                                  # ket('x').seq_merge(ket('y')) == |x> . |y>
-    return NotImplemented
+  def seq_add(self, x):                                    # ket('x').seq_merge(ket('y')) == |x> . |y>
+    r = sequence(self) + x
+    return r
 
 # deleted clean_add(self,x) and self_add(self,x). I don't know what they are meant to do, or where they are used. In new_context, I think ....  
 # Add back in later if they turn out to be important!
@@ -180,12 +181,12 @@ class ket(object):
 #    r.clean_add(x)      
 #    return r
 #
-#  def self_add(self,x):
+  def self_add(self,x):
 #    logger.debug("inside ket self_add")
 #    logger.debug("self: " + str(self))
 #    logger.debug("x: " + str(x))
-#    r = superposition(self) + x 
-#    return r
+    r = superposition(self) + x 
+    return r
 
   def add(self, label, value=1):
     r = superposition(self)
@@ -600,7 +601,7 @@ class superposition(object):
     else:
       self.dict[str] = float(value)
 
-  def add_sp(self, sp):                      # handles r.add_sp(some-ket) and r.add_sp(some-sp)
+  def add_sp(self, sp):                      # handles r.add_sp(some-ket) and r.add_sp(some-sp). Breaks if sp is a stored_rule or a memoizing_rule. How fix?
     for key,value in sp.items():
       self.add(key, value)
 
@@ -612,6 +613,15 @@ class superposition(object):
     else:
       self.dict[str] = float(value)
       
+  def max_add_sp(self, sp):
+    for key, value in sp.items():
+      self.max_add(key, value)
+
+  def seq_add(self, x):
+    r = sequence(self) + x
+    return r
+
+
 #  def clean_add(self,one):                                    # I don't know where this is used. Maybe remove since it duplicates add_sp().
 #    for key,value in one.items():
 #      self.add(key,value)      
@@ -1011,6 +1021,11 @@ class superposition(object):
         value = sigmoid(value, t1, t2)
         r.add(key,value)
     return r
+
+  def is_not_empty(self):
+    if len(self) == 0:
+      return ket('no')
+    return ket('yes')
            
   def activate(self,context=None,op=None,self_label=None):
     return self
@@ -1190,7 +1205,12 @@ class stored_rule(object):
 # 14/1/2016:    
   def add(self,value):
     return self                                    # will probably do a better job of addition later. Is it even used?
-    
+  
+  def add_sp(self, sp):                            # just for now. Tweak later.
+    if type(sp) in [stored_rule]:
+      self.rule += ' + ' + sp.rule
+    if type(sp) in [ket, superposition]:
+      self.rule += ' + ' + str(sp)  
 
 # 13/2/2015:
 # essentially a copy of stored_rule
@@ -1246,12 +1266,19 @@ class memoizing_rule(object):
 
 # sequence class. Has methods we need to chomp out that are not relevant here. TODO.
 class sequence(object):
-  def __init__(self, name='', data = []):
-    self.name = name
-    self.data = data
+  def __init__(self, data = []):
+#  def __init__(self, name='', data = []):
+#    self.name = name
+    if type(data) in [list]:
+      self.data = data
+    if type(data) in [ket, superposition]:
+      self.data = [data]
 
   def __len__(self):
     return len(self.data)
+    
+  def __str__(self):
+    return ' . '.join(str(x) for x in self.data)
 
   def __getitem__(self, key):
     return self.data[key]
@@ -1260,6 +1287,10 @@ class sequence(object):
     if type(seq) in [sequence]:
       r = copy.deepcopy(self)
       r.data += seq.data
+      return r
+    if type(seq) in [ket, superposition]:
+      r = copy.deepcopy(self)
+      r.data.append(seq)
       return r
     if type(seq) in [list]:
       r = copy.deepcopy(self)
@@ -1492,7 +1523,7 @@ class fast_superposition(object):
 
 # we need this for stored_rule class.
 # seems to work even this side of the class. Cool.
-#from the_semantic_db_processor import *
+from the_semantic_db_processor import *
 
 # we need this to speed up context.learn():
 from collections import OrderedDict
@@ -1548,19 +1579,19 @@ class new_context(object):
       self.ket_rules_dict[label] = OrderedDict()
       self.ket_rules_dict[label]["supported-ops"] = superposition()
     #self.ket_rules_dict[label]["supported-ops"].clean_add(ket("op: " + op))  # this is probably a speed bump now.
-    self.ket_rules_dict[label]["supported-ops"].add("op: " + op)              # this is probably a speed bump now.
+    self.ket_rules_dict[label]["supported-ops"].max_add("op: " + op)          # this is probably a speed bump now.
                                                                              # but if we merge over to fast_sp, that should fix itself.
     if not add_learn:
       self.ket_rules_dict[label][op] = rule
     else:
       if op not in self.ket_rules_dict[label]:
-        self.ket_rules_dict[label][op] = superposition()
+        self.ket_rules_dict[label][op] = superposition()             # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
 #      self.ket_rules_dict[label][op].clean_add(rule)
-      self.ket_rules_dict[label][op].self_add(rule)                  # does this change break anything?? If it does, we will need another approach.
-                                                                     # Hrmm... how test if it breaks? We don't have full test cases yet!
+#      self.ket_rules_dict[label][op].self_add(rule)                  # does this change break anything?? If it does, we will need another approach.
+      self.ket_rules_dict[label][op].add_sp(rule)                    # Hrmm... how test if it breaks? We don't have full test cases yet!
                                                                      # create inverse still seems to work, I think. 
   def add_learn(self,op,label,rule):
-    return self.learn(op,label,rule,True)       # corresponds to "op |x> +=> |y>"
+    return self.learn(op,label,rule,add_learn=True)                  # corresponds to "op |x> +=> |y>"
 
 # op is a string, or a ket in form |op: some-operator>
 # label is a string or a ket
@@ -1861,11 +1892,11 @@ class new_context(object):
     result = superposition()
     if op == "*":
       for label in self.ket_rules_dict:
-        result.data.append(ket(label))
+        result.add(label)
     else:
       for label in self.ket_rules_dict:
         if op in self.ket_rules_dict[label]:
-          result.data.append(ket(label))                                  # "result += ket(label)" when swap in fast_sp
+          result.add(label)                                     # "result += ket(label)" when swap in fast_sp
     return result
     
   # 9/2/2016:
@@ -1873,7 +1904,7 @@ class new_context(object):
   def supported_operators(self):
     result = superposition()
     for op in self.supported_operators_dict:
-      result.data.append(ket("op: " + op))
+      result.add("op: " + op)
     return result
         
 
@@ -2157,8 +2188,9 @@ class context_list(object):
           if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
             return
           parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
-    except:
+    except Exception as e:
       logger.info("failed to load: " + filename)
+      logger.info('reason: %s' % e)
 
 # 3/12/2015: new feature context.print_universe() and context.print_multiverse()
   def print_universe(self,exact_dump=False):

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 #######################################################################
-# code to test v0.02 the_semantic_db_code__next_gen.py
+# code to test v0.02 the_semantic_db_code.py
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-23
-# Update: 2018-1-24
+# Update: 2018-1-25
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_code.py
@@ -21,11 +21,11 @@ from the_semantic_db_functions import *
 
 
 context = context_list("semantic db code")
-#context.load("sw-examples/fred-sam-friends.sw")    # currently fails to load.
-context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
-context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
-#context.print_multiverse(True)
-#print(context.display_all())
+context.load("sw-examples/fred-sam-friends.sw")    # currently fails to load.
+#context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+#context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
+context.print_multiverse()
+#print(context.dump_multiverse())
 #sys.exit(0)
 
 
@@ -148,20 +148,29 @@ def test_sp_select_elt_neg_1():
 def test_ket_seq_merge():
   x = ket('fish')
   y = ket('soup')
-  z = x.seq_merge(y)
-  assert str(z) == ''
+  z = x.seq_add(y)
+  assert str(z) == '|fish> . |soup>'
 
 def test_ket_apply_op_friends():
+  context = context_list("test apply_op")
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
   x = ket('Fred').apply_op(context, "friends")
   assert str(x) == '|Sam> + |Max> + |Harry>'
 
 
 def test_ket_apply_sp_fn_common_friends():
+  context = context_list("test common")
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
   x = ket('Fred')
   y = x.apply_sp_fn(common,context,"friends")
   assert str(y) == '|Sam> + |Max> + |Harry>'
 
 def test_sp_apply_sp_fn_common_friends():
+  context = context_list("test common")
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
   x = ket('Fred') + ket('Sam')
   y = x.apply_sp_fn(common,context,"friends")
   assert str(y) == '|Max> + |Harry>'
@@ -197,10 +206,14 @@ def test_sp_multiply():
   assert str(y) == '11.16|Fred> + 3|Sam> + 0.9|Harry>'
 
 def test_ket_context_recall():
+  context = context_list("test recall")
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
   x = context.recall('friends', 'Fred')
   assert str(x) == '|Sam> + |Max> + |Harry>'
 
 def test_ket_apply_op():
+  context = context_list("test ket apply_op")
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
   x = ket('Fred').apply_op(context, 'friends')
   assert str(x) == '|Sam> + |Max> + |Harry>'
   
@@ -284,6 +297,9 @@ def test_sp_weighted_pick_elt():
   assert str(y) == ''
 
 def test_sp_apply_op():
+  context = context_list("test sp apply_op")
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
   x = ket('Fred') + ket('Sam')
   y = x.apply_op(context, 'friends')
   assert str(y) == '|Sam> + 2|Max> + 2|Harry> + |Simon>'
@@ -422,4 +438,189 @@ def test_sp_find_min():
   x = ket('a',3) + ket('b',2) + ket('c', 11) + ket('d') + ket('e') + ket('f',9)
   y = x.find_min()
   assert str(y) == '|d> + |e>'
+
+
+def test_parse_rule_line():
+  context = new_context('test parse rule line')
+  s = 'friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick>'
+  parse_rule_line(context, s)
+  context.print_multiverse()
+  assert True
+
+def test_context_load():
+  context.load("sw-examples/fred-sam-friends.sw")
+  context.print_multiverse()
+  assert True
+
+def test_new_context():
+  context = new_context('testing')
+  context.print_universe()
+  assert True
+
+def test_new_context_learn():
+  context = new_context('testing')
+  context.learn('', 'b', 'empty')
+  context.learn('a', 'b', ket('fish') + ket('soup'))
+  context.learn('x', 'y', 'z')
+  context.print_universe(True)
+  assert True
+
+def test_new_context_add_learn():
+  context = new_context('testing add learn')
+  context.add_learn('a', 'b', 'x')
+  context.add_learn('a', 'b', ket('x',3.21) + ket('z'))
+  context.add_learn('a', 'b', 'y')
+  context.add_learn('a', 'b', 'z')
+  context.print_universe(True)
+  assert True
+
+def test_new_context_learn_stored_rule():
+  context = new_context('testing stored rule')
+  context.learn('x', 'y', stored_rule('|fish> + 2.3|soup>'))
+  context.print_universe(True)
+  assert True
+
+def test_new_context_add_learn_stored_rule():
+  context = new_context('testing stored rule')
+  context.add_learn('x', 'y', stored_rule('|fish> + 2.3|soup>'))
+  context.print_universe(True)
+  assert False
+
+def test_new_context_learn_adding_stored_rules():
+  context = new_context('testing stored rule')
+  context.learn('x', 'y', stored_rule('|fish> + 2.3|soup>'))
+  context.add_learn('x', 'y', stored_rule('2|cats> + |dog>'))
+  context.add_learn('x', 'y', ket('onions',3))
+  context.print_universe(True)
+  assert True
+
+def test_ket_is_not_empty__empty():
+  x = ket('', 3)
+  y = x.is_not_empty()
+  assert str(y) == '|no>'
+
+def test_ket_is_not_empty__not_empty():
+  x = ket('fred')
+  y = x.is_not_empty()
+  assert str(y) == '|yes>'
+
+def test_sp_is_not_empty__empty():
+  x = ket('', 3) + ket() + ket('',7.2)
+  y = x.is_not_empty()
+  assert str(y) == '|no>'
+
+def test_sp_is_not_empty__not_empty():
+  x = ket() + ket('',2) + ket('fred')
+  y = x.is_not_empty()
+  assert str(y) == '|yes>'
+
+
+
+# test the new_context class:
+
+def test_new_context_set():
+  context = new_context('starting context')
+  context.set('next context')
+  context.print_universe()
+  assert True
+
+def test_new_context_learn():
+  context = new_context('starting context')
+  context.learn('op', 'object', ket('a') + ket('b',2) + ket('c', -3))
+  context.learn('op2', 'object', 'foo')
+  context.print_universe(True)
+  assert True
+
+def test_new_context_add_learn():
+  context = new_context('starting context')
+  context.add_learn('op', 'object', ket('a') + ket('b',2) + ket('c', -3))
+  context.add_learn('op2', 'object', 'foo')
+  context.add_learn('op', 'object', 'b')
+  context.add_learn('op2', 'object', ket('fish') + ket('soup'))
+  context.print_universe(True)
+  assert True
+
+def test_new_context_recall():
+  context = new_context('starting context')
+  context.learn('op', 'object', ket('a') + ket('b',2) + ket('c', -3))
+  x = context.recall('op', 'object')
+  assert str(x) == '|a> + 2|b> + -3|c>'
+
+def test_new_context_stored_rule_recall():
+  context = new_context('starting context')
+  context.learn('op', 'object', stored_rule('|a> + 2|b> - 3 |c>'))
+  x = context.recall('op', 'object')
+  assert str(x) == '|a> + 2|b> - 3 |c>'
+
+def test_new_context_stored_rule_recall():
+  context = new_context('starting context')
+  context.learn('op', 'object', stored_rule('|a> + 2|b> - 3 |c>'))
+  x = context.recall('op', 'object', active=True)
+  assert str(x) == '|a> + 2|b>'      # ignore the -3|c> for now.
+
+def test_new_context_stored_rule_apply_op():
+  context = new_context('starting context')
+  context.learn('op', 'object', stored_rule('|a> + 2|b> - 3 |c>'))
+  x = ket('object').apply_op(context, 'op')
+  assert str(x) == '|a> + 2|b>'
+
+def test_new_context_dump_rule():
+  context = new_context('starting context')
+  context.learn('op', 'object', ket('a') + ket('b',2) + ket('c', -3))
+  s = context.dump_rule('op', 'object')
+  assert s == 'op |object> => |a> + 2|b> + -3|c>'
+
+def test_new_context_stored_rule_dump_rule():
+  context = new_context('starting context')
+  context.learn('op', 'object', stored_rule('|a> + 2|b> - 3 |c>'))
+  s = context.dump_rule('op', 'object')
+  assert s == 'op |object> #=> |a> + 2|b> - 3 |c>'
+
+def test_new_context_create_inverse():
+  context = new_context('the context')
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
+  context.create_universe_inverse()
+  context.print_universe()
+  assert True
+
+def test_new_context_relevant_kets():
+  context = new_context('the context')
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
+  x = context.relevant_kets('friends')
+  assert str(x) == '|Fred> + |Sam>'
+
+def test_new_context_relevant_kets():
+  context = new_context('the context')
+  context.learn('op1', 'x', 'y')
+  context.learn('op2', 'a', 'b')
+  context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
+  context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
+  x = context.supported_operators()
+  assert str(x) == '|op: op1> + |op: op2> + |op: friends>'
+
+
+# test sequence class:
+def test_sequence_ket_add():
+  x = ket('x')
+  y = ket('y')
+  z = x.seq_add(y)
+  assert str(z) == '|x> . |y>'
+
+def test_sequence_sp_add():
+  x = ket('x') + ket('z')
+  y = ket('y') + ket('fish')
+  z = x.seq_add(y)
+  assert str(z) == '|x> + |z> . |y> + |fish>'
+
+def test_sequence_ket_addition():
+  x = ket('x')
+  y = sequence() + x + x + x
+  assert str(y) == '|x> . |x> . |x>'
+
+def test_sequence_sp_addition():
+  x = ket('x') + ket('y',2.7) + ket('z',93)
+  y = sequence() + x + x + x
+  assert str(y) == '|x> + 2.7|y> + 93|z> . |x> + 2.7|y> + 93|z> . |x> + 2.7|y> + 93|z>'
 

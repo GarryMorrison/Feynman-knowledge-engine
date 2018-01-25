@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 6/6/2017
+# Update: 25/1/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -902,8 +902,9 @@ def extract_literal_superposition(s,self_object=None):
       x, rest = extract_leading_ket(rest)
       if x.label == "_self":
         x.label = self_object                  # assumes of course that self_object is a string.
-      result.data.append(x)
-    except:
+      result.add_sp(x)
+    except Exception as e:
+      logger.warning('els exception, reason: %s' % e)
       return result, saved
 
     try:
@@ -934,7 +935,8 @@ def extract_clean_superposition(line):
   line = line.rstrip()          # in case there is white-space at the end of the line.
   r = superposition()           # assumes there is never any white-space at the start of the line!
   for x in line[1:-1].split("> + |"):
-    r.data.append(ket(x))       # breaks if a ket is repeated. The fix is: r += ket(x), but that is a tar pit until fast_sp is subbed in. Something I should do soon!! 
+    print('extract_clean_superposition: x: %s' % x)
+    r.add(x)                    # breaks if a ket is repeated. The fix is: r += ket(x), but that is a tar pit until fast_sp is subbed in. Something I should do soon!! 
   return r  
 
 def old_parse_rule_line(C,s):
@@ -1098,13 +1100,13 @@ def parse_rule_line(C,s):
     add_learn = True
 
   try:
-    for label in indirect_label.data:                                 # NB: indirect_label is a superposition
+    for label, value in indirect_label.items():                                 # NB: indirect_label is a superposition
       print("parse_rule_line learn label:",label)
-      rule, null = extract_compound_superposition(C,tail,label.label) # the last parameter needs to be string, not a ket.
+      rule, null = extract_compound_superposition(C,tail,label)       # the last parameter needs to be string, not a ket.
       print("parse_rule_line learn rule:",rule)
-      if op == "" and label.label == "context":                       # handle context in a special way!
-        if len(rule.data) > 0:
-          name = rule.data[0].label
+      if op == "" and label == "context":                             # handle context in a special way!
+        if len(rule) > 0:
+          name = rule.label
           if name.startswith("context: "):
             name = name[9:]
           C.set(name)
@@ -1665,7 +1667,7 @@ def extract_compound_superposition(C,s,self_object=None):
   while True:
     try:
       rule, rest = extract_literal_superposition(rest,self_object)
-      if len(rule.data) == 0:
+      if len(rule) == 0:
         try:
           rule, rest = process_brackets(C,rest,self_object)
         except:
