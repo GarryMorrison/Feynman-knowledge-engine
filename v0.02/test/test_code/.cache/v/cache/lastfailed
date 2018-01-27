@@ -6,5 +6,7 @@
   "test_code.py::test_sp_pick_elt": true,
   "test_code.py::test_sp_relative_noise": true,
   "test_code.py::test_sp_shuffle": true,
-  "test_code.py::test_sp_weighted_pick_elt": true
+  "test_code.py::test_sp_weighted_pick_elt": true,
+  "test_code.py::test_superposition_empty_merge": true,
+  "test_code.py::test_superposition_merge": true
 }

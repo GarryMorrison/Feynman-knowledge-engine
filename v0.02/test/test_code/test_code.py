@@ -629,6 +629,83 @@ def test_sequence_sp_addition():
 def test_superposition_merge():
   x = ket('a') + ket('b',2.1) + ket('c',3)
   y = ket('d',7.9) + ket('e') + ket('f')
-  z = x.merge(y)
-  assert str(z) == '|a> + 2.1|b> + |cd> + |e> + |f>'
+  z = x.merge_sp(y)
+# assert str(z) == '|a> + 2.1|b> + |cd> + |e> + |f>'
+  assert str(z) == '|a> + 2.1|b> + 3|cd> + |e> + |f>'
+
+def test_superposition_empty_merge():
+  x = superposition()
+  y = superposition('fish')
+  z = x.merge_sp(y)
+  assert str(z) == ''
+
+
+# test sequences:
+def test_sequence_add_1():
+  x = ket('a')
+  y = ket('b') + ket('c')
+  r = sequence(x) + y
+  r.display()
+  assert str(r) == '|a> . |b> + |c>'
+
+def test_sequence_add_empty():
+  y = ket('b') + ket('c')
+  r = sequence()
+  r.add_seq(y)
+  r.display()
+  assert str(r) == '|b> + |c>'
+
+def test_sequence_add_2():
+  x = ket('a')
+  y = ket('b') + ket('c')
+  z = ket('x')
+  r = sequence(x) + y
+  r.add_seq(z)
+  r.display()
+  assert str(r) == '|a> . |b> + |c> + |x>'
+
+def test_sequence_add_3():
+  x = ket('a')
+  y = ket('b') + ket('c')
+  z = sequence(ket('x')) + ket('y')
+  r = sequence(x) + y
+  r.add_seq(z)
+  r.display()
+  assert str(r) == '|a> . |b> + |c> + |x> . |y>'
+
+def test_sequence_sub_1():
+  x = ket('a')
+  y = ket('b') + ket('c')
+  z = sequence(ket('x')) + ket('y')
+  r = sequence(x) + y
+  r.sub_seq(z)
+  r.display()
+  assert str(r) == '|a> . |b> + |c> + -1|x> . |y>'
+
+def test_sequence_sub_2():
+  x = ket('a')
+  y = ket('b') + ket('c')
+  z = sequence(ket('x') + ket('y')) + ket('z')
+  r = sequence(x) + y
+  r.sub_seq(z)
+  r.display()
+  assert str(r) == '|a> . |b> + |c> + -1|x> + -1|y> . |z>'
+
+def test_sequence_merge_1():
+  x = ket('a')
+  y = ket('b') + ket('c')
+  z = sequence(ket('x') + ket('y')) + ket('z')
+  r = sequence(x) + y
+  r.merge_seq(z)
+  r.display()
+  assert str(r) == '|a> . |b> + |cx> + |y> . |z>'
+
+def test_sequence_multiply():
+  x = ket('a') + ket('b',3.14)
+  y = ket('c',2.2) + ket('d') + ket('e')
+  z = ket('f')
+  seq = sequence() + x + y + z
+  r = seq.multiply(3)
+  r.display()
+  assert str(r) == '3|a> + 9.42|b> . 6.6|c> + 3|d> + 3|e> . 3|f>'
 

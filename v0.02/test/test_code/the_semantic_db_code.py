@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-1-25
+# Update: 2018-1-27
 # Copyright: GPLv3
 #
 # Usage: 
@@ -322,7 +322,7 @@ class ket(object):
     return r
 
   def multiply(self,t):
-    return ket(self.label,self.value*t)
+    return ket(self.label, self.value*t)
     
 #  def add(self,t):                                        # Nope. Deleted for now. Conflicts with x.add(key,value)
 #    return ket(self.label,self.value + t)
@@ -642,7 +642,11 @@ class superposition(object):
     r = sequence(self) + x
     return r
 
-  def merge(self, x):                                      # |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f> == |a> + 2.1|b> + |cd> + |e> + |f>  
+  def merge_sp(self, x):                                      # |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f> == |a> + 2.1|b> + |cd> + |e> + |f>  
+    if len(self) == 0:
+      for key, value in x.items():
+        self.add(key, value)
+      return
     head = superposition()                                 # is there a better way to do this??
     tail = superposition()
     for k, (key, value) in enumerate(self.items()):
@@ -657,8 +661,9 @@ class superposition(object):
         x_head.add(key, value)
       else:
         x_tail.add(key, value)
-    result = head + ket(tail.label + x_head.label) + x_tail
-    return result
+    result = head + ket(tail.label + x_head.label, tail.value) + x_tail
+#    return result
+    self.dict = result.dict
 
 
 #  def clean_add(self,one):                                    # I don't know where this is used. Maybe remove since it duplicates add_sp().
@@ -1308,7 +1313,7 @@ class sequence(object):
   def __init__(self, data = []):
 #  def __init__(self, name='', data = []):
 #    self.name = name
-    print('sequence data: %s' % data)
+    #print('sequence data: %s' % data)
     if type(data) in [list]:
       self.data = data
     if type(data) in [ket, superposition]:
@@ -1339,6 +1344,47 @@ class sequence(object):
     else:
       return NotImplemented
 
+# to implement:
+#    if symbol == '+':
+#      seq.add(the_seq)
+#    elif symbol == '-':
+#      seq.sub(the_seq)
+#    elif symbol == '_':
+#      seq.merge(the_seq)
+#    elif symbol == '.':
+#      seq.seq_merge(the_seq)
+
+  def add_seq(self, seq):                       #(|a> . |b> + |c>) + (|x> . |y>) == |a> . |b> + |c> + |x> . |y>  I think. I need more thinking time....
+    if len(self.data) == 0:
+      self.data = [superposition()]
+    if type(seq) in [ket, superposition]:
+      self.data[-1].add_sp(seq)
+    if type(seq) in [sequence]:
+      head, *tail = seq.data
+      self.data[-1].add_sp(head)
+      self.data += tail 
+
+  def sub_seq(self, seq):                       #(|a> . |b> + |c>) - (|x> . |y>) == |a> . |b> + |c> - |x> . |y>  I think. I need more thinking time....
+    if len(self.data) == 0:
+      self.data = [superposition()]
+    if type(seq) in [ket, superposition]:
+      self.data[-1].sub_sp(seq)
+    if type(seq) in [sequence]:
+      head, *tail = seq.data
+      self.data[-1].sub_sp(head)
+      self.data += tail 
+
+  def merge_seq(self, seq):                       #(|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
+    if len(self.data) == 0:
+      self.data = [superposition()]
+    if type(seq) in [ket, superposition]:
+      self.data[-1].merge_sp(seq)
+    if type(seq) in [sequence]:
+      head, *tail = seq.data
+      self.data[-1].merge_sp(head)
+      self.data += tail 
+
+
   def old_display(self):                   # print out a sequence class
     for k,x in enumerate(self.data):
       if type(x) in [superposition]:
@@ -1361,8 +1407,8 @@ class sequence(object):
       else:
         print(x)
 
-  def add(self, seq):
-    self.data.append(copy.deepcopy(seq))
+#  def add(self, seq):
+#    self.data.append(copy.deepcopy(seq))
 
   def similar_index(self, sp):
     r = superposition()
@@ -1439,6 +1485,17 @@ class sequence(object):
       r += x
     return r
 
+  def multiply(self, t):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.multiply(t))
+    return seq
+
+  def apply_op(self, context, op):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.apply_op(context, op))
+    return seq
 
 # 10/1/2015:
 # let's try and write a fast_superposition() version of this using ordered dictionaries.

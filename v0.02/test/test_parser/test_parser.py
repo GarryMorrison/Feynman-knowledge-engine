@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-25
-# Update: 2018-1-25
+# Update: 2018-1-27
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parser.py
@@ -24,8 +24,9 @@ from the_semantic_db_processor import *
 
 context = context_list("parse compound superposition")
 #context.load("sw-examples/fred-sam-friends.sw")
-#context.load("sw-examples/test-operators.sw")
+context.load("sw-examples/test-operators.sw")
 
+logger.setLevel(logging.DEBUG)
 
 
 # operator parse:
@@ -97,7 +98,8 @@ single_compound_superposition = ws ( bracket_ops | op_sequence ):ops ws ( naked_
 
 symbol_single_compound_superposition = ws op_symbol:symbol ws single_compound_superposition:sp -> (symbol, sp)
 full_compound_superposition = ws (op_symbol | -> '+'):symbol single_compound_superposition:first ws symbol_single_compound_superposition*:rest ws -> [(symbol, first)] + rest
-
+compiled_compound_superposition = full_compound_superposition:sp -> compile_compound_superposition(sp)
+compiled_compound_sequence = full_compound_superposition:sp -> compile_compound_sequence(sp)
 """
 
 
@@ -112,15 +114,93 @@ def ket_calculate(start,pairs):
     elif op == '-':
       sp.sub(*value)
     elif op == '_':     
-      sp = sp.merge(superposition(*value))
+      sp.merge_sp(superposition(*value))
     elif op == '.':
       seq += sp
       sp = superposition(*value)
   seq += sp
   return seq
 
+def compile_compound_superposition(compound_superposition):
+  print("cs: ",end='')
+  pprint(compound_superposition)
+
+  seq = sequence()
+  sp = superposition()
+  for sp2 in compound_superposition:
+    symbol, (ops, object) = sp2
+    print("symbol: ",end='')
+    pprint(symbol)
+    print('ops: ', end = '')
+    pprint(ops)
+    print("object: ",end='')
+    pprint(object)
+
+    the_sp = superposition()
+    if type(object) is str:                                       # found a ket
+      the_sp = superposition(object)
+
+    if len(ops) > 0:
+      python_code = "".join(process_single_op(op) for op in reversed(ops))
+      logger.debug('python code: %s' % python_code)
+      the_sp = eval('the_sp' + python_code)                        # yeah, risk of injection attacks. Need better approach!!
+
+    if symbol == '+':
+      sp.add_sp(the_sp)
+    elif symbol == '-':
+      sp.sub_sp(the_sp)
+    elif symbol == '_':
+      sp.merge_sp(the_sp)
+    elif symbol == '.':
+      seq += sp
+      sp = the_sp
+  seq += sp
+  return seq    
+    
+
+def compile_compound_sequence(compound_sequence):
+  print("cs: ",end='')
+  pprint(compound_sequence)
+
+  seq = sequence()
+  for seq2 in compound_sequence:
+    symbol, (ops, object) = seq2
+    print("symbol: ",end='')
+    pprint(symbol)
+    print('ops: ', end = '')
+    pprint(ops)
+    print("object: ",end='')
+    pprint(object)
+
+    the_seq = sequence()
+    if type(object) is str:                                       # found a ket
+      the_seq = sequence(superposition(object))
+
+    if type(object) is list and False:
+      print('bracketk_cs found')
+      if len(object) == 1:
+        the_seq = compile_compound_sequence(object[0])
+
+    if len(ops) > 0:
+      python_code = "".join(process_single_op(op) for op in reversed(ops))
+      logger.debug('python code: %s' % python_code)
+      the_seq = eval('the_seq' + python_code)                        # yeah, risk of injection attacks. Need better approach!!
+
+    if symbol == '+':
+      seq.add_seq(the_seq)
+    elif symbol == '-':
+      seq.sub_seq(the_seq)
+    elif symbol == '_':
+      seq.merge_seq(the_seq)
+    elif symbol == '.':
+      seq += the_seq
+  return seq
+
+
 bindings_dictionary = {
   "ket_calculate"           : ket_calculate,
+  'compile_compound_superposition' : compile_compound_superposition,
+  'compile_compound_sequence'      : compile_compound_sequence,
 }
 
 op_grammar = makeGrammar(our_working_grammar, bindings_dictionary)
@@ -158,7 +238,8 @@ def test_ket_subtraction_2():
 
 def test_sp_merge():
   x = op_grammar(' |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f>').literal_sequence()
-  assert str(x) == '|a> + 2.1|b> + |cd> + |e> + |f>'
+#  assert str(x) == '|a> + 2.1|b> + |cd> + |e> + |f>'
+  assert str(x) == '|a> + 2.1|b> + 3|cd> + |e> + |f>'
 
 def test_seq_add():
   x = op_grammar(' |a> + 2.1|b> + 3|c> . 7.9|d> + |e> + |f>').literal_sequence()
@@ -456,4 +537,102 @@ def test_fcs_sentence_v3():
   print(x)
   assert x == [('+', [['op8'], ('op_cs', [('+', ['op7'])], [['op5'], ('op_cs', [('+', ['op4']), ('-', ['op2'])], [['sp'], [[('+', [['split'], 'x y']), ('-', [[], 'z'])]]])])])]
 
+
+
+# compile compound superposition test cases:
+def test_cfcs_simple_ket_1():
+  x = op_grammar(' |fish>').compiled_compound_superposition()
+  assert str(x) == '|fish>'
+
+def test_cfcs_simple_ket_2():
+  x = op_grammar(' 3|fish>').compiled_compound_superposition()
+  assert str(x) == '3|fish>'
+
+def test_cfcs_symbol_ket_1():
+  x = op_grammar(' -|fish>').compiled_compound_superposition()
+  assert str(x) == '-1|fish>'
+
+def test_cfcs_symbol_ket_2():
+  x = op_grammar(' +|fish>').compiled_compound_superposition()
+  assert str(x) == '|fish>'
+
+def test_cfcs_symbol_ket_3():
+  x = op_grammar(' _|fish>').compiled_compound_superposition()
+  assert str(x) == '|fish>'
+
+def test_cfcs_symbol_ket_4():
+  x = op_grammar(' .|fish>').compiled_compound_superposition()
+  assert str(x) == '|> . |fish>'
+
+def test_cfcs_simple_ket_4():
+  x = op_grammar(' -2.5|fish>').compiled_compound_superposition()
+  assert str(x) == '-2.5|fish>'
+
+def test_cfcs_simple_ket_op_1():
+  x = op_grammar(' op|fish>').compiled_compound_superposition()
+  assert str(x) == '|op: fish>'
+
+def test_cfcs_simple_ket_op_2():
+  x = op_grammar(' op |fish>').compiled_compound_superposition()
+  assert str(x) == '|op: fish>'
+
+
+# [('+', [[3], 'x']), ('+', [[], 'y']), ('-', [[3.2], 'z']), ('_', [[], 'c']), ('+', [[], 'd']), ('.', [[], 'e']), ('+', [[], 'f'])]
+def test_cfcs_ket_sum_1():
+  x = op_grammar(' 3|x> + |y> - 3.2|z> _ |c> + |d> . |e> + |f>').compiled_compound_superposition()
+  assert str(x) == '3|x> + |y> + -3.2|zc> + |d> . |e> + |f>'
+
+def test_cfcs_ket_sum_2():
+  x = op_grammar(' 3|x> + |y> + -3.2|zc> + |d> . |e> + |f>').compiled_compound_superposition()
+  assert str(x) == '3|x> + |y> + -3.2|zc> + |d> . |e> + |f>'
+  x.display()
+  assert True
+
+# [('-', [['op3', 'op2', 'op1'], 'x']), ('+', [[9.99], 'y']), ('_', [['op5', 'op4'], 'z']), ('.', [['op6'], 'e'])]
+def test_cfcs_ket_sum_with_ops_1():
+  x = op_grammar(' -op3 op2 op1 |x> + 9.99|y> _ op5 op4 |z> . op6 |e> ').compiled_compound_superposition()
+  assert str(x) == '-1|op3: op2: op1: x> + 9.99|yop5: op4: z> . |op6: e>'
+
+# [('+', [[], [[('-', [['op3', 'op2', 'op1'], 'x']), ('+', [[9.99], 'y']), ('_', [['op5', 'op4'], 'z']), ('.', [['op6'], 'e'])]]])]
+def test_fcs_ket_bracket_with_ops_1():
+  x = op_grammar(' ( -op3 op2 op1 |x> + 9.99|y> _ op5 op4 |z> . op6 |e> )').compiled_compound_superposition()
+  assert str(x) == ''
+
+
+# compile compound sequence test cases:
+def test_cfcseq_simple_ket_1():
+  x = op_grammar(' |fish>').compiled_compound_sequence()
+  assert str(x) == '|fish>'
+
+def test_cfcseq_simple_ket_2():
+  x = op_grammar(' 3|fish>').compiled_compound_sequence()
+  assert str(x) == '3|fish>'
+
+def test_cfcseq_symbol_ket_1():
+  x = op_grammar(' -|fish>').compiled_compound_sequence()
+  assert str(x) == '-1|fish>'
+
+def test_cfcseq_symbol_ket_2():
+  x = op_grammar(' +|fish>').compiled_compound_sequence()
+  assert str(x) == '|fish>'
+
+def test_cfcseq_symbol_ket_3():
+  x = op_grammar(' _|fish>').compiled_compound_sequence()
+  assert str(x) == '|fish>'
+
+def test_cfcseq_symbol_ket_4():
+  x = op_grammar(' .|fish>').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_cfcseq_simple_ket_4():
+  x = op_grammar(' -2.5|fish>').compiled_compound_sequence()
+  assert str(x) == '-2.5|fish>'
+
+def test_cfcseq_simple_ket_op_1():
+  x = op_grammar(' op|fish>').compiled_compound_sequence()
+  assert str(x) == '|op: fish>'
+
+def test_cfcseq_simple_ket_op_2():
+  x = op_grammar(' op |fish>').compiled_compound_sequence()
+  assert str(x) == '|op: fish>'
 
