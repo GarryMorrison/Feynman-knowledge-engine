@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-25
-# Update: 2018-1-27
+# Update: 2018-1-28
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parser.py
@@ -75,8 +75,10 @@ op_sequence = (ws op:first (S1 op)*:rest ws -> [first] + rest)
 
 op_symbol = ('+' | '-' | '_' | '.')
 symbol_op_sequence = ws op_symbol:symbol ws op_sequence:seq -> (symbol, seq)
-bracket_ops = ws '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws (symbol_op_sequence+:rest ws ')' ws -> [(symbol, first)] + rest
-                                          | ')' ws -> [(symbol, first)] )
+#bracket_ops = ws '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws (symbol_op_sequence+:rest ws ')' ws -> [(symbol, first)] + rest
+#                                          | ')' ws -> [(symbol, first)] )
+bracket_ops = ws '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws symbol_op_sequence*:rest ws ')' ws -> [[(symbol, first)] + rest]
+bracket_bracket_ops = ws '(' ws bracket_ops:s ws ')' ws -> s
 
 # compound_superposition:
 add_cs = ws '+' ws compound_superposition:k -> ('sp +',k)
@@ -84,7 +86,7 @@ sub_cs = ws '-' ws compound_superposition:k -> ('sp -',k)
 merge_cs = ws '_' ws compound_superposition:k -> ('sp _',k)
 seq_cs = ws '.' ws compound_superposition:k -> ('sp .',k)
 cs_ops = (add_cs | sub_cs | merge_cs | seq_cs)
-op_like_cs = ws ( bracket_ops:ops | op_sequence:ops ) ws compound_superposition:sp -> ('op_cs',ops,sp)
+op_like_cs = ws ( bracket_ops | op_sequence ):ops ws compound_superposition:sp -> ('op_cs', ops, sp)
 bracketk_cs = ws '(' compound_superposition:first ( ws ',' ws compound_superposition){0,3}:rest ')' ws -> [first] + rest
 
 compound_superposition = ws ( bracket_ops | op_sequence ):ops ws ( naked_ket:first | bracketk_cs:first | op_like_cs:first )  ws (cs_ops+:rest ws -> [ops, first] + rest
@@ -94,10 +96,11 @@ compound_superposition = ws ( bracket_ops | op_sequence ):ops ws ( naked_ket:fir
 
 full_bracketk_cs = ws '(' full_compound_superposition:first ( ws ',' ws full_compound_superposition){0,3}:rest ')' ws -> [first] + rest
 single_op_like_cs = ws ( bracket_ops:ops | op_sequence:ops ) ws single_compound_superposition:sp -> ('op_cs',ops,sp)
-single_compound_superposition = ws ( bracket_ops | op_sequence ):ops ws ( naked_ket:first | full_bracketk_cs:first | single_op_like_cs:first ) ws -> [ops, first]
+single_compound_superposition = ws ( bracket_ops | bracket_bracket_ops | op_sequence ):ops ws ( naked_ket:first | full_bracketk_cs:first | single_op_like_cs:first ) ws -> [ops, first]
 
 symbol_single_compound_superposition = ws op_symbol:symbol ws single_compound_superposition:sp -> (symbol, sp)
 full_compound_superposition = ws (op_symbol | -> '+'):symbol single_compound_superposition:first ws symbol_single_compound_superposition*:rest ws -> [(symbol, first)] + rest
+
 compiled_compound_superposition = full_compound_superposition:sp -> compile_compound_superposition(sp)
 compiled_compound_sequence = full_compound_superposition:sp -> compile_compound_sequence(sp)
 """
@@ -156,7 +159,24 @@ def compile_compound_superposition(compound_superposition):
       sp = the_sp
   seq += sp
   return seq    
+
     
+def process_operators(ops, seq):
+  if len(ops) > 0:
+    python_code = ''
+  for op in reversed(ops):
+    if type(op) is list:
+      print('bracket_ops found')
+      for new_op in op:
+        print('new op: ', end = '')
+        pprint(new_op)
+      continue
+    else:
+      python_code += process_single_op(op)
+  logger.debug('python code: %s' % python_code)
+  if len(python_code) > 0:
+     seq = eval('seq' + python_code)
+  return seq
 
 def compile_compound_sequence(compound_sequence):
   print("cs: ",end='')
@@ -176,15 +196,49 @@ def compile_compound_sequence(compound_sequence):
     if type(object) is str:                                       # found a ket
       the_seq = sequence(superposition(object))
 
-    if type(object) is list and False:
+    if type(object) is list:
       print('bracketk_cs found')
       if len(object) == 1:
         the_seq = compile_compound_sequence(object[0])
 
     if len(ops) > 0:
-      python_code = "".join(process_single_op(op) for op in reversed(ops))
+      python_code = ''
+      for op in reversed(ops):
+        if type(op) is list:
+          print('bracket_ops found')                              # now need to apply a distributive law. No clue how yet!!
+          for new_op in op:
+            print('new op: ', end = '')
+            pprint(new_op)
+          continue
+#        if type(op) is tuple and op[0] in ['+', '-', '_', '.']:
+          new_symbol, rest = op
+          print('new_symbol: ', end='')
+          pprint(new_symbol)
+          print('rest: ', end='')
+          pprint(rest)
+          #the_seq = compile_compound_sequence([('+', [rest, object])])
+
+          new_python_code = ''
+          for new_op in reversed(rest):
+            new_python_code += process_single_op(new_op)
+          print('new_python_code: %s' % new_python_code)
+          new_seq = eval('the_seq' + new_python_code)
+
+#          new_seq = sequence([])
+#          if new_symbol == '+':
+#            new_seq.add_seq(the_seq)
+#          if new_symbol == '-':
+#            new_seq.sub_seq(the_seq)
+#          if new_symbol == '_':
+#            new_seq.merge_seq(the_seq)
+#          if new_symbol == '.':
+#            new_seq += the_seq
+          the_seq = new_seq
+        else:
+          python_code += process_single_op(op)
       logger.debug('python code: %s' % python_code)
-      the_seq = eval('the_seq' + python_code)                        # yeah, risk of injection attacks. Need better approach!!
+      if len(python_code) > 0:
+        the_seq = eval('the_seq' + python_code)                        # yeah, risk of injection attacks. Need better approach!!
 
     if symbol == '+':
       seq.add_seq(the_seq)
@@ -290,29 +344,36 @@ def test_op_sequence_two():
   x = op_grammar(" 33.2  \"\" fish[foo] 3.14^3 some-op -13.572 ").op_sequence()
   assert x == [33.2, '""', ['fish', 'foo'], (3.14, 3), 'some-op', -13.572]
 
+
 def test_bracket_ops_empty():
   x = op_grammar(' ( ) ').bracket_ops()
-  assert x == [('+', [])]
+  #assert x == [('+', [])]
+  assert x == [[('+', [])]]
 
 def test_bracket_ops_simple():
   x = op_grammar(' (op2 - 2 op1) ').bracket_ops()
-  assert x == [('+', ['op2']), ('-', [2, 'op1'])]
+  #assert x == [('+', ['op2']), ('-', [2, 'op1'])]
+  assert x == [[('+', ['op2']), ('-', [2, 'op1'])]]
 
 def test_bracket_ops_complex():
   x = op_grammar(' (op6^3 op5 + op4 op3[fish]^2 op2 - 2 op1) ').bracket_ops()
-  assert x == [('+', [('op6', 3), 'op5']), ('+', ['op4', (['op3', 'fish'], 2), 'op2']), ('-', [2, 'op1'])]
+  #assert x == [('+', [('op6', 3), 'op5']), ('+', ['op4', (['op3', 'fish'], 2), 'op2']), ('-', [2, 'op1'])]
+  assert x == [[('+', [('op6', 3), 'op5']), ('+', ['op4', (['op3', 'fish'], 2), 'op2']), ('-', [2, 'op1'])]]
 
 def test_bracket_ops_merge_and_seq():
   x = op_grammar(' ( op6 op5 _ op4 . op3 op2 + op1 op - foo1^7 ) ').bracket_ops()
-  assert x == [('+', ['op6', 'op5']), ('_', ['op4']), ('.', ['op3', 'op2']), ('+', ['op1', 'op']), ('-', [('foo1', 7)])]
+  #assert x == [('+', ['op6', 'op5']), ('_', ['op4']), ('.', ['op3', 'op2']), ('+', ['op1', 'op']), ('-', [('foo1', 7)])]
+  assert x == [[('+', ['op6', 'op5']), ('_', ['op4']), ('.', ['op3', 'op2']), ('+', ['op1', 'op']), ('-', [('foo1', 7)])]]
 
 def test_op_subtraction_1():
   x = op_grammar(' (op2 - 2 op1 )').bracket_ops()
-  assert x == [('+', ['op2']), ('-', [2, 'op1'])]
+  #assert x == [('+', ['op2']), ('-', [2, 'op1'])]
+  assert x == [[('+', ['op2']), ('-', [2, 'op1'])]]
 
 def test_op_subtraction_2():
   x = op_grammar(' (-op2 + 2 op1)').bracket_ops()
-  assert x == [('-', ['op2']), ('+', [2, 'op1'])]
+  #assert x == [('-', ['op2']), ('+', [2, 'op1'])]
+  assert x == [[('-', ['op2']), ('+', [2, 'op1'])]]
 
 
 
@@ -358,24 +419,42 @@ def test_simple_ket_op_2():
 # bracketk_cs test cases:
 def test_bracket_1():
   x = op_grammar(' ( |x> ) ').bracketk_cs()
-  assert x == ''
+  assert x == [[[], 'x']]
 
 def test_bracket_2():
   x = op_grammar(' ( |x>, |y> ) ').bracketk_cs()
-  assert x == ''
+  assert x == [[[], 'x'], [[], 'y']]
 
 def test_bracket_3():
   x = op_grammar(' ( |x>,|y>,|z> ) ').bracketk_cs()
-  assert x == ''
+  assert x == [[[], 'x'], [[], 'y'], [[], 'z']]
 
 def test_bracket_4():
   x = op_grammar(' ( |x> ,|y>, |z>, |u>) ').bracketk_cs()
-  assert x == ''
+  assert x == [[[], 'x'], [[], 'y'], [[], 'z'], [[], 'u']]
 
 # designed to fail. Testing {0,3}
 #def test_bracket_5():
 #  x = op_grammar(' ( |x>,|y>,|z>,|u>,|v> ) ').bracketk_cs()
 #  assert x == ''
+
+
+def test_bracket_bracket_1():
+  x = op_grammar(' (( |x> )) ').bracketk_cs()
+  assert x == [[[], [[[], 'x']]]]
+
+def test_bracket_bracket_2():
+  x = op_grammar(' (( |x>, |y> )) ').bracketk_cs()
+  assert x == [[[], [[[], 'x'], [[], 'y']]]]
+
+def test_bracket_bracket_3():
+  x = op_grammar(' (( |x>,|y>,|z> ) )').bracketk_cs()
+  assert x == [[[], [[[], 'x'], [[], 'y'], [[], 'z']]]]
+
+def test_bracket_bracket_4():
+  x = op_grammar(' (  ( |x> ,|y>, |z>, |u>) )').bracketk_cs()
+  assert x == [[[], [[[], 'x'], [[], 'y'], [[], 'z'], [[], 'u']]]]
+
 
 
 
@@ -495,12 +574,14 @@ def test_fcs_ket_bracket_2_ops():
 def test_fcs_brackets_ops_bracket_op():
   x = op_grammar(' op5 (1 - op4 ) op2 op1 (3|x> + 0.2|z>) ').full_compound_superposition()
   print(x)
-  assert x == [('+', [['op5'], ('op_cs', [('+', [1]), ('-', ['op4'])], [['op2', 'op1'], [[('+', [[3], 'x']), ('+', [[0.2], 'z'])]]])])]
+  #assert x == [('+', [['op5'], ('op_cs', [('+', [1]), ('-', ['op4'])], [['op2', 'op1'], [[('+', [[3], 'x']), ('+', [[0.2], 'z'])]]])])]
+  assert x == [('+', [['op5'], ('op_cs', [[('+', [1]), ('-', ['op4'])]], [['op2', 'op1'], [[('+', [[3], 'x']), ('+', [[0.2], 'z'])]]])])]
 
 def test_fcs_bracket_ops():
   x = op_grammar(' (1 - op2 _ op3 op4 . op5 + op6) |x> ').full_compound_superposition()
   print(x)
-  assert x == [('+', [[('+', [1]), ('-', ['op2']), ('_', ['op3', 'op4']), ('.', ['op5']), ('+', ['op6'])], 'x'])]
+  #assert x == [('+', [[('+', [1]), ('-', ['op2']), ('_', ['op3', 'op4']), ('.', ['op5']), ('+', ['op6'])], 'x'])]
+  assert x == [('+', [[[('+', [1]), ('-', ['op2']), ('_', ['op3', 'op4']), ('.', ['op5']), ('+', ['op6'])]], 'x'])]
 
 def test_fcs_bracket_ops_2():
   x = op_grammar(' (1 - op2 _ op3 op4 . op5 + op6) -|x> ').full_compound_superposition()
@@ -510,12 +591,14 @@ def test_fcs_bracket_ops_2():
 def test_fcs_bracket_ops_3():
   x = op_grammar(' (1 - op2 _ op3 op4 . op5 + op6) -3.7|x> ').full_compound_superposition()
   print(x)
-  assert x == [('+', [[('+', [1]), ('-', ['op2']), ('_', ['op3', 'op4']), ('.', ['op5']), ('+', ['op6'])], ('op_cs', [-3.7], [[], 'x'])])]
+  #assert x == [('+', [[('+', [1]), ('-', ['op2']), ('_', ['op3', 'op4']), ('.', ['op5']), ('+', ['op6'])], ('op_cs', [-3.7], [[], 'x'])])]
+  assert x == [('+', [[[('+', [1]), ('-', ['op2']), ('_', ['op3', 'op4']), ('.', ['op5']), ('+', ['op6'])]], ('op_cs', [-3.7], [[], 'x'])])]
 
 def test_fcs_empty_bracket():
   x = op_grammar(" () (3|x> + |y>) ").full_compound_superposition()
   print(x)
-  assert x == [('+', [[('+', [])], [[('+', [[3], 'x']), ('+', [[], 'y'])]]])]
+  #assert x == [('+', [[('+', [])], [[('+', [[3], 'x']), ('+', [[], 'y'])]]])]
+  assert x == [('+', [[[('+', [])]], [[('+', [[3], 'x']), ('+', [[], 'y'])]]])]
 
 def test_fcs_op_sentence():
   x = op_grammar(" 3^2 common[friends] split |Fred Sam> ").full_compound_superposition() 
@@ -535,8 +618,8 @@ def test_fcs_op_sentence_sum_v2():
 def test_fcs_sentence_v3():
   x = op_grammar(" op8 (op7) op5 (op4 - op2) sp(split|x y> - |z>) ").full_compound_superposition()
   print(x)
-  assert x == [('+', [['op8'], ('op_cs', [('+', ['op7'])], [['op5'], ('op_cs', [('+', ['op4']), ('-', ['op2'])], [['sp'], [[('+', [['split'], 'x y']), ('-', [[], 'z'])]]])])])]
-
+  #assert x == [('+', [['op8'], ('op_cs', [('+', ['op7'])], [['op5'], ('op_cs', [('+', ['op4']), ('-', ['op2'])], [['sp'], [[('+', [['split'], 'x y']), ('-', [[], 'z'])]]])])])]
+  assert x == [('+', [['op8'], ('op_cs', [[('+', ['op7'])]], [['op5'], ('op_cs', [[('+', ['op4']), ('-', ['op2'])]], [['sp'], [[('+', [['split'], 'x y']), ('-', [[], 'z'])]]])])])]
 
 
 # compile compound superposition test cases:
@@ -635,4 +718,68 @@ def test_cfcseq_simple_ket_op_1():
 def test_cfcseq_simple_ket_op_2():
   x = op_grammar(' op |fish>').compiled_compound_sequence()
   assert str(x) == '|op: fish>'
+
+# [('+', [[3], 'x']), ('+', [[], 'y']), ('-', [[3.2], 'z']), ('_', [[], 'c']), ('+', [[], 'd']), ('.', [[], 'e']), ('+', [[], 'f'])]
+def test_cfcseq_ket_sum_1():
+  x = op_grammar(' 3|x> + |y> - 3.2|z> _ |c> + |d> . |e> + |f>').compiled_compound_sequence()
+  x.display()
+  assert str(x) == '3|x> + |y> + -3.2|zc> + |d> . |e> + |f>'
+
+def test_cfcseq_ket_sum_2():
+  x = op_grammar(' 3|x> + |y> + -3.2|zc> + |d> . |e> + |f>').compiled_compound_sequence()
+  assert str(x) == '3|x> + |y> + -3.2|zc> + |d> . |e> + |f>'
+  x.display()
+  assert True
+
+# [('-', [['op3', 'op2', 'op1'], 'x']), ('+', [[9.99], 'y']), ('_', [['op5', 'op4'], 'z']), ('.', [['op6'], 'e'])]
+def test_cfcseq_ket_sum_with_ops_1():
+  x = op_grammar(' -op3 op2 op1 |x> + 9.99|y> _ op5 op4 |z> . op6 |e> ').compiled_compound_sequence()
+  assert str(x) == '-1|op3: op2: op1: x> + 9.99|yop5: op4: z> . |op6: e>'
+
+# [('+', [[], [[('-', [['op3', 'op2', 'op1'], 'x']), ('+', [[9.99], 'y']), ('_', [['op5', 'op4'], 'z']), ('.', [['op6'], 'e'])]]])]
+def test_cfcseq_ket_bracket_with_ops_1():
+  x = op_grammar(' ( -op3 op2 op1 |x> + 9.99|y> _ op5 op4 |z> . op6 |e> )').compiled_compound_sequence()
+  assert str(x) == '-1|op3: op2: op1: x> + 9.99|yop5: op4: z> . |op6: e>'
+
+def test_cfcseq_ket_sum_with_brackets_3():
+  x = op_grammar(' ((   ( -op3 op2 op1 |x> + 9.99|y> _ op5 op4 |z> . op6 |e> )))').compiled_compound_sequence()
+  assert str(x) == '-1|op3: op2: op1: x> + 9.99|yop5: op4: z> . |op6: e>'
+
+def test_cfcseq_op_brackets_1():
+  x = op_grammar(' op1 ( |x> + 9.99|y> . |z> _ |a> + |b> ) ').compiled_compound_sequence()
+  x.display()
+  assert str(x) == '|op1: x> + 9.99|op1: y> . |op1: za> + |op1: b>'
+
+
+
+def test_cfcseq_tuple_op_1():
+  x = op_grammar('(op2 op1) |x> + |y> - |z>   ' ).compiled_compound_sequence()
+  assert str(x) == '|op2: op1: x> + |y> + -1|z>'
+
+def test_cfcseq_tuple_op_2():
+  x = op_grammar('(- op2 op1) |x> + |y> - |z>   ' ).compiled_compound_sequence()
+  assert str(x) == '-1|op2: op1: x> + |y> + -1|z>'
+
+def test_cfcseq_tuple_op_3():
+  x = op_grammar('- (op2 op1) |x> + |y> - |z>   ' ).compiled_compound_sequence()
+  assert str(x) == '-1|op2: op1: x> + |y> + -1|z>'
+
+def test_cfcseq_tuple_op_4():
+  x = op_grammar('(- op4 + op3 _ op2 . op1) |x>   ' ).compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_cfcseq_tuple_op_4_sans_bracket():
+  x = op_grammar(' ((- op4 + op3 _ op2 . op1)) |x>   ' ).compiled_compound_sequence()
+  assert str(x) == ''
+
+
+
+def test_cfcseq_tuple_op_object():
+  x = op_grammar('(op3 op2) op1 |x> ' ).compiled_compound_sequence()
+  assert str(x) == ''
+
+
+def test_cfcseq_powered_op_1():
+  x = op_grammar(' op1^3 |x> ').compiled_compound_sequence()
+  assert str(x) == '|op1: op1: op1: x>'
 

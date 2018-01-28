@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-23
-# Update: 2018-1-25
+# Update: 2018-1-28
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_code.py
@@ -708,4 +708,11 @@ def test_sequence_multiply():
   r = seq.multiply(3)
   r.display()
   assert str(r) == '3|a> + 9.42|b> . 6.6|c> + 3|d> + 3|e> . 3|f>'
+
+def test_sequence_add_seq_empty():
+  x = sequence(ket('x')) + ket('y')
+  y = sequence()
+  x.add_seq(y)
+  x.display()
+  assert str(x) == '|x> . |y>'
 

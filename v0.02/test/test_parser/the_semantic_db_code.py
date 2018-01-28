@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-1-27
+# Update: 2018-1-28
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1323,6 +1323,8 @@ class sequence(object):
     return len(self.data)
     
   def __str__(self):
+    if len(self) == 0:
+      return '|>'
     return ' . '.join(str(x) for x in self.data)
 
   def __getitem__(self, key):
@@ -1355,6 +1357,8 @@ class sequence(object):
 #      seq.seq_merge(the_seq)
 
   def add_seq(self, seq):                       #(|a> . |b> + |c>) + (|x> . |y>) == |a> . |b> + |c> + |x> . |y>  I think. I need more thinking time....
+    if len(seq) == 0:
+      return
     if len(self.data) == 0:
       self.data = [superposition()]
     if type(seq) in [ket, superposition]:
@@ -1365,6 +1369,8 @@ class sequence(object):
       self.data += tail 
 
   def sub_seq(self, seq):                       #(|a> . |b> + |c>) - (|x> . |y>) == |a> . |b> + |c> - |x> . |y>  I think. I need more thinking time....
+    if len(seq) == 0:
+      return
     if len(self.data) == 0:
       self.data = [superposition()]
     if type(seq) in [ket, superposition]:
@@ -1375,6 +1381,8 @@ class sequence(object):
       self.data += tail 
 
   def merge_seq(self, seq):                       #(|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
+    if len(seq) == 0:
+      return
     if len(self.data) == 0:
       self.data = [superposition()]
     if type(seq) in [ket, superposition]:
