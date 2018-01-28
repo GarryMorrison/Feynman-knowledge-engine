@@ -1,8 +1,5 @@
 {
   "test_parser.py::test_cfcseq_symbol_ket_4": true,
-  "test_parser.py::test_cfcseq_tuple_op_1": true,
-  "test_parser.py::test_cfcseq_tuple_op_2": true,
-  "test_parser.py::test_cfcseq_tuple_op_3": true,
   "test_parser.py::test_cfcseq_tuple_op_4": true,
   "test_parser.py::test_cfcseq_tuple_op_4_sans_bracket": true,
   "test_parser.py::test_cfcseq_tuple_op_object": true,

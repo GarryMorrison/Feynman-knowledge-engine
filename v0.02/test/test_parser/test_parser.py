@@ -162,15 +162,37 @@ def compile_compound_superposition(compound_superposition):
 
     
 def process_operators(ops, seq):
-  if len(ops) > 0:
-    python_code = ''
+  if len(ops) == 0:
+    return seq
+  python_code = ''
   for op in reversed(ops):
     if type(op) is list:
       print('bracket_ops found')
+      new_seq = sequence()
       for new_op in op:
         print('new op: ', end = '')
         pprint(new_op)
-      continue
+
+        symbol, ops = new_op
+        print("symbol: ",end='')
+        pprint(symbol)
+        print('ops: ', end = '')
+        pprint(ops)
+
+        the_seq = process_operators(ops, seq)
+        print('the_seq: %s' % the_seq)
+
+        if symbol == '+':
+          new_seq.add_seq(the_seq)
+        elif symbol == '-':
+          new_seq.sub_seq(the_seq)
+        elif symbol == '_':
+          new_seq.merge_seq(the_seq)
+        elif symbol == '.':
+          new_seq += the_seq
+        print('new_seq: %s' % new_seq)
+      seq = new_seq
+      #continue
     else:
       python_code += process_single_op(op)
   logger.debug('python code: %s' % python_code)
@@ -201,44 +223,7 @@ def compile_compound_sequence(compound_sequence):
       if len(object) == 1:
         the_seq = compile_compound_sequence(object[0])
 
-    if len(ops) > 0:
-      python_code = ''
-      for op in reversed(ops):
-        if type(op) is list:
-          print('bracket_ops found')                              # now need to apply a distributive law. No clue how yet!!
-          for new_op in op:
-            print('new op: ', end = '')
-            pprint(new_op)
-          continue
-#        if type(op) is tuple and op[0] in ['+', '-', '_', '.']:
-          new_symbol, rest = op
-          print('new_symbol: ', end='')
-          pprint(new_symbol)
-          print('rest: ', end='')
-          pprint(rest)
-          #the_seq = compile_compound_sequence([('+', [rest, object])])
-
-          new_python_code = ''
-          for new_op in reversed(rest):
-            new_python_code += process_single_op(new_op)
-          print('new_python_code: %s' % new_python_code)
-          new_seq = eval('the_seq' + new_python_code)
-
-#          new_seq = sequence([])
-#          if new_symbol == '+':
-#            new_seq.add_seq(the_seq)
-#          if new_symbol == '-':
-#            new_seq.sub_seq(the_seq)
-#          if new_symbol == '_':
-#            new_seq.merge_seq(the_seq)
-#          if new_symbol == '.':
-#            new_seq += the_seq
-          the_seq = new_seq
-        else:
-          python_code += process_single_op(op)
-      logger.debug('python code: %s' % python_code)
-      if len(python_code) > 0:
-        the_seq = eval('the_seq' + python_code)                        # yeah, risk of injection attacks. Need better approach!!
+    the_seq = process_operators(ops, the_seq)
 
     if symbol == '+':
       seq.add_seq(the_seq)
