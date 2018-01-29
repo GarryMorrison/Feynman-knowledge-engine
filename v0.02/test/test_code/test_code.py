@@ -798,3 +798,49 @@ def test_empty_recall():
   rule = context.recall('foo', '')
   assert str(rule) == '|fish>'
 
+def test_ket_add_sequence():
+  x = ket('x')
+  y = sequence('y') + ket('z')
+  z = x + y
+  assert str(z) == '|x> + |y> . |z>'      # maybe change this behaviour later.
+
+
+def test_distribute_merge_seq_add():
+  x = sequence('a')
+  y = ket('x') + ket('y')
+  x.distribute_merge_seq(y)
+  assert str(x) == '|ax> + |ay>'
+
+def test_distribute_merge_seq_sequence():
+  x = sequence('a')
+  y = sequence('x') + ket('y')
+  x.distribute_merge_seq(y)
+  assert str(x) == '|ax> . |ay>'
+
+def test_distribute_merge_seq_sub():
+  x = sequence('a')
+  y = ket('x') - ket('y')
+  print('y: %s' % y)
+  x.distribute_merge_seq(y)
+  assert str(x) == '|ax> + -1|ay>'
+
+def test_distribute_merge_seq_add_coeffs():
+  x = sequence(ket('a',2))
+  y = ket('x',4) + ket('y',5)
+  print('y: %s' % y)
+  x.distribute_merge_seq(y)
+  assert str(x) == '8|ax> + 10|ay>'
+
+def test_distribute_merge_seq_superposition():
+  x = sequence(ket('a', 3)) + ket('b', 2)
+  y = ket('x',4) + ket('y',5)
+  x.distribute_merge_seq(y)
+  assert str(x) == '3|a> . 8|bx> + 10|by>'
+
+def test_distribute_merge_seq_superposition_bigger():
+  x = sequence(ket('a', 3)) + ket('b', 2)
+  y = ket('x',4) + ket('y',5)
+  z = sequence(y) + ket('z',7)
+  print(str(z))
+  x.distribute_merge_seq(z)
+  assert str(x) == '3|a> . 8|bx> + 10|by> . 14|bz>'

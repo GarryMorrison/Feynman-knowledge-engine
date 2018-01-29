@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/1/2018
+# Update: 29/1/2018
 # Copyright: GPLv3
 #
 # Usage: 

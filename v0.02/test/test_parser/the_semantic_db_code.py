@@ -607,6 +607,10 @@ class superposition(object):
       for key,value in sp.items():
         r.add(key, value)
       return r
+    if type(sp) in [sequence]:
+      r = sequence(self)
+      r.add_seq(sp)
+      return r 
     else:
       return NotImplemented
 
@@ -678,9 +682,10 @@ class superposition(object):
         x_head.add(key, value)
       else:
         x_tail.add(key, value)
-    result = head + ket(tail.label + x_head.label, tail.value) + x_tail
-#    return result
+#    result = head + ket(tail.label + x_head.label, tail.value) + x_tail
+    result = head + ket(tail.label + x_head.label, x_head.value * tail.value) + x_tail
     self.dict = result.dict
+    
 
 
 #  def clean_add(self,one):                                    # I don't know where this is used. Maybe remove since it duplicates add_sp().
@@ -1352,7 +1357,7 @@ class sequence(object):
     if type(data) in [ket, superposition]:
       self.data = [data]
     if type(data) in [str]:
-      self.data = [ket(data)]
+      self.data = [superposition(data)]
 
   def __len__(self):
     return len(self.data)
@@ -1420,13 +1425,50 @@ class sequence(object):
       return
     if len(self.data) == 0:
       self.data = [superposition()]
-    if type(seq) in [ket, superposition]:
+    if type(seq) in [superposition]:
       self.data[-1].merge_sp(seq)
     if type(seq) in [sequence]:
       head, *tail = seq.data
       self.data[-1].merge_sp(head)
       self.data += tail 
 
+  def distribute_merge_seq(self, seq):            # |a> _ (|x> + |y>) == |ax> + |ay>             # this function feels like an ugly hack! Ditto the above add_seq/sub_seq/merge_seq!
+    if len(seq) == 0:                             # |a> _ (|x> . |y>) == |ax> . |ay>             # maybe I should implement sp.distribute_merge_sp(x)?? 
+      return                                      # |a> _ (|x> - |y>) == |ax> - |ay> 
+    print('distribute: self: %s' % self)
+    print('distribute: seq:  %s' % seq)
+    print('distribute: type(self): %s' % type(self))
+    print('distribute: type(seq):  %s' % type(self))
+    
+    if len(self.data) == 0:
+      self.data = [superposition()]
+    if type(seq) in [superposition]:
+      tail = self.data[-1]
+      r = superposition()
+      for x in seq:
+        print('x: %s' % x)
+        r2 = superposition(tail)
+        r2.merge_sp(x)
+        r.add_sp(r2)
+      self.data[-1] = r
+    if type(seq) in [sequence]:
+      head = self.data[:-1]
+      tail = self.data[-1]
+      print('head: %s' % str(head))
+      print('tail: %s' % str(tail))
+      self.data = head
+      for sp in seq.data:
+        r = superposition()
+        for x in sp:
+          print('x: %s' % str(x))
+          r2 = superposition(tail)
+          r2.merge_sp(x)
+          print('r2: %s' % str(r2))
+          r.add_sp(r2)
+        self.data.append(r)
+                    
+  
+    
 
   def old_display(self):                   # print out a sequence class
     for k,x in enumerate(self.data):

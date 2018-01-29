@@ -1,4 +1,5 @@
 {
+  "test_code.py::test_distribute_merge_seq_superposition_bigger": true,
   "test_code.py::test_ket_add": true,
   "test_code.py::test_ket_add_sp": true,
   "test_code.py::test_new_context_add_learn_stored_rule": true,
