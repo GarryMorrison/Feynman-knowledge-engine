@@ -73,7 +73,7 @@ op = (powered_op | general_op):the_op -> the_op
 op_sequence = (ws op:first (S1 op)*:rest ws -> [first] + rest)
               | ws -> []
 
-op_symbol = ('+' | '-' | '_' | '.')
+op_symbol = ('+' | '-' | '__' | '.' | '_')
 symbol_op_sequence = ws op_symbol:symbol ws op_sequence:seq -> (symbol, seq)
 #bracket_ops = ws '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws (symbol_op_sequence+:rest ws ')' ws -> [(symbol, first)] + rest
 #                                          | ')' ws -> [(symbol, first)] )
@@ -192,6 +192,8 @@ def process_operators(ops, seq):
           new_seq.sub_seq(the_seq)
         elif symbol == '_':
           new_seq.merge_seq(the_seq)
+        elif symbol == '__':
+          new_seq.merge_seq(the_seq, ' ')
         elif symbol == '.':
           new_seq += the_seq
         my_print('new_seq', str(new_seq))
@@ -223,7 +225,7 @@ def compile_compound_sequence(compound_sequence):
     elif type(object) is list:
       my_print('bracketk_cs found')
       distribute = True
-      if len(ops) == 0:
+      if len(ops) == 0 or type(ops[-1]) is not str:
         if len(object) == 1:
           the_seq = compile_compound_sequence(object[0])
         else:
@@ -232,7 +234,7 @@ def compile_compound_sequence(compound_sequence):
         seq_list = [compile_compound_sequence(x) for x in object]
         str_seq_list = [str(x) for x in seq_list]
         my_print('str_seq_list', str_seq_list)
-        fnk = ops[-1]
+        fnk = ops[-1]                                                # need to check type(fnk) is str.
         new_ops = ops[:-1]
         my_print('fnk', fnk)
         my_print('new_ops', new_ops)
@@ -257,6 +259,7 @@ def compile_compound_sequence(compound_sequence):
             my_print("whitelist_table: python code", python_code)
             the_seq = eval(python_code)
           ops = new_ops
+#            ops = new_ops
 
     elif type(object) is tuple:
       prefix, tuple_ops, tuple_rest = object
@@ -292,6 +295,11 @@ def compile_compound_sequence(compound_sequence):
         seq.merge_seq(the_seq)
       if distribute:
         seq.distribute_merge_seq(the_seq)
+    elif symbol == '__':
+      if not distribute:
+        seq.merge_seq(the_seq, ' ')
+      if distribute:
+        seq.distribute_merge_seq(the_seq, ' ')
     elif symbol == '.':
       seq += the_seq
   return seq
@@ -1056,3 +1064,16 @@ def test_ket_bracket_merge_union_bracket():
   x = op_grammar(' |fish> _ union(|cats>, |dogs>) ').compiled_compound_sequence()
   assert str(x) == '|fishcats> + |fishdogs>'
 
+
+def test_common_friends():
+  x = op_grammar(' common[friends] (|Fred> + |Sam>) ').compiled_compound_sequence()
+  assert str(x) == '|Jack> + |Emma> + |Charlie>'
+
+
+def test_double_merge():
+  x = op_grammar(' op1 |x> __ op3 op2 |y> __ |z> ').compiled_compound_sequence()
+  assert str(x) == '|op1: x op3: op2: y z>'
+
+def test_double_merge_single():
+  x = op_grammar(' op1 |x> __ op3 op2 |y> __ |z> _ |fish> ').compiled_compound_sequence()
+  assert str(x) == '|op1: x op3: op2: y zfish>'

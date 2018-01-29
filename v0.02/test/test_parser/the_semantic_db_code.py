@@ -663,7 +663,7 @@ class superposition(object):
     r = sequence(self) + x
     return r
 
-  def merge_sp(self, x):                                      # |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f> == |a> + 2.1|b> + |cd> + |e> + |f>  
+  def merge_sp(self, x, space=''):                                      # |a> + 2.1|b> + 3|c> _ 7.9|d> + |e> + |f> == |a> + 2.1|b> + |cd> + |e> + |f>  
     if len(self) == 0:
       for key, value in x.items():
         self.add(key, value)
@@ -683,7 +683,7 @@ class superposition(object):
       else:
         x_tail.add(key, value)
 #    result = head + ket(tail.label + x_head.label, tail.value) + x_tail
-    result = head + ket(tail.label + x_head.label, x_head.value * tail.value) + x_tail
+    result = head + ket(tail.label + space + x_head.label, x_head.value * tail.value) + x_tail
     self.dict = result.dict
     
 
@@ -1420,21 +1420,21 @@ class sequence(object):
       self.data[-1].sub_sp(head)
       self.data += tail 
 
-  def merge_seq(self, seq):                       #(|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
+  def merge_seq(self, seq, space=''):                       #(|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
     if len(seq) == 0:
       return
     if len(self.data) == 0:
       self.data = [superposition()]
     if type(seq) in [superposition]:
-      self.data[-1].merge_sp(seq)
+      self.data[-1].merge_sp(seq, space)
     if type(seq) in [sequence]:
       head, *tail = seq.data
-      self.data[-1].merge_sp(head)
+      self.data[-1].merge_sp(head, space)
       self.data += tail 
 
-  def distribute_merge_seq(self, seq):            # |a> _ (|x> + |y>) == |ax> + |ay>             # this function feels like an ugly hack! Ditto the above add_seq/sub_seq/merge_seq!
-    if len(seq) == 0:                             # |a> _ (|x> . |y>) == |ax> . |ay>             # maybe I should implement sp.distribute_merge_sp(x)?? 
-      return                                      # |a> _ (|x> - |y>) == |ax> - |ay> 
+  def distribute_merge_seq(self, seq, space=''):            # |a> _ (|x> + |y>) == |ax> + |ay>             # this function feels like an ugly hack! Ditto the above add_seq/sub_seq/merge_seq!
+    if len(seq) == 0:                                       # |a> _ (|x> . |y>) == |ax> . |ay>             # maybe I should implement sp.distribute_merge_sp(x)?? 
+      return                                                # |a> _ (|x> - |y>) == |ax> - |ay> 
     print('distribute: self: %s' % self)
     print('distribute: seq:  %s' % seq)
     print('distribute: type(self): %s' % type(self))
@@ -1448,7 +1448,7 @@ class sequence(object):
       for x in seq:
         print('x: %s' % x)
         r2 = superposition(tail)
-        r2.merge_sp(x)
+        r2.merge_sp(x, space)
         r.add_sp(r2)
       self.data[-1] = r
     if type(seq) in [sequence]:
@@ -1462,7 +1462,7 @@ class sequence(object):
         for x in sp:
           print('x: %s' % str(x))
           r2 = superposition(tail)
-          r2.merge_sp(x)
+          r2.merge_sp(x, space)
           print('r2: %s' % str(r2))
           r.add_sp(r2)
         self.data.append(r)

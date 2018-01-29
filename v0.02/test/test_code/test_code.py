@@ -844,3 +844,12 @@ def test_distribute_merge_seq_superposition_bigger():
   print(str(z))
   x.distribute_merge_seq(z)
   assert str(x) == '3|a> . 8|bx> + 10|by> . 14|bz>'
+
+def test_distribute_merge_seq_superposition_bigger_space():
+  x = sequence(ket('a', 3)) + ket('b', 2)
+  y = ket('x',4) + ket('y',5)
+  z = sequence(y) + ket('z',7)
+  print(str(z))
+  x.distribute_merge_seq(z, ' ')
+  assert str(x) == '3|a> . 8|b x> + 10|b y> . 14|b z>'
+
