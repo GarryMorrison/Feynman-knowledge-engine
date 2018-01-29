@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-25
-# Update: 2018-1-28
+# Update: 2018-1-29
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parser.py
@@ -23,7 +23,7 @@ from the_semantic_db_functions import *
 from the_semantic_db_processor import *
 
 context = context_list("parse compound superposition")
-#context.load("sw-examples/fred-sam-friends.sw")
+context.load("sw-examples/fred-sam-friends.sw")
 context.load("sw-examples/test-operators.sw")
 
 logger.setLevel(logging.DEBUG)
@@ -160,27 +160,28 @@ def compile_compound_superposition(compound_superposition):
   seq += sp
   return seq    
 
+def my_print(name, value=''):
+  #return
+  print(name + ': ', end='')
+  pprint(value)
     
 def process_operators(ops, seq):
   if len(ops) == 0:
     return seq
   python_code = ''
   for op in reversed(ops):
-    if type(op) is list:
+    if type(op) is list and op[0][0] in ['+', '-', '_', '.']:       # is there a better way to select out bracket_ops?
       print('bracket_ops found')
       new_seq = sequence()
       for new_op in op:
-        print('new op: ', end = '')
-        pprint(new_op)
+        my_print('new op', new_op)
 
         symbol, ops = new_op
-        print("symbol: ",end='')
-        pprint(symbol)
-        print('ops: ', end = '')
-        pprint(ops)
+        my_print('symbol', symbol)
+        my_print('ops', ops)
 
         the_seq = process_operators(ops, seq)
-        print('the_seq: %s' % the_seq)
+        my_print('the_seq', the_seq)
 
         if symbol == '+':
           new_seq.add_seq(the_seq)
@@ -190,12 +191,12 @@ def process_operators(ops, seq):
           new_seq.merge_seq(the_seq)
         elif symbol == '.':
           new_seq += the_seq
-        print('new_seq: %s' % new_seq)
+        my_print('new_seq', new_seq)
       seq = new_seq
       #continue
     else:
       python_code += process_single_op(op)
-  logger.debug('python code: %s' % python_code)
+  logger.debug('process_operators: python code: %s' % python_code)
   if len(python_code) > 0:
      seq = eval('seq' + python_code)
   return seq
@@ -204,25 +205,75 @@ def compile_compound_sequence(compound_sequence):
   print("cs: ",end='')
   pprint(compound_sequence)
 
-  seq = sequence()
+  seq = sequence([])
   for seq2 in compound_sequence:
     symbol, (ops, object) = seq2
-    print("symbol: ",end='')
-    pprint(symbol)
-    print('ops: ', end = '')
-    pprint(ops)
-    print("object: ",end='')
-    pprint(object)
+    my_print('symbol', symbol)
+    my_print('ops', ops)
+    my_print('object', object)
 
-    the_seq = sequence()
+    the_seq = sequence([])
     if type(object) is str:                                       # found a ket
       the_seq = sequence(superposition(object))
 
-    if type(object) is list:
-      print('bracketk_cs found')
-      if len(object) == 1:
-        the_seq = compile_compound_sequence(object[0])
+    elif type(object) is list:
+      my_print('bracketk_cs found')
+      if len(ops) == 0:
+        if len(object) == 1:
+          the_seq = compile_compound_sequence(object[0])
+        else:
+          the_seq = sequence([])                                     # probably don't need this branch.
+      else:
+        seq_list = [compile_compound_sequence(x) for x in object]
+        str_seq_list = [str(x) for x in seq_list]
+        my_print('str_seq_list', str_seq_list)
+        fnk = ops[-1]
+        new_ops = ops[:-1]
+        my_print('fnk', fnk)
+        my_print('new_ops', new_ops)
 
+        if len(object) == 1 and fnk not in whitelist_table_1:
+          the_seq = seq_list[0]
+        else:
+          python_code = ''
+          if len(seq_list) == 1:                                    # 1-parameter function:
+            if fnk in whitelist_table_1:
+              python_code = "%s(*seq_list)" % whitelist_table_1[fnk]
+          if len(seq_list) == 2:                                    # 2-parameter function:
+            if fnk in whitelist_table_2:
+              python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
+          elif len(seq_list) == 3:                                  # 3-parameter function:
+            if fnk in whitelist_table_3:
+              python_code = "%s(*seq_list)" % whitelist_table_3[fnk]
+          elif len(seq_list) == 4:                                  # 4-parameter function:
+            if fnk in whitelist_table_4:
+              python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
+          if len(python_code) > 0:
+            my_print("whitelist_table: python code", python_code)
+            the_seq = eval(python_code)
+          ops = new_ops
+
+    elif type(object) is tuple:
+      prefix, tuple_ops, tuple_rest = object
+      if prefix != 'op_cs':
+        logger.warning('wrong prefix: %s' % prefix)
+      my_print('tuple_ops', tuple_ops)
+      my_print('tuple_rest', tuple_rest)
+      if tuple_rest[0] == []:
+        new_tuple_object = [('+', [tuple_ops, tuple_rest[1]])]
+        my_print('new_tuple_object', new_tuple_object)
+        the_seq = compile_compound_sequence(new_tuple_object)
+      else:
+        new_tuple_object = [('+', tuple_rest)]
+        tuple_seq = compile_compound_sequence(new_tuple_object)
+        the_seq = process_operators(tuple_ops, tuple_seq)
+
+    else:
+      logger.warning('unknown object type!')
+
+    my_print('\n----------\nfinal:')
+    my_print('ops', ops)
+    my_print('the_seq', str(the_seq))
     the_seq = process_operators(ops, the_seq)
 
     if symbol == '+':
@@ -751,20 +802,133 @@ def test_cfcseq_tuple_op_3():
 
 def test_cfcseq_tuple_op_4():
   x = op_grammar('(- op4 + op3 _ op2 . op1) |x>   ' ).compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '-1|op4: x> + |op3: xop2: x> . |op1: x>'
 
-def test_cfcseq_tuple_op_4_sans_bracket():
+def test_cfcseq_tuple_op_4_bracket():
   x = op_grammar(' ((- op4 + op3 _ op2 . op1)) |x>   ' ).compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '-1|op4: x> + |op3: xop2: x> . |op1: x>'
 
+
+def test_cfcseq_tuple_op_4_op():
+  x = op_grammar('op5 (- op4 + op3 _ op2 . op1) |x>   ' ).compiled_compound_sequence()
+  assert str(x) == '-1|op5: op4: x> + |op5: op3: xop2: x> . |op5: op1: x>'
+
+def test_cfcseq_tuple_op_4_bracket_op():
+  x = op_grammar(' op5((- op4 + op3 _ op2 . op1)) |x>   ' ).compiled_compound_sequence()
+  assert str(x) == '-1|op5: op4: x> + |op5: op3: xop2: x> . |op5: op1: x>'
 
 
 def test_cfcseq_tuple_op_object():
   x = op_grammar('(op3 op2) op1 |x> ' ).compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '|op3: op2: op1: x>'
 
 
 def test_cfcseq_powered_op_1():
   x = op_grammar(' op1^3 |x> ').compiled_compound_sequence()
   assert str(x) == '|op1: op1: op1: x>'
+
+def test_simple_op():
+  x = op_grammar(' op1 |x> ').compiled_compound_sequence()
+  assert str(x) == '|op1: x>'
+
+def test_cfcseq_tuple_ops():
+  x = op_grammar(' op6 (op5 op4) op3 (op2) op1 |x> . op3|y> + op7|z> ').compiled_compound_sequence()
+  assert str(x) == '|op6: op5: op4: op3: op2: op1: x> . |op3: y> + |op7: z>'
+
+
+def test_cfcseq_op_sentence_sum():
+  x = op_grammar(' 3^2 common[friends] split |Fred Sam> + |mice> + (|cats> + |dogs>) + split |horse pony mare> ').compiled_compound_sequence()
+  print(x)
+  assert str(x) == '9|Jack> + 9|Emma> + 9|Charlie> + |mice> + |cats> + |dogs> + |horse> + |pony> + |mare>'
+
+def test_cfcseq_op_sentence_sum_v2():
+  x = op_grammar(" 3^2 common[friends] split |Fred Sam> _ |mice> - (|cats> + |dogs>) . split |horse pony mare> ").compiled_compound_sequence()
+  print(x)
+  assert str(x) == '9|Jack> + 9|Emma> + 9|Charliemice> + -1|cats> + -1|dogs> . |horse> + |pony> + |mare>'
+
+def test_cfcseq_op_sentence_short():
+  x = op_grammar(' 3^2 common[friends] split |Fred Sam> ').compiled_compound_sequence()
+  print(x)
+  assert str(x) == '9|Jack> + 9|Emma> + 9|Charlie>'
+
+def test_cfcseq_simple_bracket_op():
+  x = op_grammar(' (op) |x> ').compiled_compound_sequence()
+  assert str(x) == '|op: x>'
+
+def test_cfcseq_op_sequence_1():
+  x = op_grammar("  foo bah fish[x,y,13.2] select[1,3]^2  |x> ").compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_cfcseq_empty_bracket():
+  x = op_grammar(' (|x> , |y> , |z>) ').compiled_compound_sequence()
+  assert str(x) == '|>'
+
+def test_cfcseq_op_bracket_1():
+  x = op_grammar(' fnk (|x> , |y> , |z>) ').compiled_compound_sequence()
+  assert str(x) == '|>'
+
+def test_cfcseq_op_bracket_2():
+  x = op_grammar(' op1 fnk (|x> , |y> , |z>) ').compiled_compound_sequence()
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_op_bracket_union():
+  x = op_grammar(' op1 union (|x> , |y> , |z>) ').compiled_compound_sequence()
+  assert str(x) == '|op1: x> + |op1: y> + |op1: z>'
+
+def test_cfcseq_bracket_union():
+  x = op_grammar(' union (|x> , |y> , |z>) ').compiled_compound_sequence()
+  assert str(x) == '|x> + |y> + |z>'
+
+def test_cfcseq_bracket_union_sequence():
+  x = op_grammar(' union (|x> , |y> . |z>) ').compiled_compound_sequence()
+  assert str(x) == '|x> + |y> . |z>'
+
+def test_cfcseq_bracket_intersection_sequence():
+  x = op_grammar(' intersection (|x> , |y> . |z>) ').compiled_compound_sequence()
+  assert str(x) == '|> . |>'
+
+def test_cfcseq_bracket_intersection_split():
+  x = op_grammar(' intersection (2.5 split|x y z> , 3 split|a x b>) ').compiled_compound_sequence()
+  assert str(x) == '2.5|x>'
+
+def test_cfcseq_bracket_intersection_union():
+  x = op_grammar(' union (2.5 split|x y z> , 3 split|a x b>) ').compiled_compound_sequence()
+  assert str(x) == '3|x> + 2.5|y> + 2.5|z> + 3|a> + 3|b>'
+
+def test_cfcseq_split_ket():
+  x = op_grammar(' 2.5 split |x y z> ').compiled_compound_sequence()
+  assert str(x) == '2.5|x> + 2.5|y> + 2.5|z>'
+
+def test_cfcseq_op_empty():
+  x = op_grammar(' op1 |> ').compiled_compound_sequence()
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_op_simple():
+  x = op_grammar(' op1 |a> ').compiled_compound_sequence()
+  assert str(x) == '|op1: a>'
+
+def test_cfcseq_apply_op_empty():
+  x = ket('').apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_apply_op_simple():
+  x = ket('a').apply_op(context, 'op1')
+  assert str(x) == '|op1: a>'
+
+def test_cfcseq_sequence_apply_op_empty_1():
+  x = sequence().apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_sequence_apply_op_empty_2():
+  x = sequence('').apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_sequence_apply_op_empty_3():
+  x = sequence([]).apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+
+def test_cfcseq_sequence_apply_op_simple():
+  x = sequence('a').apply_op(context, 'op1')
+  assert str(x) == '|op1: a>'
 

@@ -22,6 +22,7 @@ from the_semantic_db_functions import *
 
 context = context_list("semantic db code")
 context.load("sw-examples/fred-sam-friends.sw")    # currently fails to load.
+context.load('sw-examples/test-operators.sw')
 #context.learn('friends', 'Fred', ket('Sam') + ket('Max') + ket('Harry'))
 #context.learn('friends', 'Sam', ket('Harry') + ket('Max') + ket('Simon'))
 context.print_multiverse()
@@ -715,4 +716,85 @@ def test_sequence_add_seq_empty():
   x.add_seq(y)
   x.display()
   assert str(x) == '|x> . |y>'
+
+def test_sequence_apply_fn_1():
+  x = sequence('a: b: c') + ket('d: e') + ket('f: g: h: i')
+  z = x.apply_fn(extract_value)
+  assert str(z) == '|c> . |e> . |i>'
+
+def test_sequence_apply_fn_2():
+  x = sequence('a: b: c') + ket('d: e') + ket('f: g: h: i')
+  z = x.apply_fn(extract_category)
+  assert str(z) == '|a: b> . |d> . |f: g: h>'
+
+
+def test_sequence_intersection():
+  x = sequence('a') + ket('b') + ket('c')
+  y = sequence('a') + ket('fish') + ket('c')
+  z = intersection(x, y)
+  z.display()
+  assert str(z) == '|a> . |> . |c>'
+
+def test_sequence_union():
+  x = sequence('a') + ket('b') + ket('c')
+  y = sequence('a') + ket('fish') + ket('c')
+  z = union(x, y)
+  z.display()
+  assert str(z) == '|a> . |b> + |fish> . |c>'
+
+def test_sequence_intersection_fn():
+  x = sequence('a') + ket('b') + ket('c')
+  y = sequence('a') + ket('fish') + ket('c')
+  z = intersection_fn(max, x, y)
+  z.display()
+  assert str(z) == '|a> . |b> + |fish> . |c>'
+
+
+
+
+def test_apply_op_empty():
+  x = ket('').apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_apply_op_simple():
+  x = ket('a').apply_op(context, 'op1')
+  assert str(x) == '|op1: a>'
+
+def test_cfcseq_sequence_apply_op_empty_1():
+  x = sequence().apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_sequence_apply_op_empty_2():
+  x = sequence('').apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_sequence_apply_op_empty_3():
+  x = sequence([]).apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_sequence_apply_op_empty_4():
+  x = sequence(ket('')).apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_cfcseq_sequence_apply_op_empty_5():
+  x = sequence(superposition('')).apply_op(context, 'op1')
+  assert str(x) == '|op1: >'
+
+def test_sequence_apply_op_simple():
+  x = sequence('a').apply_op(context, 'op1')
+  assert str(x) == '|op1: a>'
+
+
+def test_empty_learn():
+  context = new_context('test empty learn')
+  context.learn('foo', '', 'fish')
+  context.print_universe()
+  assert True
+
+def test_empty_recall():
+  context = new_context('test empty recall')
+  context.learn('foo', '', 'fish')
+  context.print_universe()
+  rule = context.recall('foo', '')
+  assert str(rule) == '|fish>'
 

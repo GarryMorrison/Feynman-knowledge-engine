@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 6/6/2017
+# Update: 2018-1-29
 # Copyright: GPLv3
 #
 # Usage: 
@@ -306,7 +306,7 @@ from collections import OrderedDict
 # Good link: http://www.voidspace.org.uk/python/odict.html
 # Heh. Not sure if this is faster or slower!
 # But it hints at how the improved superposition class should be written.
-def intersection_fn(foo,one,two):
+def second_intersection_fn(foo,one,two):
 
   result = superposition()
   
@@ -353,6 +353,46 @@ def fast_sp_intersection_fn(foo,one,two):
     value = foo(v1,v2) 
     r += ket(key,value)
   return r
+
+def superposition_intersection_fn(foo, one, two):
+  if type(one) not in [ket, superposition] and type(two) not in [ket, superposition]:
+    return superposition()
+  r = superposition()
+#  merged = OrderedDict()
+#  merged.update(one.dict)
+#  merged.update(two.dict)
+  merged = one + two
+  
+  for key,value in merged.items():
+    v1 = one.get_value(key)
+    v2 = two.get_value(key)
+    new_value = foo(v1, v2)
+    r.add(key, new_value)
+  return r
+
+# version to handle sequences too.
+def intersection_fn(foo, one, two):   
+  if type(one) in [ket, superposition] or type(two) in [ket, superposition]:
+    return superposition_intersection_fn(foo, one, two)
+  max_len = max(len(one), len(two)) 
+  seq = sequence([])
+  for k in range(max_len):
+    try:                                                 # ugly! But will do for now.
+      sp1 = one.data[k]
+    except:
+      sp1 = ket()
+    try:
+      sp2 = two.data[k]
+    except:
+      sp2 = ket()
+    r = superposition_intersection_fn(foo, sp1, sp2)
+    seq.data.append(r)
+#    print('sp1: %s' % sp1)
+#    print('sp2: %s' % sp2)    
+#    print('r: %s' % r)
+  print('seq: %s' % seq)
+  return seq
+
 
 # now the actual intersection:
 # NB: intersection is actually one key component of learning.

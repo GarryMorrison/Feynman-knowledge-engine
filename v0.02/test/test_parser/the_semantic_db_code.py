@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-1-28
+# Update: 2018-1-29
 # Copyright: GPLv3
 #
 # Usage: 
@@ -173,6 +173,13 @@ class ket(object):
     r = sequence(self) + x
     return r
 
+  def get_value(self, s):
+    if s == self.label:
+      return self.value
+    else:
+      return 0
+
+
 # deleted clean_add(self,x) and self_add(self,x). I don't know what they are meant to do, or where they are used. In new_context, I think ....  
 # Add back in later if they turn out to be important!
 # I still want to delete them, but left them in for now.  
@@ -207,7 +214,7 @@ class ket(object):
 #    r.sub_sp(sp)
 #    return r
       
-  def apply_fn(self,fn,t1=None,t2=None):                   # should be able to improve this, so we don't need the if statements!
+  def old_apply_fn(self,fn,t1=None,t2=None):                   # should be able to improve this, so we don't need the if statements!
     if t1 == None:                                         # maybe this: https://stackoverflow.com/questions/1769403/understanding-kwargs-in-python
       r = fn(self)
     elif t2 == None:
@@ -216,7 +223,7 @@ class ket(object):
       r = fn(self,t1,t2)
     return superposition(r)
 
-  def apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
+  def old_apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
     if t1 == None:
       return fn(self)
     elif t2 == None:
@@ -228,7 +235,7 @@ class ket(object):
     else:
       return fn(self,t1,t2,t3,t4)
 
-  def apply_naked_fn(self,fn,t1=None,t2=None,t3=None):                  # TODO, test later.
+  def old_apply_naked_fn(self,fn,t1=None,t2=None,t3=None):                  # TODO, test later.
     if t1 == None:
       return fn()
     elif t2 == None:
@@ -237,6 +244,16 @@ class ket(object):
       return fn(t1,t2)
     else:
       return fn(t1,t2,t3)
+
+  def apply_fn(self, fn, *args):
+    r = fn(self, *args)
+    return superposition(r)
+    
+  def apply_sp_fn(self, fn, *args):
+    return fn(self, *args)
+    
+  def apply_naked_fn(self, fn, *args):
+    return fn(*args)             
 
 # sp_recall(self,op,sp,active=False)
 
@@ -999,7 +1016,7 @@ class superposition(object):
 #      r.add(key, value * weights[k] )
 #    return r
 
-  def apply_fn(self,fn,t1=None,t2=None):
+  def old_apply_fn(self,fn,t1=None,t2=None):
     result = superposition()
     for x in self:
       if t1 == None:
@@ -1011,11 +1028,10 @@ class superposition(object):
       result += r
     return result
 
-
 # define a function that maps sp -> sp, instead of ket -> ket/sp.
 # now we need to 1) add it to ket class, and 2) wire it into the processor.
 # 5/2/2015: starting to wonder if there is a tidier way to do this!!
-  def apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
+  def old_apply_sp_fn(self,fn,t1=None,t2=None,t3=None,t4=None):
     if t1 == None:
       return fn(self)
     elif t2 == None:
@@ -1030,7 +1046,7 @@ class superposition(object):
 # need to check this works!
 # 27/6/2014: hrmm... so let me get this right, a sp_fn applies to the applied superposition.
 # and naked_fn ignores any passed in superpositions.
-  def apply_naked_fn(self,fn,t1=None,t2=None,t3=None):
+  def old_apply_naked_fn(self,fn,t1=None,t2=None,t3=None):
     if t1 == None:
       return fn()
     elif t2 == None:
@@ -1040,13 +1056,30 @@ class superposition(object):
     else:
       return fn(t1,t2,t3)
 
+  def apply_fn(self, fn, *args):
+    r = superposition()
+    for x in self:
+      r += fn(x, *args)
+    return r
+    
+  def apply_sp_fn(self, fn, *args):
+    return fn(self, *args)
+    
+  def apply_naked_fn(self, fn, *args):
+    return fn(*args)             
+    
   def apply_op(self,context,op):
     logger.debug("inside sp apply_op")
     r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
     if len(r) == 0:
       r = superposition()
-      for x in self:
-        r += context.recall(op,x,True) # should this be apply_op() instead? Nah, don't think so.
+      if len(self) == 0:
+        rule = context.recall(op, '', True)                           # op|> can return something other than |>. At least for now.
+        r.add_sp(rule)
+      else:
+        for x in self:
+          rule = context.recall(op, x, True)                          # should this be apply_op() instead? Nah, don't think so.
+          r.add_sp(rule)
     logger.debug("sp apply_op: " + str(r))
     return r
 
@@ -1315,9 +1348,11 @@ class sequence(object):
 #    self.name = name
     #print('sequence data: %s' % data)
     if type(data) in [list]:
-      self.data = data
+      self.data = data                            # copy.deepcopy(data)??
     if type(data) in [ket, superposition]:
       self.data = [data]
+    if type(data) in [str]:
+      self.data = [ket(data)]
 
   def __len__(self):
     return len(self.data)
@@ -1493,16 +1528,49 @@ class sequence(object):
       r += x
     return r
 
-  def multiply(self, t):
+  def multiply(self, t):                                 # is there a better way than writing all these identical wrappers?
     seq = sequence([])
     for x in self.data:
       seq.data.append(x.multiply(t))
     return seq
 
-  def apply_op(self, context, op):
+  def apply_fn(self, *args):
     seq = sequence([])
     for x in self.data:
-      seq.data.append(x.apply_op(context, op))
+      seq.data.append(x.apply_fn(*args))
+    return seq
+
+  def apply_sp_fn(self, *args):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.apply_sp_fn(*args))
+    return seq
+
+  def apply_naked_fn(self, *args):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.apply_naked_fn(*args))
+    return seq
+
+  def apply_op(self, context, op):
+    if len(self) == 0:
+      seq = sequence([]) + ket().apply_op(context, op)      # do we want this?
+    else:
+      seq = sequence([])
+      for x in self.data:
+        seq.data.append(x.apply_op(context, op))
+    return seq
+
+  def select_range(self, *args):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.select_range(*args))
+    return seq
+
+  def drop(self):                               # may want to filter out |>.  eg: drop (|a> . 0|b> . |c>).
+    seq = sequence([])                          # option 1) |a> . |> . |c>
+    for x in self.data:                         # option 2) |a> . |c>
+      seq.data.append(x.drop())                  
     return seq
 
 # 10/1/2015:
