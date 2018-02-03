@@ -360,12 +360,12 @@ compound_table = {
   "equal"              : ".apply_fn(equal,{0})",
   "in-range"           : ".apply_fn(in_range,{0})",
 
-  "is-greater-than"       : ".apply_fn(greater_than,{0}).is_not_empty()",
-  "is-greater-equal-than" : ".apply_fn(greater_equal_than,{0}).is_not_empty()",
-  "is-less-than"          : ".apply_fn(less_than,{0}).is_not_empty()",
-  "is-less-equal-than"    : ".apply_fn(less_equal_than,{0}).is_not_empty()",
-  "is-equal"              : ".apply_fn(equal,{0}).is_not_empty()",
-  "is-in-range"           : ".apply_fn(in_range,{0}).is_not_empty()",
+  "is-greater-than"       : ".apply_fn(is_greater_than,{0})",
+  "is-greater-equal-than" : ".apply_fn(is_greater_equal_than,{0})",
+  "is-less-than"          : ".apply_fn(is_less_than,{0})",
+  "is-less-equal-than"    : ".apply_fn(is_less_equal_than,{0})",
+  "is-equal"              : ".apply_fn(is_equal,{0})",
+  "is-in-range"           : ".apply_fn(is_in_range,{0})",
 
 # 12/4/2015:
 # not 100% sure this is the best way to do this, but for now is fine.
@@ -534,7 +534,9 @@ compound_table = {
 # 6/6/2017:
   "float-sequence"         : ".apply_fn(float_sequence,context,\"{0}\")",                       # buggy ...
       
-      
+# 2/2/2018:
+  "inherit"              : ".apply_fn(inherit_op, context,\"{0}\")",      
+
 }
 
 
@@ -1338,6 +1340,11 @@ whitelist_table_2 = {
   
 # 5/11/2016:
   "vsa-mult"            : "vsa_mult",          
+
+# 1/2/2018:
+  'And'                 : 'And',
+  'Or'                  : 'Or',
+  
 }
 
 # whitelisted functions that take 3 parameters:

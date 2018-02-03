@@ -45709,3 +45709,649 @@
   float-sequence |3.2 . 1.3 . 4>
   q
 
+2018-01-30
+  fib |0> => |0>
+  fib |1> => |1>
+  
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  n-2 |*> #=> arithmetic(|_self>,|->,|2>)
+  fib |*> !=> arithmetic( fib n-1 |_self>, |+>, fib n-2 |_self>)
+  dump
+  fib |20>
+  table[number,fib] rel-kets[fib]
+  fact |0> => |1>
+  fact |*> !=> arithmetic(|_self>, |*>, fact n-1 |_self>)dump
+  
+  dump
+  fact |20>
+  history
+  table[number,fib,fact] rel-kets[fib]
+  web-load http://semantic-db.org/sw-examples/bots.sw
+  Bella |*> #=> apply(|_self>, |bot: Bella>
+  table[op,Bella] ops |bot: Bella>
+  history
+  Bella |*> #=> apply(|_self>, |bot: Bella>)
+  table[op,Bella] ops |bot: Bella>
+  history
+  Emma |*> #=> apply(|_self>, |bot: Emma>)
+  Madison |*> #=> apply(|_self>, |bot: Madison>)
+  table[op,Bella,Emma,Madison] ops |bot: Bella>
+  history
+  web-load http://semantic-db.org/sw-examples/blog-george.sw
+  web-load http://semantic-db.org/sw-examples/blog-george.sw
+  dump
+  siblings |*> #=> brothers|_self> + sisters |_self>
+  family |*> #=> mother|_self> + father|_self> + sisters|_self> + brothers|_self>
+  family-and-friends |*> #=> family|_self> + friends|_self>
+  dump
+  family-and-friends |person: George>
+  |context> => |context: animal sounds>
+  
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (sounds-it-makes similar-input[sounds-it-makes] |_self> + -|_self>)
+  dump
+  similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  I-predict-from |scratching at the door>
+  I-predict-from |panting>
+  history
+  context if-then machines
+  |node: 0: 0> => |x> + |y> + |z>
+  |node: 0: 1> => |u> + |v>
+  then |node: 0: *> => |alpha>
+  
+  |node: 1: 0> => |u> + |v> + |w>
+  |node: 1: 1> => |h>
+  then |node: 1: *> => |beta>
+  dump
+  pattern |node: 0: 0> => |x> + |y> + |z>
+  pattern |node: 0: 1> => |u> + |v>
+  then |node: 0: *> => |alpha>
+  
+  pattern |node: 1: 0> => |u> + |v> + |w>
+  pattern |node: 1: 1> => |h>
+  then |node: 1: *> => |beta>
+  dump
+  similar-input[pattern] (|x> + |y> + |z>)
+  then similar-input[pattern] (|x> + |y> + |z>)
+  then similar-input[pattern] (|u> + |v>)
+  then similar-input[pattern] |h>
+  then similar-input[pattern] |y>
+  then similar-input[pattern] (|y> + |x>)
+  context fib/fact
+  fib |0> => |0>
+  fib |1> => |1>
+  
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  n-2 |*> #=> arithmetic(|_self>,|->,|2>)
+  fib |*> !=> arithmetic( fib n-1 |_self>, |+>, fib n-2 |_self>)
+  
+  fact |0> => |1>
+  fact |*> !=> arithmetic(|_self>, |*>, fact n-1 |_self>)
+  dump
+  table[number,fib,fact] range(|1>,|20>)
+  files
+  load blog-george.sw
+  dump
+  age |person: George>
+  friends |person: George>
+  history
+  h
+  reset
+  load blog-george.sw
+  dump
+  family |person: George>
+  do-you-know family |person: George>
+  family |*> #=> mother|_self> + father|_self> + sisters|_self> + brothers|_self>
+  family-and-friends |*> #=> family|_self> + friends|_self>
+  do-you-know family |person: George>
+  family |person: George>
+  family-and-friends |person: George>
+  George |*> #=> apply(|_self>, |person: George>)
+  table[op,George] supported-ops |person: George>
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (sounds-it-makes similar-input[sounds-it-makes] |_self> + -|_self>)
+  I-predict-from |purring>
+  I-predict-from |panting>
+  I-predict-from |scratching at the door>
+  
+  history
+  save history
+
+2018-01-31
+  fib |0> => |0>
+  fib |1> => |1>
+  
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  n-2 |*> #=> arithmetic(|_self>,|->,|2>)
+  fib |*> !=> arithmetic( fib n-1 |_self>, |+>, fib n-2 |_self>)
+  dump
+  fib |20>
+  table[number,fib] rel-kets[fib]
+  fact |0> => |1>
+  fact |*> !=> arithmetic(|_self>, |*>, fact n-1 |_self>)dump
+  
+  dump
+  fact |20>
+  history
+  table[number,fib,fact] rel-kets[fib]
+  web-load http://semantic-db.org/sw-examples/bots.sw
+  Bella |*> #=> apply(|_self>, |bot: Bella>
+  table[op,Bella] ops |bot: Bella>
+  history
+  Bella |*> #=> apply(|_self>, |bot: Bella>)
+  table[op,Bella] ops |bot: Bella>
+  history
+  Emma |*> #=> apply(|_self>, |bot: Emma>)
+  Madison |*> #=> apply(|_self>, |bot: Madison>)
+  table[op,Bella,Emma,Madison] ops |bot: Bella>
+  history
+  web-load http://semantic-db.org/sw-examples/blog-george.sw
+  web-load http://semantic-db.org/sw-examples/blog-george.sw
+  dump
+  siblings |*> #=> brothers|_self> + sisters |_self>
+  family |*> #=> mother|_self> + father|_self> + sisters|_self> + brothers|_self>
+  family-and-friends |*> #=> family|_self> + friends|_self>
+  dump
+  family-and-friends |person: George>
+  |context> => |context: animal sounds>
+  
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (sounds-it-makes similar-input[sounds-it-makes] |_self> + -|_self>)
+  dump
+  similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  I-predict-from |scratching at the door>
+  I-predict-from |panting>
+  history
+  context if-then machines
+  |node: 0: 0> => |x> + |y> + |z>
+  |node: 0: 1> => |u> + |v>
+  then |node: 0: *> => |alpha>
+  
+  |node: 1: 0> => |u> + |v> + |w>
+  |node: 1: 1> => |h>
+  then |node: 1: *> => |beta>
+  dump
+  pattern |node: 0: 0> => |x> + |y> + |z>
+  pattern |node: 0: 1> => |u> + |v>
+  then |node: 0: *> => |alpha>
+  
+  pattern |node: 1: 0> => |u> + |v> + |w>
+  pattern |node: 1: 1> => |h>
+  then |node: 1: *> => |beta>
+  dump
+  similar-input[pattern] (|x> + |y> + |z>)
+  then similar-input[pattern] (|x> + |y> + |z>)
+  then similar-input[pattern] (|u> + |v>)
+  then similar-input[pattern] |h>
+  then similar-input[pattern] |y>
+  then similar-input[pattern] (|y> + |x>)
+  context fib/fact
+  fib |0> => |0>
+  fib |1> => |1>
+  
+  n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+  n-2 |*> #=> arithmetic(|_self>,|->,|2>)
+  fib |*> !=> arithmetic( fib n-1 |_self>, |+>, fib n-2 |_self>)
+  
+  fact |0> => |1>
+  fact |*> !=> arithmetic(|_self>, |*>, fact n-1 |_self>)
+  dump
+  table[number,fib,fact] range(|1>,|20>)
+  files
+  load blog-george.sw
+  dump
+  age |person: George>
+  friends |person: George>
+  history
+  h
+  reset
+  load blog-george.sw
+  dump
+  family |person: George>
+  do-you-know family |person: George>
+  family |*> #=> mother|_self> + father|_self> + sisters|_self> + brothers|_self>
+  family-and-friends |*> #=> family|_self> + friends|_self>
+  do-you-know family |person: George>
+  family |person: George>
+  family-and-friends |person: George>
+  George |*> #=> apply(|_self>, |person: George>)
+  table[op,George] supported-ops |person: George>
+  context animal sounds
+  sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+  sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+  normalize similar-input[sounds-it-makes] |scratching at the door>
+  normalize similar-input[sounds-it-makes] (|scratching at the door> + |sniffing>)
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (sounds-it-makes similar-input[sounds-it-makes] |_self> + -|_self>)
+  I-predict-from |purring>
+  I-predict-from |panting>
+  I-predict-from |scratching at the door>
+  
+  history
+  save history
+  dump
+  words-to-list |a, b and c>
+  which-animal-is |*> #=> normalize similar-input[sounds-it-makes] words-to-list |_self>
+  which-animal-is |scratching at the door>
+  which-animal-is |panting and sniffing>
+  which-animal-is |scratching at the door and sniffing>
+  which-animal-is |purring>
+  which-animal-is |panting>
+  I-predict-from |*> #=> list-to-words drop-below[0.15] (sounds-it-makes similar-input[sounds-it-makes] words-to-list |_self> + - words-to-list |_self>)
+  dump
+  I-predict-from |purring>
+  I-predict-from |panting>
+  I-predict-from |purring and miaowing>
+  context if/then machines
+  pattern |node: 0: 0> => |x> + |y> + |z>
+  pattern |node: 0: 1> => |u> + |v>
+  then |node: 0: *> => |alpha>
+  
+  pattern |node: 1: 0> => |u> + |v> + |w>
+  pattern |node: 1: 1> => |h>
+  then |node: 1: *> => |beta>
+  dump
+  if-pattern-then |*> #=> then similar-input[pattern] words-to-list |_self>
+  if-pattern-then |x, y and z>
+  if-pattern-then |h>
+  if-pattern-then |v and u>
+  if-pattern-then |y>
+  if-pattern |*> #=> then similar-input[pattern] words-to-list |_self>
+  if-pattern |x, y and z>
+  if-pattern |h>
+  if-pattern |u and v>
+  if-pattern |y>
+  if-pattern |y and x>
+  if-pattern |v and u>
+  drop-above[0.97] if-pattern |v and u>
+  do-you-know drop-above[0.97] if-pattern |v and u>
+  is-soft-match |*> #=> do-you-know drop-above[0.97] if-pattern |_self>
+  is-soft-match |x, y and z>
+  is-soft-match |h>
+  is-soft-match |u and v>
+  is-soft-match |y>
+  is-soft-match |y and x>
+  history
+  
+  lower |No>
+  lower-case |No>
+  apply-number-prefix |*> #=> merge-labels(|number: > + |_self>)
+  apply-number-prefix range(|1>,|10>)
+  dump
+  files
+  load bots.sw
+  dump
+  supported-ops |bot: Madison>
+  similar-input[supported-ops] supported-ops |bot: Madison>
+  everything |*> #=> apply(supported-ops |_self>, |_self>)
+  everything |bot: Madison>
+  bot |*> #=> merge-labels(|bot: > + |_self>)
+  bot |Madison>
+  bot |fish>
+  history
+  save history
+
+2018-01-31
+  files
+  load bots.sw
+  dump
+  bot |*> #=> merge-labels(|bot: > + |_self>)
+  everything |*> !=> apply(supported-ops |_self>, |_self>)
+  everything bot |Emma>
+  everything bot |Madison>
+  dump
+  everything bot |Bella>
+  similar-bot |*> #=> similar-input[everything] everything bot |_self>
+  similar-bot |Bella>
+  history
+  similar-bot |Emma>
+  intn(everything bot |Bella>, everything bot |Madison>)
+  intn(everything bot |Bella>, everything bot |Emma>)
+  history
+  save history
+
+2018-02-01
+  files
+  load bots.sw
+  dump
+  bot |*> #=> merge-labels(|bot: > + |_self>)
+  everything |*> !=> apply(supported-ops |_self>, |_self>)
+  everything bot |Emma>
+  everything bot |Madison>
+  dump
+  everything bot |Bella>
+  similar-bot |*> #=> similar-input[everything] everything bot |_self>
+  similar-bot |Bella>
+  history
+  similar-bot |Emma>
+  intn(everything bot |Bella>, everything bot |Madison>)
+  intn(everything bot |Bella>, everything bot |Emma>)
+  history
+  save history
+  context logic
+  age |Fred> => 
+  age |Fred> => |17>
+  age |Sam> => |19>
+  is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+  is-a-teenager |Sam>
+  is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+  not |no> => |yes>
+  not |yes> => |no>
+  dump
+  is-an-adult |Fred>
+  is-an-adult |Sam>
+  is-a-boy |*> #=> such-that[is-male] not is-an-adult |_self>
+  is-a-man |*> #=> such-that[is-male] is-an-adult |_self>
+  dump
+  is-male |Fred> => |yes>
+  is-male |Sam> => |yes>
+  dump
+  is-a-boy |Fred>
+  is-a-boy |Sam>
+  such-that[is-male] |Fred>
+  age |Jenny> => |18>
+  such-that[is-male] |Jenny>
+  dump
+  is-an-adult |>
+  context prolog
+  is-cat |tom> => |yes>
+  is-cat |liz> => |yes>
+  dump
+  dump exact
+  rel-kets[is-cat]
+  rel-kets[supported-ops]
+  such-that[is-cat] rel-kets[supported-ops] |>
+  is-animal |*> #=> is-cat|_self> + is-dog|_self>
+  dump
+  such-that[is-animal] rel-kets[supported-ops]
+  is-a-mammal |*> #=> is-an-animal |_self>
+  context
+  context logic
+  list-of-boys |*> #=> intn(such-that[is-male] rel-kets[supported-ops], such-that[is-not-an-adult] rel-kets[supported-ops] )
+  dump
+  is-not-an-adult |*> #=> not is-an-adult |_self>
+  dump
+  list-of-boys |fish>
+  such-that[is-not-an-adult] rel-kets[supported-ops]
+  dump
+  such-that[is-male] rel-kets[ops]
+  such-that[is-male] rel-kets[supported-ops]
+  history
+  intersection(such-that[is-male] rel-kets[ops] |>, such-that[is-male] rel-kets[supported-ops] |>)
+  dump
+  list-of-boys |*> #=> intn(such-that[is-male] rel-kets[supported-ops] |>, such-that[is-not-an-adult] rel-kets[supported-ops] |>)
+  list-of-boys |fish>
+  dump
+  list-of-men |*> #=> intn(such-that[is-male] rel-kets[supported-ops] |>, such-that[is-an-adult] rel-kets[supported-ops] |>)
+  list-of-men |>
+  dump
+  And(|yes>, |yes>)
+  Or(|yes>, |no>)
+  And(|true>, |true>)
+  q
+
+2018-02-01
+  |context> => |context: logic>
+  
+  age |Fred> => |17>
+  is-male |Fred> => |yes>
+  
+  age |Sam> => |19>
+  is-male |Sam> => |yes>
+  
+  is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+  is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+  
+  dump
+  not |no> => |yes>
+  
+  not |yes> => |no>
+  
+  dump
+  is-a-man |*> #=> And(is-male |_self>, is-an-adult |_self>)
+  is-a-man |Fred>
+  is-a-man |Sam>
+  is-a-boy |*> #=> And(is-male |_self>, not is-an-adult |_self>)
+  dump
+  is-a-boy |Fred>
+  is-a-boy |Sam>
+  list-of-boys |*> #=> such-that[is-a-boy] rel-kets[supported-ops] |>
+  list-of-boys |>
+  dump
+  list-of-men |*> #=> such-that[is-a-man] rel-kets[supported-ops] |>
+  dump
+  list-of-men |>
+  dump
+  age |Jenny> => |23>
+  is-female |Jenny> => |yes>
+  dump
+  list-of-adults |*> #=> such-that[is-an-adult] rel-kets[supported-ops] |>
+  list-of-adults |>
+  dump
+  is-in-range[13,19] |20>
+  is-in-range[13,19] |fish>
+  is-an-adult |fish>
+  if(|yes>, |a>, |b>)
+  if(|no>, |a>, |b>)
+  dump
+  is-a-teenager |*> #=> if(do-you-know age |_self>, is-in-range[13,19] age |_self>, |>)
+  is-a-teenager |Fred>
+  is-an-adult |*> #=> if(do-you-know age |_self>, not is-in-range[0,17] age |_self>, |>)
+  dump
+  list-of-adults |fish>
+  dump
+  debug on
+  is-in-range[13,19] |20>
+  dump
+  q
+
+2018-02-02
+  inherit |trudy> => |cat>
+  inherit |cat> => |feline>
+  inherit |feline> => |mammal>
+  inherit |mammal> => |animal>
+  has-teeth |animal> => |yes>
+  inherit-has-teeth |*> #=> select[1,1] has-teeth exp-max[inherit] current |object>
+  inherit-has-teeth |>
+  current |object> => |trudy>
+  inherit-has-teeth |>
+  a-type-of |Jack> => |oak tree>
+  a-type-of |oak tree> => |tree>
+  a-type-of |tree> => |plant>
+  
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  dump
+  current |object> => |Jack>
+  inherit-has-teeth |>
+  dump
+  inherit[has-leaves] |Jack>
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  
+  inherit[has-leaves] |Jack>
+  dump
+  not |no> => |yes>
+  not |yes> => |no>
+  age |Fred> => |17>
+  is-male |Fred> => |yes>
+  
+  age |Sam> => |19>
+  is-male |Sam> => |yes>
+  
+  is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+  is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+  is-a-man |*> #=> And(is-male |_self>, is-an-adult |_self>)
+  is-a-boy |*> #=> And(is-male |_self>, not is-an-adult |_self>)
+  list-of-boys |*> #=> such-that[is-a-boy] rel-kets[supported-ops] |>
+  list-of-men |*> #=> such-that[is-a-man] rel-kets[supported-ops] |>
+  list-of-adults |*> #=> such-that[is-an-adult] rel-kets[supported-ops] |>
+  is-male-or-female |*> #=> Or(is-male |_self>, is-female |_self>)
+  age |Jenny> => |23>
+  is-female |Jenny> => |yes>
+  dump
+  list-of-boys |>
+  list-of-men |>
+  list-of-adults |>
+  dump
+  is-male-or-female |Jenny>
+  
+  is-male-or-female |Jack>
+  dump
+  
+  list-of |people> => |Fred> + |Sam> + |Jenny>
+  table[people,age,is-male,is-female,is-a-teenager,is-an-adult,is-a-man,is-a-boy,is-male-or-female] list-of |people>
+  table[empty,list-of-boys,list-of-men,list-of-adults] |>
+  history
+  table[empty,list-of-boys,list-of-men,list-of-adults] |null>
+  history
+  save history
+
+2018-02-02
+  inherit |trudy> => |cat>
+  inherit |cat> => |feline>
+  inherit |feline> => |mammal>
+  inherit |mammal> => |animal>
+  has-teeth |animal> => |yes>
+  inherit-has-teeth |*> #=> select[1,1] has-teeth exp-max[inherit] current |object>
+  inherit-has-teeth |>
+  current |object> => |trudy>
+  inherit-has-teeth |>
+  a-type-of |Jack> => |oak tree>
+  a-type-of |oak tree> => |tree>
+  a-type-of |tree> => |plant>
+  
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  dump
+  current |object> => |Jack>
+  inherit-has-teeth |>
+  dump
+  inherit[has-leaves] |Jack>
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  
+  inherit[has-leaves] |Jack>
+  dump
+  not |no> => |yes>
+  not |yes> => |no>
+  age |Fred> => |17>
+  is-male |Fred> => |yes>
+  
+  age |Sam> => |19>
+  is-male |Sam> => |yes>
+  
+  is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+  is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+  is-a-man |*> #=> And(is-male |_self>, is-an-adult |_self>)
+  is-a-boy |*> #=> And(is-male |_self>, not is-an-adult |_self>)
+  list-of-boys |*> #=> such-that[is-a-boy] rel-kets[supported-ops] |>
+  list-of-men |*> #=> such-that[is-a-man] rel-kets[supported-ops] |>
+  list-of-adults |*> #=> such-that[is-an-adult] rel-kets[supported-ops] |>
+  is-male-or-female |*> #=> Or(is-male |_self>, is-female |_self>)
+  age |Jenny> => |23>
+  is-female |Jenny> => |yes>
+  dump
+  list-of-boys |>
+  list-of-men |>
+  list-of-adults |>
+  dump
+  is-male-or-female |Jenny>
+  
+  is-male-or-female |Jack>
+  dump
+  
+  list-of |people> => |Fred> + |Sam> + |Jenny>
+  table[people,age,is-male,is-female,is-a-teenager,is-an-adult,is-a-man,is-a-boy,is-male-or-female] list-of |people>
+  table[empty,list-of-boys,list-of-men,list-of-adults] |>
+  history
+  table[empty,list-of-boys,list-of-men,list-of-adults] |null>
+  history
+  save history
+  table[null,list-of-boys,list-of-men,list-of-adults] |null>
+  context
+  context categories
+  h
+  dump
+  has-teeth |animal: *> => |yes>
+  has-teeth |animal: mammal: feline: cat: trudy>
+  has-pointy-ears |cat: *> => |yes>
+  has-pointy-ears |animal: mammal: feline: cat: trudy>
+  full-category |trudy> => |cat> + |feline> + |mammal> + |animal>
+  full-category |trudy> => |animal: mammal: feline: cat>
+  dump
+  context trudy
+  inherit |trudy> => |cat>
+  inherit |cat> => |feline>
+  inherit |feline> => |mammal>
+  inherit |mammal> => |animal>
+  
+  a-type-of |trudy> => |cat>
+  a-type-of |cat> => |feline>
+  a-type-of |feline> => |mammal>
+  a-type-of |mammal> => |animal>
+  
+  has-fur |animal> => |yes>
+  has-teeth |animal> => |yes>
+  has-pointy-ears |feline> => |yes>
+  dump
+  exp-max[inherit] |trudy>
+  has-teeth |trudy> => |no>
+  has-teeth exp-max[inherit] |trudy>
+  inherit-has-teeth |*> #=> select[1,1] has-teeth exp-max[inherit] |_self>
+  inherit-has-fur |*> #=> select[1,1] has-fur exp-max[inherit] |_self>
+  dump
+  inherit-has-teeth |trudy>
+  inherit-has-fur |trudy>
+  dump
+  exp-max[a-type-of] |trudy>
+  a-type-of |trudy> => |cat>
+  a-type-of |cat> => |feline>
+  a-type-of |feline> => |mammal>
+  a-type-of |mammal> => |animal>
+  
+  is-trudy-a |*> #=> is-mbr(|_self>, exp-max[a-type-of] |trudy>)
+  dump
+  is-trudy-a |feline>
+  is-trudy-a |animal>
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  
+  a-type-of |Jack> => |oak tree>
+  a-type-of |oak tree> => |tree>
+  a-type-of |tree> => |plant>
+  
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  dump
+  inherit[has-branches] |Jack>
+  inherit[is-tall] |Jack>
+  inherit[has-leaves] |Jack>
+  current |object> => |Jack>
+  is-a |*> #=> is-mbr(|_self>, exp-max[a-type-of] current |object>)
+  is-a |oak tree>
+  is-a |tree>
+  is-a |plant>
+  is-a |animal>
+  current |object> => |trudy>
+  is-a |tree>
+  is-a |animal>
+  is-a |cat>
+  shout |Hello World!>
+  help
+  history
+  save history
+

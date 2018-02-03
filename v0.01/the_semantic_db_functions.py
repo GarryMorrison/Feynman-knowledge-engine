@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 6/6/2017
+# Update: 1/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1995,6 +1995,41 @@ def weighted_bko_if(condition,one,two):
   else:
     return one.multiply(1 - value) + two.multiply(value)     
 
+def And(one,two):
+  if one.the_label().lower() in ['true', 'yes'] and two.the_label().lower() in ['true', 'yes']:
+    return ket('yes')
+  return ket('no')
+
+def Or(one,two):
+  if one.the_label().lower() in ['true', 'yes'] or two.the_label().lower() in ['true', 'yes']:
+    return ket('yes')
+  return ket('no')
+
+def try_except(one, two):                # unfortunatley, foo and bah are calculated before sent to this function! try-except(foo|_self>, bah|_self>)
+  if len(one) > 0:
+    return one
+  return two
+
+def try_except_operator(sp, context, operators):             # try-except[foo,bah] sp
+  try:
+    foo, bah = operators.split(',')
+  except:
+    return ket('')
+  r = sp.apply_op(context, foo)
+  if len(r) == 0:
+    return sp.apply_op(context, bah)
+
+def inherit_op(one, context, op):                            # maybe build this into the working of the new_context() class?
+  r = one.apply_op(context, op)
+  if len(r) != 0:
+    return r
+  while True:
+    one = one.apply_op(context, 'inherit')
+    if len(one) == 0:
+      return ket('')
+    r = one.apply_op(context, op)
+    if len(r) != 0:
+      return r  
   
 # 8/5/2014:
 # common[op] (|x> + |y> + |z>)
@@ -3545,6 +3580,62 @@ def in_range(one,t1,t2):
   if t1 <= value <= t2:
     return one
   return ket("",0)
+
+# 1/2/2018:
+def is_greater_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1]) # NB: if one is not a ket, one.label fails, and the exception is tripped. Neat!
+  except:
+    return ket("",0)
+  if value > t:
+    return ket('yes')
+  return ket('no')
+
+def is_greater_equal_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if value >= t:
+    return ket('yes')
+  return ket('no')
+
+def is_less_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if value < t:
+    return ket('yes')
+  return ket('no')
+
+def is_less_equal_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if value <= t:
+    return ket('yes')
+  return ket('no')
+
+def is_equal(one,t):          # name clash with equal(SP1,SP2)??
+  epsilon = 0.0001         # Need code since equal and float don't work well together.
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if (t - epsilon) <= value <= (t + epsilon):
+    return ket('yes')
+  return ket('no')
+
+def is_in_range(one,t1,t2):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if t1 <= value <= t2:
+    return ket('yes')
+  return ket('no')
 
 # 21/2/2015: round[3] |number: 3.1415> == |number: 3.142>
 # assumes one is a ket, t is an integer
