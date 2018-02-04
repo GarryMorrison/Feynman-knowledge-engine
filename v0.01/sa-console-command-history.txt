@@ -46355,3 +46355,275 @@
   history
   save history
 
+2018-02-03
+  inherit |trudy> => |cat>
+  inherit |cat> => |feline>
+  inherit |feline> => |mammal>
+  inherit |mammal> => |animal>
+  has-teeth |animal> => |yes>
+  inherit-has-teeth |*> #=> select[1,1] has-teeth exp-max[inherit] current |object>
+  inherit-has-teeth |>
+  current |object> => |trudy>
+  inherit-has-teeth |>
+  a-type-of |Jack> => |oak tree>
+  a-type-of |oak tree> => |tree>
+  a-type-of |tree> => |plant>
+  
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  dump
+  current |object> => |Jack>
+  inherit-has-teeth |>
+  dump
+  inherit[has-leaves] |Jack>
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  
+  inherit[has-leaves] |Jack>
+  dump
+  not |no> => |yes>
+  not |yes> => |no>
+  age |Fred> => |17>
+  is-male |Fred> => |yes>
+  
+  age |Sam> => |19>
+  is-male |Sam> => |yes>
+  
+  is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+  is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+  is-a-man |*> #=> And(is-male |_self>, is-an-adult |_self>)
+  is-a-boy |*> #=> And(is-male |_self>, not is-an-adult |_self>)
+  list-of-boys |*> #=> such-that[is-a-boy] rel-kets[supported-ops] |>
+  list-of-men |*> #=> such-that[is-a-man] rel-kets[supported-ops] |>
+  list-of-adults |*> #=> such-that[is-an-adult] rel-kets[supported-ops] |>
+  is-male-or-female |*> #=> Or(is-male |_self>, is-female |_self>)
+  age |Jenny> => |23>
+  is-female |Jenny> => |yes>
+  dump
+  list-of-boys |>
+  list-of-men |>
+  list-of-adults |>
+  dump
+  is-male-or-female |Jenny>
+  
+  is-male-or-female |Jack>
+  dump
+  
+  list-of |people> => |Fred> + |Sam> + |Jenny>
+  table[people,age,is-male,is-female,is-a-teenager,is-an-adult,is-a-man,is-a-boy,is-male-or-female] list-of |people>
+  table[empty,list-of-boys,list-of-men,list-of-adults] |>
+  history
+  table[empty,list-of-boys,list-of-men,list-of-adults] |null>
+  history
+  save history
+  table[null,list-of-boys,list-of-men,list-of-adults] |null>
+  context
+  context categories
+  h
+  dump
+  has-teeth |animal: *> => |yes>
+  has-teeth |animal: mammal: feline: cat: trudy>
+  has-pointy-ears |cat: *> => |yes>
+  has-pointy-ears |animal: mammal: feline: cat: trudy>
+  full-category |trudy> => |cat> + |feline> + |mammal> + |animal>
+  full-category |trudy> => |animal: mammal: feline: cat>
+  dump
+  context trudy
+  inherit |trudy> => |cat>
+  inherit |cat> => |feline>
+  inherit |feline> => |mammal>
+  inherit |mammal> => |animal>
+  
+  a-type-of |trudy> => |cat>
+  a-type-of |cat> => |feline>
+  a-type-of |feline> => |mammal>
+  a-type-of |mammal> => |animal>
+  
+  has-fur |animal> => |yes>
+  has-teeth |animal> => |yes>
+  has-pointy-ears |feline> => |yes>
+  dump
+  exp-max[inherit] |trudy>
+  has-teeth |trudy> => |no>
+  has-teeth exp-max[inherit] |trudy>
+  inherit-has-teeth |*> #=> select[1,1] has-teeth exp-max[inherit] |_self>
+  inherit-has-fur |*> #=> select[1,1] has-fur exp-max[inherit] |_self>
+  dump
+  inherit-has-teeth |trudy>
+  inherit-has-fur |trudy>
+  dump
+  exp-max[a-type-of] |trudy>
+  a-type-of |trudy> => |cat>
+  a-type-of |cat> => |feline>
+  a-type-of |feline> => |mammal>
+  a-type-of |mammal> => |animal>
+  
+  is-trudy-a |*> #=> is-mbr(|_self>, exp-max[a-type-of] |trudy>)
+  dump
+  is-trudy-a |feline>
+  is-trudy-a |animal>
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  
+  a-type-of |Jack> => |oak tree>
+  a-type-of |oak tree> => |tree>
+  a-type-of |tree> => |plant>
+  
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  dump
+  inherit[has-branches] |Jack>
+  inherit[is-tall] |Jack>
+  inherit[has-leaves] |Jack>
+  current |object> => |Jack>
+  is-a |*> #=> is-mbr(|_self>, exp-max[a-type-of] current |object>)
+  is-a |oak tree>
+  is-a |tree>
+  is-a |plant>
+  is-a |animal>
+  current |object> => |trudy>
+  is-a |tree>
+  is-a |animal>
+  is-a |cat>
+  shout |Hello World!>
+  help
+  history
+  save history
+  web-load http://semantic-db.org/sw-examples/names.sw
+  find-topic[names] |jill>
+  find-topic[names] |jack>
+  find-topic[names] |trudy>
+  guess-gender |*> #=> clean select[1,1] find-topic[names] |_self>
+  guess-gender |trudy>
+  select[1,1] split |female name>
+  guess-gender |*> #=> select[1,1] split clean select[1,1] find-topic[names] |_self>
+  guess-gender |jack>
+  guess-gender |robert>
+  guess-gender |garry>
+  guess-gender |fish>
+  find-topic[names] |fish>
+  tidy |male name> => |male>
+  tidy |female name> => |female>
+  tidy |last name> #=> |>
+  history
+  guess-gender |*> #=> tidy clean select[1,1] find-topic[names] |_self>
+  guess-gender |jack>
+  guess-gender |fish>
+  guess-gender |patrick>
+  history
+  guess-gender |jill>
+  guess-gender |jack>
+  guess-gender |trudy>
+  guess-gender |fish>
+  gender |*> !=> guess-gender |_self>
+  is-female |*> !=> is-equal(|female>, gender |_self>)
+  is-male |*> !=> is-equal(|male>, gender |_self>)
+  
+  the |list> => split |jill jack trudy>
+  dump
+  is-female |albert>
+  dump
+  is-equal(|a>, |a>)
+  equal(|a>, |a>)
+  is-female |*> !=> do-you-know drop[0.97] equal(|female>, gender |_self>)
+  is-female |robert>
+  gender |robert>
+  equal(|female>, gender |robert>)
+  dump
+  is-female |*> !=> is-mbr(|female>, gender |_self>)
+  is-female |garry>
+  dump
+  is-male |*> !=> is-mbr(|male>, gender |_self>)
+  dump
+  map[is-female] the |list>
+  dump
+  map[is-male] the |list>
+  dump
+  the |list> => split |jill jack trudy frank robert eric emma>
+  map[is-female] the |list>
+  map[is-male] the |list>
+  dump
+  reset
+  files
+  load names.sw
+  tidy |male name> => |male>
+  tidy |female name> => |female>
+  guess-gender |*> #=> tidy clean select[1,1] find-topic[names] lower-case |_self>
+  gender |*> !=> guess-gender |_self>
+  is-female |*> !=> is-mbr(|female>, gender |_self>)
+  is-male |*> !=> is-mbr(|male>, gender |_self>)
+  
+  the |list> => split |Jill Jack Trudy Frank Robert Eric Emma>
+  dump
+  map[is-female] the |list>
+  map[is-male] the |list>
+  dump
+  guess-gender |fish>
+  context jack
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  dump
+  inherit[has-branches] |Jack>
+  has-branches |*> #=> inherit[has-branches] |_self>
+  has-branches |Jack>
+  dump
+  inherit |trudy> => |cat>
+  inherit |cat> => |feline>
+  inherit |feline> => |mammal>
+  inherit |mammal> => |animal>
+  
+  has-fur |animal> => |yes>
+  has-teeth |animal> => |yes>
+  has-pointy-ears |feline> => |yes>
+  a-type-of |trudy> => |cat>
+  a-type-of |cat> => |feline>
+  a-type-of |feline> => |mammal>
+  a-type-of |mammal> => |animal>
+  inherit |Jack> => |oak tree>
+  inherit |oak tree> => |tree>
+  inherit |tree> => |plant>
+  
+  a-type-of |Jack> => |oak tree>
+  a-type-of |oak tree> => |tree>
+  a-type-of |tree> => |plant>
+  
+  has-branches |tree> => |yes>
+  is-tall |tree> => |yes>
+  has-leaves |plant> => |yes>
+  
+  dump
+  is-a |*> #=> is-mbr(|_self>, exp-max[a-type-of] current |object>)
+  current |object> => |Jack>
+  is-a |oak tree>
+  dump
+  current |object> => |feline>
+  is-a |animal>
+  is-a |fish>
+  current |object> => |fish>
+  is-a |animal>
+  context
+  context names
+  guess-gender |Madison>
+  find-topic[names] |madison>
+  guess-gender |*> #=> clean select[1,1] tidy find-topic[names] lower-case |_self>
+  guess-gender |Madison>
+  h
+  history
+  q
+
+2018-02-03
+  union(|a> , |b>)
+  q
+
+2018-02-03
+  learn(|op: age>, |Fred>, |age: 37>)
+  q
+

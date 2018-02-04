@@ -1,10 +1,4 @@
 {
-  "test_parser.py::test_cfcseq_op_sequence_1": true,
-  "test_parser.py::test_cfcseq_symbol_ket_4": true,
-  "test_parser.py::test_fcs_bracket_ops_2": true,
-  "test_parser.py::test_fcs_ket_bracket_with_ops_1": true,
-  "test_parser.py::test_symbol_ket_1": true,
-  "test_parser.py::test_symbol_ket_2": true,
-  "test_parser.py::test_symbol_ket_3": true,
-  "test_parser.py::test_symbol_ket_4": true
+  "test_parser_v2.py::test_ket_bracket_merge_union_bracket": true,
+  "test_parser_v2.py::test_tuple_op_4_bracket_op": true
 }

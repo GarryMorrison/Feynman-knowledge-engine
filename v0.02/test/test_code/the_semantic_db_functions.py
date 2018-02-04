@@ -3595,11 +3595,15 @@ def old_round_numbers(one,t):
 #
 # foo() is a 2 param fn, one is a ket, t is number
 def numbers_fn(foo,one,t):
-  cat, value = extract_category_value(one.label)
   try:
+    cat, value = one.label.rsplit(': ', 1)
     value = float(value)
   except:
-    return one
+    try:
+      cat = ''
+      value = float(one.label)
+    except:
+      return one                            # not sure best thing to return for this case.
   if len(cat) > 0:
     cat += ": "
   result_value = foo(value,t)

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-25
-# Update: 2018-1-29
+# Update: 2018-2-4
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parser.py
@@ -56,6 +56,7 @@ literal_sequence = ws signed_ket:left ws symbol_ket*:right ws -> ket_calculate(l
 
 
 positive_int = <digit+>:n -> int(n)
+fraction = number:numerator (ws '/' ws number | -> 1):denominator -> float_int(numerator/denominator)
 #S0 = ' '*
 S1 = ' '+
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
@@ -63,7 +64,7 @@ op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.')
 valid_op_name = op_start_char:first <op_char*>:rest -> first + rest
 simple_op = valid_op_name:s -> s
 #parameters = (number | simple_op | '\"\"' | '*'):p -> p
-parameters = (number | simple_op | '\"\"' | '*'):p -> str(p)
+parameters = (fraction | simple_op | '\"\"' | '*'):p -> str(p)
 
 minus = '-' -> -1
 compound_op = simple_op:the_op '[' parameters:first (',' ws parameters)*:rest ']' -> [the_op] + [first] + rest
@@ -105,6 +106,10 @@ compiled_compound_superposition = full_compound_superposition:sp -> compile_comp
 compiled_compound_sequence = full_compound_superposition:sp -> compile_compound_sequence(sp)
 """
 
+def float_int(x):
+  if x.is_integer():
+    return int(x)
+  return x
 
 def ket_calculate(start,pairs):
   print('pairs: %s' % (pairs))
@@ -306,9 +311,10 @@ def compile_compound_sequence(compound_sequence):
 
 
 bindings_dictionary = {
-  "ket_calculate"           : ket_calculate,
+  'ket_calculate'                  : ket_calculate,
   'compile_compound_superposition' : compile_compound_superposition,
   'compile_compound_sequence'      : compile_compound_sequence,
+  'float_int'                      : float_int,
 }
 
 op_grammar = makeGrammar(our_working_grammar, bindings_dictionary)
@@ -1077,3 +1083,11 @@ def test_double_merge():
 def test_double_merge_single():
   x = op_grammar(' op1 |x> __ op3 op2 |y> __ |z> _ |fish> ').compiled_compound_sequence()
   assert str(x) == '|op1: x op3: op2: y zfish>'
+
+def test_temperature_conversion_1():
+  x = op_grammar(' |F:> __ round[2] plus[32] times-by[9/5] extract-value |C: 37> ').compiled_compound_sequence()
+  assert str(x) == '|F: 98.6>'
+
+def test_temperature_conversion_2():
+  x = op_grammar(' |F:> __ round[2] minus[459.67] times-by[9/5] extract-value |K: 200> ').compiled_compound_sequence()
+  assert str(x) == '|F: -99.67>'

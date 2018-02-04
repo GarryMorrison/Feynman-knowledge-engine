@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 1/2/2018
+# Update: 3/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -2698,6 +2698,18 @@ def apply_sp(context,one,two):
       op = x.label[4:] 
       r += two.apply_op(context,op).multiply(x.value)
   return r
+
+# 3/2/2018:
+# learn(|op: age>, |Fred>, |age: 37>)
+# implements: age |Fred> => |age: 37>
+#
+def learn_sp(context, one, two, three):
+  for op in one:
+    if op.label.startswith('op: '):
+      str_op = op.label[4:]
+      for object in two:
+        context.learn(str_op, object, three)
+  return three        
 
 # 17/1/2015:
 # clone(|x>,|y>)

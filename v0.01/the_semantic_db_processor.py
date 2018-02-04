@@ -1424,6 +1424,9 @@ context_whitelist_table_3 = {
 # 25/11/2016:
   "predict-whats-next" : "predict_whats_next_three",
   "predict-whats-next-skip" : "predict_whats_next_skip_three",
+  
+# 3/2/2018:
+  'learn'              : 'learn_sp',  
 
 }
 # new: 27/11/2016:
