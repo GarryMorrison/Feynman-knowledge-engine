@@ -169,30 +169,59 @@ def process_operators(ops, seq):
       elif op[0][0] in ['+', '-', '_', '.']:
         my_print('bracket ops')
         my_print('bracket ops seq', str(seq))
-        for sp in seq:                                              # haven't handled sequences yet. eg, (op3 _ op2) (|x> . |y> + |z>)
-          r = sequence([])
-          for x in sp:
-            new_seq = sequence([])
-            for bracket_op in op:
-              my_print('bracket_op', bracket_op)
-              symbol, bracket_ops = bracket_op
-              my_print('symbol', symbol)
-              my_print('bracket_ops', bracket_ops)
-              the_seq = process_operators(bracket_ops, x)
+        version_1 = True
+        if version_1:
+          new_seq = sequence([])
+          for bracket_op in op:
+            my_print('bracket_op', bracket_op)
+            symbol, bracket_ops = bracket_op
+            my_print('symbol', symbol)
+            my_print('bracket_ops', bracket_ops)
+            the_seq = process_operators(bracket_ops, seq)
+
+            if symbol == '+':
+              new_seq.add_seq(the_seq)
+            elif symbol == '-':
+              new_seq.sub_seq(the_seq)
+            elif symbol == '_':
+              new_seq.merge_seq(the_seq)
+            elif symbol == '__':
+              new_seq.merge_seq(the_seq, ' ')
+            elif symbol == '.':
+              new_seq += the_seq
+            my_print('new_seq', str(new_seq))
+          seq = new_seq
+        else:                                                         # finish this branch!
+          for sp in seq:                                              # haven't handled sequences yet. eg, (op3 _ op2) (|x> . |y> + |z>)
+            r = sequence([])
+            for x in sp:
+              new_seq = sequence([])
+              for bracket_op in op:
+                my_print('bracket_op', bracket_op)
+                symbol, bracket_ops = bracket_op
+                my_print('symbol', symbol)
+                my_print('bracket_ops', bracket_ops)
+                the_seq = process_operators(bracket_ops, x)
          
-              if symbol == '+':
-                new_seq.add_seq(the_seq)
-              elif symbol == '-':
-                new_seq.sub_seq(the_seq)
-              elif symbol == '_':
-                new_seq.merge_seq(the_seq)                           # do we need distributed_merge_seq here too? I suspect yes. 
-              elif symbol == '__':
-                new_seq.merge_seq(the_seq, ' ')
-              elif symbol == '.':
-                new_seq += the_seq
-              my_print('new_seq', str(new_seq))
-            r.add_seq(new_seq)
-          seq = r
+                if symbol == '+':
+                  new_seq.add_seq(the_seq)
+                elif symbol == '-':
+                  new_seq.sub_seq(the_seq)
+                elif symbol == '_':
+                  new_seq.merge_seq(the_seq)                           # do we need distributed_merge_seq here too? I suspect yes. 
+                elif symbol == '__':
+                  new_seq.merge_seq(the_seq, ' ')
+                elif symbol == '.':
+                  new_seq += the_seq
+                my_print('new_seq', str(new_seq))
+              r.add_seq(new_seq)
+            seq = r
+    elif type(op) is tuple:                                            # powered op found.
+      tuple_op, power = op
+      my_print('tuple_op', tuple_op)
+      my_print('power', power)
+      for _ in range(power):                                           # is there a better way to implement this?
+        seq = process_operators([tuple_op], seq)
     else:
       python_code = process_single_op(op)
       if len(python_code) > 0:
@@ -593,3 +622,11 @@ def test_bracket_ops_dot_3():
   x = op_grammar(' (op3 . op2) split |x y> ').compiled_compound_sequence()
   assert str(x) == ''
 
+
+def test_tuple_op_1():
+  x = op_grammar(' op1^3 |x> ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_tuple_op_2():
+  x = op_grammar('  (  ( op1 ))^3 |x> ').compiled_compound_sequence()
+  assert str(x) == ''

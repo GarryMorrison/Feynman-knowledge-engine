@@ -7,5 +7,7 @@
   "test_parser_v2.py::test_bracket_ops_merge_4": true,
   "test_parser_v2.py::test_bracket_ops_minus_1": true,
   "test_parser_v2.py::test_bracket_ops_minus_2": true,
+  "test_parser_v2.py::test_tuple_op_1": true,
+  "test_parser_v2.py::test_tuple_op_2": true,
   "test_parser_v2.py::test_tuple_op_4_bracket_op": true
 }
