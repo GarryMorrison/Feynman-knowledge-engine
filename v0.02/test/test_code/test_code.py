@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-23
-# Update: 2018-1-28
+# Update: 2018-2-5
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_code.py
@@ -853,3 +853,10 @@ def test_distribute_merge_seq_superposition_bigger_space():
   x.distribute_merge_seq(z, ' ')
   assert str(x) == '3|a> . 8|b x> + 10|b y> . 14|b z>'
 
+def test_sequence_iter():
+  x = sequence(ket('a',3)) + (ket('b',2) + ket('y',10)) + ket('z',14)
+  x.display()
+  for e in x:
+    print(e)
+  assert True
+  

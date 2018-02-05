@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-1-29
+# Update: 2018-2-5
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1361,6 +1361,10 @@ class sequence(object):
 
   def __len__(self):
     return len(self.data)
+    
+  def __iter__(self):
+    for x in self.data:
+      yield x
     
   def __str__(self):
     if len(self) == 0:

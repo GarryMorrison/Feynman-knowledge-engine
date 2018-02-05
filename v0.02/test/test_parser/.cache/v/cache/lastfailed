@@ -1,4 +1,11 @@
 {
-  "test_parser_v2.py::test_ket_bracket_merge_union_bracket": true,
+  "test_parser_v2.py::test_bracket_ops_dot_1": true,
+  "test_parser_v2.py::test_bracket_ops_dot_2": true,
+  "test_parser_v2.py::test_bracket_ops_dot_3": true,
+  "test_parser_v2.py::test_bracket_ops_merge_2": true,
+  "test_parser_v2.py::test_bracket_ops_merge_3": true,
+  "test_parser_v2.py::test_bracket_ops_merge_4": true,
+  "test_parser_v2.py::test_bracket_ops_minus_1": true,
+  "test_parser_v2.py::test_bracket_ops_minus_2": true,
   "test_parser_v2.py::test_tuple_op_4_bracket_op": true
 }

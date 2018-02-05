@@ -168,27 +168,31 @@ def process_operators(ops, seq):
           python_code = ''
       elif op[0][0] in ['+', '-', '_', '.']:
         my_print('bracket ops')
-        new_seq = sequence([])
-        for bracket_op in op:
-          my_print('bracket_op', bracket_op)
-          symbol, bracket_ops = bracket_op
-          my_print('symbol', symbol)
-          my_print('bracket_ops', bracket_ops)
-          the_seq = process_operators(bracket_ops, seq)
-
-          if symbol == '+':
-            new_seq.add_seq(the_seq)
-          elif symbol == '-':
-            new_seq.sub_seq(the_seq)
-          elif symbol == '_':
-            new_seq.merge_seq(the_seq)
-          elif symbol == '__':
-            new_seq.merge_seq(the_seq, ' ')
-          elif symbol == '.':
-            new_seq += the_seq
-          my_print('new_seq', str(new_seq))
-        seq = new_seq
-          
+        my_print('bracket ops seq', str(seq))
+        for sp in seq:                                              # haven't handled sequences yet. eg, (op3 _ op2) (|x> . |y> + |z>)
+          r = sequence([])
+          for x in sp:
+            new_seq = sequence([])
+            for bracket_op in op:
+              my_print('bracket_op', bracket_op)
+              symbol, bracket_ops = bracket_op
+              my_print('symbol', symbol)
+              my_print('bracket_ops', bracket_ops)
+              the_seq = process_operators(bracket_ops, x)
+         
+              if symbol == '+':
+                new_seq.add_seq(the_seq)
+              elif symbol == '-':
+                new_seq.sub_seq(the_seq)
+              elif symbol == '_':
+                new_seq.merge_seq(the_seq)                           # do we need distributed_merge_seq here too? I suspect yes. 
+              elif symbol == '__':
+                new_seq.merge_seq(the_seq, ' ')
+              elif symbol == '.':
+                new_seq += the_seq
+              my_print('new_seq', str(new_seq))
+            r.add_seq(new_seq)
+          seq = r
     else:
       python_code = process_single_op(op)
       if len(python_code) > 0:
@@ -206,7 +210,7 @@ def compile_compound_sequence(compound_sequence):
     my_print('ops', ops)
     my_print('object', object)
 
-    distribute = False
+    distribute = True
     the_seq = sequence([])
     if type(object) is str:                                       # found a ket
       the_seq = sequence(superposition(object))
@@ -214,6 +218,7 @@ def compile_compound_sequence(compound_sequence):
     if type(object) is list:
       my_print('fish')
       the_seq = compile_compound_sequence(object)
+      distribute = True
 
     my_print('\n----------\nfinal')
     my_print('ops', ops)
@@ -479,7 +484,7 @@ def test_temperature_conversion_2():
 
 def test_ket_bracket_merge_union_bracket():
   x = op_grammar(' |fish> __ union(|cats>, |dogs>) ').compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '|fish cats> + |fish dogs>'
 
 def test_bracket_sp_big_brackets_subtract():
   x = op_grammar(' ( |x> + 0.5|y> + 2.7|z> ) + ((|fish> - (|cats> + |dogs>)) + |mice>) + |rats> ').compiled_compound_sequence()
@@ -507,3 +512,84 @@ def test_tuple_op_4_bracket_op():
 def test_tuple_op_4_bracket_op_2():
   x = op_grammar(' op5 ((- op4 + op3 __ op2 . op1)) |x>   ' ).compiled_compound_sequence()
   assert str(x) == '-1|op5: op4: x> + |op5: op3: x op2: x> . |op5: op1: x>'
+
+def test_distributed_merge_1():
+  x = op_grammar(' |fish> __ (|cats> + |dogs>) ').compiled_compound_sequence()
+  assert str(x) == '|fish cats> + |fish dogs>'
+
+def test_distributed_merge_2():
+  x = op_grammar(' |fish> __ (((|cats> + |dogs>))) ').compiled_compound_sequence()
+  assert str(x) == '|fish cats> + |fish dogs>'
+
+def test_distributed_merge_3():
+  x = op_grammar(' |fish> __ split |cats dogs> ').compiled_compound_sequence()
+  assert str(x) == '|fish cats> + |fish dogs>'
+
+def test_distributed_merge_4():
+  x = op_grammar(' |fish> __ union( |cats> ,  |dogs> ) ').compiled_compound_sequence()
+  assert str(x) == '|fish cats> + |fish dogs>'
+
+def test_distributed_merge_5():
+  x = op_grammar(' |fish> __ |cats> + |dogs> ').compiled_compound_sequence()
+  assert str(x) == '|fish cats> + |dogs>'
+
+
+
+def test_distributed_minus_1():
+  x = op_grammar(' |fish> - (|cats> + |dogs>) ').compiled_compound_sequence()
+  assert str(x) == '|fish> + -1|cats> + -1|dogs>'
+
+def test_distributed_minus_2():
+  x = op_grammar(' |fish> - (((|cats> + |dogs>))) ').compiled_compound_sequence()
+  assert str(x) == '|fish> + -1|cats> + -1|dogs>'
+
+def test_distributed_minus_3():
+  x = op_grammar(' |fish> - split |cats dogs> ').compiled_compound_sequence()
+  assert str(x) == '|fish> + -1|cats> + -1|dogs>'
+
+def test_distributed_minus_4():
+  x = op_grammar(' |fish> - union( |cats> ,  |dogs> ) ').compiled_compound_sequence()
+  assert str(x) == '|fish> + -1|cats> + -1|dogs>'
+
+def test_distributed_minus_5():
+  x = op_grammar(' |fish> - |cats> + |dogs> ').compiled_compound_sequence()
+  assert str(x) == '|fish> + -1|cats> + |dogs>'
+
+
+def test_bracket_ops_merge_1():
+  x = op_grammar(' (op3 __ op2) op1 |x> ').compiled_compound_sequence()
+  assert str(x) == '|op3: op1: x op2: op1: x>'
+
+def test_bracket_ops_merge_2():
+  x = op_grammar(' (op3 __ op2) op1 (|x> + |y>) ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_bracket_ops_merge_3():
+  x = op_grammar(' (op3 __ op2) (|x> + |y>) ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_bracket_ops_merge_4():
+  x = op_grammar(' (op3 __ op2) split |x y> ').compiled_compound_sequence()
+  assert str(x) == ''
+
+
+def test_bracket_ops_minus_1():
+  x = op_grammar(' (op3 - op2) |x> ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_bracket_ops_minus_2():
+  x = op_grammar(' (op3 - op2) (|x> + |y>) ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_bracket_ops_dot_1():
+  x = op_grammar(' (op3 . op2) |x> ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_bracket_ops_dot_2():
+  x = op_grammar(' (op3 . op2) (|x> + |y>) ').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_bracket_ops_dot_3():
+  x = op_grammar(' (op3 . op2) split |x y> ').compiled_compound_sequence()
+  assert str(x) == ''
+
