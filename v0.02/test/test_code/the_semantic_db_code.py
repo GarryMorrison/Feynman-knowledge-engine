@@ -1073,7 +1073,7 @@ class superposition(object):
   def apply_naked_fn(self, fn, *args):
     return fn(*args)             
     
-  def apply_op(self,context,op):
+  def old_apply_op(self,context,op):                                      # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
     logger.debug("inside sp apply_op")
     r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
     if len(r) == 0:
@@ -1088,7 +1088,22 @@ class superposition(object):
     logger.debug("sp apply_op: " + str(r))
     return r
 
-  def apply_sigmoid(self, sigmoid, t1=None, t2=None):
+  def apply_op(self,context,op):                                      # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
+    logger.debug("inside sp apply_op")
+    r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
+    if len(r) == 0:
+      r = sequence([])
+      if len(self) == 0:
+        rule = context.recall(op, '', True)                           # op|> can return something other than |>. At least for now.
+        r.add_seq(rule)
+      else:
+        for x in self:
+          rule = context.recall(op, x, True)                          # should this be apply_op() instead? Nah, don't think so.
+          r.add_seq(rule)
+    logger.debug("sp apply_op: " + str(r))
+    return r
+
+  def apply_sigmoid(self, sigmoid, t1=None, t2=None):                    # use *args notation.
     r = superposition()
     if t1 == None:
       for key,value in self.dict.items():
@@ -1614,7 +1629,14 @@ class sequence(object):
     else:
       seq = sequence([])
       for x in self.data:
-        seq.data.append(x.apply_op(context, op))
+        print('type(x): %s' % type(x))
+        print('x: %s' % str(x))
+        #y = x.apply_op(context, op)                         # bug 1, when apply_op(context, op) returns a sequence
+        #seq.data.append(x.apply_op(context, op))            # bug 2, putting a sequence inside a sequence
+        for y in x.apply_op(context, op):                    # now assumes x.apply_op(context, op) is a sequence.
+          print('type(y): %s' % type(y))
+          print('y: %s' % str(y))
+          seq.data.append(y)
     return seq
 
   def select_range(self, *args):
