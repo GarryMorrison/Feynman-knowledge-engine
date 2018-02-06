@@ -7,7 +7,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-4
-# Update: 2018-2-4
+# Update: 2018-2-6
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_parser_v2.py
@@ -60,6 +60,7 @@ literal_sequence = ws signed_ket:left ws symbol_ket*:right ws -> ket_calculate(l
 positive_int = <digit+>:n -> int(n)
 fraction = number:numerator (ws '/' ws number | -> 1):denominator -> float_int(numerator/denominator)
 #S0 = ' '*
+ws = ' '*
 S1 = ' '+
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
 op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.')
@@ -89,6 +90,19 @@ symbol_single_compound_sequence = ws op_symbol:symbol ws single_compound_sequenc
 full_compound_sequence = ws (op_symbol | -> '+'):symbol single_compound_sequence:first ws symbol_single_compound_sequence*:rest ws -> [(symbol, first)] + rest
 
 compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequence(seq)
+
+new_line = ('\r\n' | '\r' | '\n')
+#char = :c ?(is_not_newline(c)) -> c
+char = ~new_line anything
+string = <char*>:s -> s
+#string = <~new_line anything>*:s -> "".join(s)
+object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' ):obj -> obj
+stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule ws string:s -> learn_stored_rule(context, prefix_op, obj, rule, s)
+#memoizing_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws '!=>' ws string:s -> learn_memoizing_rule(context, prefix_op, obj, s)
+learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule ws compiled_compound_sequence:seq -> learn_standard_rule(context, prefix_op, obj, rule, seq)
+recall_rule = ws (simple_op | "\'\'" ):prefix_op ws object:obj -> recall_rule(context, prefix_op, obj)
+
+sw_file = (learn_rule | stored_rule | new_line)*
 """
 
 def float_int(x):
@@ -276,11 +290,46 @@ def compile_compound_sequence(compound_sequence):
       seq += the_seq
   return seq
 
+def learn_stored_rule(context, op, one, rule, s):
+  my_print('op', op)
+  my_print('one', one)
+  my_print('rule', rule)
+  my_print('s', s)
+  if rule == '#=>':
+    context.learn(op, one, stored_rule(s))
+  elif rule == '!=>':
+    context.learn(op, one, memoizing_rule(s))
+#  context.print_universe()
+
+def learn_standard_rule(context, op, one, rule, seq):
+  my_print('op', op)
+  my_print('one', one)
+  my_print('rule', rule)
+  my_print('seq', str(seq))
+  if rule == '=>':
+    context.learn(op, one, seq)
+  elif rule == '+=>':
+    context.add_learn(op, one, seq)
+#  context.print_universe()
+
+def recall_rule(context, op, one):
+  return context.recall(op, one)
+#  return ket(one).apply_op(context, op)
+
+
+def is_not_newline(c):
+  return c not in ['\r', '\n']
 
 bindings_dictionary = {
   'ket_calculate'                  : ket_calculate,
   'compile_compound_sequence'      : compile_compound_sequence,
   'float_int'                      : float_int,
+  'learn_stored_rule'              : learn_stored_rule,
+#  'learn_memoizing_rule'           : learn_memoizing_rule,
+  'learn_standard_rule'            : learn_standard_rule,
+  'recall_rule'                    : recall_rule,
+  'context'                        : context,
+  'is_not_newline'                 : is_not_newline,
 }
 
 op_grammar = makeGrammar(our_working_grammar, bindings_dictionary)
@@ -630,3 +679,65 @@ def test_tuple_op_1():
 def test_tuple_op_2():
   x = op_grammar('  (  ( op1 ))^3 |x> ').compiled_compound_sequence()
   assert str(x) == ''
+
+
+# test learn rules:
+def test_learn_stored_rule_1():
+  x = op_grammar('op |ket> #=> |bah> ').stored_rule()
+  assert False
+
+def test_learn_stored_rule_2():
+  x = op_grammar(' |ket> #=> |foo> ').stored_rule()
+  assert False
+
+def test_learn_memoizing_rule_1():
+  x = op_grammar(' measure |system> !=> some |state> ').stored_rule()            #memoizing_rule()
+  assert False
+
+def test_learn_standard_rule_1():
+  x = op_grammar(' age |Fred> => |37> ').learn_rule()
+  assert False
+
+def test_learn_standard_rule_2():
+  x = op_grammar(' spell |Fred> => |F> . |r> . |e> . |d> ').learn_rule()
+  assert False
+
+
+def test_string_parse_1():
+  x = op_grammar(' some random string ').string()
+  assert x == ' some random string '
+
+# this is meant to fail:
+#def test_string_parse_2():
+#  x = op_grammar(' some random string \n ').string()
+#  assert x == ''
+
+def test_object_1():
+  x = op_grammar('|Fred>').object()
+  assert x == 'Fred'
+
+def test_object_2():
+  x = op_grammar('|*>').object()
+  assert x == '*'
+
+def test_object_3():
+  x = op_grammar('(*,*)').object()
+  assert x == '(*,*)'
+
+def test_sw_file_1():
+  x = op_grammar('age |Julie> => |32> \n spell-out |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> ').sw_file()
+  context.print_universe()
+  assert False
+
+def test_recall_rule_1():
+  x = op_grammar('spell-out|Julie>').recall_rule()
+  assert str(x) == ''
+
+def test_recall_compiled_sequence_1():
+  x = op_grammar('spell-out|Julie>').compiled_compound_sequence()
+  assert str(x) == ''
+
+def test_recall_compiled_sequnece_2():
+  x = op_grammar('friends|Fred>').compiled_compound_sequence()
+  assert str(x) == ''
+

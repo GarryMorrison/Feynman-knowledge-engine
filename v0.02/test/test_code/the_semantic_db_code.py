@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-2-5
+# Update: 2018-2-6
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1481,9 +1481,9 @@ class sequence(object):
       else:
         print("seq |%s: %s> => %s" % (self.name, str(k), x))
 
-  def display(self):                   # print out a sequence class
+  def long_display(self):                   # print out a sequence class
     for k,x in enumerate(self.data):
-      if type(x) in [superposition] and False:
+      if type(x) in [superposition] and False:                             # switched this branch off for now. I currently prefer not to change the order. 
         print("seq |%s> => %s" % (k, x.coeff_sort()))
       else:
         print("seq |%s> => %s" % (k, x))
@@ -1495,6 +1495,16 @@ class sequence(object):
         print(x.coeff_sort())                                              # not super happy with this.
       else:
         print(x)
+
+  def display(self,exact=False):
+    if len(self.data) == 0:
+      return '|>'
+    return " . ".join(x.display(exact) for x in self)     # 1) get ket class to do the display. 2) need something better if we mix + - _ .  
+
+  def readable_display(self):
+    if len(self.data) == 0:
+      return ""
+    return " . ".join(x.readable_display() for x in self)
 
 #  def add(self, seq):
 #    self.data.append(copy.deepcopy(seq))
@@ -1618,6 +1628,10 @@ class sequence(object):
     for x in self.data:                         # option 2) |a> . |c>
       seq.data.append(x.drop())                  
     return seq
+
+  def activate(self,context=None,op=None,self_label=None):
+    return self
+
 
 # 10/1/2015:
 # let's try and write a fast_superposition() version of this using ordered dictionaries.
