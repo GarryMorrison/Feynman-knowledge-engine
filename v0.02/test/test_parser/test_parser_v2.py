@@ -306,7 +306,11 @@ def learn_standard_rule(context, op, one, rule, seq):
   my_print('one', one)
   my_print('rule', rule)
   my_print('seq', str(seq))
-  if rule == '=>':
+  if op == '' and one == 'context' and rule == '=>':
+    name = seq[0].label
+    if name.startswith('context: '):
+      context.set(name[9:])
+  elif rule == '=>':
     context.learn(op, one, seq)
   elif rule == '+=>':
     context.add_learn(op, one, seq)
@@ -674,33 +678,33 @@ def test_bracket_ops_dot_3():
 
 def test_tuple_op_1():
   x = op_grammar(' op1^3 |x> ').compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '|op1: op1: op1: x>'
 
 def test_tuple_op_2():
   x = op_grammar('  (  ( op1 ))^3 |x> ').compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '|op1: op1: op1: x>'
 
 
 # test learn rules:
 def test_learn_stored_rule_1():
   x = op_grammar('op |ket> #=> |bah> ').stored_rule()
-  assert False
+  assert True
 
 def test_learn_stored_rule_2():
   x = op_grammar(' |ket> #=> |foo> ').stored_rule()
-  assert False
+  assert True
 
 def test_learn_memoizing_rule_1():
   x = op_grammar(' measure |system> !=> some |state> ').stored_rule()            #memoizing_rule()
-  assert False
+  assert True
 
 def test_learn_standard_rule_1():
   x = op_grammar(' age |Fred> => |37> ').learn_rule()
-  assert False
+  assert True
 
 def test_learn_standard_rule_2():
   x = op_grammar(' spell |Fred> => |F> . |r> . |e> . |d> ').learn_rule()
-  assert False
+  assert True
 
 
 def test_string_parse_1():
@@ -727,17 +731,32 @@ def test_object_3():
 def test_sw_file_1():
   x = op_grammar('age |Julie> => |32> \n spell-out |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> ').sw_file()
   context.print_universe()
-  assert False
+  assert True
+
+#def test_sw_file_learn_context():
+#  x = op_grammar('  |context> => |context: testing sw file>\n\n measure-state-of |system> !=> some |state> ').sw_file()
+#  context.print_universe()
+#  assert False
 
 def test_recall_rule_1():
   x = op_grammar('spell-out|Julie>').recall_rule()
-  assert str(x) == ''
+  assert str(x) == '|J> . |u> . |l> . |i> . |e>'
 
 def test_recall_compiled_sequence_1():
   x = op_grammar('spell-out|Julie>').compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '|J> . |u> . |l> . |i> . |e>'
 
 def test_recall_compiled_sequnece_2():
   x = op_grammar('friends|Fred>').compiled_compound_sequence()
-  assert str(x) == ''
+  assert str(x) == '|Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>'
 
+def test_op_applied_to_sequence_1():
+  x = op_grammar('op (|a> + |b> . |c> + |d>) ').compiled_compound_sequence()
+  assert str(x) == '|op: a> + |op: b> . |op: c> + |op: d>'
+
+def test_sequence_sigmoids_1():
+  #x = op_grammar(' foo |bah> => 3|a> + 2.2 |b> . 3.14|pi> . 2.7|e> + -3(|cats> + |dogs>)').sw_file()
+  x = op_grammar(' foo |bah> => 3|a> + 2.2 |b> . 3.14|pi> . 2.7|e> - 3(|cats> + |dogs>)').sw_file()
+  #context.print_universe()
+  x = op_grammar(' clean foo |bah>').compiled_compound_sequence()
+  assert str(x) == '|a> + |b> . |pi> . |e> + 0|cats> + 0|dogs>'

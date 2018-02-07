@@ -1631,12 +1631,22 @@ class sequence(object):
       for x in self.data:
         print('type(x): %s' % type(x))
         print('x: %s' % str(x))
-        #y = x.apply_op(context, op)                         # bug 1, when apply_op(context, op) returns a sequence
-        #seq.data.append(x.apply_op(context, op))            # bug 2, putting a sequence inside a sequence
-        for y in x.apply_op(context, op):                    # now assumes x.apply_op(context, op) is a sequence.
-          print('type(y): %s' % type(y))
-          print('y: %s' % str(y))
+        y = x.apply_op(context, op)
+        print('type(y): %s' % type(y))
+        print('y: %s' % str(y))
+        if type(y) in [ket, superposition]:
           seq.data.append(y)
+        elif type(y) in [sequence]:
+          seq.data += y.data
+    return seq
+
+  def apply_sigmoid(self, sigmoid, *args):
+    if len(self) == 0:
+      seq = sequence([]) + ket().apply_sigmoid(sigmoid, *args)   # do we need/want this?
+    else:
+      seq = sequence([])
+      for x in self.data:
+        seq.data.append(x.apply_sigmoid(sigmoid, *args))
     return seq
 
   def select_range(self, *args):
