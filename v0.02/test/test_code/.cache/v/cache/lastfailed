@@ -1,4 +1,9 @@
 {
+  "test_code.py::test_context_sp_learn_1": true,
+  "test_code.py::test_context_sp_learn_2": true,
+  "test_code.py::test_context_sp_learn_3": true,
+  "test_code.py::test_context_sp_learn_4": true,
+  "test_code.py::test_context_sp_recall_3": true,
   "test_code.py::test_ket_add": true,
   "test_code.py::test_ket_add_sp": true,
   "test_code.py::test_new_context_add_learn_stored_rule": true,

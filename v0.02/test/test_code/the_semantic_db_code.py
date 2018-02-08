@@ -259,7 +259,7 @@ class ket(object):
 
   def apply_op(self,context,op):                                        # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
     logger.debug("inside ket apply_op")
-    r = context.sp_recall(op,self,True)       # this is broken! Not sure why, yet. I think I fixed it.  
+    r = context.sp_recall(op, [self] ,True)       # this is broken! Not sure why, yet. I think I fixed it.  
     logger.debug("inside ket apply_op, sp: " + str(r))
     if len(r) == 0:
       r = context.recall(op,self,True)  # see much later in the code for definition of recall.
@@ -1075,7 +1075,7 @@ class superposition(object):
     
   def old_apply_op(self,context,op):                                      # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
     logger.debug("inside sp apply_op")
-    r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
+    r = context.sp_recall(op, [self] ,True)  # op (*) has higher precedence than op |*>
     if len(r) == 0:
       r = superposition()
       if len(self) == 0:
@@ -1090,7 +1090,7 @@ class superposition(object):
 
   def apply_op(self,context,op):                                      # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
     logger.debug("inside sp apply_op")
-    r = context.sp_recall(op,self,True)  # op (*) has higher precedence than op |*>
+    r = context.sp_recall(op, [self] ,True)                           # op (*) has higher precedence than op |*>
     if len(r) == 0:
       r = sequence([])
       if len(self) == 0:
@@ -1369,6 +1369,8 @@ class sequence(object):
     #print('sequence data: %s' % data)
     if type(data) in [list]:
       self.data = data                            # copy.deepcopy(data)??
+    if type(data) in [sequence]:
+      self.data = copy.deepcopy(data.data)
     if type(data) in [ket]:
       self.data = [ket() + data]                  # cast ket to superposition
     if type(data) in [superposition]:
@@ -1968,9 +1970,9 @@ class new_context(object):
     # some prelims:                                     # Plan to implement this in apply_op(context,"op")
     if op == "supported-ops":                    # never learn "supported-ops", it is auto-generated and managed
       return
-#    if type(label) == ket:                       # label is string. if ket, convert back to string
-#      label = label.label
-    label = "*"                                  # hrmm... for now. Almost certainly tweak later!
+    if type(label) == ket:                       # label is string. if ket, convert back to string
+      label = label.label
+    #label = "*"                                  # hrmm... for now. Almost certainly tweak later!
     if type(rule) == str:                        # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
       rule = ket(rule)                           # if string, cast to ket
     if len(rule) == 0:                           # do not learn rules that are |>
@@ -1979,7 +1981,7 @@ class new_context(object):
     if label not in self.sp_rules_dict: 
       self.sp_rules_dict[label] = OrderedDict()
       self.sp_rules_dict[label]["supported-ops"] = superposition()
-    self.sp_rules_dict[label]["supported-ops"].clean_add(ket("op: " + op))  # this is probably a speed bump now.
+    self.sp_rules_dict[label]["supported-ops"].max_add("op: " + op)          # this is probably a speed bump now.
                                                                              # but if we merge over to fast_sp, that should fix itself.
     if not add_learn:
       self.sp_rules_dict[label][op] = rule
@@ -1992,15 +1994,27 @@ class new_context(object):
     return self.sp_learn(op,label,rule,True)       # corresponds to "op (*) +=> |y>"
 
 # op is a string, or a ket in form |op: some-operator>
-# label is a string or a ket
+# seq_list is a list of sequences 
 #
-  def sp_recall(self,op,sp,active=False):    # work in progress ...
+  def sp_recall(self, op, seq_list, active=False):    # work in progress ...
     logger.debug("inside sp_recall")
     #return ket("",0)                         # currently the code that follows this is broken, so this is the temp work-around.
     # some prelims:
     if type(op) == ket:
       op = op.label[4:]                         # map |op: age> to "age"
-    ket_label = "*"                             # probably tweak later. Eg if I decide to implement op(*,*), op(*,*,*) etc. Also, maybe op(fixed-object) #=> ... 
+    #ket_label = "*"                             # probably tweak later. Eg if I decide to implement op(*,*), op(*,*,*) etc. Also, maybe op(fixed-object) #=> ... 
+    #ket_label = sp
+    if type(seq_list) is str:
+      ket_label = seq_list
+    elif type(seq_list) is list:
+      if len(seq_list) == 1:
+        ket_label = '*'
+      elif len(seq_list) == 2:
+        ket_label = '*,*'
+      elif len(seq_list) == 3:
+        ket_label = '*,*,*'
+      elif len(seq_list) == 4:
+        ket_label = '*,*,*,*'
 
     match = False                               # If/when I implement op(*,*) et al, I need a tidy way to handle stored rules and |_self1> vs |_self2> etc! No idea how to do that currently.  
     if ket_label in self.sp_rules_dict:
@@ -2015,12 +2029,15 @@ class new_context(object):
     if active:
 #      rule = rule.activate(self,op,sp)        # how handle op (*) #=> foo |_self> ??  op (|a> + |b>) returns foo (|a> + |b>)
 #    return rule.multiply(coeff)              # I'm not sure multiply(coeff) makes sense for sp_recall().
-      if type(rule) in [memoizing_rule,stored_rule]:
+      if type(rule) in [memoizing_rule, stored_rule]:
         try:
-          resulting_rule = extract_compound_superposition(self,rule,sp)[0]  # we need to fix ECS so that it can handle superpositions as self-objects. Currently it can only handle strings.
-        except:
-          resulting_rule = ket("",0)
-          logger.warning("except while processing stored_rule")
+          #resulting_rule = extract_compound_superposition(self,rule,sp)[0]  # we need to fix ECS so that it can handle superpositions as self-objects. Currently it can only handle strings.
+          logger.debug('rule: %s' % rule)
+          logger.debug('seq: %s' % seq_list[0])
+          resulting_rule = extract_compound_superposition(self, rule , seq_list[0])[0]
+        except Exception as e:
+          resulting_rule = ket()
+          logger.warning("except while processing stored_rule: %s" % e)
         if type(rule) is memoizing_rule:
           self.sp_learn(op,sp,resulting_rule)
         rule = resulting_rule
@@ -2066,7 +2083,7 @@ class new_context(object):
       op = op.label[4:]
     sp_name = label
 
-    rule = self.sp_recall(op,label)
+    rule = self.sp_recall(op, label)
     rule_string = " => "
     if type(rule) == stored_rule:
       rule_string = " #=> "

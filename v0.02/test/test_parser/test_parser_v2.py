@@ -261,11 +261,15 @@ def compile_compound_sequence(compound_sequence, self_object = None):
     distribute = True
     the_seq = sequence([])
     if type(object) is str:                                       # found a ket
-      if object == '_self' and self_object is not None:
-        if type(self_object) in [str, ket, superposition]:
-          the_seq = sequence(self_object)
-        elif type(self_object) in [sequence]:
-          the_seq = self_object
+      if object == '_self' and type(self_object) in [str, ket, superposition, sequence]:
+        the_seq = sequence(self_object)
+      elif object.startswith('_self') and type(self_object) is list:          # this branch needs to handle |_self> too.
+        try:
+          position = int(object[5:])
+          the_seq = sequence(self_object[position - 1])
+        except Exception as e:
+          my_print('self object exception', e)
+          the_seq = sequence(superposition(object))
       else:
         the_seq = sequence(superposition(object))
 
@@ -319,7 +323,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
   my_print('rule_type', rule_type)
 
   if type(one) is str:
-    seq = compile_compound_sequence(parsed_seq, one)
+    seq = compile_compound_sequence(parsed_seq, [one])
     my_print('seq', str(seq))
 
     if op == '' and one == 'context' and rule_type == '=>':
@@ -335,7 +339,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
     my_print('indirect learn object', str(indirect_object))  
     for sp in indirect_object:
       for one in sp:
-        seq = compile_compound_sequence(parsed_seq, one)
+        seq = compile_compound_sequence(parsed_seq, [one])
         if rule_type == '=>':
           context.learn(op, one, seq)
         elif rule_type == '+=>':
@@ -345,6 +349,13 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
 def recall_rule(context, op, one):
   return context.recall(op, one)
 #  return ket(one).apply_op(context, op)
+
+def extract_compound_sequence(context, unparsed_seq, self_object):      # need to make context explicit somewhere ... rather than a global....
+  parsed_seq = op_grammar(unparsed_seq).full_compound_sequence()
+  my_print('parsed_seq', parsed_seq)
+  my_print('self_object', self_object)
+  seq = compile_compound_sequence(parsed_seq, self_object)
+  return seq
 
 
 def is_not_newline(c):
@@ -879,3 +890,13 @@ def test_learn_star_rule_2():
   context.print_universe()
   assert False
 
+
+def test_extract_compound_sequence_1():
+  s = '5|_self>'
+  seq = extract_compound_sequence(context, s, 'fish')
+  assert str(seq) == '5|fish>'
+
+def test_extract_compound_sequence_1():
+  s = '5|_self1> + 7|_self2>'
+  seq = extract_compound_sequence(context, s, ['fish', 'soup'])
+  assert str(seq) == '5|fish> + 7|soup>'

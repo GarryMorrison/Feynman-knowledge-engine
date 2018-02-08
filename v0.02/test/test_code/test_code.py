@@ -20,6 +20,7 @@ from the_semantic_db_code import *
 from the_semantic_db_functions import *
 
 
+
 context = context_list("semantic db code")
 context.load("sw-examples/fred-sam-friends.sw")    # currently fails to load.
 context.load('sw-examples/test-operators.sw')
@@ -29,6 +30,7 @@ context.print_multiverse()
 #print(context.dump_multiverse())
 #sys.exit(0)
 
+logger.setLevel(logging.DEBUG)
 
 def test_empty_ket():
   x = ket()
@@ -912,4 +914,42 @@ def test_ssplit_2():
   y = x.apply_sp_fn(ssplit, ' and ')
   assert str(y) == '5|a> . 5|b>'
 
+
+def test_context_sp_learn_1():
+  context.sp_learn('op-a', '*', 'value a')
+  context.print_universe()
+  assert False
+
+def test_context_sp_learn_2():
+  context.sp_learn('op-b', '*,*', 'value b')
+  context.print_universe(True)
+  assert False
+
+
+def test_context_sp_recall_1():
+  r = context.sp_recall('op-a', ['fish'])
+  assert str(r) == '|value a>'
+
+def test_context_sp_recall_2():
+  r = context.sp_recall('op-b', ['fish', 'soup'])
+  assert str(r) == '|value b>'
+
+
+def test_context_sp_learn_3():
+  context.sp_learn('op-c', '*,*', stored_rule('2|_self1> + 3|_self2>'))
+  context.print_universe(True)
+  assert False
+
+def test_context_sp_recall_3():
+  r = context.sp_recall('op-c', ['fish', 'soup'])
+  assert str(r) == ''
+
+def test_context_sp_learn_4():
+  context.sp_learn('op-d', '*', stored_rule('5|_self>'))
+  context.print_universe(True)
+  assert False
+
+def test_context_sp_recall_3():
+  r = context.sp_recall('op-d', ['fish'], active = True)
+  assert str(r) == ''
 
