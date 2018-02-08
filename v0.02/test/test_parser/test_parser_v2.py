@@ -65,7 +65,9 @@ S1 = ' '+
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
 op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.')
 simple_op = op_start_char:first <op_char*>:rest -> first + rest
-parameters = (fraction | simple_op | '\"\"' | '*'):p -> str(p)
+filtered_char = anything:x ?(x not in '[]|><') -> x
+filtered_parameter_string = '"' ( ~'"' filtered_char)*:c '"' -> ''.join(c)
+parameters = (fraction | simple_op | filtered_parameter_string | '\"\"' | '*'):p -> str(p)
 
 compound_op = simple_op:the_op '[' parameters:first (',' ws parameters)*:rest ']' -> ['c_op', the_op] + [first] + rest
 #function_op = simple_op:the_op '(' ws literal_sequence:first (',' ws literal_sequence)*:rest ws ')' -> ['f_op', the_op] + [first] + rest
@@ -94,15 +96,17 @@ compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequ
 new_line = ('\r\n' | '\r' | '\n')
 #char = :c ?(is_not_newline(c)) -> c
 char = ~new_line anything
-string = <char*>:s -> s
-#string = <~new_line anything>*:s -> "".join(s)
-object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' ):obj -> obj
-stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule ws string:s -> learn_stored_rule(context, prefix_op, obj, rule, s)
-#memoizing_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws '!=>' ws string:s -> learn_memoizing_rule(context, prefix_op, obj, s)
-learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule ws compiled_compound_sequence:seq -> learn_standard_rule(context, prefix_op, obj, rule, seq)
+line = <char*>:s -> s
+#line = <~new_line anything>*:s -> "".join(s)
+object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | full_compound_sequence ):obj -> obj
+stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws line:s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
+#memoizing_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws '!=>' ws line:s -> learn_memoizing_rule(context, prefix_op, obj, s)
+#learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule ws compiled_compound_sequence:seq -> learn_standard_rule(context, prefix_op, obj, rule, seq)
+learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule_type ws full_compound_sequence:parsed_seq -> learn_standard_rule(context, prefix_op, obj, rule_type, parsed_seq)
 recall_rule = ws (simple_op | "\'\'" ):prefix_op ws object:obj -> recall_rule(context, prefix_op, obj)
 
 sw_file = (learn_rule | stored_rule | new_line)*
+process_rule_line = (learn_rule | stored_rule | compiled_compound_sequence | new_line)
 """
 
 def float_int(x):
@@ -139,7 +143,7 @@ def my_print(name, value=''):
     pprint(value)
 
 
-def process_operators(ops, seq):
+def process_operators(ops, seq, self_object = None):
   if len(ops) == 0:
     return seq
   python_code = ''
@@ -162,8 +166,8 @@ def process_operators(ops, seq):
           if fnk in whitelist_table_1:
             python_code = "%s(*seq_list)" % whitelist_table_1[fnk]
           else:
-            the_seq = compile_compound_sequence(data[0])
-            seq = process_operators([fnk], the_seq)
+            the_seq = compile_compound_sequence(data[0], self_object)
+            seq = process_operators([fnk], the_seq, self_object)
         if len(data) == 2:                                    # 2-parameter function:
           if fnk in whitelist_table_2:
             python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
@@ -175,7 +179,7 @@ def process_operators(ops, seq):
             python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
         if len(python_code) > 0:
           my_print("whitelist_table: python code", python_code)
-          seq_list = [compile_compound_sequence(x) for x in data]
+          seq_list = [compile_compound_sequence(x, self_object) for x in data]
           str_seq_list = [str(x) for x in seq_list]
           my_print('str_seq_list', str_seq_list)
           seq = eval(python_code)
@@ -191,7 +195,7 @@ def process_operators(ops, seq):
             symbol, bracket_ops = bracket_op
             my_print('symbol', symbol)
             my_print('bracket_ops', bracket_ops)
-            the_seq = process_operators(bracket_ops, seq)
+            the_seq = process_operators(bracket_ops, seq, self_object)
 
             if symbol == '+':
               new_seq.add_seq(the_seq)
@@ -215,7 +219,7 @@ def process_operators(ops, seq):
                 symbol, bracket_ops = bracket_op
                 my_print('symbol', symbol)
                 my_print('bracket_ops', bracket_ops)
-                the_seq = process_operators(bracket_ops, x)
+                the_seq = process_operators(bracket_ops, x, self_object)
          
                 if symbol == '+':
                   new_seq.add_seq(the_seq)
@@ -235,7 +239,7 @@ def process_operators(ops, seq):
       my_print('tuple_op', tuple_op)
       my_print('power', power)
       for _ in range(power):                                           # is there a better way to implement this?
-        seq = process_operators([tuple_op], seq)
+        seq = process_operators([tuple_op], seq, self_object)
     else:
       python_code = process_single_op(op)
       if len(python_code) > 0:
@@ -243,8 +247,9 @@ def process_operators(ops, seq):
   return seq
 
 
-def compile_compound_sequence(compound_sequence):
+def compile_compound_sequence(compound_sequence, self_object = None):
   my_print('cs', compound_sequence)
+  my_print('self', self_object)
 
   seq = sequence([])
   for seq2 in compound_sequence:
@@ -256,11 +261,17 @@ def compile_compound_sequence(compound_sequence):
     distribute = True
     the_seq = sequence([])
     if type(object) is str:                                       # found a ket
-      the_seq = sequence(superposition(object))
+      if object == '_self' and self_object is not None:
+        if type(self_object) in [str, ket, superposition]:
+          the_seq = sequence(self_object)
+        elif type(self_object) in [sequence]:
+          the_seq = self_object
+      else:
+        the_seq = sequence(superposition(object))
 
     if type(object) is list:
       my_print('fish')
-      the_seq = compile_compound_sequence(object)
+      the_seq = compile_compound_sequence(object, self_object)
       distribute = True
 
     my_print('\n----------\nfinal')
@@ -268,14 +279,14 @@ def compile_compound_sequence(compound_sequence):
     my_print('the_seq', str(the_seq))
     my_print('distribute', distribute)
     my_print('----------\n')
-    the_seq = process_operators(ops, the_seq)
+    the_seq = process_operators(ops, the_seq, self_object)
     #my_print('really final the_seq', str(the_seq))
 
 
     if symbol == '+':
-      seq.add_seq(the_seq)
+      seq.tail_add_seq(the_seq)
     elif symbol == '-':
-      seq.sub_seq(the_seq)
+      seq.tail_sub_seq(the_seq)
     elif symbol == '_':
       if not distribute:
         seq.merge_seq(the_seq)
@@ -290,31 +301,46 @@ def compile_compound_sequence(compound_sequence):
       seq += the_seq
   return seq
 
-def learn_stored_rule(context, op, one, rule, s):
+def learn_stored_rule(context, op, one, rule_type, s):
   my_print('op', op)
   my_print('one', one)
-  my_print('rule', rule)
+  my_print('rule_type', rule_type)
   my_print('s', s)
-  if rule == '#=>':
+  if rule_type == '#=>':
     context.learn(op, one, stored_rule(s))
-  elif rule == '!=>':
+  elif rule_type == '!=>':
     context.learn(op, one, memoizing_rule(s))
 #  context.print_universe()
 
-def learn_standard_rule(context, op, one, rule, seq):
+def learn_standard_rule(context, op, one, rule_type, parsed_seq):
   my_print('op', op)
   my_print('one', one)
-  my_print('rule', rule)
-  my_print('seq', str(seq))
-  if op == '' and one == 'context' and rule == '=>':
-    name = seq[0].label
-    if name.startswith('context: '):
-      context.set(name[9:])
-  elif rule == '=>':
-    context.learn(op, one, seq)
-  elif rule == '+=>':
-    context.add_learn(op, one, seq)
-#  context.print_universe()
+  my_print('type(one)', type(one))
+  my_print('rule_type', rule_type)
+
+  if type(one) is str:
+    seq = compile_compound_sequence(parsed_seq, one)
+    my_print('seq', str(seq))
+
+    if op == '' and one == 'context' and rule_type == '=>':
+      name = seq[0].label
+      if name.startswith('context: '):
+        context.set(name[9:])
+    elif rule_type == '=>':
+      context.learn(op, one, seq)
+    elif rule_type == '+=>':
+      context.add_learn(op, one, seq)
+  elif type(one) is list:                          # indirect learn rule found
+    indirect_object = compile_compound_sequence(one)
+    my_print('indirect learn object', str(indirect_object))  
+    for sp in indirect_object:
+      for one in sp:
+        seq = compile_compound_sequence(parsed_seq, one)
+        if rule_type == '=>':
+          context.learn(op, one, seq)
+        elif rule_type == '+=>':
+          context.add_learn(op, one, seq)
+
 
 def recall_rule(context, op, one):
   return context.recall(op, one)
@@ -707,13 +733,13 @@ def test_learn_standard_rule_2():
   assert True
 
 
-def test_string_parse_1():
-  x = op_grammar(' some random string ').string()
+def test_line_parse_1():
+  x = op_grammar(' some random string ').line()
   assert x == ' some random string '
 
 # this is meant to fail:
-#def test_string_parse_2():
-#  x = op_grammar(' some random string \n ').string()
+#def test_line_parse_2():
+#  x = op_grammar(' some random string \n ').line()
 #  assert x == ''
 
 def test_object_1():
@@ -760,3 +786,96 @@ def test_sequence_sigmoids_1():
   #context.print_universe()
   x = op_grammar(' clean foo |bah>').compiled_compound_sequence()
   assert str(x) == '|a> + |b> . |pi> . |e> + 0|cats> + 0|dogs>'
+
+
+def test_self_object_1():
+  x = op_grammar(' age |Fred> => 33|_self> ').learn_rule()
+  context.print_universe()
+  assert False
+
+def test_self_object_2():
+  x = op_grammar(' 33 |_self> ').full_compound_sequence()
+  r = compile_compound_sequence(x, 'rabbit')
+  assert str(r) == '33|rabbit>'
+
+def test_self_object_3():
+  x = op_grammar(' 13 (|x> + |y> . |_self> + |z>) ').full_compound_sequence()
+  r = compile_compound_sequence(x, 'rabbit')
+  assert str(r) == '13|x> + 13|y> . 13|rabbit> + 13|z>'
+
+def test_self_object_4():
+  x = op_grammar(' 13 (|x> + |y> . |_self> + |z>) ').full_compound_sequence()
+  r = compile_compound_sequence(x, ket('rabbit',2))
+  assert str(r) == '13|x> + 13|y> . 26|rabbit> + 13|z>'
+
+def test_self_object_5():
+  x = op_grammar(' 13 (|x> + |y> . |_self> + |z>) ').full_compound_sequence()
+  r = compile_compound_sequence(x, ket('rabbit',2) + ket('soup',7))
+  assert str(r) == '13|x> + 13|y> . 26|rabbit> + 91|soup> + 13|z>'
+
+def test_self_object_6():
+  x = op_grammar(' 13 (|x> + |y> . |_self> + |z>) ').full_compound_sequence()
+  a = sequence('a') + sequence('b') + sequence('c')
+  r = compile_compound_sequence(x, a)
+  assert str(r) == '13|x> + 13|y> . 13|a> . 13|b> . 13|c> + 13|z>'
+
+def test_self_object_7():
+  x = op_grammar(' 13 (|x> + |y> . |_self> + |z>) ').full_compound_sequence()
+  a = sequence('a') + ket('b',2) + ket('c',3)
+  r = compile_compound_sequence(x, a)
+  assert str(r) == '13|x> + 13|y> . 13|a> . 26|b> . 39|c> + 13|z>'
+
+
+def test_spelling_self_object_1():
+  x = op_grammar(' spell |Sam> => spell-out |_self> ').learn_rule()
+  context.print_universe()
+  assert True
+
+def test_ssplit_1():
+  x = op_grammar(' ssplit |x, y> ').compiled_compound_sequence()
+  assert str(x) == '|x> . |,> . | > . |y>'
+
+def test_ssplit_2():
+  x = op_grammar(' ssplit[", "] |x, y> ').compiled_compound_sequence()
+  assert str(x) == '|x> . |y>'
+
+
+def test_filtered_parameter_string_empty_1():
+  x = op_grammar('""').filtered_parameter_string()
+  assert x == ''
+
+def test_filtered_parameter_string_2():
+  x = op_grammar('" fish "').filtered_parameter_string()
+  assert x == ' fish '
+
+# meant to fail:
+#def test_filtered_parameter_string_3():
+#  x = op_grammar('" fish ] ["').filtered_parameter_string()
+#  assert x == ''
+
+
+def test_learn_indirectly_1():
+  x = op_grammar('|list> => split |Eric Rob Matt>\n age "" |list> => 23 |_self> ').sw_file()
+  context.print_universe()
+  assert True
+
+def test_learn_indirectly_2():
+  x = op_grammar(' age-self friends split |Fred Sam> => 20 clean |_self>').sw_file()
+  context.print_universe()
+  assert True
+
+def test_learn_star_ket_1():
+  x = op_grammar(' star |*> #=> supported-ops |_self> ').stored_rule()
+  context.print_universe()
+  assert False
+
+def test_learn_star_rule_1():
+  x = op_grammar(' star (*) #=> supported-ops |_self> ').stored_rule()
+  context.print_universe()
+  assert False
+
+def test_learn_star_rule_2():
+  x = op_grammar(' star2 (*,*) #=> supported-ops |_self1> + age |_self2> ').stored_rule()
+  context.print_universe()
+  assert False
+

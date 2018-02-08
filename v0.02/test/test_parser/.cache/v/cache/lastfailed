@@ -7,5 +7,9 @@
   "test_parser_v2.py::test_bracket_ops_merge_4": true,
   "test_parser_v2.py::test_bracket_ops_minus_1": true,
   "test_parser_v2.py::test_bracket_ops_minus_2": true,
+  "test_parser_v2.py::test_learn_star_ket_1": true,
+  "test_parser_v2.py::test_learn_star_rule_1": true,
+  "test_parser_v2.py::test_learn_star_rule_2": true,
+  "test_parser_v2.py::test_self_object_1": true,
   "test_parser_v2.py::test_tuple_op_4_bracket_op": true
 }

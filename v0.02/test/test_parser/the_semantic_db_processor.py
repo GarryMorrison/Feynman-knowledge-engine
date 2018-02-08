@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/1/2018
+# Update: 8/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -533,7 +533,9 @@ compound_table = {
   
 # 6/6/2017:
   "float-sequence"         : ".apply_fn(float_sequence,context,\"{0}\")",                       # buggy ...
-      
+
+# 8/2/2018:
+  'ssplit'                 : '.apply_sp_fn(ssplit, \"{0}\")',      
       
 }
 
@@ -558,6 +560,9 @@ sp_fn_table = {
 # 19/5/2015:
   "image-show"         : "improved_image_save_show",  
 
+# 8/2/2018:
+  'spell-out'          : 'spell_out',
+  'ssplit'             : 'ssplit',
 }
 
 # 2/2/2015: new addition functions that map ket -> ket/sp but needs context info.

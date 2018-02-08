@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-1-29
+# Update: 2018-2-8
 # Copyright: GPLv3
 #
 # Usage: 
@@ -5778,4 +5778,28 @@ def print_table(table):
     for i in range(tuple_len):
       print(e[i].ljust(max_length_column[i]), end='')
     print()
-                                                                                          
+
+# spell-out |fish> => |f> . |i> . |s> . |h>
+# AKA: ssplit |fish> => |f> . |i> . |s> . |h>
+def spell_out(one):
+  seq = sequence([])
+  if type(one) in [ket, superposition]:
+    for x in one:
+      for c in list(x.label):
+        seq += ket(c, x.value)
+  return seq
+  
+def ssplit(one, split_char = ''):
+  if split_char == '':
+    def split_with(x):
+      return list(x)
+  else:
+    def split_with(x):
+      return x.split(split_char)
+  seq = sequence([])
+  if type(one) in [ket, superposition]:
+    for x in one:
+      for c in split_with(x.label):
+        seq += ket(c, x.value)
+  return seq
+                                                                                                  

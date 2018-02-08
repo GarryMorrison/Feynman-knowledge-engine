@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-2-6
+# Update: 2018-2-8
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1369,7 +1369,9 @@ class sequence(object):
     #print('sequence data: %s' % data)
     if type(data) in [list]:
       self.data = data                            # copy.deepcopy(data)??
-    if type(data) in [ket, superposition]:
+    if type(data) in [ket]:
+      self.data = [ket() + data]                  # cast ket to superposition
+    if type(data) in [superposition]:
       self.data = [data]
     if type(data) in [str]:
       self.data = [superposition(data)]
@@ -1394,8 +1396,15 @@ class sequence(object):
       r = copy.deepcopy(self)
       r.data += seq.data
       return r
-    if type(seq) in [ket, superposition]:
+#    if type(seq) in [ket, superposition]:
+#      r = copy.deepcopy(self)
+#      r.data.append(seq)
+    if type(seq) in [ket]:
       r = copy.deepcopy(self)
+      r.data.append(ket() + seq)               # cast ket to superposition. Sequences of kets seems to bug out all over the place!
+      return r
+    if type(seq) in [superposition]:
+      r = copy.deepcopy(self)                  # do we need the deepcopy? How test?
       r.data.append(seq)
       return r
     if type(seq) in [list]:
@@ -1415,19 +1424,23 @@ class sequence(object):
 #    elif symbol == '.':
 #      seq.seq_merge(the_seq)
 
-  def add_seq(self, seq):                       #(|a> . |b> + |c>) + (|x> . |y>) == |a> . |b> + |c> + |x> . |y>  I think. I need more thinking time....
+  def tail_add_seq(self, seq):                       #(|a> . |b> + |c>) + (|x> . |y>) == |a> . |b> + |c> + |x> . |y>  I think. I need more thinking time....
     if len(seq) == 0:
       return
     if len(self.data) == 0:
       self.data = [superposition()]
     if type(seq) in [ket, superposition]:
       self.data[-1].add_sp(seq)
+#    if type(seq) in [ket]:
+#      self.data[-1].add_sp(ket() + seq)
+#    if type(seq) in [superposition]:
+#      self.data[-1].add_sp(seq)
     if type(seq) in [sequence]:
       head, *tail = seq.data
       self.data[-1].add_sp(head)
       self.data += tail 
 
-  def sub_seq(self, seq):                       #(|a> . |b> + |c>) - (|x> . |y>) == |a> . |b> + |c> - |x> . |y>  I think. I need more thinking time....
+  def tail_sub_seq(self, seq):                       #(|a> . |b> + |c>) - (|x> . |y>) == |a> . |b> + |c> - |x> . |y>  I think. I need more thinking time....
     if len(seq) == 0:
       return
     if len(self.data) == 0:
@@ -1438,6 +1451,46 @@ class sequence(object):
       head, *tail = seq.data
       self.data[-1].sub_sp(head)
       self.data += tail 
+
+  def add_seq(self, seq):
+    if len(seq) == 0:
+      return
+    if len(self) == 0:
+      self.data = [superposition()]                               # is this right? should it be self.data = []?
+    print('self: %s' % str(self))
+    print('seq: %s' % str(seq))
+    if type(seq) in [ket, superposition]:
+      len_seq = 1
+    else:
+      len_seq = len(seq.data)
+    max_len = max(len(self), len_seq)
+    one = self.data + [superposition()] * (max_len - len(self.data))
+    if type(seq) in [ket, superposition]:
+      two = [seq] + [superposition()] * (max_len - 1)
+    if type(seq) in [sequence]:
+      two = seq.data + [superposition()] * (max_len - len(seq.data))
+    print('one: %s' % [str(x) for x in one])
+    print('two: %s' % [str(x) for x in two])
+    self.data = []
+    for k in range(max_len):
+      self.data.append( one[k] + two[k] )      
+
+  def sub_seq(self, seq):
+    if len(seq) == 0:
+      return
+    if len(self) == 0:
+      self.data = [superposition()]
+    max_len = max(len(self), len(seq))
+    one = self.data + [superposition()] * (max_len - len(self.data))
+    if type(seq) in [ket, superposition]:
+      two = [seq] + [superposition()] * (max_len - 1)
+    if type(seq) in [sequence]:
+      two = seq.data + [superposition()] * (max_len - len(seq.data))
+    print('one: %s' % [str(x) for x in one])
+    print('two: %s' % [str(x) for x in two])
+    self.data = []
+    for k in range(max_len):
+      self.data.append( one[k] - two[k] )      
 
   def merge_seq(self, seq, space=''):                       #(|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
     if len(seq) == 0:
@@ -1608,13 +1661,21 @@ class sequence(object):
   def apply_fn(self, *args):
     seq = sequence([])
     for x in self.data:
-      seq.data.append(x.apply_fn(*args))
+      y = x.apply_fn(*args)
+      if type(y) in [ket, superposition]:
+        seq += y
+      elif type(y) in [sequence]:
+        seq.data += y.data
     return seq
 
   def apply_sp_fn(self, *args):
     seq = sequence([])
     for x in self.data:
-      seq.data.append(x.apply_sp_fn(*args))
+      y = x.apply_sp_fn(*args)
+      if type(y) in [ket, superposition]:
+        seq += y
+      elif type(y) in [sequence]:
+        seq.data += y.data
     return seq
 
   def apply_naked_fn(self, *args):

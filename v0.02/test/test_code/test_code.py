@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-1-23
-# Update: 2018-2-5
+# Update: 2018-2-8
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_code.py
@@ -651,7 +651,7 @@ def test_sequence_add_1():
 
 def test_sequence_add_empty():
   y = ket('b') + ket('c')
-  r = sequence()
+  r = sequence([])
   r.add_seq(y)
   r.display()
   assert str(r) == '|b> + |c>'
@@ -663,7 +663,8 @@ def test_sequence_add_2():
   r = sequence(x) + y
   r.add_seq(z)
   r.display()
-  assert str(r) == '|a> . |b> + |c> + |x>'
+  #assert str(r) == '|a> . |b> + |c> + |x>'
+  assert str(r) == '|a> + |x> . |b> + |c>'
 
 def test_sequence_add_3():
   x = ket('a')
@@ -672,7 +673,8 @@ def test_sequence_add_3():
   r = sequence(x) + y
   r.add_seq(z)
   r.display()
-  assert str(r) == '|a> . |b> + |c> + |x> . |y>'
+  #assert str(r) == '|a> . |b> + |c> + |x> . |y>'
+  assert str(r) == '|a> + |x> . |b> + |c> + |y>'
 
 def test_sequence_sub_1():
   x = ket('a')
@@ -681,7 +683,8 @@ def test_sequence_sub_1():
   r = sequence(x) + y
   r.sub_seq(z)
   r.display()
-  assert str(r) == '|a> . |b> + |c> + -1|x> . |y>'
+  #assert str(r) == '|a> . |b> + |c> + -1|x> . |y>'
+  assert str(r) == '|a> + -1|x> . |b> + |c> + -1|y>'
 
 def test_sequence_sub_2():
   x = ket('a')
@@ -690,7 +693,8 @@ def test_sequence_sub_2():
   r = sequence(x) + y
   r.sub_seq(z)
   r.display()
-  assert str(r) == '|a> . |b> + |c> + -1|x> + -1|y> . |z>'
+  #assert str(r) == '|a> . |b> + |c> + -1|x> + -1|y> . |z>'
+  assert str(r) == '|a> + -1|x> + -1|y> . |b> + |c> + -1|z>'
 
 def test_sequence_merge_1():
   x = ket('a')
@@ -859,4 +863,53 @@ def test_sequence_iter():
   for e in x:
     print(e)
   assert True
+
+def test_new_sequence_addition_1():
+  x = sequence(superposition('a')) + superposition('b')
+  y = sequence(superposition('x')) + superposition('y')
+  x.add_seq(y)
+  x.long_display()
+  assert str(x) == '|a> + |x> . |b> + |y>'
+
+def test_new_sequence_addition_2():
+  x = sequence(superposition('a')) + superposition('b')
+  y = sequence(ket('x') + ket('y') + ket('z',3))
+  x.add_seq(y)
+  x.long_display()
+  assert str(x) == '|a> + |x> + |y> + 3|z> . |b>'
   
+def test_new_sequence_subtraction_1():
+  x = sequence(superposition('a')) + superposition('b')
+  y = sequence(superposition('x')) + superposition('y')
+  x.sub_seq(y)
+  x.long_display()
+  assert str(x) == '|a> + -1|x> . |b> + -1|y>'
+
+def test_new_sequence_subtraction_2():
+  x = sequence(superposition('a')) + superposition('b')
+  y = sequence(ket('x') + ket('y') + ket('z',3))
+  x.sub_seq(y)
+  x.long_display()
+  assert str(x) == '|a> + -1|x> + -1|y> + -3|z> . |b>'
+
+
+def test_spell_out_1():
+  x = ket('fish',3).apply_sp_fn(spell_out)
+  assert str(x) == '3|f> . 3|i> . 3|s> . 3|h>'
+
+def test_spell_out_2():
+  x = ket('fish',3) + ket('soup', 2)
+  y = x.apply_sp_fn(spell_out)
+  assert str(y) == '3|f> . 3|i> . 3|s> . 3|h> . 2|s> . 2|o> . 2|u> . 2|p>'
+
+def test_ssplit_1():
+  x = ket('a and b',7)
+  y = x.apply_sp_fn(ssplit)
+  assert str(y) == '7|a> . 7| > . 7|a> . 7|n> . 7|d> . 7| > . 7|b>'
+
+def test_ssplit_2():
+  x = ket('a and b',5)
+  y = x.apply_sp_fn(ssplit, ' and ')
+  assert str(y) == '5|a> . 5|b>'
+
+
