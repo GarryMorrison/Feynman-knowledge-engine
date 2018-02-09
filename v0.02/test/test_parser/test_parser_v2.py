@@ -23,7 +23,7 @@ from the_semantic_db_code import *
 from the_semantic_db_functions import *
 from the_semantic_db_processor import *
 
-context = context_list("parse compound superposition")
+context = context_list("parse compound sequence")
 context.load("sw-examples/fred-sam-friends.sw")
 context.load("sw-examples/test-operators.sw")
 
@@ -91,7 +91,7 @@ single_compound_sequence = op_sequence:ops (naked_ket | bracket_sequence | -> ''
 symbol_single_compound_sequence = ws op_symbol:symbol ws single_compound_sequence:seq -> (symbol, seq)
 full_compound_sequence = ws (op_symbol | -> '+'):symbol single_compound_sequence:first ws symbol_single_compound_sequence*:rest ws -> [(symbol, first)] + rest
 
-compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequence(seq)
+compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequence(context, seq)
 
 new_line = ('\r\n' | '\r' | '\n')
 #char = :c ?(is_not_newline(c)) -> c
@@ -143,7 +143,7 @@ def my_print(name, value=''):
     pprint(value)
 
 
-def process_operators(ops, seq, self_object = None):
+def process_operators(context, ops, seq, self_object = None):
   if len(ops) == 0:
     return seq
   python_code = ''
@@ -166,8 +166,8 @@ def process_operators(ops, seq, self_object = None):
           if fnk in whitelist_table_1:
             python_code = "%s(*seq_list)" % whitelist_table_1[fnk]
           else:
-            the_seq = compile_compound_sequence(data[0], self_object)
-            seq = process_operators([fnk], the_seq, self_object)
+            the_seq = compile_compound_sequence(context, data[0], self_object)
+            seq = process_operators(context, [fnk], the_seq, self_object)
         if len(data) == 2:                                    # 2-parameter function:
           if fnk in whitelist_table_2:
             python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
@@ -179,7 +179,7 @@ def process_operators(ops, seq, self_object = None):
             python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
         if len(python_code) > 0:
           my_print("whitelist_table: python code", python_code)
-          seq_list = [compile_compound_sequence(x, self_object) for x in data]
+          seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
           str_seq_list = [str(x) for x in seq_list]
           my_print('str_seq_list', str_seq_list)
           seq = eval(python_code)
@@ -195,7 +195,7 @@ def process_operators(ops, seq, self_object = None):
             symbol, bracket_ops = bracket_op
             my_print('symbol', symbol)
             my_print('bracket_ops', bracket_ops)
-            the_seq = process_operators(bracket_ops, seq, self_object)
+            the_seq = process_operators(context, bracket_ops, seq, self_object)
 
             if symbol == '+':
               new_seq.add_seq(the_seq)
@@ -219,7 +219,7 @@ def process_operators(ops, seq, self_object = None):
                 symbol, bracket_ops = bracket_op
                 my_print('symbol', symbol)
                 my_print('bracket_ops', bracket_ops)
-                the_seq = process_operators(bracket_ops, x, self_object)
+                the_seq = process_operators(context, bracket_ops, x, self_object)
          
                 if symbol == '+':
                   new_seq.add_seq(the_seq)
@@ -239,7 +239,7 @@ def process_operators(ops, seq, self_object = None):
       my_print('tuple_op', tuple_op)
       my_print('power', power)
       for _ in range(power):                                           # is there a better way to implement this?
-        seq = process_operators([tuple_op], seq, self_object)
+        seq = process_operators(context, [tuple_op], seq, self_object)
     else:
       python_code = process_single_op(op)
       if len(python_code) > 0:
@@ -247,7 +247,7 @@ def process_operators(ops, seq, self_object = None):
   return seq
 
 
-def compile_compound_sequence(compound_sequence, self_object = None):
+def compile_compound_sequence(context, compound_sequence, self_object = None):
   my_print('cs', compound_sequence)
   my_print('self', self_object)
 
@@ -266,6 +266,9 @@ def compile_compound_sequence(compound_sequence, self_object = None):
       elif object.startswith('_self') and type(self_object) is list:          # this branch needs to handle |_self> too.
         try:
           position = int(object[5:])
+        except:
+          position = 1
+        try:
           the_seq = sequence(self_object[position - 1])
         except Exception as e:
           my_print('self object exception', e)
@@ -275,7 +278,7 @@ def compile_compound_sequence(compound_sequence, self_object = None):
 
     if type(object) is list:
       my_print('fish')
-      the_seq = compile_compound_sequence(object, self_object)
+      the_seq = compile_compound_sequence(context, object, self_object)
       distribute = True
 
     my_print('\n----------\nfinal')
@@ -283,7 +286,7 @@ def compile_compound_sequence(compound_sequence, self_object = None):
     my_print('the_seq', str(the_seq))
     my_print('distribute', distribute)
     my_print('----------\n')
-    the_seq = process_operators(ops, the_seq, self_object)
+    the_seq = process_operators(context, ops, the_seq, self_object)
     #my_print('really final the_seq', str(the_seq))
 
 
@@ -323,7 +326,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
   my_print('rule_type', rule_type)
 
   if type(one) is str:
-    seq = compile_compound_sequence(parsed_seq, [one])
+    seq = compile_compound_sequence(context, parsed_seq, [one])
     my_print('seq', str(seq))
 
     if op == '' and one == 'context' and rule_type == '=>':
@@ -335,11 +338,11 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
     elif rule_type == '+=>':
       context.add_learn(op, one, seq)
   elif type(one) is list:                          # indirect learn rule found
-    indirect_object = compile_compound_sequence(one)
+    indirect_object = compile_compound_sequence(context, one)
     my_print('indirect learn object', str(indirect_object))  
     for sp in indirect_object:
       for one in sp:
-        seq = compile_compound_sequence(parsed_seq, [one])
+        seq = compile_compound_sequence(context, parsed_seq, [one])
         if rule_type == '=>':
           context.learn(op, one, seq)
         elif rule_type == '+=>':
@@ -350,13 +353,17 @@ def recall_rule(context, op, one):
   return context.recall(op, one)
 #  return ket(one).apply_op(context, op)
 
-def extract_compound_sequence(context, unparsed_seq, self_object):      # need to make context explicit somewhere ... rather than a global....
+def extract_compound_sequence(context, unparsed_seq, self_object = None):      # need to make context explicit somewhere ... rather than a global....
   parsed_seq = op_grammar(unparsed_seq).full_compound_sequence()
   my_print('parsed_seq', parsed_seq)
   my_print('self_object', self_object)
-  seq = compile_compound_sequence(parsed_seq, self_object)
+  seq = compile_compound_sequence(context, parsed_seq, self_object)
   return seq
 
+def process_sw_file(context, sw_text):
+  op_grammar(sw_text).sw_file()
+  context.print_universe()
+  
 
 def is_not_newline(c):
   return c not in ['\r', '\n']
@@ -900,3 +907,8 @@ def test_extract_compound_sequence_1():
   s = '5|_self1> + 7|_self2>'
   seq = extract_compound_sequence(context, s, ['fish', 'soup'])
   assert str(seq) == '5|fish> + 7|soup>'
+
+def test_process_sw_file_1():
+  s = 'age |John> => |29>'
+  process_sw_file(context, s)
+  assert False

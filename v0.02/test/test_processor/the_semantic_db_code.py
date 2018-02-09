@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 2018-2-8
+# Update: 2018-2-9
 # Copyright: GPLv3
 #
 # Usage: 
@@ -20,6 +20,7 @@ import re
 import math
 
 from operator import mul
+#from the_semantic_db_processor import *
 
 import logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -1859,7 +1860,7 @@ class fast_superposition(object):
 
 # we need this for stored_rule class.
 # seems to work even this side of the class. Cool.
-from the_semantic_db_processor import *
+#from the_semantic_db_processor import *
 
 # we need this to speed up context.learn():
 from collections import OrderedDict
@@ -2370,10 +2371,10 @@ class new_context(object):
         for line in f:
           if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
             return                               # maybe move try/except to around parse_rule_line() instead of entire file?
-          parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
-    except Exeption as e:
+          #parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
+          process_sw_file(self, line)             # this is broken! bug found when loading fragment-document.sw fragments
+    except Exception as e:
       logger.info("failed to load: %s\nReason: %s" % (filename, e))
-      logger.info('bah!')
 
 # 3/12/2015: new feature context.print_universe() and context.print_multiverse()
   def print_universe(self,exact_dump=False):
@@ -2539,7 +2540,8 @@ class context_list(object):
         for line in f:
           if line.startswith("exit sw"):      # use "exit sw" as the code to stop processing a .sw file.
             return
-          parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
+          #parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
+          process_sw_file(self, line)             # later maybe process entire file at once. Not sure which method is faster.
     except Exception as e:
       logger.info("failed to load: " + filename)
       logger.info('reason: %s' % e)

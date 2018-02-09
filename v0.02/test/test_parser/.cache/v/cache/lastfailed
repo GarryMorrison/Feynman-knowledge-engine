@@ -10,6 +10,13 @@
   "test_parser_v2.py::test_learn_star_ket_1": true,
   "test_parser_v2.py::test_learn_star_rule_1": true,
   "test_parser_v2.py::test_learn_star_rule_2": true,
+  "test_parser_v2.py::test_process_sw_file_1": true,
   "test_parser_v2.py::test_self_object_1": true,
+  "test_parser_v2.py::test_self_object_2": true,
+  "test_parser_v2.py::test_self_object_3": true,
+  "test_parser_v2.py::test_self_object_4": true,
+  "test_parser_v2.py::test_self_object_5": true,
+  "test_parser_v2.py::test_self_object_6": true,
+  "test_parser_v2.py::test_self_object_7": true,
   "test_parser_v2.py::test_tuple_op_4_bracket_op": true
 }
