@@ -542,7 +542,6 @@ class ket(object):
 
 
 # a superposition is a collection of float,string pairs, displayed using ket notation. 
-# NB: we removed the whole idea of a ket class. Now everything is a superposition.
 class superposition(object):
   def __init__(self,first='',value=1):
 #    self.dict = {}                                      # faster and cheaper than OrderedDict() if you don't need to preserve order

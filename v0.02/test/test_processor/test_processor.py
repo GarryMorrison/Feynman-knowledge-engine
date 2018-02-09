@@ -38,9 +38,11 @@ def test_process_single_op_compound_1():
 
 
 def test_sw_file_1():
-  x = op_grammar('age |Julie> => |32> \n spelling |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> ').sw_file()
-  context.print_universe()
-  assert True
+#  x = op_grammar('age |Julie> => |32> \n spelling |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> ').sw_file()
+  s = 'age |Julie> => |32> \n spelling |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> '
+  process_sw_file(context, s)
+  context.print_multiverse()
+  assert False
 
 def test_recall_1():
   s = 'spelling |Julie>'
