@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 8/2/2018
+# Update: 10/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -13,10 +13,14 @@
 
 from parsley import makeGrammar
 
-from the_semantic_db_processor_tables import *
-from the_semantic_db_code import *
+#from the_semantic_db_processor_tables import *
+#from the_semantic_db_code import *
 
-#context = context_list("parse compound sequence")
+#from semantic_db.new_context import new_context
+#from semantic_db.context_list import ContextList
+
+
+#context = ContextList("parse compound sequence")
 
 from string import ascii_letters
 def valid_op(op):                                                       # do we still need this now we have a better parser?
@@ -433,7 +437,8 @@ def is_not_newline(c):
   return c not in ['\r', '\n']
 
 #from the_semantic_db_code import *
-context = context_list('in the processor')
+import semantic_db as sdb
+context = sdb.context_list.ContextList('in the processor')
 #context = ''
   
 bindings_dictionary = {

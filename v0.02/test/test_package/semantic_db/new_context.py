@@ -1,4 +1,6 @@
-class new_context(object):
+from collections import OrderedDict
+
+class NewContext(object):
   def __init__(self,name):
     self.name = name
     self.ket_rules_dict = OrderedDict()

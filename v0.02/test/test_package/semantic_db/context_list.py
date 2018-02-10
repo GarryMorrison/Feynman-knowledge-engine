@@ -1,7 +1,9 @@
-class context_list(object):
+from semantic_db.new_context import NewContext
+
+class ContextList(object):
   def __init__(self,name):
     self.name = name
-    c = new_context(name)
+    c = NewContext(name)
     self.data = [c]
     self.index = 0
 

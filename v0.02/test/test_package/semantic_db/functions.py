@@ -24,7 +24,7 @@ import copy
 import string
 import re
 
-from the_semantic_db_code import *
+#from the_semantic_db_code import *
 #from the_semantic_db_processor import *
 
 # the value function
