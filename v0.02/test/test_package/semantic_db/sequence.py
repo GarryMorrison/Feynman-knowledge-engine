@@ -1,3 +1,8 @@
+import copy
+from semantic_db.ket import ket
+from semantic_db.superposition import superposition
+
+
 # sequence class. Has methods we need to chomp out that are not relevant here. TODO.
 class sequence(object):
   def __init__(self, data = []):

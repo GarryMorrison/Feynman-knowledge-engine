@@ -18,7 +18,7 @@ from parsley import makeGrammar
 
 #from semantic_db.new_context import new_context
 #from semantic_db.context_list import ContextList
-
+import semantic_db as sdb
 
 #context = ContextList("parse compound sequence")
 
@@ -437,7 +437,7 @@ def is_not_newline(c):
   return c not in ['\r', '\n']
 
 #from the_semantic_db_code import *
-import semantic_db as sdb
+#import semantic_db as sdb
 context = sdb.context_list.ContextList('in the processor')
 #context = ''
   

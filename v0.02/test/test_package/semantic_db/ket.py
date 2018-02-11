@@ -1,3 +1,6 @@
+from semantic_db.superposition import superposition
+
+
 class ket(object):
   def __init__(self,label='',value=1):
     self.label = label

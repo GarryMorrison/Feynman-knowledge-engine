@@ -1,3 +1,7 @@
+from collections import OrderedDict
+#from semantic_db.ket import ket
+
+
 # a superposition is a collection of float,string pairs, displayed using ket notation. 
 class superposition(object):
   def __init__(self,first='',value=1):
@@ -583,3 +587,5 @@ class superposition(object):
            
   def activate(self,context=None,op=None,self_label=None):
     return self
+
+

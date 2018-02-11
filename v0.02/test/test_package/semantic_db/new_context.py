@@ -1,4 +1,25 @@
 from collections import OrderedDict
+from semantic_db.ket import ket
+from semantic_db.superposition import superposition
+from semantic_db.misc import *
+from semantic_db.stored_rule import stored_rule
+from semantic_db.memoizing_rule import memoizing_rule
+
+def label_descent(x):                           # can we optimize this at all? Does it matter?
+  logger.info("ket: " + x)
+  result = [x]
+  if x == "*":
+    return result
+  if x.endswith(": *"):
+    x = x[:-3]
+  while True:
+    try:
+      x,null = x.rsplit(": ",1)
+      result.append(x + ": *")
+    except:
+      result.append("*")
+      return result
+
 
 class NewContext(object):
   def __init__(self,name):

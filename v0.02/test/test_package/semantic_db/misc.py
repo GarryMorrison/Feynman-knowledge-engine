@@ -1,3 +1,7 @@
+import logging
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger()
+
 # put this here for now:
 # http://stackoverflow.com/questions/4836710/does-python-have-a-built-in-function-for-string-natural-sort
 # 6/8/2014: Doh! There is a bug in sorting things like 0 vs 00 vs 000.

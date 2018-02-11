@@ -15,13 +15,30 @@
 
 
 import sys
-from parsley import makeGrammar
+#from parsley import makeGrammar
 
+from pprint import pprint
 from semantic_db import *
 #import semantic_db as sdb
+#from semantic_db.context_list import ContextList
+#import semantic_db
 
+#pprint(globals())
+#pprint(locals())
 
-context = ContextList('in test the processor')
+context = ContextList('test')
+x = ket('fred', 3)
+y = sequence('fred') + ket('sam')
+print(str(y))
+
+logger.setLevel(logging.DEBUG)
+context.learn('age', 'Fred', '39')
+context.print_universe()
+sys.exit(0)
+
+#import semantic_db as sdb
+
+context = context_list.ContextList('in test the processor')
 
 logger.setLevel(logging.DEBUG)
 
