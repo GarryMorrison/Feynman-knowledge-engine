@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-16
+# Update: 2018-2-8
 # Copyright: GPLv3
 #
 # Usage: 
@@ -26,7 +26,6 @@ import re
 
 #from the_semantic_db_code import *
 #from the_semantic_db_processor import *
-from semantic_db.code import *
 
 # the value function
 # eg: value |price: _x> => _x |_self>

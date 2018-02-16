@@ -24,7 +24,7 @@ import urllib.request
 #from the_semantic_db_code import *
 #from the_semantic_db_functions import *
 #from the_semantic_db_processor import *
-#from semantic_db import *
+from semantic_db import *
 
 # if --debug, set logging level to DEBUG:
 if len(sys.argv) == 2:
@@ -46,7 +46,8 @@ if not os.path.exists(sw_file_dir):
 
 print("Welcome!")
 
-C = ContextList("sw console")
+#C = ContextList("sw console")
+C = context
 
 help_string = """
   q, quit, exit                quit the agent.
@@ -273,7 +274,8 @@ while True:
 
 # time it!
     start_time = time.time()
-    load_sw(C,name)
+    #load_sw(C,name)
+    C.load(name)
     end_time = time.time()
     delta_time = end_time - start_time
     print("\n  Time taken:",display_time(delta_time))

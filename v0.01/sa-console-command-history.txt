@@ -46627,3 +46627,397 @@
   learn(|op: age>, |Fred>, |age: 37>)
   q
 
+2018-02-15
+  not |yes> => |no>
+  not |no> => |yes>
+  |rained last night> => |no>
+  |sprinkler was on> => |no>
+  |grass is wet> => |no>
+  ask-if |rained last night> #=> And("" |grass is wet>, not "" |sprinkler was on>)
+  ask-if |sprinkler was on> #=> And("" |grass is wet>, not "" |rained last night>)
+  ask-if |grass is wet> #=> Or("" |rained last night>, "" |sprinkler was on>)
+  dump
+  ask-if |rained last night>
+  ask-if |grass is wet>
+  
+  |rained last night> => |yes>
+  ask-if |grass is wet>
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  
+  if |*> #=> then drop-below[0.8] rescale similar-input[pattern] words-to-list |_self>
+  
+  dump
+  if |grass is wet>
+  if |sprinkler was on>
+  if |rained last night>
+  if |sprinkler was on and rained last night>
+  if |grass is wet and not rained last night>
+  if |grass is wet and not sprinkler was on>
+  info off
+  if |grass is wet>
+  dump
+  if |sprinkler was on>
+  if^2 |sprinkler was on>
+  if^3 |sprinkler was on>
+  
+  context logic
+  pattern |node 1: 1> => |x> + |y>
+  then |node 1: *> => |x and y>
+  pattern |node 2: 1> => 0.5|x> + 0.5|y>
+  then |node 2: *> => |x or y>
+  dump
+  then similar-input[pattern] split |x y>
+  then similar-input[pattern] 0.5 split |x y>
+  context active conclude
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  dump
+  active |rained last night> => |no>
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |no>
+  dump
+  rel-kets[active] |>
+  such-that[active] rel-kets[active] |>
+  save history
+
+2018-02-15
+  not |yes> => |no>
+  not |no> => |yes>
+  |rained last night> => |no>
+  |sprinkler was on> => |no>
+  |grass is wet> => |no>
+  ask-if |rained last night> #=> And("" |grass is wet>, not "" |sprinkler was on>)
+  ask-if |sprinkler was on> #=> And("" |grass is wet>, not "" |rained last night>)
+  ask-if |grass is wet> #=> Or("" |rained last night>, "" |sprinkler was on>)
+  dump
+  ask-if |rained last night>
+  ask-if |grass is wet>
+  
+  |rained last night> => |yes>
+  ask-if |grass is wet>
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  
+  if |*> #=> then drop-below[0.8] rescale similar-input[pattern] words-to-list |_self>
+  
+  dump
+  if |grass is wet>
+  if |sprinkler was on>
+  if |rained last night>
+  if |sprinkler was on and rained last night>
+  if |grass is wet and not rained last night>
+  if |grass is wet and not sprinkler was on>
+  info off
+  if |grass is wet>
+  dump
+  if |sprinkler was on>
+  if^2 |sprinkler was on>
+  if^3 |sprinkler was on>
+  
+  context logic
+  pattern |node 1: 1> => |x> + |y>
+  then |node 1: *> => |x and y>
+  pattern |node 2: 1> => 0.5|x> + 0.5|y>
+  then |node 2: *> => |x or y>
+  dump
+  then similar-input[pattern] split |x y>
+  then similar-input[pattern] 0.5 split |x y>
+  context active conclude
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  dump
+  active |rained last night> => |no>
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |no>
+  dump
+  rel-kets[active] |>
+  such-that[active] rel-kets[active] |>
+  save history
+  similar-input[pattern] |>
+  conclude |*> #=> then similar-input[pattern] such-that[active] rel-kets[active] |>
+  conclude
+  active |rained last night> => |yes>
+  conclude
+  active |rained last night> => |no>
+  conclude
+  active |sprinkler was on> => |yes>
+  conclude
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |yes>
+  conclude
+  dump
+  such-that[active] rel-kets[active] |>
+  active |grass is wet> => |no>
+  active |sprinkler was on> => |yes>
+  conclude
+  active |sprinkler was on> => |no>
+  active |rained last night> => |yes>
+  conclude
+  active |sprinkler was on> => |yes>
+  conclude
+  dump
+  active |rained last night> => |no>
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |yes>
+  active |not rained last night> => |yes>
+  conclude
+  dump
+  such-that[active] rel-kets[active] |>
+  conclude |>
+  conclude |*> #=> then drop-below[0.8] rescale similar-input[pattern] such-that[active] rel-kets[active] |>
+  conclude
+  conclude |>
+  save history
+
+2018-02-15
+  not |yes> => |no>
+  not |no> => |yes>
+  |rained last night> => |no>
+  |sprinkler was on> => |no>
+  |grass is wet> => |no>
+  ask-if |rained last night> #=> And("" |grass is wet>, not "" |sprinkler was on>)
+  ask-if |sprinkler was on> #=> And("" |grass is wet>, not "" |rained last night>)
+  ask-if |grass is wet> #=> Or("" |rained last night>, "" |sprinkler was on>)
+  dump
+  ask-if |rained last night>
+  ask-if |grass is wet>
+  
+  |rained last night> => |yes>
+  ask-if |grass is wet>
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  
+  if |*> #=> then drop-below[0.8] rescale similar-input[pattern] words-to-list |_self>
+  
+  dump
+  if |grass is wet>
+  if |sprinkler was on>
+  if |rained last night>
+  if |sprinkler was on and rained last night>
+  if |grass is wet and not rained last night>
+  if |grass is wet and not sprinkler was on>
+  info off
+  if |grass is wet>
+  dump
+  if |sprinkler was on>
+  if^2 |sprinkler was on>
+  if^3 |sprinkler was on>
+  
+  context logic
+  pattern |node 1: 1> => |x> + |y>
+  then |node 1: *> => |x and y>
+  pattern |node 2: 1> => 0.5|x> + 0.5|y>
+  then |node 2: *> => |x or y>
+  dump
+  then similar-input[pattern] split |x y>
+  then similar-input[pattern] 0.5 split |x y>
+  context active conclude
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  dump
+  active |rained last night> => |no>
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |no>
+  dump
+  rel-kets[active] |>
+  such-that[active] rel-kets[active] |>
+  save history
+  similar-input[pattern] |>
+  conclude |*> #=> then similar-input[pattern] such-that[active] rel-kets[active] |>
+  conclude
+  active |rained last night> => |yes>
+  conclude
+  active |rained last night> => |no>
+  conclude
+  active |sprinkler was on> => |yes>
+  conclude
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |yes>
+  conclude
+  dump
+  such-that[active] rel-kets[active] |>
+  active |grass is wet> => |no>
+  active |sprinkler was on> => |yes>
+  conclude
+  active |sprinkler was on> => |no>
+  active |rained last night> => |yes>
+  conclude
+  active |sprinkler was on> => |yes>
+  conclude
+  dump
+  active |rained last night> => |no>
+  active |sprinkler was on> => |no>
+  active |grass is wet> => |yes>
+  active |not rained last night> => |yes>
+  conclude
+  dump
+  such-that[active] rel-kets[active] |>
+  conclude |>
+  conclude |*> #=> then drop-below[0.8] rescale similar-input[pattern] such-that[active] rel-kets[active] |>
+  conclude
+  conclude |>
+  save history
+  active |not rained last night> #=> not active |rained last night>
+  active |not sprinkler was on> #=> not active |sprinkler was on>
+  not |no> => |yes>
+  not |yes> => |no>
+  dump
+  such-that[active] rel-kets[active] |>
+  active |rained last night> => |yes>
+  such-that[active] rel-kets[active] |>
+  conclude |>
+  active |rained last night> => |no>
+  conclude |>
+  dump
+  active |rained last night> => |don't know>
+  active |sprinkler was on> => |don't know>
+  active |grass is wet> => |don't know>
+  such-that[active] rel-kets[active] |>
+  dump
+  save active-conclude.sw
+  conclude |>
+  active |grass is wet> => |yes>
+  conclude |>
+  active |grass is wet> => |don't know>
+  active |sprinkler was on> => |yes>
+  conclude |>
+  active |sprinkler was on> => |don't know>
+  active |rained last night> => |yes>
+  conclude |>
+  active |sprinkler was on> => |yes>
+  conclude |>
+  active |rained last night> => |no>
+  active |sprinkler was on> => |don't know>
+  active |grass is wet> => |yes>
+  conclude |>
+  active |rained last night> => |don't know>
+  active |sprinkler was on> => |no>
+  conclude |>
+  context
+  context active conclude 2
+  -- learn the basics:
+  not |no> => |yes>
+  not |yes> => |no>
+  not |don't know> => |don't know>
+  
+  
+  -- learn our three if-then machines:
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  
+  
+  -- learn what we currently know about the world:
+  active |rained last night> => |don't know>
+  active |not rained last night> #=> not active |rained last night>
+  
+  active |sprinkler was on> => |don't know>
+  active |not sprinkler was on> #=> not active |sprinkler was on>
+  
+  active |grass is wet> => |don't know>
+  
+  
+  -- define our conclude operator:
+  conclude |*> #=> then drop-below[0.8] rescale similar-input[pattern] such-that[active] rel-kets[active] |>
+  dump
+  conclude |>
+  h
+  active |grass is wet> => |yes>
+  conclude |>
+  active |grass is wet> => |don't know>
+  active |sprinkler was on> => |yes>
+  conclude |>
+  active |sprinkler was on> => |don't know>
+  active |rained last night> => |yes>
+  conclude |>
+  active |sprinkler was on> => |yes>
+  conclude |>
+  active |sprinkler was on> => |don't know>
+  active |rained last night> => |no>
+  active |grass is wet> => |yes>
+  conclude |>
+  active |rained last night> => |don't know>
+  active |sprinkler was on> => |no>
+  conclude |>
+  dump
+  learn(|op: age> , |Fred>, |33>)
+  dump
+  unlearn-grass-is-wet |*> #=> learn(|op: active>, |grass is wet>, |don't know>)
+  unlearn-grass-is-wet |>
+  dump
+  unlearn-rained-last-night |*> #=> learn(|op: active>, |rained last night>, |don't know>)
+  unlearn-sprinkler-was-on |*> #=> learn(|op: active>, |sprinkler was on>, |don't know>)
+  dump
+  unlearn-grass-is-wet |*> #=> learn(|op: active>, |grass is wet>, |don't know>)
+  unlearn-rained-last-night |*> #=> learn(|op: active>, |rained last night>, |don't know>)
+  unlearn-not-rained-last-night |*> #=> learn(|op: active>, |not rained last night>, |don't know>)
+  unlearn-sprinkler-was-on |*> #=> learn(|op: active>, |sprinkler was on>, |don't know>)
+  unlearn-not-sprinkler-was-on |*> #=> learn(|op: active>, |not sprinkler was on>, |don't know>)
+  
+  make-active |*> #=> learn(|op: active>, |_self>, |yes>)
+  
+  unlearn-everything |*> #=> unlearn-grass-is-wet unlearn-rained-last-night unlearn-not-rained-last-night unlearn-sprinkler-was-on unlearn-not-sprinkler-was-on |>
+  
+  
+  dump
+  unlearn-everything |>
+  dump
+  read-sentence |*> #=> make-active words-to-list |_self>
+  read-sentence |grass is wet>
+  dump
+  unlearn-everything
+  dump
+  read-sentence |grass is wet and not sprinkler was on>
+  dump
+  conclude |>
+  save history
+

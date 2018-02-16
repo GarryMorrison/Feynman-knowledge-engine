@@ -1,3 +1,16 @@
 {
-  "test_processor.py": true
+  "test_processor.py::test_context_load_1": true,
+  "test_processor.py::test_context_sp_learn_1": true,
+  "test_processor.py::test_context_sp_learn_2": true,
+  "test_processor.py::test_context_sp_learn_3": true,
+  "test_processor.py::test_context_sp_learn_4": true,
+  "test_processor.py::test_context_sp_learn_5": true,
+  "test_processor.py::test_process_sw_file_1": true,
+  "test_processor.py::test_self_learn_1": true,
+  "test_processor.py::test_self_learn_2": true,
+  "test_processor.py::test_star_learn_1": true,
+  "test_processor.py::test_star_learn_2": true,
+  "test_processor.py::test_star_learn_3": true,
+  "test_processor.py::test_star_learn_4": true,
+  "test_processor.py::test_sw_file_1": true
 }

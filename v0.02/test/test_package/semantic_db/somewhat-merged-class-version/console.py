@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/2/2018
+# Update: 24/9/2015
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -21,10 +21,9 @@ import time
 import urllib.request
 #import logging
 
-#from the_semantic_db_code import *
-#from the_semantic_db_functions import *
-#from the_semantic_db_processor import *
-#from semantic_db import *
+from the_semantic_db_code import *
+from the_semantic_db_functions import *
+from the_semantic_db_processor import *
 
 # if --debug, set logging level to DEBUG:
 if len(sys.argv) == 2:
@@ -46,7 +45,7 @@ if not os.path.exists(sw_file_dir):
 
 print("Welcome!")
 
-C = ContextList("sw console")
+C = context_list("sw console")
 
 help_string = """
   q, quit, exit                quit the agent.
