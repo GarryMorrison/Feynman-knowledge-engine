@@ -528,7 +528,9 @@ compound_table = {
   "float-sequence"         : ".apply_fn(float_sequence,context,\"{0}\")",                       # buggy ...
 
 # 8/2/2018:
-  'ssplit'                 : '.apply_sp_fn(ssplit, \"{0}\")',      
+#  'ssplit'                 : '.apply_sp_fn(ssplit, \"{0}\")',
+# 17/2/2018:
+#  'insert'                 : '.apply_sp_fn(insert, \"{0}\")',        
       
 }
 
@@ -555,7 +557,7 @@ sp_fn_table = {
 
 # 8/2/2018:
   'spell-out'          : 'spell_out',
-  'ssplit'             : 'ssplit',
+#  'ssplit'             : 'ssplit',
 }
 
 # 2/2/2015: new addition functions that map ket -> ket/sp but needs context info.

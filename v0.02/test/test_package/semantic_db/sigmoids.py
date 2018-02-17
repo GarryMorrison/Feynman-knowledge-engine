@@ -1,3 +1,17 @@
+#######################################################################
+# the semantic-db sigmoids
+#
+# Author: Garry Morrison
+# email: garry -at- semantic-db.org
+# Date: 2018
+# Update: 17/2/2018
+# Copyright: GPLv3
+#
+# Usage: 
+#
+#######################################################################
+
+
 # some sigmoids:
 def clean(x):
   if x <= 0:

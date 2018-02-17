@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 #######################################################################
-# let's test our new processor
+# let's test v0.02
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-16
+# Update: 2018-2-17
 # Copyright: GPLv3
 #
-# Usage: py.test -v test_processor.py
+# Usage: py.test -v test_package.py
 #
 #######################################################################
 
@@ -17,9 +17,6 @@
 import sys
 from pprint import pprint
 from semantic_db import *
-
-#pprint(globals())
-#pprint(locals())
 
 #context = ContextList('in test the processor')
 #context.print_universe()
@@ -137,4 +134,18 @@ def test_star_learn_4():
   process_sw_file(context, s)
   context.print_multiverse(True)
   assert False
+
+def test_apply_sp_1():
+  s = 'apply(|op: friends>, |Fred>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>'  
+
+def test_apply_sp_2():
+  r = apply_sp(context, ket('op: friends'), ket('Fred'))
+  assert str(r) == '|Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>'
+
+def test_union_1():
+  s = 'union(|a>, |b>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a> + |b>'
 

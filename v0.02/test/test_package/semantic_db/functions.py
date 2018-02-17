@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-16
+# Update: 2018-2-17
 # Copyright: GPLv3
 #
 # Usage: 
@@ -5790,6 +5790,13 @@ def spell_out(one):
         seq += ket(c, x.value)
   return seq
   
+# set invoke method:
+sp_fn_table['ssplit'] = 'ssplit'
+compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")' 
+# usage:
+# ssplit[", "] |a, b, c>
+#   |a> . |b> . |c>
+# 
 def ssplit(one, split_char = ''):
   if split_char == '':
     def split_with(x):
@@ -5803,4 +5810,19 @@ def ssplit(one, split_char = ''):
       for c in split_with(x.label):
         seq += ket(c, x.value)
   return seq
-                                                                                                  
+
+# set invoke method:
+compound_table['insert'] = '.apply_sp_fn(insert, \"{0}\")'
+# usage:
+# insert["Fred"] |hey {1}!>
+#   |hey Fred!>
+#                                                                                                  
+def insert(one, text):
+  print('insert: %s' % text)
+  pieces = text.split(',')                                              # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
+  seq = sequence([])
+  if type(one) in [ket, superposition]:
+    for key, value in one.items():
+      text = key.format('', *pieces)
+      seq += ket(text, value)
+  return seq 

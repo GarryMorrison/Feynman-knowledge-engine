@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/2/2018
+# Update: 17/2/2018
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -24,7 +24,7 @@ import urllib.request
 #from the_semantic_db_code import *
 #from the_semantic_db_functions import *
 #from the_semantic_db_processor import *
-#from semantic_db import *
+from semantic_db import *
 
 # if --debug, set logging level to DEBUG:
 if len(sys.argv) == 2:
@@ -46,7 +46,8 @@ if not os.path.exists(sw_file_dir):
 
 print("Welcome!")
 
-C = ContextList("sw console")
+#C = ContextList("sw console")
+C = context
 
 help_string = """
   q, quit, exit                quit the agent.
@@ -91,7 +92,7 @@ help_string = """
 """
 
 
-x = ket("",0)
+x = ket()
 stored_line = ""
 command_history = []
 command_history_file = "sa-console-command-history.txt"  # file where we save the command history. Might be interesting.
@@ -273,7 +274,8 @@ while True:
 
 # time it!
     start_time = time.time()
-    load_sw(C,name)
+    #load_sw(C,name)
+    C.load(name)
     end_time = time.time()
     delta_time = end_time - start_time
     print("\n  Time taken:",display_time(delta_time))
@@ -292,7 +294,8 @@ while True:
     name = line[5:]
     name = sw_file_dir + "/" + name            # load and save files to the sw_file_dir.    
     print("saving current context to:",name)
-    save_sw(C,name)
+    #save_sw(C,name)
+    C.save(name)
 
   elif line == "files":
     sep = "   "

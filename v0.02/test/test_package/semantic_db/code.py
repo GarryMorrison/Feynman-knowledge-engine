@@ -1,3 +1,17 @@
+#######################################################################
+# the semantic-db code
+#
+# Author: Garry Morrison
+# email: garry -at- semantic-db.org
+# Date: 2018
+# Update: 17/2/2018
+# Copyright: GPLv3
+#
+# Usage: 
+#
+#######################################################################
+
+
 import logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger()
@@ -1404,9 +1418,15 @@ class sequence(object):
     return seq
 
   def drop(self):                               # may want to filter out |>.  eg: drop (|a> . 0|b> . |c>).
-    seq = sequence([])                          # option 1) |a> . |> . |c>
-    for x in self.data:                         # option 2) |a> . |c>
+    seq = sequence([])                          # option 1) |a> . |> . |c>              # perhaps call this drop
+    for x in self.data:                         # option 2) |a> . |c>                   # and call this sdrop?
       seq.data.append(x.drop())                  
+    return seq
+
+  def pick_elt(self):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.pick_elt())
     return seq
 
   def activate(self,context=None,op=None,self_label=None):
@@ -2449,8 +2469,10 @@ def process_operators(context, ops, seq, self_object = None):
             the_seq = compile_compound_sequence(context, data[0], self_object)
             seq = process_operators(context, [fnk], the_seq, self_object)
         if len(data) == 2:                                    # 2-parameter function:
-          if fnk in whitelist_table_2:
+          if fnk in whitelist_table_2:                                                 # still not sure if I want whitelist_table and context_whitelist_table separate, or pass context to everything. 
             python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
+          elif fnk in context_whitelist_table_2:
+            python_code = "%s(context, *seq_list)" % context_whitelist_table_2[fnk]
         elif len(data) == 3:                                  # 3-parameter function:
           if fnk in whitelist_table_3:
             python_code = "%s(*seq_list)" % whitelist_table_3[fnk]

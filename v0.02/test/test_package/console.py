@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/2/2018
+# Update: 17/2/2018
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -92,7 +92,7 @@ help_string = """
 """
 
 
-x = ket("",0)
+x = ket()
 stored_line = ""
 command_history = []
 command_history_file = "sa-console-command-history.txt"  # file where we save the command history. Might be interesting.
@@ -294,7 +294,8 @@ while True:
     name = line[5:]
     name = sw_file_dir + "/" + name            # load and save files to the sw_file_dir.    
     print("saving current context to:",name)
-    save_sw(C,name)
+    #save_sw(C,name)
+    C.save(name)
 
   elif line == "files":
     sep = "   "

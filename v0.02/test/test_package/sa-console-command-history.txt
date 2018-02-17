@@ -1,0 +1,119 @@
+2018-02-16
+  age |Fred> => |27>
+  dump
+  q
+
+2018-02-16
+  split[" and "] |dogs and cats>
+  ssplit[" and "] |dogs and cats>
+  q
+
+2018-02-16
+  ssplit[' and '] |dogs and cats>
+  context fish
+  dump
+  h
+  dump multi
+  spelling |Fred> => ssplit |_self>
+  dump
+  context
+  |fish> __ |soup>
+  F |C: *> #=> |F:> __ round[2] plus[32] times-by[9/5] extract-value |_self>
+  dump
+  F |C: 37>
+  extract-value |C: 37>
+  times-by[9/5] |37>
+  plus[32] |67>
+  round[2] |99>
+  |F:> __ |99>
+  dump
+  |F:> __ round[2] plus[32] times-by[9/5] extract-value |C: 37>
+  dump
+  foo |C: *> #=> |_self>
+  foo |C: 29>
+  dump
+  q
+
+2018-02-16
+  foo |C: *> #=> |_self>
+  dump
+  foo |C: 37>
+  q
+
+2018-02-16
+  clean 37.2 |Fred>
+  history
+  q
+
+2018-02-17
+  age |Fred> => |29>
+  dump
+  apply(|op: age> , |Fred>)
+  history
+  q
+
+2018-02-17
+  union(|a>, |b>)
+  q
+
+2018-02-17
+  files
+  load greetings.sw
+  dump
+  list-of |greetings> => supported-ops |*>
+  dump
+  files
+  save greetings.sw
+  history
+  q
+
+2018-02-17
+  load greetings.sw
+  dump
+  pick-elt list-of |greetings>
+  .
+  .
+  dump
+  apply(|op: gday>, |Emma>)
+  dump
+  greet |*> #=> apply(pick-elt list-of |greetings>, |_self>)
+  dump
+  greet |Rob>
+  .
+  .
+  .
+  .
+  dump
+  display
+  dump
+  save greetings.sw
+  q
+
+2018-02-17
+  load greetings.sw
+  dump
+  friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Robert> + |Frank> + |Julie>
+  friends |Emma> => |Liz> + |Bob>
+  dump
+  list-to-words friends |Emma>
+  the-friends-of |*> #=> list-to-words friends |_self>
+  greet the-friends-of |Emma>
+  history
+  greet the-friends-of |Sam>
+  dump
+  save greetings.sw
+  dump
+  q
+
+2018-02-17
+  insert[" foo "] |hey {1} you>
+  insert["a", "b"] |hey {1}, {2}>
+  q
+
+2018-02-17
+  ssplit |abc>
+  insert[3,5] |{1}, {2}>
+  insert[a,b] |{1}, {2}>
+  history
+  q
+
