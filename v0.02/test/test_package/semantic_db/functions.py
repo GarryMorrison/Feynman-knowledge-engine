@@ -27,6 +27,7 @@ import re
 #from the_semantic_db_code import *
 #from the_semantic_db_processor import *
 from semantic_db.code import *
+from semantic_db.sigmoids import *
 
 # the value function
 # eg: value |price: _x> => _x |_self>
@@ -626,7 +627,7 @@ def ket_weighted_simm(w,A,B):
 #
 # OK. In testing in the console it seems to work.
 # Not sure if we can make it faster, but I think we are O(n) now. 
-def fast_simm(A,B):
+def old_fast_simm(A,B):
 #  logger.debug("inside fast_simm")
   if A.count() <= 1 and B.count() <= 1:
     a = A.ket()
@@ -679,7 +680,6 @@ def fast_simm(A,B):
     return merged_sum
   except Exception as e:
     logger.debug("fast_simm exception reason: %s" % e)
-
 
 # 27/3/2014: time to implement the landscape function.
 # Hrm... how do I plan on testing it?
@@ -3258,7 +3258,7 @@ def float_to_int(x,t=3):
 #
 # also, now with table code, should not be much work to convert sw => csv.
 #
-def pretty_print_table(one,context,params,strict=False,rank=False):
+def old_pretty_print_table(one,context,params,strict=False,rank=False):
   #logger.debug("one: " + str(one))
   ops = params.split(',')         
   if "coeff" in ops:                                  # yup. seems to work.
@@ -3392,7 +3392,7 @@ def ket_such_that(one,context,ops):     # what happens if coeff != 1, eg 0?
 
 # 28/4/2016:
 # tweak such-that[op] so it is a sp -> sp function, instead of a ket -> ket function. Should be an optimization, with a better big-O.  
-def sp_such_that(one,context,ops):
+def old_sp_such_that(one,context,ops):
   def valid_ket(one,context,ops):
     for op in ops.split(','):
       e = one.apply_op(context,op).ket()
@@ -5825,4 +5825,197 @@ def insert(one, text):
     for key, value in one.items():
       text = key.format('', *pieces)
       seq += ket(text, value)
-  return seq 
+  return seq
+  
+  
+# set invoke method:
+compound_table['remove-prefix'] = '.apply_fn(remove_prefix, \"{0}\")'
+# usage:
+# remove-prefix["not "] |not happy at all>
+#   |happy at all>
+#
+def remove_prefix(one, prefix):
+  seq = sequence([])
+  if type(one) in [ket]:
+    for key, value in one.items():
+      text = key
+      if key.startswith(prefix):
+        prefix_len = len(prefix)
+        text = key[prefix_len:]
+      seq += ket(text, value)
+  return seq
+  
+# set invoke method:
+compound_table['has-prefix'] = '.apply_fn(has_prefix, \"{0}\")'
+# usage:
+# has-prefix["not "] |not happy at all>
+#   |yes>
+#
+def has_prefix(one, prefix):
+  seq = sequence([])
+  if type(one) in [ket]:
+    for key, value in one.items():
+      text = 'no'
+      if key.startswith(prefix):
+        text = 'yes'
+      seq += ket(text, value)
+  return seq
+  
+
+# set invoke method:
+context_whitelist_table_3['learn'] = 'learn_sp'
+# usage:
+# learn(|op: age>, |Fred>, |age: 37>)
+# implements: age |Fred> => |age: 37>
+#
+def learn_sp(context, one, two, three):
+  for op in one[0]:
+    if op.label.startswith('op: '):
+      str_op = op.label[4:]
+      for object in two[0]:
+        context.learn(str_op, object, three)
+  return three
+
+# set invoke method:
+compound_table['such-that'] = '.apply_sp_fn(sp_such_that, context, \"{0}\")'
+# usage:
+# such-that[is-a-woman] rel-kets[supported-ops] |>
+#
+def sp_such_that(one, context, ops):
+  def valid_ket(one, context, ops):
+    for op in ops.split(','):
+      e = one.apply_op(context,op)[0]                 # fix the [0] cast from sequence to superposition later!
+      if e.label not in ["true","yes"]:
+        return False
+      if e.value < 0.5:                # need to test this bit.
+        return False
+    return True       
+  r = superposition()
+  for x in one:
+    if valid_ket(x, context, ops):
+      r += x
+  return r
+
+
+def fast_simm(A,B):
+  if type(A) is sequence:                     # hack just for now, until we can implement a sequence version of simm.
+    A = A[0]
+  if type(B) is sequence:
+    B = B[0]
+
+  if len(A) == 0 or len(B) == 0:
+    return 0
+  if len(A) == 1 and len(B) == 1:
+    if A.label != B.label:                    # put a.label == '' test in here too?
+      return 0
+    a = max(A.value,0)                        # just making sure they are >= 0.
+    b = max(B.value,0)
+    if a == 0 and b == 0:                     # prevent div by zero.
+      return 0
+    return min(a,b)/max(a,b)
+#  return intersection(A.normalize(),B.normalize()).count_sum()     # very slow version!
+
+  # now calculate the superposition version of simm, while trying to be as fast as possible:
+  try:
+    merged = {}
+    one_sum = 0
+    one = {}
+    for label,value in A.items():
+      one[label] = value
+      one_sum += value                     # assume all values in A are >= 0
+      merged[label] = True                 # potentially we could use abs(elt.value)
+
+    two_sum = 0
+    two = {}
+    for label,value in B.items():
+      two[label] = value
+      two_sum += value                     # assume all values in B are >= 0
+      merged[label] = True
+
+    # prevent div by zero:
+    if one_sum == 0 or two_sum == 0:
+      return 0
+
+    merged_sum = 0
+    for key in merged:
+      if key in one and key in two:
+        v1 = one[key]/one_sum
+        v2 = two[key]/two_sum
+        merged_sum += min(v1,v2)
+    return merged_sum
+  except Exception as e:
+    print("fast_simm exception reason: %s" % e)
+    
+from pprint import pprint
+def my_print(name, value=''):
+  #return
+  if value is '':
+    print(name)
+  else:
+    print(name + ': ', end='')
+    pprint(value)
+
+
+def print_table(table):
+  max_length_column = []
+  tuple_len = len(table[0])     # assume entire table has the same shape as the first row
+  for i in range(tuple_len):
+    max_length_column.append(max(len(e[i])+2 for e in table))    
+  for e in table:
+    for i in range(tuple_len):
+      print(e[i].ljust(max_length_column[i]), end='')
+    print()
+
+
+# set invoke method:
+    
+# usage:
+#     
+def pretty_print_table(one,context,params,strict=False,rank=False):
+  ops = params.split(',')         
+  #my_print('one', str(one))
+  #my_print('ops', ops)
+  header_row = ops
+  rows = []
+  for x in one:
+    label = x.apply_fn(remove_leading_category).readable_display()
+    row = [label] + [x.apply_op(context, op).apply_fn(remove_leading_category).readable_display() for op in ops[1:] ]
+    #my_print('row', row)
+    rows.append(row)
+  max_col_widths = []
+  for i in range(len(ops)):
+    col_width = len(ops[i])
+    for k in range(len(one)):
+      col_width = max(col_width, len(rows[k][i]))
+    max_col_widths.append(col_width)
+  #my_print('max_col_widths', max_col_widths)
+  
+  hpre = "+-"
+  hmid = "-+-"
+  hpost = "-+\n"
+  hfill = "-"
+  header = hpre + hmid.join(hfill*w for w in max_col_widths) + hpost
+  #my_print('header', header)
+  pre = "| "
+  mid = " | "
+  post = " |\n"
+  label_header = pre + mid.join(op.ljust(max_col_widths[k]) for k,op in enumerate(ops)) + post
+  #my_print('label_header', label_header)
+  s = header + label_header + header
+  for k in range(len(one)):
+    srow = pre + mid.join(x.ljust(max_col_widths[w]) for w,x in enumerate(rows[k])) + post
+    s += srow
+  s += header
+  print(s)
+
+# code to save the table (useful for big ones that are too hard to cut and paste from the console)
+  logger.info("saving to: saved-table.txt")
+  file = open("saved-table.txt",'w')
+  file.write("sa: table[" + params + "]\n")
+  file.write(s)
+  file.close()  
+        
+  return ket('table')
+
+
+          

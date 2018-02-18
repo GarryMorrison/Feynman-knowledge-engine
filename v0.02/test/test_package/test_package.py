@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-17
+# Update: 2018-2-18
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -148,4 +148,29 @@ def test_union_1():
   s = 'union(|a>, |b>)'
   r = extract_compound_sequence(context, s)
   assert str(r) == '|a> + |b>'
+
+
+def test_fast_simm_1():
+  x = ket('a') + ket('b') + ket('c')
+  y = ket('b')
+  r = fast_simm(x,y)
+  assert r == 0.3333333333333333
+
+def test_fast_simm_2():
+  x = ket('a') + ket('b') + ket('c')
+  y = ket('b') + ket('a')
+  r = fast_simm(x,y)
+  assert r == 0.6666666666666666
+
+def test_print_table_1():
+  context.load('sw-examples/fred-sam-friends.sw')
+  x = ket('Fred') + ket('Sam')
+  x.apply_sp_fn(old_pretty_print_table,context,"person,friends")
+  assert False
+
+def test_print_table_2():
+  context.load('sw-examples/fred-sam-friends.sw')
+  x = ket('Fred') + ket('Sam')
+  x.apply_sp_fn(pretty_print_table,context,"person,friends")
+  assert False
 

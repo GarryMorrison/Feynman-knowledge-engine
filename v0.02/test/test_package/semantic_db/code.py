@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 17/2/2018
+# Update: 18/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1432,6 +1432,8 @@ class sequence(object):
   def activate(self,context=None,op=None,self_label=None):
     return self
 
+  def similar_input(self,context,op):
+    return context.pattern_recognition(self, op) 
 
 
 # code for the yet to be added stored function rules:
@@ -1616,8 +1618,9 @@ class NewContext(object):
         self.ket_rules_dict[label][op] = superposition()             # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
 #      self.ket_rules_dict[label][op].clean_add(rule)
 #      self.ket_rules_dict[label][op].self_add(rule)                  # does this change break anything?? If it does, we will need another approach.
-      self.ket_rules_dict[label][op].add_sp(rule)                    # Hrmm... how test if it breaks? We don't have full test cases yet!
-                                                                     # create inverse still seems to work, I think. 
+#      self.ket_rules_dict[label][op].add_sp(rule)                    # Hrmm... how test if it breaks? We don't have full test cases yet!
+      self.ket_rules_dict[label][op].tail_add_seq(rule)               # maybe change to something else in the future.
+                                                                           # create inverse still seems to work, I think. 
   def add_learn(self,op,label,rule):
     return self.learn(op,label,rule,add_learn=True)                  # corresponds to "op |x> +=> |y>"
 
@@ -1905,7 +1908,7 @@ class NewContext(object):
 #        value = silent_simm(pattern,candidate_pattern)
         value = fast_simm(pattern,candidate_pattern)                    # see if this speeds things up!
         if value > t:                                                   # "value >= t" instead?
-          result.data.append(ket(label,value))                          # "result += ket(label,value)" when swap in fast_superposition
+          result.add(label,value)                                       # "result += ket(label,value)" when swap in fast_superposition
     return result.coeff_sort()
 
 
@@ -2476,6 +2479,8 @@ def process_operators(context, ops, seq, self_object = None):
         elif len(data) == 3:                                  # 3-parameter function:
           if fnk in whitelist_table_3:
             python_code = "%s(*seq_list)" % whitelist_table_3[fnk]
+          elif fnk in context_whitelist_table_3:
+            python_code = "%s(context, *seq_list)" % context_whitelist_table_3[fnk]
         elif len(data) == 4:                                  # 4-parameter function:
           if fnk in whitelist_table_4:
             python_code = "%s(*seq_list)" % whitelist_table_4[fnk]

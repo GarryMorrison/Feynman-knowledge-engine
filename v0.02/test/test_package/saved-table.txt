@@ -1,0 +1,14 @@
+sa: table[state,unlearn-everything,read-sentence,currently-active,conclude]
++------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+| state                                          | unlearn-everything | read-sentence | currently-active                            | conclude                                      |
++------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+| grass is wet                                   | 3 don't know       | yes           | grass is wet                                | 0.50 sprinkler was on, 0.50 rained last night |
+| sprinkler was on                               | 3 don't know       | yes           | sprinkler was on                            | grass is wet                                  |
+| rained last night                              | 3 don't know       | yes           | rained last night                           | grass is wet                                  |
+| sprinkler was on and rained last night         | 3 don't know       | 2 yes         | rained last night, sprinkler was on         | grass is wet                                  |
+| grass is wet and not rained last night         | 3 don't know       | yes, no       | not rained last night, grass is wet         | sprinkler was on                              |
+| grass is wet and not sprinkler was on          | 3 don't know       | yes, no       | not sprinkler was on, grass is wet          | rained last night                             |
+| not rained last night                          | 3 don't know       | no            | not rained last night                       | 0.50 sprinkler was on, 0.50 not grass is wet  |
+| not sprinkler was on                           | 3 don't know       | no            | not sprinkler was on                        | 0.50 rained last night, 0.50 not grass is wet |
+| not rained last night and not sprinkler was on | 3 don't know       | 2 no          | not rained last night, not sprinkler was on | not grass is wet                              |
++------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+

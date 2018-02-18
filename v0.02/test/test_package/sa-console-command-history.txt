@@ -117,3 +117,74 @@
   history
   q
 
+2018-02-18
+  ssplit[" "] |not hungry at all>
+  learn(|op: age>, |Fred>, |42>)
+  dump
+  history
+  q
+
+2018-02-18
+  context active logic
+  not |no> => |yes>
+  not |yes> => |no>
+  not |don't know> => |don't know>
+  
+  
+  -- learn our three if-then machines:
+  pattern |node 1: 1> => |grass is wet> + |not rained last night>
+  then |node 1: *> => |sprinkler was on>
+  
+  pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+  then |node 2: *> => |rained last night>
+  
+  pattern |node 3: 1> => |sprinkler was on>
+  pattern |node 3: 2> => |rained last night>
+  then |node 3: *> => |grass is wet>
+  
+  -- learn what we currently know about the world:
+  active |rained last night> => |don't know>
+  active |not rained last night> => |don't know>
+  
+  active |sprinkler was on> => |don't know>
+  active |not sprinkler was on> => |don't know>
+  
+  active |grass is wet> => |don't know>
+  
+  
+  -- learn some operators:
+  unlearn |*> #=> learn(|op: active>, |_self>, |don't know>)
+  unlearn-everything |*> #=> unlearn rel-kets[active]|>
+  dump
+  active |not rained last night> #=> not active |rained last night>
+  active |not sprinkler was on> #=> not active |sprinkler was on>
+  active |not grass is wet> #=> not active |grass is wet>
+  dump
+  make-active |*> #=> learn(|op: active>, remove-prefix["not "] |_self>, not has-prefix["not "] |_self>)
+  dump
+  read-sentence |*> #=> make-active words-to-list |_self>
+  dump
+  read-sentence |grass is wet>
+  dump
+  read-sentence |not grass is wet>
+  dump
+  unlearn-everything
+  dump
+  read-sentence |not rained last night>
+  dump
+  conclude |>
+  conclude |*> #=> then drop-below[0.8] rescale similar-input[pattern] such-that[active] rel-kets[active] |>
+  dump
+  conclude |>
+  dump
+  rel-kets[active]
+  such-that[active] rel-kets[active] |>
+  dump
+  read-sentence |rained last night>
+  such-that[active] rel-kets[active] |>
+  dump
+  save active-logic.sw
+  dump
+  files
+  q
+
