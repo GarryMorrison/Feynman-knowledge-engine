@@ -5920,14 +5920,14 @@ def fast_simm(A,B):
     merged = {}
     one_sum = 0
     one = {}
-    for label,value in A.items():
+    for label,value in A.drop().items():   # handle superpositions with negative coeffs by dropping them, for now! Improve later!!
       one[label] = value
       one_sum += value                     # assume all values in A are >= 0
       merged[label] = True                 # potentially we could use abs(elt.value)
 
     two_sum = 0
     two = {}
-    for label,value in B.items():
+    for label,value in B.drop().items():
       two[label] = value
       two_sum += value                     # assume all values in B are >= 0
       merged[label] = True
@@ -5948,7 +5948,7 @@ def fast_simm(A,B):
     
 from pprint import pprint
 def my_print(name, value=''):
-  #return
+  return
   if value is '':
     print(name)
   else:

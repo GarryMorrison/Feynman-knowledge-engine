@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 18/2/2018
+# Update: 19/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -39,6 +39,15 @@ def float_to_int(x,t=3):
     return str(int(x))
 #  return str("%.3f" % x)
   return str(round(x,t))
+
+from pprint import pprint
+def my_print(name, value=''):
+  return
+  if value is '':
+    print(name)
+  else:
+    print(name + ': ', end='')
+    pprint(value)
 
 
 from collections import OrderedDict
@@ -1158,8 +1167,8 @@ class sequence(object):
       return
     if len(self) == 0:
       self.data = [superposition()]                               # is this right? should it be self.data = []?
-    print('self: %s' % str(self))
-    print('seq: %s' % str(seq))
+    my_print('self', str(self))
+    my_print('seq',  str(seq))
     if type(seq) in [ket, superposition]:
       len_seq = 1
     else:
@@ -1170,8 +1179,8 @@ class sequence(object):
       two = [seq] + [superposition()] * (max_len - 1)
     if type(seq) in [sequence]:
       two = seq.data + [superposition()] * (max_len - len(seq.data))
-    print('one: %s' % [str(x) for x in one])
-    print('two: %s' % [str(x) for x in two])
+    my_print('one', [str(x) for x in one])
+    my_print('two', [str(x) for x in two])
     self.data = []
     for k in range(max_len):
       self.data.append( one[k] + two[k] )      
@@ -1187,8 +1196,8 @@ class sequence(object):
       two = [seq] + [superposition()] * (max_len - 1)
     if type(seq) in [sequence]:
       two = seq.data + [superposition()] * (max_len - len(seq.data))
-    print('one: %s' % [str(x) for x in one])
-    print('two: %s' % [str(x) for x in two])
+    my_print('one', [str(x) for x in one])
+    my_print('two', [str(x) for x in two])
     self.data = []
     for k in range(max_len):
       self.data.append( one[k] - two[k] )      
@@ -1391,11 +1400,11 @@ class sequence(object):
     else:
       seq = sequence([])
       for x in self.data:
-        print('type(x): %s' % type(x))
-        print('x: %s' % str(x))
+        #my_print('type(x)', type(x))
+        #my_print('x', str(x))
         y = x.apply_op(context, op)
-        print('type(y): %s' % type(y))
-        print('y: %s' % str(y))
+        #my_print('type(y)', type(y))
+        #my_print('y', str(y))
         if type(y) in [ket, superposition]:
           seq.data.append(y)
         elif type(y) in [sequence]:
@@ -2437,14 +2446,6 @@ def ket_calculate(start,pairs):
   seq += sp
   return seq
 
-from pprint import pprint
-def my_print(name, value=''):
-  #return
-  if value is '':
-    print(name)
-  else:
-    print(name + ': ', end='')
-    pprint(value)
 
 def process_operators(context, ops, seq, self_object = None):
   if len(ops) == 0:
