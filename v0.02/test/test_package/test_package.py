@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-18
+# Update: 2018-2-19
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -174,3 +174,15 @@ def test_print_table_2():
   x.apply_sp_fn(pretty_print_table,context,"person,friends")
   assert False
 
+
+def test_extract_compound_sequence_1():
+  rule = 'list-to-words |_self>'
+  seq = ket('a') + ket('b')
+  r = extract_compound_sequence(context, rule, [seq])
+  assert str(r) == '|a and b>'
+
+def test_extract_compound_sequence_2():
+  rule = stored_rule('list-to-words |_self>')
+  seq = ket('a') + ket('b')
+  r = extract_compound_sequence(context, rule.rule, [seq])
+  assert str(r) == '|a and b>'

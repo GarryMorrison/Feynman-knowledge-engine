@@ -1737,8 +1737,9 @@ class NewContext(object):
         try:
           #resulting_rule = extract_compound_superposition(self,rule,sp)[0]  # we need to fix ECS so that it can handle superpositions as self-objects. Currently it can only handle strings.
           logger.debug('rule: %s' % rule)
-          logger.debug('seq: %s' % seq_list[0])
-          resulting_rule = extract_compound_superposition(self, rule , seq_list[0])[0]
+          logger.debug('seq: %s' % [str(x) for x in seq_list])
+          #resulting_rule = extract_compound_superposition(self, rule , seq_list[0])[0]
+          resulting_rule = extract_compound_sequence(self, rule.rule , seq_list)
         except Exception as e:
           resulting_rule = ket()
           logger.warning("except while processing stored_rule: %s" % e)
@@ -2621,6 +2622,13 @@ def learn_stored_rule(context, op, one, rule_type, s):
   my_print('one', one)
   my_print('rule_type', rule_type)
   my_print('s', s)
+  if one in ['(*)', '(*,*)', '(*,*,*)']:                                # sp_learn rule found. Tidy later!
+    one = one[1:-1]
+    if rule_type == '#=>':
+      context.sp_learn(op, one, stored_rule(s))
+    elif rule_type == '!=>':
+      context.sp_learn(op, one, memoizing_rule(s))
+    return      
   if rule_type == '#=>':
     context.learn(op, one, stored_rule(s))
   elif rule_type == '!=>':
