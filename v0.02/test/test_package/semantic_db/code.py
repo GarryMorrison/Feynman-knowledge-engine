@@ -1704,7 +1704,7 @@ class NewContext(object):
     logger.debug("inside sp_recall")
     #return ket("",0)                         # currently the code that follows this is broken, so this is the temp work-around.
     # some prelims:
-    if type(op) == ket:
+    if type(op) is ket:
       op = op.label[4:]                         # map |op: age> to "age"
     #ket_label = "*"                             # probably tweak later. Eg if I decide to implement op(*,*), op(*,*,*) etc. Also, maybe op(fixed-object) #=> ... 
     #ket_label = sp
@@ -1728,7 +1728,7 @@ class NewContext(object):
     
     if not match:
       logger.debug("%s (*) not found" % (op))   # tweak later! Probably want to switch this off completely once testing is done. 
-      rule = ket("",0)
+      rule = ket()
 
     if active:
 #      rule = rule.activate(self,op,sp)        # how handle op (*) #=> foo |_self> ??  op (|a> + |b>) returns foo (|a> + |b>)
@@ -2384,6 +2384,8 @@ parameters = (fraction | simple_op | filtered_parameter_string | '\"\"' | '*'):p
 compound_op = simple_op:the_op '[' parameters:first (',' ws parameters)*:rest ']' -> ['c_op', the_op] + [first] + rest
 #function_op = simple_op:the_op '(' ws literal_sequence:first (',' ws literal_sequence)*:rest ws ')' -> ['f_op', the_op] + [first] + rest
 function_op = simple_op:the_op '(' ws full_compound_sequence:first (',' ws full_compound_sequence)*:rest ws ')' -> ['f_op', the_op] + [first] + rest
+# not sure if putting ws in here before the '(' breaks anything? Perhaps more complex operator sequences? Yup, breaks: 'op8 (op7) op6 |fish>'
+# so, can we easily fix it?
 #function_op = simple_op:the_op ws '(' ws full_compound_sequence:first (',' ws full_compound_sequence)*:rest ws ')' -> ['f_op', the_op] + [first] + rest
 general_op = (bracket_ops | compound_op | function_op | simple_op | number | '\"\"' ):the_op -> the_op
 powered_op = general_op:the_op '^' positive_int:power -> (the_op, power)
@@ -2486,13 +2488,14 @@ def process_operators(context, ops, seq, self_object = None):
         elif len(data) == 4:                                  # 4-parameter function:
           if fnk in whitelist_table_4:
             python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
+        seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
+        my_print('str_seq_list', [str(x) for x in seq_list])
         if len(python_code) > 0:
           my_print("whitelist_table: python code", python_code)
-          seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
-          str_seq_list = [str(x) for x in seq_list]
-          my_print('str_seq_list', str_seq_list)
-          seq = eval(python_code)
-          python_code = ''
+          seq = eval(python_code)                                                       # can we implement this without using eval??
+        else:
+          seq = context.sp_recall(fnk, seq_list, True)
+        python_code = ''
       elif op[0][0] in ['+', '-', '_', '.']:
         my_print('bracket ops')
         my_print('bracket ops seq', str(seq))

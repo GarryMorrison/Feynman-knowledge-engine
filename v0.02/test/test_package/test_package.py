@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-19
+# Update: 2018-2-21
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -186,3 +186,22 @@ def test_extract_compound_sequence_2():
   seq = ket('a') + ket('b')
   r = extract_compound_sequence(context, rule.rule, [seq])
   assert str(r) == '|a and b>'
+
+
+def test_op_loading_1():
+  context.load('sw-examples/test-operators.sw')
+  context.print_universe()
+  assert True
+
+def test_op_sequence_1():
+  context.load('sw-examples/test-operators.sw')
+  s = '(op7) op6 |fish>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|op7: op6: fish>'
+
+def test_op_sequence_2():
+  context.load('sw-examples/test-operators.sw')
+  s = 'op8 (op7) op6 |fish>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == ''
+

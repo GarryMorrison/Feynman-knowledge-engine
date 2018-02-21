@@ -5,6 +5,7 @@
   "test_package.py::test_context_sp_learn_3": true,
   "test_package.py::test_context_sp_learn_4": true,
   "test_package.py::test_context_sp_learn_5": true,
+  "test_package.py::test_op_sequence_2": true,
   "test_package.py::test_print_table_1": true,
   "test_package.py::test_print_table_2": true,
   "test_package.py::test_process_sw_file_1": true,
