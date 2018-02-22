@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 19/2/2018
+# Update: 22/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1436,6 +1436,24 @@ class sequence(object):
     seq = sequence([])
     for x in self.data:
       seq.data.append(x.pick_elt())
+    return seq
+
+  def weighted_pick_elt(self):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.weighted_pick_elt())
+    return seq
+
+  def normalize(self):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.normalize())
+    return seq
+
+  def shuffle(self):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.shuffle())
     return seq
 
   def activate(self,context=None,op=None,self_label=None):

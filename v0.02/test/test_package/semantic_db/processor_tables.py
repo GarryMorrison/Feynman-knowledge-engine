@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 9/2/2018
+# Update: 22/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -18,6 +18,7 @@
 # Left hand side is BKO language, right is python.
 
 # functions built into ket/superposition classes.
+built_in_table_usage = {}
 built_in_table = {
   "display"          : "display",
   "transpose"        : "transpose",
@@ -86,6 +87,7 @@ built_in_table = {
 }                                                                                      
 
 # table of sigmoids:
+sigmoid_table_usage = {}
 sigmoid_table = {
   "clean"              : "clean",
 # "threshold-filter"   : "threshold_filter",   # we can't handle paramters with our ops yet.
@@ -123,6 +125,7 @@ sigmoid_table = {
 }                                   
 
 # some ket -> ket functions:
+fn_table_usage = {}
 fn_table = {
   "apply-value"      : "apply_value",
   "extract-category" : "extract_category",
@@ -216,6 +219,7 @@ fn_table = {
 
 # 7/4/2014 me wonders. do fn_table and fn_table2 really need to be separate?  
 # some other functions. Some are ket -> ket, some are ket -> superposition.
+fn_table2_usage = {}
 fn_table2 = {
   "read"              : "read_text",
 #  "spell"             : "spell_word",                          # removed 16/9/2016. We have a new spell that uses high order sequences
@@ -235,6 +239,7 @@ fn_table2 = {
 # Fix!!! 
 # table of compound operators.
 # They need to be handled separately from those in the tables above, because they have parameters.
+compound_table_usage = {}
 compound_table = {
   "select-elt"         : ".select_elt({0})",
 # "find-index"           # can't support these two until we have more advanced parsing.
@@ -539,6 +544,7 @@ compound_table = {
 # Pretty sure this breaks the linearity. 
 # Ie, the functions here are in general not linear, while most other ops/fns are.
 # 30/6/2014: heh. I'd forgotten I had this! 
+sp_fn_table_usage = {}
 sp_fn_table = {
   "list-to-words"      : "sp_to_words",
   "read-letters"       : "read_letters",
@@ -561,6 +567,7 @@ sp_fn_table = {
 }
 
 # 2/2/2015: new addition functions that map ket -> ket/sp but needs context info.
+ket_context_table_usage = {}
 ket_context_table = {
   "int-coeffs-to-word" : "int_coeffs_to_word",
 
@@ -601,6 +608,7 @@ ket_context_table = {
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.
 # I tried putting it in the compound op table, but that failed since it has no parameters.
 #
+sp_context_table_usage = {}
 sp_context_table = {
 #28/7/2016:
   "have-in-common"    : "have_in_common",
@@ -623,6 +631,7 @@ def sp_len_1(x):
   return ket("sp") + x
 
 # white listed functions that take 1 parameter:
+whitelist_table_1_usage = {}
 whitelist_table_1 = {
 #  "dump"          : "C.dump_sp_rules",        # buggy since, it returns a string! Not a ket/sp.
   "sp"             : "sp_len_1",
@@ -635,6 +644,7 @@ whitelist_table_1 = {
 }
 
 # whitelisted functions, that take 2 parameters:
+whitelist_table_2_usage = {}
 whitelist_table_2 = {
   "intersection"        : "intersection",
   "intn"                : "intersection",
@@ -685,6 +695,7 @@ whitelist_table_2 = {
 }
 
 # whitelisted functions that take 3 parameters:
+whitelist_table_3_usage = {}
 whitelist_table_3 = {
   "intersection"  : "tri_intersection",
   "intn"          : "tri_intersection",
@@ -716,6 +727,7 @@ whitelist_table_3 = {
 
 # the code needed for this not yet implemented.
 # whitelisted functions that take 4 parameters:
+whitelist_table_4_usage = {}
 whitelist_table_4 = {
   "algebra"       : "algebra",
 }
@@ -724,6 +736,7 @@ whitelist_table_4 = {
 # new: 24/11/2016:
 # whitelisted functions that need context variable, and takes 1 extra parameter:
 # eg: predict_whats_next_one(context,sp1)
+context_whitelist_table_1_usage = {}
 context_whitelist_table_1 = {
 # 24/11/2016:
   "predict-whats-next" : "predict_whats_next_one",
@@ -736,6 +749,7 @@ context_whitelist_table_1 = {
 # new: 10/11/2014:
 # whitelisted functions that need context variable, and takes 2 extra parameters:
 # eg: apply(context,sp1,sp2)
+context_whitelist_table_2_usage = {}
 context_whitelist_table_2 = {
   "apply-sp" : "apply_sp",
   "apply"    : "apply_sp",
@@ -757,6 +771,7 @@ context_whitelist_table_2 = {
 # new: 25/11/2016:
 # whitelisted functions that need context variable, and takes 3 extra parameters:
 # eg: predict_whats_next_three(context,one,two,three)
+context_whitelist_table_3_usage = {}
 context_whitelist_table_3 = {
 # 25/11/2016:
   "predict-whats-next" : "predict_whats_next_three",
@@ -766,6 +781,7 @@ context_whitelist_table_3 = {
 # new: 27/11/2016:
 # whitelisted functions that need context variable, and takes 4 extra parameters:
 # eg: predict_whats_next_skip_four(context,one,two,three,four)
+context_whitelist_table_4_usage = {}
 context_whitelist_table_4 = {
 # 27/11/2016:
 #  "predict-whats-next" : "predict_whats_next_three",

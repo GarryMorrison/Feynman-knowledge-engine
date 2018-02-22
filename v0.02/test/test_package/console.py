@@ -25,6 +25,7 @@ import urllib.request
 #from the_semantic_db_functions import *
 #from the_semantic_db_processor import *
 from semantic_db import *
+from semantic_db.usage_tables import usage
 
 # if --debug, set logging level to DEBUG:
 if len(sys.argv) == 2:
@@ -88,6 +89,8 @@ help_string = """
   info on                      switch info messages on
   info off                     switch info messages off
   -- comment                   ignore, this is just a comment line.
+  usage                        show list of usage information
+  usage operator-name          show usage of a particular operator
   if none of the above         process_input_line(C,line,x)
 """
 
@@ -372,6 +375,13 @@ while True:
     
   elif line == 'info off':
     logger.setLevel(logging.WARNING)
+
+  elif line == 'usage':
+    usage()
+
+  elif line.startswith('usage '):
+    op_name = line[6:]
+    usage(op_name)    
 
   else:
     if line == ".":

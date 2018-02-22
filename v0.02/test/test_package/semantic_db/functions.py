@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-17
+# Update: 2018-2-22
 # Copyright: GPLv3
 #
 # Usage: 
@@ -4319,6 +4319,10 @@ def hash_data(one,size):
 #
 # one, two and three are superpositions
 def process_reaction(one,two,three):
+  if type(one) is sequence and type(two) is sequence and type(three) is sequence:
+    one = one[0]                                                      # hackily cast sequence to superposition for now.
+    two = two[0]
+    three = three[0]
   def del_fn(x,y):   # NB: creates negative coeffs.
     return x - y
   if intersection(two,one).count_sum() != two.count_sum():
@@ -5792,11 +5796,33 @@ def spell_out(one):
   
 # set invoke method:
 sp_fn_table['ssplit'] = 'ssplit'
-compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")' 
-# usage:
-# ssplit[", "] |a, b, c>
-#   |a> . |b> . |c>
-# 
+compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")'                  # maybe it should be an apply_fn??
+# set usage info:
+sp_fn_table_usage['ssplit'] = """
+    description:
+      ssplit splits the superposition into a sequence
+      
+    examples:
+      ssplit |Fred>
+        |F> . |r> . |e> . |d>
+      
+      ssplit (|a> + 2|bcd> + 3.1|efgh>)
+        |a> . 2|b> . 2|c> . 2|d> . 3.1|e> . 3.1|f> . 3.1|g> . 3.1|h>      
+"""
+compound_table_usage['ssplit'] = """
+    description:
+      ssplit["str"] splits the superposition into a sequence at the 'str' substring
+      
+    examples:
+      ssplit[", "] |a, b, c>
+        |a> . |b> . |c>
+
+      ssplit[" and "] |a, b, c and d>
+        |a, b, c> . |d>
+
+      ssplit[", "] ssplit[" and "] |a, b, c and d>
+        |a> . |b> . |c> . |d>
+"""
 def ssplit(one, split_char = ''):
   if split_char == '':
     def split_with(x):
@@ -5878,9 +5904,19 @@ def learn_sp(context, one, two, three):
 
 # set invoke method:
 compound_table['such-that'] = '.apply_sp_fn(sp_such_that, context, \"{0}\")'
-# usage:
-# such-that[is-a-woman] rel-kets[supported-ops] |>
-#
+# set usage info:
+compound_table_usage['such-that'] = """
+    description:
+      such-that[op] filters the given superposition to elements that return true for "op |element>"     
+    
+    examples:
+      such-that[is-a-woman] rel-kets[supported-ops] |>
+      
+      is-hungry |Fred> => |yes>
+      is-hungry |Sam> => |no>
+      such-that[is-hungry] rel-kets[supported-ops] |>
+        |Fred>            
+"""
 def sp_such_that(one, context, ops):
   def valid_ket(one, context, ops):
     for op in ops.split(','):
@@ -6018,4 +6054,33 @@ def pretty_print_table(one,context,params,strict=False,rank=False):
   return ket('table')
 
 
-          
+import numpy as np
+from matplotlib import pyplot as plt
+
+# set invoke method:
+sp_fn_table['plot'] = 'plot'
+# set usage info:
+sp_fn_table_usage['plot'] = """
+    description:
+      plot a superposition as a bar chart using matplotlib
+    
+    examples:
+      plot (|Fred> + 2|Sam>)
+      plot rank split |a b c d e f>
+      plot shuffle rank split |a b c d e f>
+"""
+def plot(one):
+  values = []
+  labels = []
+  for label,value in one.items():
+    labels.append(label)
+    values.append(value)
+
+  fig = plt.figure()
+  width = 0.1
+  ind = np.arange(len(values))
+  plt.bar(ind, values, width = width)
+  plt.xticks(ind + width/2, labels)
+  fig.autofmt_xdate()
+  plt.show()
+  return ket('plot')          

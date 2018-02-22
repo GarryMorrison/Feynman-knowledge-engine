@@ -205,3 +205,9 @@ def test_op_sequence_2():
   r = extract_compound_sequence(context, s)
   assert str(r) == ''
 
+def test_op_sequence_3():
+  context.load('sw-examples/test-operators.sw')
+  s = 'op8 (op7)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == ''
+

@@ -11,6 +11,7 @@
 #
 #######################################################################
 
+import math
 
 # some sigmoids:
 def clean(x):
@@ -107,7 +108,7 @@ def subtraction_invert(x,t):
 def log(x,t=None):
   if x <= 0:
     return 0
-  if t == None:
+  if t is None:
     return math.log(x)       # default is base e, ie natural logarithm
   return math.log(x,t)       # choose another base
 
@@ -115,7 +116,7 @@ def log(x,t=None):
 def log_1(x,t=None):
   if x <= 0:                 # maybe tweak this, given that it is log(1 + x), not log(x)
     return 0
-  if t == None:
+  if t is None:
     return math.log(1+x)       # default is base e, ie natural logarithm
   return math.log(1+x,t)       # choose another base
 
