@@ -335,7 +335,7 @@ compound_table = {
   "save-image"         : ".apply_sp_fn(save_image,context,\"{0}\")",       # why do these need to be apply_sp_fn instead of just apply_fn?
 
 # 29/1/2015:
-  "table"              : ".apply_sp_fn(pretty_print_table,context,\"{0}\")",
+#  "table"              : ".apply_sp_fn(pretty_print_table,context,\"{0}\")",
   
 # 1/2/2015:
   "sort-by"            : ".apply_sp_fn(sort_by,context,\"{0}\")",
@@ -604,6 +604,9 @@ ket_context_table = {
 # 6/6/2017:
   "float-sequence"      : "float_sequence",               
 }
+
+# for operators that take sequences as input:
+seq_fn_table = {}
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.
 # I tried putting it in the compound op table, but that failed since it has no parameters.

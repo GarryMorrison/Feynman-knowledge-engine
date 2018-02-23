@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 22/2/2018
+# Update: 23/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1394,6 +1394,9 @@ class sequence(object):
       seq.data.append(x.apply_naked_fn(*args))
     return seq
 
+  def apply_seq_fn(self, fn, *args):
+    return fn(self, *args)
+
   def apply_op(self, context, op):
     if len(self) == 0:
       seq = sequence([]) + ket().apply_op(context, op)      # do we want this?
@@ -2344,6 +2347,9 @@ def process_single_op(op):
   elif op in sp_fn_table:
     logger.debug("op in sp fn table")
     python_code = ".apply_sp_fn({0})".format(sp_fn_table[op])    
+  elif op in seq_fn_table:
+    logger.debug("op in seq fn table")
+    python_code = ".apply_seq_fn({0})".format(seq_fn_table[op])    
   elif op in ket_context_table:
     logger.debug("op in ket context table")
     python_code = ".apply_fn({0},context)".format(ket_context_table[op])

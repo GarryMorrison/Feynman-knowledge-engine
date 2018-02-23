@@ -5,16 +5,19 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 22/2018
+# Update: 23/2/2018
 # Copyright: GPLv3
 #
 # Usage:
 #
 #######################################################################
 
+from semantic_db.functions import function_operators_usage, superposition_functions_usage
+
+
 # define our usage report function:
-def usage(op = None):
-  if op is None:                  # print usage table
+def usage(ops = None):
+  if ops is None:                  # print usage table
     s = 'Usage:\n'
 
     s += '  built in operators:\n'
@@ -25,37 +28,38 @@ def usage(op = None):
     for key in sorted(sigmoid_table_usage):
       s += '    ' + key + '\n'
 
-    s += '\n  compound operators:\n'
-    for key in sorted(compound_table_usage):
+    s += '\n  function operators:\n'
+    for key in sorted(function_operators_usage):
       s += '    ' + key + '\n'
 
-    s += '\n  superposition function operators:\n'
-    for key in sorted(sp_fn_table_usage):
+    s += '\n  superposition functions:\n'
+    for key in sorted(superposition_functions_usage):
       s += '    ' + key + '\n'
 
 
 
   else:
     s = 'Usage:\n'
-    if op in built_in_table_usage:
-      s += 'built in operator:\n'
-      s += '  ' + op + ':\n'
-      s += built_in_table_usage[op] + '\n'
+    for op in ops:
+      if op in built_in_table_usage:
+        s += 'built in operator:\n'
+        s += '  ' + op + ':\n'
+        s += built_in_table_usage[op] + '\n'
 
-    if op in sigmoid_table_usage:
-      s += 'sigmoid:\n'
-      s += '  ' + op + ':\n'
-      s += sigmoid_table_usage[op] + '\n'
+      if op in sigmoid_table_usage:
+        s += 'sigmoid:\n'
+        s += '  ' + op + ':\n'
+        s += sigmoid_table_usage[op] + '\n'
 
-    if op in compound_table_usage:
-      s += 'compound operator:\n'
-      s += '  ' + op + ':\n'
-      s += compound_table_usage[op] + '\n'
+      if op in function_operators_usage:
+        s += 'function operator:\n'
+        s += '  ' + op + ':\n'
+        s += function_operators_usage[op] + '\n'
 
-    if op in sp_fn_table_usage:
-      s += 'superposition function operator:\n'
-      s += '  ' + op + ':\n'
-      s += sp_fn_table_usage[op] + '\n'
+      if op in superposition_functions_usage:
+        s += 'superposition function:\n'
+        s += '  ' + op + ':\n'
+        s += superposition_functions_usage[op] + '\n'
 
 
   print(s, end='')
@@ -80,8 +84,6 @@ context_whitelist_table_2_usage = {}
 context_whitelist_table_3_usage = {}
 context_whitelist_table_4_usage = {}
 
-
-from semantic_db.functions import *
 
 # fill out the built_in_table_usage dictionary:
 built_in_table_usage['pick-elt'] = """

@@ -90,7 +90,7 @@ help_string = """
   info off                     switch info messages off
   -- comment                   ignore, this is just a comment line.
   usage                        show list of usage information
-  usage operator-name          show usage of a particular operator
+  usage op1, op2, op3          show usage of listed operators
   if none of the above         process_input_line(C,line,x)
 """
 
@@ -380,8 +380,8 @@ while True:
     usage()
 
   elif line.startswith('usage '):
-    op_name = line[6:]
-    usage(op_name)    
+    op_names = line[6:].split(', ')
+    usage(op_names)    
 
   else:
     if line == ".":

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-22
+# Update: 2018-2-23
 # Copyright: GPLv3
 #
 # Usage: 
@@ -2680,7 +2680,7 @@ def sp_propagate(one,context,parameters):
 # age |Fred> + friends |Fred>
 # a more common usage:
 # star |*> #=> apply(supported-ops|_self>,|_self>)
-def apply_sp(context,one,two):
+def old_apply_sp(context,one,two):
   print("one:",one)
   print("two:",two)
   r = superposition()
@@ -4318,7 +4318,7 @@ def hash_data(one,size):
 # 16/2/2016: maybe process-consuming-reaction() is a better name, to tie in with process-catalytic-reacion()
 #
 # one, two and three are superpositions
-def process_reaction(one,two,three):
+def old_process_reaction(one,two,three):
   if type(one) is sequence and type(two) is sequence and type(three) is sequence:
     one = one[0]                                                      # hackily cast sequence to superposition for now.
     two = two[0]
@@ -4336,7 +4336,7 @@ def process_reaction(one,two,three):
 # I suspect process-catalytic-reaction() can be used to encode maths proofs. One is the current state of knowledge. Two is the necessary conditions for the proof to be true. Three is the implications of that proof.
 # Another example is simple physics problems. You write down what you know, and any possibly relevant equations. Then try to figure out a pathway to the desired result.  
 #
-def process_catalytic_reaction(one,two,three):
+def old_process_catalytic_reaction(one,two,three):
   if intersection(two,one).count_sum() != two.count_sum():
     return one
   else:
@@ -5793,14 +5793,31 @@ def spell_out(one):
       for c in list(x.label):
         seq += ket(c, x.value)
   return seq
+
+# ---------------------------------------------------------------------------------------
+# start of new functions file:
+
+# define our usage dictionaries:
+function_operators_usage = {}
+superposition_functions_usage = {}
+
+from pprint import pprint
+def my_print(name, value=''):
+  return
+  if value is '':
+    print(name)
+  else:
+    print(name + ': ', end='')
+    pprint(value)
   
 # set invoke method:
 sp_fn_table['ssplit'] = 'ssplit'
 compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")'                  # maybe it should be an apply_fn??
 # set usage info:
-sp_fn_table_usage['ssplit'] = """
+function_operators_usage['ssplit'] = """
     description:
       ssplit splits the superposition into a sequence
+      ssplit["str"] splits the superposition into a sequence at the 'str' substring
       
     examples:
       ssplit |Fred>
@@ -5808,12 +5825,7 @@ sp_fn_table_usage['ssplit'] = """
       
       ssplit (|a> + 2|bcd> + 3.1|efgh>)
         |a> . 2|b> . 2|c> . 2|d> . 3.1|e> . 3.1|f> . 3.1|g> . 3.1|h>      
-"""
-compound_table_usage['ssplit'] = """
-    description:
-      ssplit["str"] splits the superposition into a sequence at the 'str' substring
-      
-    examples:
+
       ssplit[", "] |a, b, c>
         |a> . |b> . |c>
 
@@ -5838,11 +5850,51 @@ def ssplit(one, split_char = ''):
   return seq
 
 # set invoke method:
+seq_fn_table['smerge'] = 'smerge'
+compound_table['smerge'] = '.apply_seq_fn(smerge, \"{0}\")'
+# set usage info:
+function_operators_usage['smerge'] = """
+    description:
+      smerge merges a sequence into a single ket
+      smerge["str"] merges a sequence into a single ket, seperated by the str string
+      
+    examples:
+      smerge (|F> . |r> . |e> . |d>)
+        |Fred>
+      
+      smerge[", "] (|a> . |b> . |c> . |d>)
+        |a, b, c, d>
+      
+      smerge[", "] (|a> + |b> + |c> . |d> + |e>)
+        |a, b, c, d, e>
+"""
+# one is a sequence
+#
+def smerge(one, merge_char = ''):
+  if type(one) is not sequence:
+    return ket()
+  labels = []
+  for elt in one:
+    for x in elt:
+      labels.append(x.label)
+  s = merge_char.join(labels)
+  return ket(s)
+
+
+# set invoke method:
 compound_table['insert'] = '.apply_sp_fn(insert, \"{0}\")'
-# usage:
-# insert["Fred"] |hey {1}!>
-#   |hey Fred!>
-#                                                                                                  
+# set usage info:
+function_operators_usage['insert'] = """
+    description:
+      insert string into ket
+         
+    examples:
+      insert["Fred"] |hey {1}!>
+        |hey Fred!>
+        
+      insert["Fred", "Sam"] |Hello {1} and {2}.>
+        |Hello Fred and Sam.>
+"""
 def insert(one, text):
   print('insert: %s' % text)
   pieces = text.split(',')                                              # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
@@ -5856,10 +5908,15 @@ def insert(one, text):
   
 # set invoke method:
 compound_table['remove-prefix'] = '.apply_fn(remove_prefix, \"{0}\")'
-# usage:
-# remove-prefix["not "] |not happy at all>
-#   |happy at all>
-#
+# set usage info:
+function_operators_usage['remove-prefix'] = """
+    description:
+      remove given prefix from the ket
+            
+    examples:
+      remove-prefix["not "] |not sitting at the beach>
+       |sitting at the beach>
+"""
 def remove_prefix(one, prefix):
   seq = sequence([])
   if type(one) in [ket]:
@@ -5873,10 +5930,18 @@ def remove_prefix(one, prefix):
   
 # set invoke method:
 compound_table['has-prefix'] = '.apply_fn(has_prefix, \"{0}\")'
-# usage:
-# has-prefix["not "] |not happy at all>
-#   |yes>
-#
+# set usage info:
+function_operators_usage['has-prefix'] = """
+    description:
+      asks if the ket has the given prefix
+      
+    examples:
+      has-prefix["not "] |not sitting at the beach>
+        |yes>
+        
+      has-prefix["not "] |sitting at the beach>
+        |no>
+"""
 def has_prefix(one, prefix):
   seq = sequence([])
   if type(one) in [ket]:
@@ -5890,10 +5955,15 @@ def has_prefix(one, prefix):
 
 # set invoke method:
 context_whitelist_table_3['learn'] = 'learn_sp'
-# usage:
-# learn(|op: age>, |Fred>, |age: 37>)
-# implements: age |Fred> => |age: 37>
-#
+# set usage info:
+superposition_functions_usage['learn'] = """
+    description:
+      wrapper around a learn rule, so we can use it in operators
+      
+    examples:
+      learn(|op: age>, |Fred>, |37>)
+      implements: age |Fred> => |37>
+"""
 def learn_sp(context, one, two, three):
   for op in one[0]:
     if op.label.startswith('op: '):
@@ -5903,9 +5973,51 @@ def learn_sp(context, one, two, three):
   return three
 
 # set invoke method:
+context_whitelist_table_2['apply'] = 'apply_sp'
+# set usage info:
+superposition_functions_usage['apply'] = """
+    description:
+      wrapper around apply op, so we can use it in operators
+      
+    examples:
+      apply(|op: age>, |Fred>)
+      implements: age |Fred>
+
+      apply(|op: age> + |op: friends>, |Fred>)
+      implements: age |Fred> + friends |Fred>
+      
+      apply(|op: age> . |op: friends>, |Fred>)
+      implements: age |Fred> . friends |Fred>
+      
+      age |Fred> => |35>
+      nick-name |Fred> => |Freddie>
+      mother |Fred> => |Jude>
+      father |Fred> => |Tom>
+      star |*> #=> apply(supported-ops|_self>, |_self>)
+      star |Fred>
+        |35> + |Freddie> + |Jude> + |Tom>
+
+    future:
+      maybe implement op-sequences too.
+      eg: apply(|op: how-many common[friends] split>, |Fred Sam>)
+"""
+def apply_sp(context, one, two):
+  seq = sequence([])
+  for sp in one:
+    r = superposition()
+    for x in sp:
+      if x.label.startswith("op: "):
+        op = x.label[4:] 
+        r += two.apply_op(context,op).multiply(x.value)[0]     # hackily cast two-result from seq to sp, for now.
+    seq += r
+  return seq
+
+  
+
+# set invoke method:
 compound_table['such-that'] = '.apply_sp_fn(sp_such_that, context, \"{0}\")'
 # set usage info:
-compound_table_usage['such-that'] = """
+function_operators_usage['such-that'] = """
     description:
       such-that[op] filters the given superposition to elements that return true for "op |element>"     
     
@@ -5982,14 +6094,7 @@ def fast_simm(A,B):
   except Exception as e:
     print("fast_simm exception reason: %s" % e)
     
-from pprint import pprint
-def my_print(name, value=''):
-  return
-  if value is '':
-    print(name)
-  else:
-    print(name + ': ', end='')
-    pprint(value)
+
 
 
 def print_table(table):
@@ -6004,9 +6109,24 @@ def print_table(table):
 
 
 # set invoke method:
+compound_table['table'] = ".apply_sp_fn(pretty_print_table,context,\"{0}\")"
+# set usage info:
+function_operators_usage['table'] = """
+    description:
+      display a nicely formated table
     
-# usage:
-#     
+    examples:
+      load fred-sam-friends.sw
+      age |Fred> => |47>
+      age |Sam> => |45>
+      table[person, age, friends] split |Fred Sam>
+        +--------+-----+----------------------------------------------------+
+        | person | age | friends                                            |
+        +--------+-----+----------------------------------------------------+
+        | Fred   | 47  | Jack, Harry, Ed, Mary, Rob, Patrick, Emma, Charlie |
+        | Sam    | 45  | Charlie, George, Emma, Jack, Rober, Frank, Julie   |
+        +--------+-----+----------------------------------------------------+
+"""
 def pretty_print_table(one,context,params,strict=False,rank=False):
   ops = params.split(',')         
   #my_print('one', str(one))
@@ -6060,7 +6180,7 @@ from matplotlib import pyplot as plt
 # set invoke method:
 sp_fn_table['plot'] = 'plot'
 # set usage info:
-sp_fn_table_usage['plot'] = """
+function_operators_usage['plot'] = """
     description:
       plot a superposition as a bar chart using matplotlib
     
@@ -6083,4 +6203,69 @@ def plot(one):
   plt.xticks(ind + width/2, labels)
   fig.autofmt_xdate()
   plt.show()
-  return ket('plot')          
+  return ket('plot')
+  
+
+# set invoke method:
+context_whitelist_table_3['consume-reaction'] = 'process_reaction'
+# set usage info:
+superposition_functions_usage['consume-reaction'] = """
+    description:
+      process a chemical reaction that consumes the reactants
+      eg: 2 H_2 + O_2 -> 2 H_2 0
+      is represented by: 
+        consume-reaction(input-sp, 2|H2> + |O2>, 2|H2O>)
+      which is equivalent to:
+        input-sp - (2|H2> + |O2>) + 2|H2O>
+      
+      if input-sp doesn't contain the reactants, then it is returned unchanged 
+      
+    examples:
+      current |state> => words-to-list |can opener, closed can and hungry>
+      learn-state (*) #=> learn(|op: current>, |state>, |_self>)
+      use |can opener> #=> learn-state consume-reaction(current |state>, |closed can>, |open can>)
+      eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
+"""
+#
+# one, two and three are superpositions
+def process_reaction(one,two,three):
+  if type(one) is sequence and type(two) is sequence and type(three) is sequence:
+    one = one[0]                                                      # hackily cast sequence to superposition for now.
+    two = two[0]
+    three = three[0]
+  def del_fn(x,y):   # NB: creates negative coeffs.
+    return x - y
+  if intersection(two,one).count_sum() != two.count_sum():
+    return one
+  else:
+    return intersection_fn(del_fn,one,two).drop() + three              # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
+
+# set invoke method:
+context_whitelist_table_3['catalytic-reaction'] = 'process_catalytic_reaction'
+# set usage info:
+superposition_functions_usage['catalytic-reaction'] = """
+    description:
+      process a catalyzed reaction, that doesn't consume the reactants, 
+      but if they are not present, then the state is left unchanged.
+      
+      catalytic-reaction(input-sp, |a> + |b>, |c> +|d>)
+      is equivalent to:
+        input-sp + |c> + |d>,
+      provided |a> + |b> is in input-sp
+      else, return input-sp
+            
+    examples:
+"""
+# 16/2/2016:
+# process-catalytic-reaction(current-sp,|a> + |b>,|c> +|d>) = current-sp + |c> + |d> if |a> + |b> is in current-sp
+# What if |c> + |d> is already in current-sp? Do you add it again?
+# I suspect process-catalytic-reaction() can be used to encode maths proofs. One is the current state of knowledge. Two is the necessary conditions for the proof to be true. Three is the implications of that proof.
+# Another example is simple physics problems. You write down what you know, and any possibly relevant equations. Then try to figure out a pathway to the desired result.  
+#
+def process_catalytic_reaction(one,two,three):
+  if intersection(two,one).count_sum() != two.count_sum():
+    return one
+  else:
+    return one + three
+    
+               
