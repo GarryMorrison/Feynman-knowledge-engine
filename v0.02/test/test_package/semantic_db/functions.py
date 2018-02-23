@@ -29,82 +29,7 @@ import re
 from semantic_db.code import *
 from semantic_db.sigmoids import *
 
-# the value function
-# eg: value |price: _x> => _x |_self>
-# provided _x is convertable to float, else return |_self>
-def apply_value(one):
-  cat, value = one.label.rsplit(': ', 1)
-  try:
-    x = float(value)
-  except ValueError:
-    return one
-  return ket(one.label,x * one.value)
 
-# the extract category function
-# eg: extract-category |animal: fish> => |animal>
-def extract_category(one):
-  cat, value = one.label.rsplit(': ', 1)  
-  return ket(cat,one.value)
-
-# the extract value function
-# eg: extract-value |animal: fish> => |fish>
-def extract_value(one):
-  cat, value = one.label.rsplit(': ', 1)
-  return ket(value,one.value)
-
-# 28/8/2015:
-# remove-leading-category |a: b: c: d> == |b: c: d>
-# I think this will be useful in the table[] code.
-# one is a ket
-def remove_leading_category(one):
-  text = one.label.split(': ',1)[-1]
-  return ket(text,one.value)
-
-# find-leading-category |a: b: c: d> == |a>
-# one is a ket
-def find_leading_category(one):
-  text = one.label.split(': ',1)[0]
-  return ket(text,one.value)
-   
-
-# 1/5/2014:
-# to-value and to-category (maybe come up with better names!)
-# to-value |> => |>
-# to-value |19> => 19| >  -- NB the space, cf to-number
-# to-value |age: 23> => 23|age>
-# to-value |age: 23.5> => 23.5|age>
-# to-value |string> => |string> or 0| >        -- currently the first one.
-# to-value |cat: val> => |cat: val> or 0|cat>
-# to-value |cat1: cat2: 13> => 13|cat1: cat2>
-#
-# to-category 57| > => |57>
-# to-category |age> => |age: 1>
-# to-category 23|age> => |age: 23>
-def to_value(one):                          # tested. Seems to work as desired!
-  # do we need one = one.ket() here?
-  cat, value = extract_category_value(one.label)
-  logger.debug("cat: " + cat)
-  logger.debug("value: " + value)
-  
-  if len(cat) == 0:
-    label = " "
-  else:
-    label = cat
-
-  try:
-    x = float(value)
-    return ket(label,x)
-  except:
-    return one 
-
-def to_category(one):
-  # do we need one = one.ket() here?
-  label = one.label
-  if label in [""," "]:                      # maybe label.strip() == ""?
-    label = ""                               # Also, stop using -- for comments in python!
-  else:
-    label += ": "
-  return ket(label + "%.3f" % one.value)
             
 
 # the range function
@@ -147,106 +72,11 @@ def old_show_range(start,finish,step="n: 1"):
 
 
 # 23/4/2014: need float range:
-# from: http://stackoverflow.com/questions/4189766/python-range-with-step-of-type-float
-def float_range(start, stop, step):
-  while start <= stop + 0.0000001:           # hack so hopefully the float rounding doesn't give the wrong result.
-    yield start                              # may need to tweak the 0.0000001 value.
-    start += step                            # also, I like my ranges to reach their upper-bound!
-
-# 23/4/2014: decided to change range from integer steps to float steps.
-#
-def show_range(start,finish,step="n: 1"):
-# tweak so full kets are optional, and labels are sufficient:
-  start_label = start if type(start) == str else start.the_label()
-  finish_label = finish if type(finish) == str else finish.the_label()
-  step_label = step if type(step) == str else step.the_label()
-
-#  print("step_label:",step_label)
-
-  cat1, v1 = extract_category_value(start_label)
-  cat2, v2 = extract_category_value(finish_label)
-  cat3, v3 = extract_category_value(step_label)
-#  print("v3:",v3)
-
-  if cat1 != cat2:
-    return ket("",0)
-
-  label = ""
-  if len(cat1) > 0:
-    label = cat1 + ": "         
-  result = superposition()      
-
-  try:
-    start = int(v1)
-    stop = int(v2) + 1           # maybe bug. also in float version!
-    step = int(v3)
-    for k in range(start,stop,step):
-      #result += ket(label + str(k))            # fast_superposition will speed this line up.
-      result.data.append(ket(label + str(k)))   # temp hack/fix. Remove when swap in fast_superposition. Made a vast improvement for range(|2>,|50000>)
-  except:     
-    try:
-      start = float(v1)
-      stop = float(v2)
-      step = float(v3)
-      for k in float_range(start,stop,step):
-        result += ket(label + "%.2f" % k)      # here too. Though hasn't been an issue yet.
-    except:
-      return ket("",0)
-  return result
 
 
 
-# the arithmetic function
-# eg: arithmetic(|number: 3>,|symbol: +>,|number: 8>)
-# heh. note the "amplification factor"
-# of z = x*y directly in python vs what this function does!
-# you do get some power in return though.
-# and it is still much cheaper than a fully neural model equivalent presumably is.
-#
-# What I meant by "amplification factor" is the amount of computing power needed to calculate say z = x*y 
-# in python, vs the amount if you use this arithmetic function.
-#
-# x, y superposition bug here too!
-# fixed, I hope.
-#
-def arithmetic(x,operator,y):
-  x_label = x if type(x) == str else x.label
-  op_label = operator if type(operator) == str else operator.label
-  y_label = y if type(y) == str else y.label
 
-  cat1, v1 = x_label.rsplit(': ', 1)
-  name, op = op_label.rsplit(': ', 1)
-  cat2, v2 = y_label.rsplit(': ', 1)
-  if cat1 != cat2 or op not in ['+','-','*','/','%','^']:
-    return ket()
-  try:
-    x = int(v1)
-    y = int(v2)
-  except ValueError:
-    try:
-      x = float(v1)
-      y = float(v2)
-    except ValueError:
-      return ket()
-  label = ""
-  if len(cat1) > 0:
-    label = cat1 + ": "      
-  if op == '+':
-    return ket(label + str(x + y))
-  elif op == '-':
-    return ket(label + str(x - y))
-  elif op == '*':
-    return ket(label + str(x * y))
-  elif op == '/':
-    if y == 0:         # prevent div by zero
-      return ket()
-    return ket(label + str(x / y))
-  elif op == '%':
-    return ket(label + str(x % y))
-  elif op == '^':
-    return ket(label + str(x ** y))
-  else:
-    return ket()                       # presumably this should never be reached.
+
 
 
 
@@ -356,44 +186,6 @@ def fast_sp_intersection_fn(foo,one,two):
     r += ket(key,value)
   return r
 
-def superposition_intersection_fn(foo, one, two):
-  if type(one) not in [ket, superposition] and type(two) not in [ket, superposition]:
-    return superposition()
-  r = superposition()
-#  merged = OrderedDict()
-#  merged.update(one.dict)
-#  merged.update(two.dict)
-  merged = one + two
-  
-  for key,value in merged.items():
-    v1 = one.get_value(key)
-    v2 = two.get_value(key)
-    new_value = foo(v1, v2)
-    r.add(key, new_value)
-  return r
-
-# version to handle sequences too.
-def intersection_fn(foo, one, two):   
-  if type(one) in [ket, superposition] or type(two) in [ket, superposition]:
-    return superposition_intersection_fn(foo, one, two)
-  max_len = max(len(one), len(two)) 
-  seq = sequence([])
-  for k in range(max_len):
-    try:                                                 # ugly! But will do for now.
-      sp1 = one.data[k]
-    except:
-      sp1 = ket()
-    try:
-      sp2 = two.data[k]
-    except:
-      sp2 = ket()
-    r = superposition_intersection_fn(foo, sp1, sp2)
-    seq.data.append(r)
-#    print('sp1: %s' % sp1)
-#    print('sp2: %s' % sp2)    
-#    print('r: %s' % r)
-  print('seq: %s' % seq)
-  return seq
 
 
 # now the actual intersection:
@@ -5809,6 +5601,23 @@ def my_print(name, value=''):
   else:
     print(name + ': ', end='')
     pprint(value)
+
+# convert float to int if possible:
+def float_to_int(x,t=3):
+  if float(x).is_integer():
+    return str(int(x))
+#  return str("%.3f" % x)
+  return str(round(x,t))
+
+
+def extract_category_value(x):
+  try:                                          # is there a cleaner way to find category/values?
+    cat, val = x.rsplit(': ', 1)
+  except:
+    cat = ''
+    val = x
+  return cat, val
+    
   
 # set invoke method:
 sp_fn_table['ssplit'] = 'ssplit'
@@ -6268,4 +6077,401 @@ def process_catalytic_reaction(one,two,three):
   else:
     return one + three
     
-               
+
+# set invoke method:
+fn_table['apply-value'] = 'apply_value'
+# set usage info:
+function_operators_usage['apply-value'] = """
+    description:
+      apply value to the given ket
+      return the ket if the value is not convertable to float
+            
+    examples:
+      apply-value |price: fish>
+        |price: fish>
+        
+      apply-value |price: 37>
+        37|price: 37>
+"""
+def apply_value(one):
+  cat, value = one.label.rsplit(': ', 1)
+  try:
+    x = float(value)
+  except ValueError:
+    return one
+  return ket(one.label, x * one.value)
+
+# set invoke method:
+fn_table['extract-category'] = 'extract_category'
+# set usage info:
+function_operators_usage['extract-category'] = """
+    description:
+      extract the category from the given ket
+            
+    examples:
+      extract-category |fish>
+        |fish>
+        
+      extract-category |animal: mammal: dog>
+        |animal: mammal>
+        
+    see also:
+      extract-value    
+"""
+def extract_category(one):
+  try:
+    cat, value = one.label.rsplit(': ', 1)
+  except:
+    return one   
+  return ket(cat,one.value)
+
+# set invoke method:
+fn_table['extract-value'] = 'extract_value'
+# set usage info:
+function_operators_usage['extract-value'] = """
+    description:
+      extract the value, ie remove the category, from the given ket
+            
+    examples:
+      extract-value |fish>
+        |fish>
+        
+      extract-value |animal: mammal: dog>
+        |dog>
+        
+    see also:
+      extract-category    
+"""
+# the extract value function
+# eg: extract-value |animal: fish> => |fish>
+def extract_value(one):
+  try:
+    cat, value = one.label.rsplit(': ', 1)
+  except:
+    return one
+  return ket(value,one.value)
+
+# set invoke method:
+fn_table['remove-leading-category'] = 'remove_leading_category'
+# set usage info:
+function_operators_usage['remove-leading-category'] = """
+    description:
+      remove the leading category
+            
+    examples:
+      remove-leading-category |fish>
+        |fish>
+        
+      remove-leading-category |animal: mammal: dog>
+        |mammal: dog>
+        
+    see also:
+      find-leading-category    
+"""
+# one is a ket
+def remove_leading_category(one):
+  text = one.label.split(': ',1)[-1]
+  return ket(text,one.value)
+
+# set invoke method:
+fn_table['find-leading-category'] = 'find_leading_category'
+# set usage info:
+function_operators_usage['find-leading-category'] = """
+    description:
+      find the leading category
+            
+    examples:
+      find-leading-category |fish>
+        |fish>
+        
+      find-leading-category |animal: mammal: dog>
+        |animal>
+        
+    see also:
+      remove-leading-category    
+"""
+# one is a ket
+def find_leading_category(one):
+  text = one.label.split(': ',1)[0]
+  return ket(text,one.value)
+   
+
+# set invoke method:
+fn_table['to-value'] = 'to_value'
+# set usage info:
+function_operators_usage['to-value'] = """
+    description:
+      if the value is a float, remove from the ket, and apply it to the coefficient
+            
+    examples:
+      to-value |>
+        |>
+        
+      to-value |19>
+        19| >
+        
+      to-value |age: 33.5>
+        33.5|age>
+        
+      to-value |cat: val>
+        |cat: val>
+        
+      to-value |cat1: cat2: 13>
+        13|cat1: cat2>
+        
+    see also:
+      to-category
+"""
+# one is a ket
+def to_value(one):
+  try:
+    cat, value = one.label.rsplit(': ', 1)
+  except:
+    cat = ''
+    value = one.label
+ 
+  if len(cat) == 0:
+    label = " "
+  else:
+    label = cat
+
+  try:
+    x = float(value)
+    return ket(label, x)
+  except:
+    return one 
+
+# set invoke method:
+fn_table['to-category'] = 'to_category'
+# set usage info:
+function_operators_usage['to-category'] = """
+    description:
+      append the coefficient of the ket, to the ket label
+            
+    examples:
+      to-category 57| >
+        |57>
+      
+      to-category |age>
+        |age: 1>
+        
+      to-category 23|age>
+        |age: 23>
+        
+    see also:
+      to-value
+"""
+# one is a ket
+def to_category(one):
+  # do we need one = one.ket() here?
+  label = one.label
+  if label in [""," "]:                      # maybe label.strip() == ""?
+    label = ""   
+  else:
+    label += ": "
+  return ket(label + float_to_int(one.value))
+  
+
+# set invoke method:
+whitelist_table_3['arithmetic'] = 'arithmetic'
+# set usage info:
+superposition_functions_usage['arithmetic'] = """
+    description:
+      the arithmetic function
+      supported operators: + - * / % ^
+      if the categories are different, return |>
+      
+    examples:
+      arithmetic(|number: 3>, |symbol: +>, |number: 8>)
+        |number: 11>
+        
+      arithmetic(|3>, |^>, |4>)
+        |81>
+      
+      arithmetic(|price: 37>, |->, |number: 5.20>)
+        |>
+        
+      number-to-price |number: *> #=> |price:> __ extract-value |_self>
+      arithmetic(|price: 37>, |->, number-to-price |number: 5.20>)
+        |price: 31.8>
+      
+      fib |0> => |0>
+      fib |1> => |1>
+      n-1 |*> #=> arithmetic(|_self>,|->,|1>)
+      n-2 |*> #=> arithmetic(|_self>,|->,|2>)
+      fib |*> !=> arithmetic( fib n-1 |_self>, |+>, fib n-2 |_self>)
+      fact |0> => |1>
+      fact |*> !=> arithmetic(|_self>, |*>, fact n-1 |_self>)
+      table[number,fib,fact] range(|1>, |10>)
+        +--------+-----+---------+
+        | number | fib | fact    |
+        +--------+-----+---------+
+        | 1      | 1   | 1       |
+        | 2      | 1   | 2       |
+        | 3      | 2   | 6       |
+        | 4      | 3   | 24      |
+        | 5      | 5   | 120     |
+        | 6      | 8   | 720     |
+        | 7      | 13  | 5040    |
+        | 8      | 21  | 40320   |
+        | 9      | 34  | 362880  |
+        | 10     | 55  | 3628800 |
+        +--------+-----+---------+
+"""
+# the arithmetic function
+# eg: arithmetic(|number: 3>,|symbol: +>,|number: 8>)
+# heh. note the "amplification factor"
+# of z = x*y directly in python vs what this function does!
+# you do get some power in return though.
+# and it is still much cheaper than a fully neural model equivalent presumably is.
+#
+# What I meant by "amplification factor" is the amount of computing power needed to calculate say z = x*y 
+# in python, vs the amount if you use this arithmetic function.
+#
+# x, y superposition bug here too!
+# fixed, I hope.
+#
+def arithmetic(x, operator, y):
+  if type(x) is sequence:                   # for now, cast sequences to superpositions. Fix later!
+    x = x[0]
+  if type(operator) is sequence:
+    operator = operator[0]
+  if type(y) is sequence:
+    y = y[0]
+  
+  x_label = x if type(x) == str else x.label
+  op_label = operator if type(operator) == str else operator.label
+  y_label = y if type(y) == str else y.label
+
+  cat1, v1 = extract_category_value(x_label)
+  name, op = extract_category_value(op_label)
+  cat2, v2 = extract_category_value(y_label)
+      
+  if cat1 != cat2 or op not in ['+','-','*','/','%','^']:
+    return ket()
+  try:
+    x = int(v1)
+    y = int(v2)
+  except ValueError:
+    try:
+      x = float(v1)
+      y = float(v2)
+    except ValueError:
+      return ket()
+  label = ""
+  if len(cat1) > 0:
+    label = cat1 + ": "      
+  if op == '+':
+    return ket(label + str(x + y))
+  elif op == '-':
+    return ket(label + str(x - y))
+  elif op == '*':
+    return ket(label + str(x * y))
+  elif op == '/':
+    if y == 0:         # prevent div by zero
+      return ket()
+    return ket(label + str(x / y))
+  elif op == '%':
+    return ket(label + str(x % y))
+  elif op == '^':
+    return ket(label + str(x ** y))
+  else:
+    return ket()                       # presumably this should never be reached.
+
+
+# from: http://stackoverflow.com/questions/4189766/python-range-with-step-of-type-float
+# maybe use numpy instead?
+def float_range(start, stop, step):
+  while start <= stop + 0.0000001:           # hack so hopefully the float rounding doesn't give the wrong result.
+    yield start                              # may need to tweak the 0.0000001 value.
+    start += step                            # also, I like my ranges to reach their upper-bound!
+
+# set invoke method:
+whitelist_table_2['range'] = 'show_range'
+whitelist_table_3['range'] = 'show_range'
+# set usage info:
+superposition_functions_usage['range'] = """
+    description:
+      the range function
+            
+    examples:
+      range(|1>, |10>)
+        |1> + |2> + |3> + |4> + |5> + |6> + |7> + |8> + |9> + |10>
+      
+      range(|1>, |5>, |0.5>)
+        |1> + |1.5> + |2> + |2.5> + |3> + |3.5> + |4> + |4.5> + |5>
+"""
+def show_range(start,finish,step="1"):
+  if type(start) is sequence:                   # for now, cast sequences to superpositions. Fix later! Yup! Not happy with it at all.
+    start = start[0]
+  if type(finish) is sequence:
+    finish = finish[0]
+  if type(step) is sequence:
+    step = step[0]
+
+  start_label = start if type(start) == str else start.label
+  finish_label = finish if type(finish) == str else finish.label
+  step_label = step if type(step) == str else step.label
+
+  cat1, v1 = extract_category_value(start_label)
+  cat2, v2 = extract_category_value(finish_label)
+  cat3, v3 = extract_category_value(step_label)
+
+  if cat1 != cat2:
+    return ket()
+
+  label = ""
+  if len(cat1) > 0:
+    label = cat1 + ": "         
+  result = superposition()      
+
+  try:
+    start = int(v1)
+    stop = int(v2) + 1           # maybe bug. also in float version!
+    step = int(v3)
+    for k in range(start,stop,step):
+      result.add(label + str(k)) 
+  except:     
+    try:
+      start = float(v1)
+      stop = float(v2)
+      step = float(v3)
+      for k in float_range(start,stop,step):
+        result.add(label + float_to_int(k))
+    except:
+      return ket()
+  return result
+  
+
+
+def superposition_intersection_fn(foo, one, two):
+  if type(one) not in [ket, superposition] and type(two) not in [ket, superposition]:
+    return superposition()
+  r = superposition()
+  merged = one + two
+  
+  for key,value in merged.items():
+    v1 = one.get_value(key)
+    v2 = two.get_value(key)
+    new_value = foo(v1, v2)
+    r.add(key, new_value)
+  return r
+
+# version to handle sequences too.
+def intersection_fn(foo, one, two):   
+  if type(one) in [ket, superposition] or type(two) in [ket, superposition]:
+    return superposition_intersection_fn(foo, one, two)
+  seq = sequence([])
+  one, two = normalize_seq_len(one, two)
+  for k in range(len(one)):
+    r = superposition_intersection_fn(foo, one[k], two[k])
+    seq.data.append(r)
+  return seq
+
+def normalize_seq_len(one, two):
+  if len(one) == len(two):
+    return one, two
+  empty = superposition()
+  
+  max_len = max(len(one), len(two))
+                         

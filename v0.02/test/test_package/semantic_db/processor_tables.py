@@ -127,7 +127,7 @@ sigmoid_table = {
 # some ket -> ket functions:
 fn_table_usage = {}
 fn_table = {
-  "apply-value"      : "apply_value",
+#  "apply-value"      : "apply_value",
   "extract-category" : "extract_category",
   "extract-value"    : "extract_value",
 
