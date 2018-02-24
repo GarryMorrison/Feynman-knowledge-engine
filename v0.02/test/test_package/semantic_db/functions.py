@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-23
+# Update: 2018-2-24
 # Copyright: GPLv3
 #
 # Usage: 
@@ -77,7 +77,12 @@ def old_show_range(start,finish,step="n: 1"):
 
 
 
-
+# test for set membership of |x> in |X>
+# this is simple enough, that we probably don't even need this function. Just do it inline.
+# Probably a little clearer to do it inline anyway, instead of the one step of indirection.
+# 24/1/2015: what about using X.get_value(x.label)?
+def set_mbr(x,X,t=1):
+  return X.apply_bra(x) >= t
 
 
 
@@ -188,414 +193,9 @@ def fast_sp_intersection_fn(foo,one,two):
 
 
 
-# now the actual intersection:
-# NB: intersection is actually one key component of learning.
-# Say a child trying to learn the meaning of "apple". 
-# They take an intersection of what they were currently thinking everytime their parents say "apple".
-# The bit in common (ie, the intersection) most likely is the meaning of "apple".
-# Something similar for a dog learning a trick and hearing "good dog".
-#
-# Let's expand a bit.
-# Let's say the superpositions of each time their parents said "apple" are r1, r2, r3, ...,rn
-# Then, if not over-specified (ie we get the empty set), meaning-apple might simply be: intersection(r1,r2,...,rn)
-#
-# 1/5/2014: Alternatively, we can learn using thresholds and sums:
-# TF[t5](TF[t1] pattern-1 |dog> + TF[t2] pattern-2 |dog> + TF[t3] pattern-3 |dog> + TF[t4] pattern-4 |dog>) 
-#
-# I suspect intersection can also be used in language translation (more thought needed!).
-# Say you have a good set of sentence pairs in language A and B.
-# Then intersection may help in finding the word pairs. Word in A vs same meaning in B.
-#
-# a union also plays a role in learning, when quite distinct things refer to the same object.
-# say if we want |word: frog> and |image: frog> to both trigger the |concept: frog>
-def intersection(one,two):
-  return intersection_fn(min,one,two).drop()
-
-# now the union:
-def union(one,two):
-  return intersection_fn(max,one,two)
-
-# potentially we could write a wrapper that maps associative pair functions into triple, quad etc fns.
-# eg: assoc_wrapper(fn,pieces)
-# where pieces is the list of parametrs to feed to "fn"
-#
-# the triple intersection:
-def tri_intersection(one,two,three):
-  return intersection(intersection(one,two),three)
-
-# the triple union:
-def tri_union(one,two,three):
-  return union(union(one,two),three)
 
 
-# the complement variable function:
-def comp_fn(x,y):
-  if x == 0 and y != 0:
-    return y
-  elif x != 0 and y == 0:
-    return x
-  else:
-    return 0
 
-# now for complement:
-def complement(one,two):
-  return intersection_fn(comp_fn,one,two)
-
-# test for set membership of |x> in |X>
-# this is simple enough, that we probably don't even need this function. Just do it inline.
-# Probably a little clearer to do it inline anyway, instead of the one step of indirection.
-# 24/1/2015: what about using X.get_value(x.label)?
-def set_mbr(x,X,t=1):
-  return X.apply_bra(x) >= t
-
-# the delete function:
-def del_fn(x,y):    # a possible variant is "return y - x"
-  if x != 0:
-    return 0
-  else:
-    return y
-
-def delete(one,two):
-  return intersection_fn(del_fn,one,two).drop()  # NB: the .drop()
-
-# OK. Let's write the "return y - x" variant:
-def del_fn2(x,y):
-  if x <= y:
-    return y - x
-  else:
-    return 0
-
-def delete2(one,two):
-  return intersection_fn(del_fn2,one,two).drop()
-
-def mult_fn(x,y):
-  return x*y
-  
-def multiply(one,two):
-  return intersection_fn(mult_fn,one,two)
-  
-def sum_fn(x,y):
-  return x + y
-  
-def addition(one,two):
-  return intersection_fn(sum_fn,one,two)
-  
-
-def del_fn3(x,y):   # NB: creates negative coeffs.
-  return x - y
-  
-def delete3(one,two):
-  return intersection_fn(del_fn3,one,two)
-  
-def squared_difference(x,y):
-  return (x - y)**2
-
-import math
-def Euclidean_distance(one,two):
-  return ket("number: " + str(math.sqrt(intersection_fn(squared_difference,one,two).count_sum())))
-
-# 11/8/2015: the exclude function:
-# exclude(|a> + |c>,|a> + |b> + |c> + |d>) == |b> + |d>
-# in quick testing, seems to work.
-#
-def exclude_fn(x,y):
-  if x > 0:
-    return 0
-  return y
-       
-def exclude(one,two):
-  return intersection_fn(exclude_fn,one,two).drop()
-
-# a superposition version of simm.
-# not yet sure how to write the sequence version of simm.
-# BTW, simm stands for "similarity metric".
-# ie, 1 for exact match
-# 0 for exact mismatch
-# values in between otherwise.
-# in practice it is more of a concept than a single equation.
-# but it is the foundation equation for pattern recognition
-#
-# One interesting use of simm is the Landscape function:
-# L(f,x) = simm(f,g(x))
-# with a different pattern g(x) at each point x.
-# cf. DNA micro-array
-# http://en.wikipedia.org/wiki/DNA_microarray
-# the landscape fn converts an incoming pattern f into a mathematical surface (in general not a smooth surface though)
-#
-# A well supported similarity is one that has a high simm score, 
-# and A and B have a large number of terms.
-# A weakly supported similarity is where A and B have a small number of terms.
-# Though on further thought it is not that simple.
-# If the kets are "low order", ie close to the input, then you need more of them.
-# If the kets are "higher order", ie more abstract, and hence rarer in frequency,
-# then each ket carries more meaning.
-# 
-# Maybe we need a version of simm for kets. Currently simm(a|x>,b|x>) returns 100% 
-# independent of the coeffs a and b. 
-# Recall we were meant to only use s1*wf == s2*wg if f and g are longer than one element.
-# Provided they are not negative, simm for single elts should be: min(a,b)/max(a,b)
-#
-def simm(A,B):
-  print(display(A))
-  print(display(B))
-
-  A = superposition() + A
-  B = superposition() + B
-
-  one = A.normalize()
-  two = B.normalize()
-
-  print(display(one))
-  print(display(two))
-
-  result = intersection(one,two)
-  print(display(result))
-  return result.count_sum()
-
-
-# a quiet version of simm:
-# maybe we should use |A intn B|/|A union B| instead?? 
-# Though would need to check it gives the same answer as the current method. 
-def silent_simm(A,B):
-# handle single kets, where we don't want rescaling to s1*wf == s2*wg
-# seems to be working just fine.
-  if A.count() <= 1 and B.count() <= 1:
-    a = A.ket()
-    b = B.ket()
-    if a.label != b.label:                    # put a.label == '' test in here too?
-      return 0
-    a = max(a.value,0)                        # just making sure they are >= 0.
-    b = max(b.value,0)
-    if a == 0 and b == 0:                     # prevent div by zero.
-      return 0
-    return min(a,b)/max(a,b)
-  return intersection(A.normalize(),B.normalize()).count_sum()
-
-# unscaled simm.
-def unscaled_simm(A,B):
-  wf = A.count_sum()
-  wg = B.count_sum()
-  if wf == 0 and wg == 0:
-    return 0
-  return intersection(A,B).count_sum()/max(wf,wg)
-  
-
-# quick test found this is not in [0,1]
-#  return intersection(A,B).count_sum()
-#
-# potentially need a version that is intersection(A,B).count_sum()
-# cf: |A intn B|, where intn is the intersection operator, and usually applies to A,B with Boolean values, not float.
-# We can emulate the Boolean bit with: intersection(A,B).drop().count()
-# though the closest to original simm corresponds to the .normalize() version.
-
-# closer to the original simm[w,f,g], we are going to introduce a weighted simm:
-#
-# a couple of common use cases are:
-# weighted_simm(A,A,B) and weighted_simm(B,A,B)
-# or something close to that.
-#
-def weighted_simm(w,A,B):
-  A = multiply(w,A)
-  B = multiply(w,B)
-  return intersection(A.normalize(),B.normalize()).count_sum()
-
-
-# a version of simmm that returns: result|simm>
-def ket_simm(A,B):
-#  result = intersection(A.normalize(),B.normalize()).count_sum()
-  result = silent_simm(A,B)
-  return ket("simm",result)
-
-def ket_weighted_simm(w,A,B):
-  result = weighted_simm(w,A,B)
-  return ket("simm",result)
-    
-
-# 18/6/2016:
-# implement a faster simm.
-# simm is often a time sink, so we need to find ways to speed it up.
-# note eventually we might be able to implement a parallel version.
-# if not simm, then pattern_recognition function in new_context().
-#
-# OK. In testing in the console it seems to work.
-# Not sure if we can make it faster, but I think we are O(n) now. 
-def old_fast_simm(A,B):
-#  logger.debug("inside fast_simm")
-  if A.count() <= 1 and B.count() <= 1:
-    a = A.ket()
-    b = B.ket()
-    if a.label != b.label:                    # put a.label == '' test in here too?
-      return 0
-    a = max(a.value,0)                        # just making sure they are >= 0.
-    b = max(b.value,0)
-    if a == 0 and b == 0:                     # prevent div by zero.
-      return 0
-    return min(a,b)/max(a,b)
-#  return intersection(A.normalize(),B.normalize()).count_sum()
-
-  # now calculate the superposition version of simm, while trying to be as fast as possible:
-#  logger.debug("made it here in fast_simm")
-  try:
-    merged = {}
-    one_sum = 0
-    one = {}
-    for elt in A:
-      one[elt.label] = elt.value               # what about empty kets? How does this code handle them?
-      one_sum += elt.value                     # assume all values in A are >= 0
-      merged[elt.label] = True                 # potentially we could use abs(elt.value)
-
-    two_sum = 0
-    two = {}
-    for elt in B:
-      two[elt.label] = elt.value
-      two_sum += elt.value                     # assume all values in B are >= 0
-      merged[elt.label] = True
-
-    # prevent div by zero:
-    if one_sum == 0 or two_sum == 0:
-      return 0
-
-    merged_sum = 0
-#    for key in merged:
-#      v1 = 0
-#      if key in one:
-#        v1 = one[key]/one_sum
-#      v2 = 0
-#      if key in two:
-#        v2 = two[key]/two_sum
-#      merged_sum += min(v1,v2)
-    for key in merged:
-      if key in one and key in two:
-        v1 = one[key]/one_sum
-        v2 = two[key]/two_sum
-        merged_sum += min(v1,v2)
-    return merged_sum
-  except Exception as e:
-    logger.debug("fast_simm exception reason: %s" % e)
-
-# 27/3/2014: time to implement the landscape function.
-# Hrm... how do I plan on testing it?
-#
-# Recall the math definition:
-# L(f,x) = simm(f,g(x))
-#
-def landscape(context,pattern,f,x):
-  f = f.apply_op(context,pattern)
-  g = x.apply_op(context,pattern)
-  return silent_simm(f,g)             # or should this be ket_simm()?
-
-# list simm. This is not a ket/sp function at all, but I think it belongs here anyway.
-# eg, maybe as background to explain the ket/sp simm() I do have here.
-#
-# First definition of simm:
-# simm(w,f,g) = w*[f - g] + R abs(w*f - w*g)/[w*f + w*g + R abs(w*f - w*g)]
-# where one version of a*b is:
-# a*b = \Sum_k abs(a_k * b_k)
-# And for best results set R = 1.
-# This version has the property:
-# 0 <= simm(w,f,g) <= 1. 1 for f,g completely disjoint, 0 for f,g exactly identical.
-# BTW, this follows from:
-# w*[f - g] = w*f + w*g if f,g are completely disjoint (taking into account the effect of w)
-# w*[f - g] = 0 if f,g are identical (taking into account the effect of w)
-#
-# The second version of simm is: 1 - simm(w,f,g)
-# w*f + w*g - w*[f - g]/[w*f + w*g + R abs(w*f - w*g)]
-# This version has the property:
-# 0 <= simm(w,f,g) <= 1. 0 for f,g completely disjoint, 1 for f,g exactly identical.
-#
-# Both versions have some symmetries (indeed, I tweaked the function to create symmetries, cf physics). I'll type them up later.
-# NB: I swap back and forth between these two variations, and call them the same name,
-# depending on what I am trying to do.
-#
-# NB: if a,b >= 0 then:                    # what about if a and or b are < 0?
-# a + b + abs(a - b) = 2*max(a,b)
-# a + b - abs(a - b) = 2*min(a,b)
-#
-# w,f,g are lists of ints or floats. They have nothing to do with kets or superpositions!
-def list_simm(w,f,g):
-  the_len = min(len(f),len(g))
-  print("the_len:",the_len)
-  print("w:",w)
-  print("f:",f)
-  print("g:",g)
-  print()
-# w += [0] * (the_len - len(w))            # from here: http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
-  w += [1] * (the_len - len(w))   
-  f = f[:the_len]
-  g = g[:the_len]
-  print("w:",w)
-  print("f:",f)
-  print("g:",g)
-
-  wf = sum(abs(w[k]*f[k]) for k in range(the_len))
-  wg = sum(abs(w[k]*g[k]) for k in range(the_len))
-  wfg = sum(abs(w[k]*f[k] - w[k]*g[k]) for k in range(the_len))
-  
-  print("wf:",wf)
-  print("wg:",wg)
-  print("wfg:",wfg)
-
-  
-  if wf == 0 and wg == 0:
-#    return 0
-    result = 0
-  else:
-    #return (wf + wg - wfg)/(2*max(wf,wg))
-    result = (wf + wg - wfg)/(2*max(wf,wg))
-  print("result:",result)
-  return result
-
-# 17/2/2015: a rescaled version of list simm
-# need to test it now!
-#
-def rescaled_list_simm(w,f,g):
-  the_len = min(len(f),len(g))
-#  print("the_len:",the_len)
-#  print("w:",w)
-#  print("f:",f)
-#  print("g:",g)
-#  print()
-# normalize lengths of our lists:
-#  w += [0] * (the_len - len(w))            # from here: http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
-  w += [1] * (the_len - len(w))          
-  f = f[:the_len]
-  g = g[:the_len]
-#  print("w:",w)
-#  print("f:",f)
-#  print("g:",g)
-
-# rescale step, first find size:
-  s1 = sum(abs(w[k]*f[k]) for k in range(the_len))
-  s2 = sum(abs(w[k]*g[k]) for k in range(the_len))
-
-# if s1 == 0, or s2 == 0, we can't rescale:
-  if s1 == 0 or s2 == 0:
-    return 0
-  
-# now rescale:
-  f = [f[k]/s1 for k in range(the_len)]  
-  g = [g[k]/s2 for k in range(the_len)]  
-  
-# proceed with algo:
-# if rescaled correctly, wf and wg should == 1.
-#  wf = sum(abs(w[k]*f[k]) for k in range(the_len))
-#  wg = sum(abs(w[k]*g[k]) for k in range(the_len))
-  wfg = sum(abs(w[k]*f[k] - w[k]*g[k]) for k in range(the_len))
-  
-#  print("wf:",wf)
-#  print("wg:",wg)
-#  print("wfg:",wfg)
-
-# we should never have wf or wg == 0 in the rescaled case:  
-#  if wf == 0 and wg == 0:
-#    return 0
-#    result = 0
-#  else:
-    #return (wf + wg - wfg)/(2*max(wf,wg))
-#    result = (wf + wg - wfg)/(2*max(wf,wg))
-  return (2 - wfg)/2
-#  print("result:",result)
-#  return result
 
 
 # still can't use this in the console, since the context needs to be passed in too.
@@ -5588,10 +5188,11 @@ def spell_out(one):
 
 # ---------------------------------------------------------------------------------------
 # start of new functions file:
+import math
 
 # define our usage dictionaries:
 function_operators_usage = {}
-superposition_functions_usage = {}
+sequence_functions_usage = {}
 
 from pprint import pprint
 def my_print(name, value=''):
@@ -5713,7 +5314,32 @@ def insert(one, text):
       text = key.format('', *pieces)
       seq += ket(text, value)
   return seq
-  
+
+# set invoke method:
+compound_table['to-upper'] = '.apply_sp_fn(to_upper, \"{0}\")'
+# set usage info:
+function_operators_usage['to-upper'] = """
+    description:
+      change i'th characters to upper case
+         
+    examples:
+      to-upper[1] |fred>
+        |Fred>
+      
+      to-upper[1,3,5] |abcdefg>
+        |AbCdEfg>
+"""
+def to_upper(one, positions):
+  try:
+    positions = [int(x) -1 for x in positions.split(',')]               # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
+  except:
+    return one
+  r = superposition()
+  if type(one) in [ket, superposition]:
+    for key, value in one.items():
+      text = "".join(key[i].upper() if i in positions else key[i] for i in range(len(key)))
+      r.add(text, value)
+  return r
   
 # set invoke method:
 compound_table['remove-prefix'] = '.apply_fn(remove_prefix, \"{0}\")'
@@ -5765,7 +5391,7 @@ def has_prefix(one, prefix):
 # set invoke method:
 context_whitelist_table_3['learn'] = 'learn_sp'
 # set usage info:
-superposition_functions_usage['learn'] = """
+sequence_functions_usage['learn'] = """
     description:
       wrapper around a learn rule, so we can use it in operators
       
@@ -5784,7 +5410,7 @@ def learn_sp(context, one, two, three):
 # set invoke method:
 context_whitelist_table_2['apply'] = 'apply_sp'
 # set usage info:
-superposition_functions_usage['apply'] = """
+sequence_functions_usage['apply'] = """
     description:
       wrapper around apply op, so we can use it in operators
       
@@ -5854,54 +5480,6 @@ def sp_such_that(one, context, ops):
   return r
 
 
-def fast_simm(A,B):
-  if type(A) is sequence:                     # hack just for now, until we can implement a sequence version of simm.
-    A = A[0]
-  if type(B) is sequence:
-    B = B[0]
-
-  if len(A) == 0 or len(B) == 0:
-    return 0
-  if len(A) == 1 and len(B) == 1:
-    if A.label != B.label:                    # put a.label == '' test in here too?
-      return 0
-    a = max(A.value,0)                        # just making sure they are >= 0.
-    b = max(B.value,0)
-    if a == 0 and b == 0:                     # prevent div by zero.
-      return 0
-    return min(a,b)/max(a,b)
-#  return intersection(A.normalize(),B.normalize()).count_sum()     # very slow version!
-
-  # now calculate the superposition version of simm, while trying to be as fast as possible:
-  try:
-    merged = {}
-    one_sum = 0
-    one = {}
-    for label,value in A.drop().items():   # handle superpositions with negative coeffs by dropping them, for now! Improve later!!
-      one[label] = value
-      one_sum += value                     # assume all values in A are >= 0
-      merged[label] = True                 # potentially we could use abs(elt.value)
-
-    two_sum = 0
-    two = {}
-    for label,value in B.drop().items():
-      two[label] = value
-      two_sum += value                     # assume all values in B are >= 0
-      merged[label] = True
-
-    # prevent div by zero:
-    if one_sum == 0 or two_sum == 0:
-      return 0
-
-    merged_sum = 0
-    for key in merged:
-      if key in one and key in two:
-        v1 = one[key]/one_sum
-        v2 = two[key]/two_sum
-        merged_sum += min(v1,v2)
-    return merged_sum
-  except Exception as e:
-    print("fast_simm exception reason: %s" % e)
     
 
 
@@ -5935,11 +5513,43 @@ function_operators_usage['table'] = """
         | Fred   | 47  | Jack, Harry, Ed, Mary, Rob, Patrick, Emma, Charlie |
         | Sam    | 45  | Charlie, George, Emma, Jack, Rober, Frank, Julie   |
         +--------+-----+----------------------------------------------------+
+        
+      web-load http://semantic-db.org/sw-examples/bots.sw
+      Bella |*> #=> apply(|_self>, |bot: Bella>)
+      Emma |*> #=> apply(|_self>, |bot: Emma>)
+      Madison |*> #=> apply(|_self>, |bot: Madison>)
+      table[op, Bella, Emma, Madison] supported-ops (|bot: Bella> + |bot: Emma> + |bot: Madison>)
+        +------------------------+--------------+----------------+---------------------+
+        | op                     | Bella        | Emma           | Madison             |
+        +------------------------+--------------+----------------+---------------------+
+        | name                   | Bella        | Emma           | Madison             |
+        | mother                 | Mia          | Madison        | Mia                 |
+        | father                 | William      | Nathan         | Ian                 |
+        | birth-sign             | Cancer       | Capricorn      | Cancer              |
+        | number-siblings        | 1            | 4              | 6                   |
+        | wine-preference        | Merlot       | Pinot Noir     | Pinot Noir          |
+        | favourite-fruit        | pineapples   | oranges        | pineapples          |
+        | favourite-music        | genre: punk  | genre: hip hop | genre: blues        |
+        | favourite-play         | Endgame      | No Exit        | Death of a Salesman |
+        | hair-colour            | gray         | red            | red                 |
+        | eye-colour             | hazel        | gray           | amber               |
+        | where-live             | Sydney       | New York       | Vancouver           |
+        | favourite-holiday-spot | Paris        | Taj Mahal      | Uluru               |
+        | make-of-car            | Porsche      | BMW            | Bugatti             |
+        | religion               | Christianity | Taoism         | Islam               |
+        | personality-type       | the guardian | the visionary  | the performer       |
+        | current-emotion        | fear         | kindness       | indignation         |
+        | bed-time               | 8pm          | 2am            | 10:30pm             |
+        | age                    | 31           | 29             | 23                  |
+        | hungry                 |              |                | starving            |
+        | friends                |              |                | Emma, Bella         |
+        +------------------------+--------------+----------------+---------------------+
 """
 def pretty_print_table(one,context,params,strict=False,rank=False):
   ops = params.split(',')         
   #my_print('one', str(one))
   #my_print('ops', ops)
+  one = one.apply_sigmoid(set_to,1)
   header_row = ops
   rows = []
   for x in one:
@@ -6016,9 +5626,9 @@ def plot(one):
   
 
 # set invoke method:
-context_whitelist_table_3['consume-reaction'] = 'process_reaction'
+whitelist_table_3['consume-reaction'] = 'process_reaction'
 # set usage info:
-superposition_functions_usage['consume-reaction'] = """
+sequence_functions_usage['consume-reaction'] = """
     description:
       process a chemical reaction that consumes the reactants
       eg: 2 H_2 + O_2 -> 2 H_2 0
@@ -6034,6 +5644,12 @@ superposition_functions_usage['consume-reaction'] = """
       learn-state (*) #=> learn(|op: current>, |state>, |_self>)
       use |can opener> #=> learn-state consume-reaction(current |state>, |closed can>, |open can>)
       eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
+      current |state>
+        |can opener> + |closed can> + |hungry>
+      use |can opener>
+        |can opener> + |hungry> + |open can>
+      eat-from |can>
+        |can opener> + |empty can> + |not hungry>
 """
 #
 # one, two and three are superpositions
@@ -6050,9 +5666,9 @@ def process_reaction(one,two,three):
     return intersection_fn(del_fn,one,two).drop() + three              # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
 
 # set invoke method:
-context_whitelist_table_3['catalytic-reaction'] = 'process_catalytic_reaction'
+whitelist_table_3['catalytic-reaction'] = 'process_catalytic_reaction'
 # set usage info:
-superposition_functions_usage['catalytic-reaction'] = """
+sequence_functions_usage['catalytic-reaction'] = """
     description:
       process a catalyzed reaction, that doesn't consume the reactants, 
       but if they are not present, then the state is left unchanged.
@@ -6275,7 +5891,7 @@ def to_category(one):
 # set invoke method:
 whitelist_table_3['arithmetic'] = 'arithmetic'
 # set usage info:
-superposition_functions_usage['arithmetic'] = """
+sequence_functions_usage['arithmetic'] = """
     description:
       the arithmetic function
       supported operators: + - * / % ^
@@ -6390,7 +6006,7 @@ def float_range(start, stop, step):
 whitelist_table_2['range'] = 'show_range'
 whitelist_table_3['range'] = 'show_range'
 # set usage info:
-superposition_functions_usage['range'] = """
+sequence_functions_usage['range'] = """
     description:
       the range function
             
@@ -6443,7 +6059,14 @@ def show_range(start,finish,step="1"):
   return result
   
 
-
+# the intersection function.
+# if you set foo = min, then it is a generalization of Boolean set intersection.
+# if you set foo = max, then it is a generalization of Boolean set union.
+# if you set foo = sum, then it is a literal sum.
+# if you set foo = mult, then it is a multiplication of the list elements. 
+# possibly other useful values of foo too.
+# maybe we can do a complement function? if value1 == 0 and value2 != 0, then return value2
+#
 def superposition_intersection_fn(foo, one, two):
   if type(one) not in [ket, superposition] and type(two) not in [ket, superposition]:
     return superposition()
@@ -6459,7 +6082,7 @@ def superposition_intersection_fn(foo, one, two):
 
 # version to handle sequences too.
 def intersection_fn(foo, one, two):   
-  if type(one) in [ket, superposition] or type(two) in [ket, superposition]:
+  if type(one) in [ket, superposition] and type(two) in [ket, superposition]:
     return superposition_intersection_fn(foo, one, two)
   seq = sequence([])
   one, two = normalize_seq_len(one, two)
@@ -6471,7 +6094,605 @@ def intersection_fn(foo, one, two):
 def normalize_seq_len(one, two):
   if len(one) == len(two):
     return one, two
+  if type(one) is not sequence:
+    one = sequence(one)
+  if type(two) is not sequence:
+    two = sequence(two)  
   empty = superposition()
-  
   max_len = max(len(one), len(two))
-                         
+  one.data = one.data + [empty]*(max_len - len(one))
+  two.data = two.data + [empty]*(max_len - len(two))
+  return one, two
+  
+
+# now the actual intersection:
+# NB: intersection is actually one key component of learning.
+# Say a child trying to learn the meaning of "apple". 
+# They take an intersection of what they were currently thinking everytime their parents say "apple".
+# The bit in common (ie, the intersection) most likely is the meaning of "apple".
+# Something similar for a dog learning a trick and hearing "good dog".
+#
+# Let's expand a bit.
+# Let's say the superpositions of each time their parents said "apple" are r1, r2, r3, ...,rn
+# Then, if not over-specified (ie we get the empty set), meaning-apple might simply be: intersection(r1,r2,...,rn)
+#
+# 1/5/2014: Alternatively, we can learn using thresholds and sums:
+# TF[t5](TF[t1] pattern-1 |dog> + TF[t2] pattern-2 |dog> + TF[t3] pattern-3 |dog> + TF[t4] pattern-4 |dog>) 
+#
+# I suspect intersection can also be used in language translation (more thought needed!).
+# Say you have a good set of sentence pairs in language A and B.
+# Then intersection may help in finding the word pairs. Word in A vs same meaning in B.
+#
+# a union also plays a role in learning, when quite distinct things refer to the same object.
+# say if we want |word: frog> and |image: frog> to both trigger the |concept: frog>
+
+# set invoke method:
+whitelist_table_2['intersection'] = 'intersection'
+whitelist_table_3['intersection'] = 'tri_intersection'
+# set usage info:
+sequence_functions_usage['intersection'] = """
+    description:
+      the intersection function
+      takes element-wise min of the coefficients
+            
+    examples:
+      intersection(|a>, |b>, |c>)
+        |>
+        
+      intersection(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)      
+        3|a> + 0.9|b>
+        
+    see also:
+      union, complement 
+"""
+def intersection(one,two):
+  return intersection_fn(min,one,two).drop()
+
+# now the union:
+# set invoke method:
+whitelist_table_2['union'] = 'union'
+whitelist_table_3['union'] = 'tri_union'
+# set usage info:
+sequence_functions_usage['union'] = """
+    description:
+      the union function
+      takes element-wise max of the coefficients
+            
+    examples:
+      union(|a>, |b>, |c>)
+        |a> + |b> + |c>
+        
+      union(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
+        3.5|a> + 1.2|b> + 5.13|c>
+
+    see also:
+      intersection, complement 
+"""
+def union(one,two):
+  return intersection_fn(max,one,two)
+
+# potentially we could write a wrapper that maps associative pair functions into triple, quad etc fns.
+# eg: assoc_wrapper(fn,pieces)
+# where pieces is the list of parametrs to feed to "fn"
+#
+# the triple intersection:
+def tri_intersection(one,two,three):
+  return intersection(intersection(one,two),three)
+
+# the triple union:
+def tri_union(one,two,three):
+  return union(union(one,two),three)
+
+
+# the complement variable function:
+def comp_fn(x,y):
+  if x == 0 and y != 0:
+    return y
+  elif x != 0 and y == 0:
+    return x
+  else:
+    return 0
+
+# now for complement:
+# set invoke method:
+whitelist_table_2['complement'] = 'complement'
+# set usage info:
+sequence_functions_usage['complement'] = """
+    description:
+      the complement function
+            
+    examples:
+
+    see also:
+      intersection, union,  
+"""
+def complement(one,two):
+  return intersection_fn(comp_fn,one,two)
+
+
+
+# the delete function:
+def del_fn(x,y):    # a possible variant is "return y - x"
+  if x != 0:
+    return 0
+  else:
+    return y
+
+def delete(one,two):
+  return intersection_fn(del_fn,one,two).drop()  # NB: the .drop()
+
+# OK. Let's write the "return y - x" variant:
+def del_fn2(x,y):
+  if x <= y:
+    return y - x
+  else:
+    return 0
+
+def delete2(one,two):
+  return intersection_fn(del_fn2,one,two).drop()
+
+def mult_fn(x,y):
+  return x*y
+  
+# set invoke method:
+whitelist_table_2['multiply'] = 'multiply'
+# set usage info:
+sequence_functions_usage['multiply'] = """
+    description:
+      the multiply function
+      takes element-wise multiply of the coefficients
+            
+    examples:
+      multiply(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
+        10.5|a> + 1.08|b> + 0|c>
+
+    see also:
+      intersection, union, complement, addition   
+"""
+def multiply(one,two):
+  return intersection_fn(mult_fn,one,two)
+  
+def sum_fn(x,y):
+  return x + y
+
+# set invoke method:
+whitelist_table_2['addition'] = 'addition'
+# set usage info:
+sequence_functions_usage['addition'] = """
+    description:
+      the addition function
+      takes element-wise sum of the coefficients
+            
+    examples:
+      addition(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
+        6.5|a> + 2.1|b> + 5.13|c>
+
+    see also:
+      intersection, union, complement, multiply 
+"""
+def addition(one,two):
+  return intersection_fn(sum_fn,one,two)
+  
+
+def del_fn3(x,y):   # NB: creates negative coeffs.
+  return x - y
+  
+def delete3(one,two):
+  return intersection_fn(del_fn3,one,two)
+  
+def squared_difference(x,y):
+  return (x - y)**2
+
+# set invoke method:
+whitelist_table_2['distance'] = 'Euclidean_distance'
+# set usage info:
+sequence_functions_usage['distance'] = """
+    description:
+      the Euclidean distance function
+            
+    examples:
+      distance(0|x> + 0|y>, 0|x> + 7|y>)
+        |number: 7>
+        
+      distance(0|x> + 0|y>, 3|x> + 4|y>)
+        |number: 5>        
+
+      distance(0|x> + 0|y>, 5|x> + 12|y>)
+        |number: 13>
+
+      distance(0|x> + 0|y>, |x> + 2|y>)
+        |number: 2.236>
+           
+    see also:
+      simm 
+
+    future:
+      maybe change the number of decimal points in the result.
+      currently set to 3
+      maybe remove the number prefix too.
+"""
+def Euclidean_distance(one,two):
+  if type(one) is sequence:                                     # cast to superposition, for now. Not sure ED over sequences makes sense.
+    one = one[0]
+  if type(two) is sequence:
+    two = two[0]
+  
+  return ket("number: " + float_to_int(math.sqrt(intersection_fn(squared_difference,one,two).count_sum())))
+
+# 11/8/2015: the exclude function:
+# exclude(|a> + |c>,|a> + |b> + |c> + |d>) == |b> + |d>
+# in quick testing, seems to work.
+#
+def exclude_fn(x,y):
+  if x > 0:
+    return 0
+  return y
+       
+def exclude(one,two):
+  return intersection_fn(exclude_fn,one,two).drop()
+  
+
+
+
+# the similarity measures: Yeah, we have a bunch of variations.
+# a superposition version of simm.
+# not yet sure how to write the sequence version of simm.
+# BTW, simm stands for "similarity measure".
+# ie, 1 for exact match
+# 0 for exact mismatch
+# values in between otherwise.
+# in practice it is more of a concept than a single equation.
+# but it is the foundation equation for pattern recognition
+#
+# One interesting use of simm is the Landscape function:
+# L(f,x) = simm(f,g(x))
+# with a different pattern g(x) at each point x.
+# cf. DNA micro-array
+# http://en.wikipedia.org/wiki/DNA_microarray
+# the landscape fn converts an incoming pattern f into a mathematical surface (in general not a smooth surface though)
+#
+# A well supported similarity is one that has a high simm score, 
+# and A and B have a large number of terms.
+# A weakly supported similarity is where A and B have a small number of terms.
+# Though on further thought it is not that simple.
+# If the kets are "low order", ie close to the input, then you need more of them.
+# If the kets are "higher order", ie more abstract, and hence rarer in frequency,
+# then each ket carries more meaning.
+# 
+# Maybe we need a version of simm for kets. Currently simm(a|x>,b|x>) returns 100% 
+# independent of the coeffs a and b. 
+# Recall we were meant to only use s1*wf == s2*wg if f and g are longer than one element.
+# Provided they are not negative, simm for single elts should be: min(a,b)/max(a,b)
+#
+def simm(A,B):
+  print(display(A))
+  print(display(B))
+
+  A = superposition() + A
+  B = superposition() + B
+
+  one = A.normalize()
+  two = B.normalize()
+
+  print(display(one))
+  print(display(two))
+
+  result = intersection(one,two)
+  print(display(result))
+  return result.count_sum()
+
+
+# a quiet version of simm:
+# maybe we should use |A intn B|/|A union B| instead?? 
+# Though would need to check it gives the same answer as the current method. 
+def silent_simm(A,B):
+# handle single kets, where we don't want rescaling to s1*wf == s2*wg
+# seems to be working just fine.
+  if A.count() <= 1 and B.count() <= 1:
+    a = A.ket()
+    b = B.ket()
+    if a.label != b.label:                    # put a.label == '' test in here too?
+      return 0
+    a = max(a.value,0)                        # just making sure they are >= 0.
+    b = max(b.value,0)
+    if a == 0 and b == 0:                     # prevent div by zero.
+      return 0
+    return min(a,b)/max(a,b)
+  return intersection(A.normalize(),B.normalize()).count_sum()
+
+# unscaled simm.
+def unscaled_simm(A,B):
+  wf = A.count_sum()
+  wg = B.count_sum()
+  if wf == 0 and wg == 0:
+    return 0
+  return intersection(A,B).count_sum()/max(wf,wg)
+  
+
+# quick test found this is not in [0,1]
+#  return intersection(A,B).count_sum()
+#
+# potentially need a version that is intersection(A,B).count_sum()
+# cf: |A intn B|, where intn is the intersection operator, and usually applies to A,B with Boolean values, not float.
+# We can emulate the Boolean bit with: intersection(A,B).drop().count()
+# though the closest to original simm corresponds to the .normalize() version.
+
+# closer to the original simm[w,f,g], we are going to introduce a weighted simm:
+#
+# a couple of common use cases are:
+# weighted_simm(A,A,B) and weighted_simm(B,A,B)
+# or something close to that.
+#
+def weighted_simm(w,A,B):
+  A = multiply(w,A)
+  B = multiply(w,B)
+  return intersection(A.normalize(),B.normalize()).count_sum()
+
+
+# a version of simmm that returns: result|simm>
+def ket_simm(A,B):
+#  result = intersection(A.normalize(),B.normalize()).count_sum()
+  result = silent_simm(A,B)
+  return ket("simm",result)
+
+def ket_weighted_simm(w,A,B):
+  result = weighted_simm(w,A,B)
+  return ket("simm",result)
+    
+
+# 18/6/2016:
+# implement a faster simm.
+# simm is often a time sink, so we need to find ways to speed it up.
+# note eventually we might be able to implement a parallel version.
+# if not simm, then pattern_recognition function in new_context().
+#
+# OK. In testing in the console it seems to work.
+# Not sure if we can make it faster, but I think we are O(n) now. 
+def old_fast_simm(A,B):
+#  logger.debug("inside fast_simm")
+  if A.count() <= 1 and B.count() <= 1:
+    a = A.ket()
+    b = B.ket()
+    if a.label != b.label:                    # put a.label == '' test in here too?
+      return 0
+    a = max(a.value,0)                        # just making sure they are >= 0.
+    b = max(b.value,0)
+    if a == 0 and b == 0:                     # prevent div by zero.
+      return 0
+    return min(a,b)/max(a,b)
+#  return intersection(A.normalize(),B.normalize()).count_sum()
+
+  # now calculate the superposition version of simm, while trying to be as fast as possible:
+#  logger.debug("made it here in fast_simm")
+  try:
+    merged = {}
+    one_sum = 0
+    one = {}
+    for elt in A:
+      one[elt.label] = elt.value               # what about empty kets? How does this code handle them?
+      one_sum += elt.value                     # assume all values in A are >= 0
+      merged[elt.label] = True                 # potentially we could use abs(elt.value)
+
+    two_sum = 0
+    two = {}
+    for elt in B:
+      two[elt.label] = elt.value
+      two_sum += elt.value                     # assume all values in B are >= 0
+      merged[elt.label] = True
+
+    # prevent div by zero:
+    if one_sum == 0 or two_sum == 0:
+      return 0
+
+    merged_sum = 0
+#    for key in merged:
+#      v1 = 0
+#      if key in one:
+#        v1 = one[key]/one_sum
+#      v2 = 0
+#      if key in two:
+#        v2 = two[key]/two_sum
+#      merged_sum += min(v1,v2)
+    for key in merged:
+      if key in one and key in two:
+        v1 = one[key]/one_sum
+        v2 = two[key]/two_sum
+        merged_sum += min(v1,v2)
+    return merged_sum
+  except Exception as e:
+    logger.debug("fast_simm exception reason: %s" % e)
+
+# 27/3/2014: time to implement the landscape function.
+# Hrm... how do I plan on testing it?
+#
+# Recall the math definition:
+# L(f,x) = simm(f,g(x))
+#
+def landscape(context,pattern,f,x):
+  f = f.apply_op(context,pattern)
+  g = x.apply_op(context,pattern)
+  return silent_simm(f,g)             # or should this be ket_simm()?
+
+# list simm. This is not a ket/sp function at all, but I think it belongs here anyway.
+# eg, maybe as background to explain the ket/sp simm() I do have here.
+#
+# First definition of simm:
+# simm(w,f,g) = w*[f - g] + R abs(w*f - w*g)/[w*f + w*g + R abs(w*f - w*g)]
+# where one version of a*b is:
+# a*b = \Sum_k abs(a_k * b_k)
+# And for best results set R = 1.
+# This version has the property:
+# 0 <= simm(w,f,g) <= 1. 1 for f,g completely disjoint, 0 for f,g exactly identical.
+# BTW, this follows from:
+# w*[f - g] = w*f + w*g if f,g are completely disjoint (taking into account the effect of w)
+# w*[f - g] = 0 if f,g are identical (taking into account the effect of w)
+#
+# The second version of simm is: 1 - simm(w,f,g)
+# w*f + w*g - w*[f - g]/[w*f + w*g + R abs(w*f - w*g)]
+# This version has the property:
+# 0 <= simm(w,f,g) <= 1. 0 for f,g completely disjoint, 1 for f,g exactly identical.
+#
+# Both versions have some symmetries (indeed, I tweaked the function to create symmetries, cf physics). I'll type them up later.
+# NB: I swap back and forth between these two variations, and call them the same name,
+# depending on what I am trying to do.
+#
+# NB: if a,b >= 0 then:                    # what about if a and or b are < 0?
+# a + b + abs(a - b) = 2*max(a,b)
+# a + b - abs(a - b) = 2*min(a,b)
+#
+# w,f,g are lists of ints or floats. They have nothing to do with kets or superpositions!
+def list_simm(w,f,g):
+  the_len = min(len(f),len(g))
+  print("the_len:",the_len)
+  print("w:",w)
+  print("f:",f)
+  print("g:",g)
+  print()
+# w += [0] * (the_len - len(w))            # from here: http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
+  w += [1] * (the_len - len(w))   
+  f = f[:the_len]
+  g = g[:the_len]
+  print("w:",w)
+  print("f:",f)
+  print("g:",g)
+
+  wf = sum(abs(w[k]*f[k]) for k in range(the_len))
+  wg = sum(abs(w[k]*g[k]) for k in range(the_len))
+  wfg = sum(abs(w[k]*f[k] - w[k]*g[k]) for k in range(the_len))
+  
+  print("wf:",wf)
+  print("wg:",wg)
+  print("wfg:",wfg)
+
+  
+  if wf == 0 and wg == 0:
+#    return 0
+    result = 0
+  else:
+    #return (wf + wg - wfg)/(2*max(wf,wg))
+    result = (wf + wg - wfg)/(2*max(wf,wg))
+  print("result:",result)
+  return result
+
+# 17/2/2015: a rescaled version of list simm
+# need to test it now!
+#
+def rescaled_list_simm(w,f,g):
+  the_len = min(len(f),len(g))
+#  print("the_len:",the_len)
+#  print("w:",w)
+#  print("f:",f)
+#  print("g:",g)
+#  print()
+# normalize lengths of our lists:
+#  w += [0] * (the_len - len(w))            # from here: http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
+  w += [1] * (the_len - len(w))          
+  f = f[:the_len]
+  g = g[:the_len]
+#  print("w:",w)
+#  print("f:",f)
+#  print("g:",g)
+
+# rescale step, first find size:
+  s1 = sum(abs(w[k]*f[k]) for k in range(the_len))
+  s2 = sum(abs(w[k]*g[k]) for k in range(the_len))
+
+# if s1 == 0, or s2 == 0, we can't rescale:
+  if s1 == 0 or s2 == 0:
+    return 0
+  
+# now rescale:
+  f = [f[k]/s1 for k in range(the_len)]  
+  g = [g[k]/s2 for k in range(the_len)]  
+  
+# proceed with algo:
+# if rescaled correctly, wf and wg should == 1.
+#  wf = sum(abs(w[k]*f[k]) for k in range(the_len))
+#  wg = sum(abs(w[k]*g[k]) for k in range(the_len))
+  wfg = sum(abs(w[k]*f[k] - w[k]*g[k]) for k in range(the_len))
+  
+#  print("wf:",wf)
+#  print("wg:",wg)
+#  print("wfg:",wfg)
+
+# we should never have wf or wg == 0 in the rescaled case:  
+#  if wf == 0 and wg == 0:
+#    return 0
+#    result = 0
+#  else:
+    #return (wf + wg - wfg)/(2*max(wf,wg))
+#    result = (wf + wg - wfg)/(2*max(wf,wg))
+  return (2 - wfg)/2
+#  print("result:",result)
+#  return result
+
+def fast_simm(A,B):
+  if type(A) is sequence:                     # hack just for now, until we can implement a sequence version of simm.
+    A = A[0]
+  if type(B) is sequence:
+    B = B[0]
+
+  if len(A) == 0 or len(B) == 0:
+    return 0
+  if len(A) == 1 and len(B) == 1:
+    if A.label != B.label:                    # put a.label == '' test in here too?
+      return 0
+    a = max(A.value,0)                        # just making sure they are >= 0.
+    b = max(B.value,0)
+    if a == 0 and b == 0:                     # prevent div by zero.
+      return 0
+    return min(a,b)/max(a,b)
+#  return intersection(A.normalize(),B.normalize()).count_sum()     # very slow version!
+
+  # now calculate the superposition version of simm, while trying to be as fast as possible:
+  try:
+    merged = {}
+    one_sum = 0
+    one = {}
+    for label,value in A.drop().items():   # handle superpositions with negative coeffs by dropping them, for now! Improve later!!
+      one[label] = value
+      one_sum += value                     # assume all values in A are >= 0
+      merged[label] = True                 # potentially we could use abs(elt.value)
+
+    two_sum = 0
+    two = {}
+    for label,value in B.drop().items():
+      two[label] = value
+      two_sum += value                     # assume all values in B are >= 0
+      merged[label] = True
+
+    # prevent div by zero:
+    if one_sum == 0 or two_sum == 0:
+      return 0
+
+    merged_sum = 0
+    for key in merged:
+      if key in one and key in two:
+        v1 = one[key]/one_sum
+        v2 = two[key]/two_sum
+        merged_sum += min(v1,v2)
+    return merged_sum
+  except Exception as e:
+    print("fast_simm exception reason: %s" % e)
+
+
+
+# set invoke method:
+sp_fn_table['sp2seq'] = 'sp2seq'                                 # maybe it should be in seq_fn_table?
+# set usage info:
+function_operators_usage['sp2seq'] = """
+    description:
+      sp2seq converts superpositions into sequences
+      
+    examples:
+      sp2seq range(|1>, |5>)
+        |1> . |2> . |3> . |4> . |5>
+"""
+# one is a superposition:
+def sp2seq(one):
+  seq = sequence([])
+  for x in one:
+    seq += x
+  return seq
+  
+                             

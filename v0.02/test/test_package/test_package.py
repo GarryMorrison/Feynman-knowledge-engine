@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-21
+# Update: 2018-2-24
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -211,3 +211,13 @@ def test_op_sequence_3():
   r = extract_compound_sequence(context, s)
   assert str(r) == ''
 
+
+def test_normalize_seq_len_1():
+  x = ket('a',2) + ket('b',3.3)
+  y = sequence('x') + ket('y') + ket('z')
+  print(str(x))
+  print(str(y))
+  r1, r2 = normalize_seq_len(x, y)
+  print(str(r1))
+  print(str(r2))
+  assert False

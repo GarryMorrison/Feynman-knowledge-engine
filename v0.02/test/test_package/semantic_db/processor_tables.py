@@ -58,8 +58,8 @@ built_in_table = {
   "ket-sort"         : "ket_sort",
   "max-elt"          : "find_max_elt",
   "min-elt"          : "find_min_elt",
-  "max"              : "find_max",
-  "min"              : "find_min",
+#  "max"              : "find_max",
+#  "min"              : "find_min",
 
 # new:
   "discrimination"   : "discrimination",

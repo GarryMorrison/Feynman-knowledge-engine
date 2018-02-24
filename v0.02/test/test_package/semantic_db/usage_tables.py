@@ -12,7 +12,7 @@
 #
 #######################################################################
 
-from semantic_db.functions import function_operators_usage, superposition_functions_usage
+from semantic_db.functions import function_operators_usage, sequence_functions_usage
 
 
 # define our usage report function:
@@ -32,8 +32,8 @@ def usage(ops = None):
     for key in sorted(function_operators_usage):
       s += '    ' + key + '\n'
 
-    s += '\n  superposition functions:\n'
-    for key in sorted(superposition_functions_usage):
+    s += '\n  sequence functions:\n'
+    for key in sorted(sequence_functions_usage):
       s += '    ' + key + '\n'
 
 
@@ -56,10 +56,10 @@ def usage(ops = None):
         s += '  ' + op + ':\n'
         s += function_operators_usage[op] + '\n'
 
-      if op in superposition_functions_usage:
-        s += 'superposition function:\n'
+      if op in sequence_functions_usage:
+        s += 'sequence function:\n'
         s += '  ' + op + ':\n'
-        s += superposition_functions_usage[op] + '\n'
+        s += sequence_functions_usage[op] + '\n'
 
 
   print(s, end='')

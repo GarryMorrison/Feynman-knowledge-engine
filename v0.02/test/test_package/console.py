@@ -264,7 +264,8 @@ while True:
 
     # now let's load it into memory:
     print("loading:",dest,"\n")
-    load_sw(C,dest)
+    #load_sw(C,dest)
+    C.load(dest)
     end_time = time.time()
     delta_time = end_time - start_time
     print("\n  Time taken:",display_time(delta_time))
