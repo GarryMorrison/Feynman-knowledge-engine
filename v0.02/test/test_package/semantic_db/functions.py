@@ -5285,8 +5285,11 @@ def smerge(one, merge_char = ''):
     return ket()
   labels = []
   for elt in one:
-    for x in elt:
-      labels.append(x.label)
+    if len(elt) == 0:                                       # so this works: smerge["\n"] (|b> . |c> . |> . |d>)
+      labels.append('')
+    else:
+      for x in elt:
+        labels.append(x.label)
   s = merge_char.join(labels)
   return ket(s)
 
@@ -5544,6 +5547,9 @@ function_operators_usage['table'] = """
         | hungry                 |              |                | starving            |
         | friends                |              |                | Emma, Bella         |
         +------------------------+--------------+----------------+---------------------+
+        
+    see also:
+      such-that, sort-by
 """
 def pretty_print_table(one,context,params,strict=False,rank=False):
   ops = params.split(',')         
@@ -6092,7 +6098,7 @@ def intersection_fn(foo, one, two):
   return seq
 
 def normalize_seq_len(one, two):
-  if len(one) == len(two):
+  if len(one) == len(two):                                          # maybe shift to after the cast to sequence?
     return one, two
   if type(one) is not sequence:
     one = sequence(one)
@@ -6141,6 +6147,9 @@ sequence_functions_usage['intersection'] = """
         
       intersection(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)      
         3|a> + 0.9|b>
+
+      intersection(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+        |a1> + 0.9|a2> . 0.5|b2>
         
     see also:
       union, complement 
@@ -6164,6 +6173,9 @@ sequence_functions_usage['union'] = """
         
       union(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
         3.5|a> + 1.2|b> + 5.13|c>
+
+      union(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+        3|a1> + |a2> . 0.3|b1> + 0.7|b2>
 
     see also:
       intersection, complement 

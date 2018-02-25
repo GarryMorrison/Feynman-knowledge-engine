@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 23/2/2018
+# Update: 25/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -525,7 +525,7 @@ class superposition(object):
         return key
     if name == 'value':
       if len(self.dict) == 0:
-        return ""
+        return 1                                               # hrmm... what is the value of |>? Currently set to 1.
       for key,value in self.dict.items():
         return value
     else:
@@ -622,7 +622,7 @@ class superposition(object):
         x_head.add(key, value)
       else:
         x_tail.add(key, value)
-#    result = head + ket(tail.label + x_head.label, tail.value) + x_tail
+#    result = head + ket(tail.label + space + x_head.label, tail.value) + x_tail
     result = head + ket(tail.label + space + x_head.label, x_head.value * tail.value) + x_tail
     self.dict = result.dict
     
@@ -1217,10 +1217,10 @@ class sequence(object):
   def distribute_merge_seq(self, seq, space=''):            # |a> _ (|x> + |y>) == |ax> + |ay>             # this function feels like an ugly hack! Ditto the above add_seq/sub_seq/merge_seq!
     if len(seq) == 0:                                       # |a> _ (|x> . |y>) == |ax> . |ay>             # maybe I should implement sp.distribute_merge_sp(x)?? 
       return                                                # |a> _ (|x> - |y>) == |ax> - |ay> 
-    print('distribute: self: %s' % self)
-    print('distribute: seq:  %s' % seq)
-    print('distribute: type(self): %s' % type(self))
-    print('distribute: type(seq):  %s' % type(self))
+    #print('distribute: self: %s' % self)
+    #print('distribute: seq:  %s' % seq)
+    #print('distribute: type(self): %s' % type(self))
+    #print('distribute: type(seq):  %s' % type(self))
     
     if len(self.data) == 0:
       self.data = [superposition()]
@@ -1228,7 +1228,7 @@ class sequence(object):
       tail = self.data[-1]
       r = superposition()
       for x in seq:
-        print('x: %s' % x)
+        #print('x: %s' % x)
         r2 = superposition(tail)
         r2.merge_sp(x, space)
         r.add_sp(r2)
@@ -1236,17 +1236,22 @@ class sequence(object):
     if type(seq) in [sequence]:
       head = self.data[:-1]
       tail = self.data[-1]
-      print('head: %s' % str(head))
-      print('tail: %s' % str(tail))
+      #print('head: %s' % str(head))
+      #print('tail: %s' % str(tail))
       self.data = head
       for sp in seq.data:
         r = superposition()
-        for x in sp:
-          print('x: %s' % str(x))
-          r2 = superposition(tail)
-          r2.merge_sp(x, space)
-          print('r2: %s' % str(r2))
-          r.add_sp(r2)
+        if len(sp) == 0:
+            r2 = superposition(tail)
+            r2.merge_sp(ket(), space)
+            r.add_sp(r2)
+        else:
+          for x in sp:
+            #print('x: %s' % str(x))
+            r2 = superposition(tail)
+            r2.merge_sp(x, space)
+            #print('r2: %s' % str(r2))
+            r.add_sp(r2)
         self.data.append(r)
                     
   
@@ -1434,13 +1439,27 @@ class sequence(object):
     for x in self.data:                         # option 2) |a> . |c>                   # and call this sdrop?
       seq.data.append(x.drop())                  
     return seq
+    
+  def sdrop(self):
+    seq = sequence([])
+    for sp in self.data:
+      r = sp.drop()
+      if len(r) > 0:
+        seq.data.append(r)
+    return seq
 
   def pick_elt(self):
     seq = sequence([])
     for x in self.data:
       seq.data.append(x.pick_elt())
     return seq
-
+    
+  def spick_elt(self):
+    if len(self) == 0:
+      return sequence([])
+    r = random.choice(self.data)
+    return sequence(r)
+  
   def weighted_pick_elt(self):
     seq = sequence([])
     for x in self.data:

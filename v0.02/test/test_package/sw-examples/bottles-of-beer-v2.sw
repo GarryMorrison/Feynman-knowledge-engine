@@ -11,7 +11,7 @@ first-line |*> #=> to-upper[1] bottles |_self> __ |of beer on the wall,> __ bott
 second-line |*> #=> |Take one down and pass it around,> __ bottles n-1 |_self> __ |of beer on the wall.>
 second-line |0> #=> |Go to the store and buy some more,> __ bottles max |bottles> __ |of beer on the wall.>
 
-row |*> #=> first-line |_self> . second-line |_self> . | >
+row |*> #=> first-line |_self> . second-line |_self> . |>
 
 max |bottles> => |10>
 sing |*> #=> smerge["\n"] row sp2seq reverse range(|0>, max |bottles>)

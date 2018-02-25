@@ -114,6 +114,16 @@ built_in_table_usage['normalize'] = """
         0.667|a> + 0.333|b>
 """
 
+built_in_table_usage['sdrop'] = """
+    description:
+      sequence version of drop
+
+    examples:
+
+    see also:
+      drop
+"""
+
 
 built_in_table_usage['z'] = """
     description:
