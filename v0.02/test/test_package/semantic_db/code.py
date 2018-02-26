@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 25/2/2018
+# Update: 26/2/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1476,6 +1476,15 @@ class sequence(object):
     seq = sequence([])
     for x in self.data:
       seq.data.append(x.shuffle())
+    return seq
+
+  def sselect_range(self,a,b):                              # tweak so we can do: sselect[1,-2]
+    #a = max(1, a) - 1
+    if a >= 0:
+      a -= 1
+    b = min(b, len(self.data))
+    seq = sequence([])
+    seq.data = self.data[a:b]
     return seq
 
   def activate(self,context=None,op=None,self_label=None):

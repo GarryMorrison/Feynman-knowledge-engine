@@ -262,6 +262,9 @@ compound_table = {
   "drop-above"         : ".drop_above({0})",
   "select-range"       : ".select_range({0})",       # may comment this one out, but fine for now to have two versions.
   "select"             : ".select_range({0})",
+
+  "sselect"            : ".sselect_range({0})",
+  
   "delete-elt"         : ".delete_elt({0})",
   "threshold-filter"   : ".apply_sigmoid(threshold_filter,{0})",
   "not-threshold-filter" : ".apply_sigmoid(not_threshold_filter,{0})",

@@ -6727,13 +6727,47 @@ compound_table['predict'] = ".apply_seq_fn(predict_next, context, \"{0}\")"
 sequence_functions_usage['predict'] = """
     description:
       given an input sequence, predict what is next
+      optionally specify the max sequence length you want returned
             
     examples:
-      seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>
+      seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7> . |8> . |9> . |10>
       seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>
       seq |fact> => |1> . |2> . |6> . |24> . |120>
       seq |primes> => |2> . |3> . |5> . |7> . |11> . |13> . |17> . |19> . |23>
+      predict[seq] (|2> . |5>)
+        1.0     count   |6> . |7> . |8> . |9> . |10>
+        1.0     fib     |8> . |13>
+        1.0     primes  |7> . |11> . |13> . |17> . |19> . |23>
+        0.5     fact    |6> . |24> . |120>
+        |count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>
+
       predict[seq,3] (|2> . |5>)
+        1.0     count   |6> . |7> . |8>
+        1.0     fib     |8> . |13>
+        1.0     primes  |7> . |11> . |13>
+        0.5     fact    |6> . |24> . |120>
+        |count: 6 . 7 . 8> + |fib: 8 . 13> + |primes: 7 . 11 . 13> + 0.5|fact: 6 . 24 . 120>
+        
+      extract-category predict[seq] (|2> . |5> . |7>)
+        1.0     count   |8> . |9> . |10>
+        1.0     primes  |11> . |13> . |17> . |19> . |23>
+        0.5     fib     |8> . |13>
+        0.25    fact    |6> . |24> . |120>
+        |count> + |primes> + 0.5|fib> + 0.25|fact>
+
+      extract-value predict[seq] (|2> . |5> . |7>)
+        1.0     count   |8> . |9> . |10>
+        1.0     primes  |11> . |13> . |17> . |19> . |23>
+        0.5     fib     |8> . |13>
+        0.25    fact    |6> . |24> . |120>
+        |8 . 9 . 10> + |11 . 13 . 17 . 19 . 23> + 0.5|8 . 13> + 0.25|6 . 24 . 120>
+        
+      extract-value predict[seq,1] (|2> . |5> . |7>)
+        1.0     count   |8>
+        1.0     primes  |11>
+        0.5     fib     |8>
+        0.25    fact    |6>
+        1.5|8> + |11> + 0.25|6>
 
     see also: 
 """
@@ -6760,29 +6794,29 @@ def predict_next(one, context, parameters):                     # maybe change i
 
   def find_next_sequences(sp, sequences):
     next_sequences = []
-    for coeff, seq in sequences:
+    for coeff, name, seq in sequences:
       for pos, value in find_similar_index(sp, seq).items():
         next_seq = sequence([]) + seq[int(pos):]
-        next_sequences.append([value*coeff, next_seq])
+        next_sequences.append([value*coeff, name, next_seq])
     return next_sequences
 
   def find_next_sequences_v2(sp, sequences):
     next_sequences = []
-    for coeff, seq in sequences:
+    for coeff, name, seq in sequences:
       similar_index = find_similar_index(sp, seq)
       if len(similar_index) == 0:
-        next_sequences.append([coeff/2, seq])
+        next_sequences.append([coeff/2, name, seq])
       else: 
         for pos, value in similar_index.items():
           next_seq = sequence([]) + seq[int(pos):]
-          next_sequences.append([value*coeff, next_seq])
+          next_sequences.append([value*coeff, name, next_seq])
     return next_sequences
  
   # load up our sequences:
   sequences = []
   for elt in context.relevant_kets(op):
     seq = context.recall(op, elt, True)
-    sequences.append([1, seq])
+    sequences.append([1, elt.label, seq])
 
   # filter our sequences:
   next_sequences = sequences
@@ -6790,20 +6824,14 @@ def predict_next(one, context, parameters):                     # maybe change i
     next_sequences = find_next_sequences_v2(sp, next_sequences)
   
   # print out our sequences:
-  for coeff, seq in next_sequences:
-    print('%s: %s' % (coeff, str(seq)))      
-  
-  # process seq for output:
-  def seq_to_str(seq, count):
-    if count is not False:
-      seq = sequence([]) + seq[:count]
-    return smerge(seq, ' . ').label      
-
   r = superposition()
-  for coeff, seq in next_sequences:
-    str_seq = seq_to_str(seq, count)
-    r.add(str_seq, coeff)
-  return r.coeff_sort()
+  for coeff, name, seq in sorted(next_sequences, key = lambda x: x[0], reverse = True):
+    if count is not False:
+      seq = sequence([]) + seq[:count]      
+    print('%s\t%s\t%s' % (coeff, name, str(seq)))      
+    str_seq = smerge(seq, ' . ').label
+    r.add(name + ": " + str_seq, coeff)
+  return r      
 
 
 # set invoke method:
