@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-24
+# Update: 2018-2-26
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -221,3 +221,30 @@ def test_normalize_seq_len_1():
   print(str(r1))
   print(str(r2))
   assert False
+
+
+def test_predict_next_1():
+  s = 'seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>\n'
+  s += 'seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>\n'
+  s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
+  process_sw_file(context, s)
+#  context.print_universe()
+  r = predict_next(context, sequence('2') + ket('3'), 'seq,3')
+  assert str(r) == ''
+
+def test_predict_next_2():
+  s = 'seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>\n'
+  s += 'seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>\n'
+  s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
+  process_sw_file(context, s)
+  r = predict_next(context, sequence('6') + ket('2'), 'seq,3')
+  assert str(r) == ''
+
+def test_predict_next_3():
+  s = 'seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>\n'
+  s += 'seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>\n'
+  s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
+  process_sw_file(context, s)
+  r = predict_next(context, sequence('2') + ket('5'), 'seq,3')
+  assert str(r) == ''
+

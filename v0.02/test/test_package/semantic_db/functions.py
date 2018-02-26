@@ -6098,12 +6098,12 @@ def intersection_fn(foo, one, two):
   return seq
 
 def normalize_seq_len(one, two):
-  if len(one) == len(two):                                          # maybe shift to after the cast to sequence?
-    return one, two
   if type(one) is not sequence:
     one = sequence(one)
   if type(two) is not sequence:
     two = sequence(two)  
+  if len(one) == len(two):                                          
+    return one, two
   empty = superposition()
   max_len = max(len(one), len(two))
   one.data = one.data + [empty]*(max_len - len(one))
@@ -6638,12 +6638,7 @@ def rescaled_list_simm(w,f,g):
 #  print("result:",result)
 #  return result
 
-def fast_simm(A,B):
-  if type(A) is sequence:                     # hack just for now, until we can implement a sequence version of simm.
-    A = A[0]
-  if type(B) is sequence:
-    B = B[0]
-
+def superposition_simm(A,B):
   if len(A) == 0 or len(B) == 0:
     return 0
   if len(A) == 1 and len(B) == 1:
@@ -6687,6 +6682,128 @@ def fast_simm(A,B):
   except Exception as e:
     print("fast_simm exception reason: %s" % e)
 
+#  if type(A) is sequence:                     # hack just for now, until we can implement a sequence version of simm.
+#    A = A[0]
+#  if type(B) is sequence:
+#    B = B[0]
+
+# set invoke method:
+whitelist_table_2['aligned-simm'] = 'aligned_simm'
+# set usage info:
+sequence_functions_usage['aligned-simm'] = """
+    description:
+      the aligned sequences version of our similarity measure
+      for each superposition in our sequences, calculate the similarity measure
+      (ie, 0 for completely distinct, 1 for exactly the same, values in between otherwise)
+      then average them
+            
+    examples:
+      aligned-simm(|a>, |b>)
+        |0>
+        
+      aligned-simm(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
+        |0.462>
+
+      aligned-simm(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+        |0.678>
+
+    see also: 
+"""
+def aligned_simm(one, two):
+  return ket(float_to_int(aligned_simm_value(one, two)))
+
+def aligned_simm_value(one, two):
+  one, two = normalize_seq_len(one, two)
+  if len(one) == 0:
+    return 0
+  r = 0                                                          # for now just average the results. Min of results is a stricter alternative
+  for k in range(len(one)):
+    r += superposition_simm(one[k], two[k])
+  return r/len(one)
+
+# set invoke method:
+compound_table['predict'] = ".apply_seq_fn(predict_next, context, \"{0}\")"
+# set usage info:
+sequence_functions_usage['predict'] = """
+    description:
+      given an input sequence, predict what is next
+            
+    examples:
+      seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>
+      seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>
+      seq |fact> => |1> . |2> . |6> . |24> . |120>
+      seq |primes> => |2> . |3> . |5> . |7> . |11> . |13> . |17> . |19> . |23>
+      predict[seq,3] (|2> . |5>)
+
+    see also: 
+"""
+def predict_next(one, context, parameters):                     # maybe change invoke order, so context comes first??
+  params = parameters.split(',')                                # yeah, change invoke so we don't need to split the input. FIX!!
+  op = params[0]
+  if len(params) == 1:
+    count = False
+  else:
+    try:
+      count = int(params[1])
+    except:
+      return ket()
+
+  # pattern is a superposition
+  # sequence is a sequence
+  def find_similar_index(pattern, sequence, t = 0):
+    similar_index = superposition()
+    for k,x in enumerate(sequence):
+      value = superposition_simm(pattern, x)
+      if value > t:
+        similar_index.add(str(k+1), value)
+    return similar_index
+
+  def find_next_sequences(sp, sequences):
+    next_sequences = []
+    for coeff, seq in sequences:
+      for pos, value in find_similar_index(sp, seq).items():
+        next_seq = sequence([]) + seq[int(pos):]
+        next_sequences.append([value*coeff, next_seq])
+    return next_sequences
+
+  def find_next_sequences_v2(sp, sequences):
+    next_sequences = []
+    for coeff, seq in sequences:
+      similar_index = find_similar_index(sp, seq)
+      if len(similar_index) == 0:
+        next_sequences.append([coeff/2, seq])
+      else: 
+        for pos, value in similar_index.items():
+          next_seq = sequence([]) + seq[int(pos):]
+          next_sequences.append([value*coeff, next_seq])
+    return next_sequences
+ 
+  # load up our sequences:
+  sequences = []
+  for elt in context.relevant_kets(op):
+    seq = context.recall(op, elt, True)
+    sequences.append([1, seq])
+
+  # filter our sequences:
+  next_sequences = sequences
+  for sp in one:                                          # assumes one is a sequence
+    next_sequences = find_next_sequences_v2(sp, next_sequences)
+  
+  # print out our sequences:
+  for coeff, seq in next_sequences:
+    print('%s: %s' % (coeff, str(seq)))      
+  
+  # process seq for output:
+  def seq_to_str(seq, count):
+    if count is not False:
+      seq = sequence([]) + seq[:count]
+    return smerge(seq, ' . ').label      
+
+  r = superposition()
+  for coeff, seq in next_sequences:
+    str_seq = seq_to_str(seq, count)
+    r.add(str_seq, coeff)
+  return r.coeff_sort()
 
 
 # set invoke method:

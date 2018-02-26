@@ -2455,7 +2455,7 @@ new_line = ('\r\n' | '\r' | '\n')
 char = ~new_line anything
 line = <char*>:s -> s
 #line = <~new_line anything>*:s -> "".join(s)
-comment = '-'+ line
+comment = ( '-'+ line | ws new_line)
 object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | full_compound_sequence ):obj -> obj
 stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws line:s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
 #memoizing_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws '!=>' ws line:s -> learn_memoizing_rule(context, prefix_op, obj, s)
@@ -2463,7 +2463,7 @@ stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):
 learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule_type ws full_compound_sequence:parsed_seq -> learn_standard_rule(context, prefix_op, obj, rule_type, parsed_seq)
 recall_rule = ws (simple_op | "\'\'" ):prefix_op ws object:obj -> recall_rule(context, prefix_op, obj)
 
-sw_file = (learn_rule | stored_rule | new_line | comment)*
+sw_file = (comment | learn_rule | stored_rule )*
 process_rule_line = (learn_rule | stored_rule | compiled_compound_sequence | new_line | comment)
 """
 
