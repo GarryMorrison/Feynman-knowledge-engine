@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-24
+# Update: 2018-2-27
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1395,7 +1395,7 @@ def number_to_words(one):
 # bko_if(|True>,|a>,|b>)  -- returns |a>
 # bko_if(|False>,|c>,|d>) -- returns |d>
 def bko_if(condition,one,two):
-  if condition.the_label().lower() in ["true","yes"]:
+  if condition[0].label.lower() in ["true","yes"]:
     return one
   else:
     return two
@@ -3011,7 +3011,12 @@ def times_numbers(one,t):               # cool, times_numbers, and plus_numbers 
   def multiply(a,b):
     return a*b
   return numbers_fn(multiply,one,t)
-  
+
+def int_divide_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
+  def int_divide(a,b):
+    return a//b
+  return numbers_fn(int_divide, one, t)
+
 def plus_numbers(one,t):
   def add(a,b):
     return a+b

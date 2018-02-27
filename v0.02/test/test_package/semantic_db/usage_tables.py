@@ -36,6 +36,9 @@ def usage(ops = None):
     for key in sorted(sequence_functions_usage):
       s += '    ' + key + '\n'
 
+    s += '\n  worked examples:\n'
+    for key in sorted(examples_usage):
+      s += '    ' + key + '\n'
 
 
   else:
@@ -61,6 +64,11 @@ def usage(ops = None):
         s += '  ' + op + ':\n'
         s += sequence_functions_usage[op] + '\n'
 
+      if op in examples_usage:
+        s += 'worked example:\n'
+        s += '  ' + op + ':\n'
+        s += examples_usage[op] + '\n'
+
 
   print(s, end='')
 
@@ -84,6 +92,7 @@ context_whitelist_table_2_usage = {}
 context_whitelist_table_3_usage = {}
 context_whitelist_table_4_usage = {}
 
+examples_usage = {}
 
 # fill out the built_in_table_usage dictionary:
 built_in_table_usage['pick-elt'] = """
@@ -345,3 +354,464 @@ sigmoid_table_usage['ceiling'] = """
         3|x> + 8|y>
 """
 
+examples_usage['numbers-to-words'] = """
+    description:
+      convert integers into words
+      
+    code:
+      ones |0> #=> |>
+      ones |1> => |one>
+      ones |2> => |two>
+      ones |3> => |three>
+      ones |4> => |four>
+      ones |5> => |five>
+      ones |6> => |six>
+      ones |7> => |seven>
+      ones |8> => |eight>
+      ones |9> => |nine>
+
+      tens |10> => |ten>
+      tens |11> => |eleven>
+      tens |12> => |twelve>
+      tens |13> => |thirteen>
+      tens |14> => |fourteen>
+      tens |15> => |fifteen>
+      tens |16> => |sixteen>
+      tens |17> => |seventeen>
+      tens |18> => |eighteen>
+      tens |19> => |nineteen>
+
+      ten |20> => |twenty>
+      ten |30> => |thirty>
+      ten |40> => |forty>
+      ten |50> => |fifty>
+      ten |60> => |sixty>
+      ten |70> => |seventy>
+      ten |80> => |eighty>
+      ten |90> => |ninety>
+
+      tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
+      hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
+
+      hundreds |0> #=> |>
+      hundreds |*> #=> ones |_self> __ |hundred>
+
+      thousands |0> #=> |>
+      thousands |*> #=> hundreds-rule |_self> __ |thousand>
+
+      millions |0> #=> |>
+      millions |*> #=> hundreds-rule |_self> __ |million>
+
+      n2w |0> => |zero>
+      n2w |*> #=> smerge[", "] sdrop (millions int-divide-by[1000000] mod[1000000000] |_self> . thousands int-divide-by[1000] mod[1000000] |_self> . hundreds-rule |_self>)
+
+    examples:
+      n2w |0>
+        |zero>
+
+      n2w |3>
+        |three>
+
+      n2w |15>
+        |fifteen>
+
+      n2w |53>
+        |fifty three>
+
+      n2w |735>
+        |seven hundred and thirty five>
+
+      n2w |12000>
+        |twelve thousand>
+
+      n2w |12500>
+        |twelve thousand, five hundred>
+
+      n2w |987654321>
+        |nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one>
+"""
+
+examples_usage['bottles-of-beer'] = """
+    description:
+      sing the bottles of beer song
+
+    code:
+      n-1 |*> #=> arithmetic(|_self>, |->, |1>)
+
+      bottles |0> => |no more bottles>
+      bottles |1> => |1 bottle>
+      bottles |*> #=> |_self> __ |bottles>
+
+      first-line |*> #=> to-upper[1] bottles |_self> __ |of beer on the wall,> __ bottles |_self> __ |of beer.>
+
+      second-line |*> #=> |Take one down and pass it around,> __ bottles n-1 |_self> __ |of beer on the wall.>
+      second-line |0> #=> |Go to the store and buy some more,> __ bottles max |bottles> __ |of beer on the wall.>
+
+      row |*> #=> first-line |_self> . second-line |_self> . |>
+
+      max |bottles> => |10>
+      sing |*> #=> smerge["\\n"] row sp2seq reverse range(|0>, max |bottles>)
+
+    examples:
+      max |bottles> => |4>
+      sing
+        |4 bottles of beer on the wall, 4 bottles of beer.
+        Take one down and pass it around, 3 bottles of beer on the wall.
+
+        3 bottles of beer on the wall, 3 bottles of beer.
+        Take one down and pass it around, 2 bottles of beer on the wall.
+
+        2 bottles of beer on the wall, 2 bottles of beer.
+        Take one down and pass it around, 1 bottle of beer on the wall.
+
+        1 bottle of beer on the wall, 1 bottle of beer.
+        Take one down and pass it around, no more bottles of beer on the wall.
+
+        No more bottles of beer on the wall, no more bottles of beer.
+        Go to the store and buy some more, 4 bottles of beer on the wall.
+        >
+"""
+
+examples_usage['eat-from-can'] = """
+    description:
+      use consume-reaction to open and then eat from a can
+      
+    code:
+      current |state> => words-to-list |can opener, closed can and hungry>
+      learn-state (*) #=> learn(|op: current>, |state>, |_self>)
+      use |can opener> #=> learn-state consume-reaction(current |state>, |closed can>, |open can>)
+      eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
+
+    examples:
+      current |state>
+        |can opener> + |closed can> + |hungry>
+
+      use |can opener>
+        |can opener> + |hungry> + |open can>
+
+      eat-from |can>
+        |can opener> + |empty can> + |not hungry>
+"""
+
+examples_usage['greetings'] = """
+    description:
+      random greet a list of people      
+
+    code:
+      hello |*> #=> |Hello,> __ |_self> _ |!>
+      hey |*> #=> |Hey Ho!> __ |_self> _ |.>
+      wat-up |*> #=> |Wat up my homie!> __ |_self> __ |right?>
+      greetings |*> #=> |Greetings fine Sir. I belive they call you> __ |_self> _ |.>
+      howdy |*> #=> |Howdy partner!>
+      good-morning |*> #=> |Good morning> __ |_self> _ |.>
+      gday |*> #=> |G'day> __ |_self> _ |.>
+
+      list-of |greetings> => |op: hello> + |op: hey> + |op: wat-up> + |op: greetings> + |op: howdy> + |op: good-morning> + |op: gday>
+      greet (*) #=> apply(pick-elt list-of |greetings>, list-to-words |_self>)
+
+      friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Robert> + |Frank> + |Julie>
+      friends |Emma> => |Liz> + |Bob>
+
+   examples:
+     greet (|Sam> + |Jack>)
+       |G'day Sam and Jack.>
+
+     greet friends |Sam>
+       |Hey Ho! Charlie, George, Emma, Jack, Robert, Frank and Julie.>
+
+     greet friends |Emma>
+       |Wat up my homie! Liz and Bob right?>
+"""
+
+examples_usage['fission-uranium'] = """
+    description:
+      another example of consume-reaction()
+      this time a toy example of fissioning uranium 235
+
+    code:
+      fission-channel-1 |U: 235> => |Ba: 141> + |Kr: 92> + 3|n>
+      fission-channel-2 |U: 235> => |Xe: 140> + |Sr: 94> + 2|n>
+      fission-channel-3 |U: 235> => |La: 143> + |Br: 90> + 3|n>
+      fission-channel-4 |U: 235> => |Cs: 137> + |Rb: 96> + 3|n>
+      fission-channel-5 |U: 235> => |I: 131> + |Y: 89> + 16|n>
+
+      -- a more realistic example would have probabilities, as coefficients, for each of the channels.
+      list-of-fission-channels |U: 235> => |op: fission-channel-1> + |op: fission-channel-2> + |op: fission-channel-3> + |op: fission-channel-4> + |op: fission-channel-5>
+
+      fission |*> #=> apply(weighted-pick-elt list-of-fission-channels |_self>, |_self>)
+
+      fission-uranium-235 (*) #=> consume-reaction(|_self>,|n> + |U: 235>,fission |U: 235>)
+
+    examples:
+      fission |U: 235>
+        |Xe: 140> + |Sr: 94> + 2|n>
+
+      fission |U: 235>
+        |La: 143> + |Br: 90> + 3|n>
+
+      fission |U: 235>
+        |I: 131> + |Y: 89> + 16|n>
+
+      fission-uranium-235 (|n> + 10|U: 235>)
+        9|U: 235> + |Cs: 137> + |Rb: 96> + 3|n>
+
+      fission-uranium-235^50 (|n> + 100|U: 235>)
+        50|U: 235> + 12|Ba: 141> + 12|Kr: 92> + 237|n> + 11|I: 131> + 11|Y: 89> + 7|Xe: 140> + 7|Sr: 94> + 12|La: 143> + 12|Br: 90> + 8|Cs: 137> + 8|Rb: 96>
+"""
+
+examples_usage['simple-adjective-sentence'] = """
+    description:
+      proof of concept of writing sentences
+      in this case a simple adjective sentence
+      obviously, the plan is to scale this up massively
+      also, the plan is to eventually auto-learn adjectives from reading text
+      but that is a ways off!!
+
+    code:
+      current |person> => |old man>
+      learn-person |*> #=> learn(|op: current>, |person>, |_self>)
+
+      adjectives |old man> => 10|crotchety> + 8|grumpy> + 5|friendly> + |kindly> + 0.2|sleepy>
+      adjectives |old woman> => 2|kindly> + |sleepy> + |pleasant> + |strange>
+      adjectives |teenager> => |enthusiastic> + |energetic>
+
+      pick-adjective (*) #=> clean weighted-pick-elt adjectives |_self>
+      how-many-adjectives |*> #=> clean weighted-pick-elt (8|0> + 2|1> + 0.5|2> + 0.2|3>)
+
+      insert-adjective |*> #=> |>
+      insert-adjective |1> #=> pick-adjective current |person>
+      insert-adjective |2> #=> pick-adjective current |person> . pick-adjective current |person>
+      insert-adjective |3> #=> pick-adjective current |person> . pick-adjective current |person> . pick-adjective current |person>
+
+      adjective-list |*> #=> smerge[", "] insert-adjective how-many-adjectives learn-person |_self>
+
+      the-sentence |*> #=> smerge[" "] sdrop (|The> . adjective-list |_self> . |_self> _ |.>)
+      sentence |*> #=> the-sentence pick-elt (|old man> + |old woman> + |teenager>)
+
+    examples:
+      sentence
+        |The kindly old man.>
+
+      sentence
+        |The old woman.>
+
+      sentence
+        |The teenager.>
+
+      sentence
+        |The strange, kindly old woman.>
+
+      sentence
+        |The energetic teenager.>
+
+    future:
+      fix! Need a better way to handle old, and the placement of commas.
+"""
+
+examples_usage['random-sentence'] = """
+    description:
+      learn some sentence fragments, and then produce a valid sentence
+      motivated by this: http://write-up.semantic-db.org/221-generating-random-grammatically-correct-sentences.html
+
+      in gm notation:
+        A = {the.woman.saw}
+        B = {through.the.telescope}
+        C = {{}, young}
+        D = {girl, boy}
+        E = {{}, old, other}
+        F = {man, woman, lady}
+        G = E.F
+        H = {the}
+        I = H.C.D
+        J = H.E.F
+        K = {{},I,J}
+
+        L = A.K.B
+
+        M = {I,J}
+        N = {saw}
+        O = M.N.K.B
+
+        P = {through.the}
+        Q = {telescope, binoculars, night.vision.goggles}
+
+        R = M.N.K.P.Q
+
+    code:
+      frag |A> => |the woman saw>
+      frag |B> => |through the telescope>
+      frag |C> #=> spick-elt (|> . |young>)
+      frag |D> #=> spick-elt (|girl> . |boy>)
+      frag |E> #=> spick-elt (|> . |old> . |other>)
+      frag |F> #=> spick-elt (|man> . |woman> . |lady>)
+      frag |G> #=> frag (|E> . |F>)
+      frag |H> => |the>
+      frag |I> #=> frag (|H> . |C> . |D>)
+      frag |J> #=> frag (|H> . |E> . |F>)
+      frag |K> #=> frag spick-elt (|> . |I> . |J>)
+      frag |L> #=> frag (|A> . |K> . |B>)
+      frag |M> #=> frag spick-elt (|I> . |J>)
+      frag |N> => |saw>
+      frag |O> #=> frag (|M> . |N> . |K> . |B>)
+      frag |P> => |through the>
+      frag |Q> #=> spick-elt (|telescope> . |binoculars> . |night vision goggles>)
+      frag |R> #=> frag (|M> . |N> . |K> . |P> . |Q>)
+
+      sentence |*> #=> to-upper[1] smerge[" "] sdrop frag |R> _ |.>
+
+    examples:
+      sentence
+        |The other lady saw the old woman through the telescope.>
+
+      sentence
+        |The young boy saw the young girl through the binoculars.>
+
+      sentence
+        |The old woman saw the other man through the telescope.>
+
+      sentence
+        |The young boy saw the young girl through the night vision goggles.>
+
+    future:
+      scale it up, and maybe write a gm-to-code converter?
+"""
+
+examples_usage['active-logic'] = """
+    description:
+      proof of concept using simple if-then machines
+      in this case, concerning wet grass, the sprinkler and rain
+
+    code:
+      -- learn the meaning of not:
+      not |no> => |yes>
+      not |yes> => |no>
+      not |don't know> => |don't know>
+
+      -- define our if-then machines:
+      pattern |node 1: 1> => |grass is wet> + |not rained last night>
+      then |node 1: 1> => 2.0|sprinkler was on> + -1.0|rained last night> + -1.0|not grass is wet>
+
+      pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+      then |node 2: 1> => 2.0|rained last night> + -1.0|sprinkler was on> + -1.0|not grass is wet>
+
+      pattern |node 3: 1> => |sprinkler was on>
+      then |node 3: 1> => |grass is wet> + -1.0|not sprinkler was on>
+
+      pattern |node 3: 2> => |rained last night>
+      then |node 3: 2> => |grass is wet> + -1.0|not rained last night>
+
+      pattern |node 4: 1> => |not rained last night> + |not sprinkler was on>
+      then |node 4: 1> => 2.0|not grass is wet> + -1.0|rained last night> + -1.0|sprinkler was on>
+
+
+      -- learn state of activation:
+      active |rained last night> => |don't know>
+      active |not rained last night> #=> not active |rained last night>
+      active |sprinkler was on> => |don't know>
+      active |not sprinkler was on> #=> not active |sprinkler was on>
+      active |grass is wet> => |don't know>
+      active |not grass is wet> #=> not active |grass is wet>
+
+
+      -- activation states we want to unlearn:
+      the-unlearn |list> => |rained last night> + |sprinkler was on> + |grass is wet>
+
+
+      -- unlearn operators:
+      unlearn |*> #=> learn(|op: active>, |_self>, |don't know>)
+      unlearn-everything |*> #=> unlearn the-unlearn |list>
+
+
+      -- our 'active' operators:
+      make-active |*> #=> learn(|op: active>, remove-prefix["not "] |_self>, not has-prefix["not "] |_self>)
+      currently-active |*> #=> such-that[active] rel-kets[active] |>
+      read-sentence |*> #=> make-active words-to-list |_self>
+
+
+      -- define our conclude operators:
+      conclude |*> #=> drop then similar-input[pattern] such-that[active] rel-kets[active] |>
+      inverse-conclude |*> #=> pattern similar-input[then] such-that[active] rel-kets[active] |>
+
+
+      -- define short-cuts for our tables:
+      t |*> #=> table[state, unlearn-everything, read-sentence, currently-active, conclude, inverse-conclude] the-list-of |states>
+      t2 |*> #=> table[state, unlearn-everything, read-sentence, currently-active, conclude] the-list-of |states>
+
+
+      -- learn the list of states we want in our tables:
+      the-list-of |states> => |grass is wet>
+      the-list-of |states> +=> |sprinkler was on>
+      the-list-of |states> +=> |rained last night>
+      the-list-of |states> +=> |sprinkler was on and rained last night>
+      the-list-of |states> +=> |grass is wet and not rained last night>
+      the-list-of |states> +=> |grass is wet and not sprinkler was on>
+      the-list-of |states> +=> |not rained last night>
+      the-list-of |states> +=> |not sprinkler was on>
+      the-list-of |states> +=> |not rained last night and not sprinkler was on>
+      the-list-of |states> +=> |not grass is wet>
+
+    examples:
+      unlearn-everything
+        3|don't know>
+
+      read-sentence |grass is wet and not rained last night>
+        |yes> + |no>
+
+      currently-active
+        |not rained last night> + |grass is wet>
+
+      conclude
+        |sprinkler was on>
+
+
+      t2
+        +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+        | state                                          | unlearn-everything | read-sentence | currently-active                            | conclude                                      |
+        +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+        | grass is wet                                   | 3 don't know       | yes           | grass is wet                                | 0.50 sprinkler was on, 0.50 rained last night |
+        | sprinkler was on                               | 3 don't know       | yes           | sprinkler was on                            | grass is wet                                  |
+        | rained last night                              | 3 don't know       | yes           | rained last night                           | grass is wet                                  |
+        | sprinkler was on and rained last night         | 3 don't know       | 2 yes         | rained last night, sprinkler was on         | grass is wet                                  |
+        | grass is wet and not rained last night         | 3 don't know       | yes, no       | not rained last night, grass is wet         | sprinkler was on                              |
+        | grass is wet and not sprinkler was on          | 3 don't know       | yes, no       | not sprinkler was on, grass is wet          | rained last night                             |
+        | not rained last night                          | 3 don't know       | no            | not rained last night                       | 0.50 sprinkler was on, 0.50 not grass is wet  |
+        | not sprinkler was on                           | 3 don't know       | no            | not sprinkler was on                        | 0.50 rained last night, 0.50 not grass is wet |
+        | not rained last night and not sprinkler was on | 3 don't know       | 2 no          | not rained last night, not sprinkler was on | not grass is wet                              |
+        | not grass is wet                               | 3 don't know       | no            | not grass is wet                            |                                               |
+        +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+"""
+
+examples_usage['temperature-conversions'] = """
+    description:
+      converting between Fahrenheit, Celsius and Kelvin
+
+    code:
+      to-Kelvin |K: *> #=> |_self>
+      to-Celsius |K: *> #=> |C:> __ round[2] minus[273.15] extract-value |_self>
+      to-Fahrenheit |K: *> #=> |F:> __ round[2] minus[459.67] times-by[9/5] extract-value |_self>
+
+      to-Kelvin |C: *> #=> |K:> __ round[2] plus[273.15] extract-value |_self>
+      to-Celsius |C: *> #=> |_self>
+      to-Fahrenheit |C: *> #=> |F:> __ round[2] plus[32] times-by[9/5] extract-value |_self>
+
+      to-Kelvin |F: *> #=> |K:> __ round[2] times-by[5/9] plus[459.67] extract-value |_self>
+      to-Celsius |F: *> #=> |C:> __ round[2] times-by[5/9] minus[32] extract-value |_self>
+      to-Fahrenheit |F: *> #=> |_self>
+
+      to-K |*> #=> to-Kelvin |_self>
+      to-C |*> #=> to-Celsius |_self>
+      to-F |*> #=> to-Fahrenheit |_self>
+
+    examples:
+      to-F |C: 42>
+        |F: 107.6>
+
+      to-C |F: 50>
+        |C: 10>
+
+      to-K |C: 0>
+        |K: 273.15>
+
+      to-F |C: 100>
+        |F: 212>
+"""

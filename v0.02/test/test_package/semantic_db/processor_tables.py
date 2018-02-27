@@ -414,6 +414,7 @@ compound_table = {
   "times"                 : ".apply_fn(times_numbers,{0})",
   "times-by"              : ".apply_fn(times_numbers,{0})",
   "divide-by"             : ".apply_fn(times_numbers,1/{0})",
+  "int-divide-by"         : ".apply_fn(int_divide_numbers,{0})",
   "plus"                  : ".apply_fn(plus_numbers,{0})",
   "minus"                 : ".apply_fn(plus_numbers,-{0})",
   "add"                   : ".apply_fn(plus_numbers,{0})",

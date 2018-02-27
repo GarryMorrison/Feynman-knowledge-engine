@@ -1087,6 +1087,10 @@ class sequence(object):
       self.data = [superposition(data)]
 
   def __len__(self):
+    if len(self.data) == 0:
+      return 0
+    if self.data[0].label == '':
+      return 0
     return len(self.data)
     
   def __iter__(self):
@@ -1486,6 +1490,11 @@ class sequence(object):
     seq = sequence([])
     seq.data = self.data[a:b]
     return seq
+
+  def is_not_empty(self):
+    if len(self) == 0:
+      return ket("no")
+    return ket("yes")
 
   def activate(self,context=None,op=None,self_label=None):
     return self
@@ -1965,7 +1974,8 @@ class NewContext(object):
         if type(candidate_pattern) in [stored_rule, memoizing_rule]:
           candidate_pattern = candidate_pattern.activate(self,op,label) # do we really want to activate memoizing rules just by running similar-input[op]??
 #        value = silent_simm(pattern,candidate_pattern)
-        value = fast_simm(pattern,candidate_pattern)                    # see if this speeds things up!
+#        value = fast_simm(pattern,candidate_pattern)                    # see if this speeds things up!
+        value = aligned_simm_value(pattern, candidate_pattern)
         if value > t:                                                   # "value >= t" instead?
           result.add(label,value)                                       # "result += ket(label,value)" when swap in fast_superposition
     return result.coeff_sort()
