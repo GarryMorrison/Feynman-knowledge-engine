@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 23/2/2018
+# Update: 28/2/2018
 # Copyright: GPLv3
 #
 # Usage:
@@ -132,6 +132,18 @@ built_in_table_usage['sdrop'] = """
     see also:
       drop
 """
+
+#built_in_table['sreverse'] = 'sreverse'
+built_in_table_usage['sreverse'] = """
+    description:
+      sequence version of reverse
+
+    examples:
+
+    see also:
+      reverse
+"""
+
 
 
 built_in_table_usage['z'] = """
@@ -392,6 +404,8 @@ examples_usage['numbers-to-words'] = """
 
       tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
       hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
+      thousands-rule |*> #=> thousands int-divide-by[1000] mod[1000000] |_self>
+      millions-rule |*> #=> millions int-divide-by[1000000] mod[1000000000] |_self>
 
       hundreds |0> #=> |>
       hundreds |*> #=> ones |_self> __ |hundred>
@@ -403,7 +417,7 @@ examples_usage['numbers-to-words'] = """
       millions |*> #=> hundreds-rule |_self> __ |million>
 
       n2w |0> => |zero>
-      n2w |*> #=> smerge[", "] sdrop (millions int-divide-by[1000000] mod[1000000000] |_self> . thousands int-divide-by[1000] mod[1000000] |_self> . hundreds-rule |_self>)
+      n2w |*> #=> smerge[", "] sdrop (millions-rule |_self> . thousands-rule |_self> . hundreds-rule |_self>)
 
     examples:
       n2w |0>
@@ -429,6 +443,93 @@ examples_usage['numbers-to-words'] = """
 
       n2w |987654321>
         |nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one>
+
+      -- or all at once:
+      table[number, n2w] split |0 3 15 53 735 12000 987654321>
+        +-----------+----------------------------------------------------------------------------------------------------------+
+        | number    | n2w                                                                                                      |
+        +-----------+----------------------------------------------------------------------------------------------------------+
+        | 0         | zero                                                                                                     |
+        | 3         | three                                                                                                    |
+        | 15        | fifteen                                                                                                  |
+        | 53        | fifty three                                                                                              |
+        | 735       | seven hundred and thirty five                                                                            |
+        | 12000     | twelve thousand                                                                                          |
+        | 987654321 | nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one |
+        +-----------+----------------------------------------------------------------------------------------------------------+
+
+    source code:
+      load numbers-to-words.sw
+"""
+
+examples_usage['big-numbers-to-words'] = """
+    description:
+      convert integers into words
+
+    code:
+      ones |1> => |one>
+      ones |2> => |two>
+      ones |3> => |three>
+      ones |4> => |four>
+      ones |5> => |five>
+      ones |6> => |six>
+      ones |7> => |seven>
+      ones |8> => |eight>
+      ones |9> => |nine>
+
+      tens |10> => |ten>
+      tens |11> => |eleven>
+      tens |12> => |twelve>
+      tens |13> => |thirteen>
+      tens |14> => |fourteen>
+      tens |15> => |fifteen>
+      tens |16> => |sixteen>
+      tens |17> => |seventeen>
+      tens |18> => |eighteen>
+      tens |19> => |nineteen>
+
+      ten |20> => |twenty>
+      ten |30> => |thirty>
+      ten |40> => |forty>
+      ten |50> => |fifty>
+      ten |60> => |sixty>
+      ten |70> => |seventy>
+      ten |80> => |eighty>
+      ten |90> => |ninety>
+
+      tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
+      hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
+
+      hundreds |0> #=> |>
+      hundreds |*> #=> ones |_self> __ |hundred>
+
+      thousands |0> #=> |>
+      thousands |*> #=> hundreds-rule |_self> __ |thousand>
+
+      millions |0> #=> |>
+      millions |*> #=> hundreds-rule |_self> __ |million>
+
+      billions |0> #=> |>
+      billions |*> #=> hundreds-rule |_self> __ |billion>
+
+      trillions |0> #=> |>
+      trillions |*> #=> hundreds-rule |_self> __ |trillion>
+
+      op |seq> => |op: hundreds-rule> . |op: thousands> . |op: millions> . |op: billions> . |op: trillions>
+
+      n2w |0> => |zero>
+      n2w |*> #=> smerge[", "] sreverse op-zip(op |seq>, split-num |_self>)
+
+      split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
+      process-if |less than 1000: *> #=> remove-leading-category |_self>
+      process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>
+
+    examples:
+      n2w |123456789012345>
+        |one hundred and twenty three trillion, four hundred and fifty six billion, seven hundred and eighty nine million, twelve thousand, three hundred and forty five>
+
+    source code:
+      load big-numbers-to-words.sw      
 """
 
 examples_usage['bottles-of-beer'] = """
@@ -470,6 +571,9 @@ examples_usage['bottles-of-beer'] = """
         No more bottles of beer on the wall, no more bottles of beer.
         Go to the store and buy some more, 4 bottles of beer on the wall.
         >
+
+    source code:
+      load bottles-of-beer.sw
 """
 
 examples_usage['eat-from-can'] = """
@@ -491,6 +595,9 @@ examples_usage['eat-from-can'] = """
 
       eat-from |can>
         |can opener> + |empty can> + |not hungry>
+
+    source code:
+      load eat-from-can.sw
 """
 
 examples_usage['greetings'] = """
@@ -521,6 +628,9 @@ examples_usage['greetings'] = """
 
      greet friends |Emma>
        |Wat up my homie! Liz and Bob right?>
+
+    source code:
+      load greetings.sw
 """
 
 examples_usage['fission-uranium'] = """
@@ -557,6 +667,9 @@ examples_usage['fission-uranium'] = """
 
       fission-uranium-235^50 (|n> + 100|U: 235>)
         50|U: 235> + 12|Ba: 141> + 12|Kr: 92> + 237|n> + 11|I: 131> + 11|Y: 89> + 7|Xe: 140> + 7|Sr: 94> + 12|La: 143> + 12|Br: 90> + 8|Cs: 137> + 8|Rb: 96>
+
+    source code:
+      load fission-uranium.sw
 """
 
 examples_usage['simple-adjective-sentence'] = """
@@ -606,6 +719,9 @@ examples_usage['simple-adjective-sentence'] = """
 
     future:
       fix! Need a better way to handle old, and the placement of commas.
+
+    source code:
+      load the-old-man.sw
 """
 
 examples_usage['random-sentence'] = """
@@ -674,6 +790,9 @@ examples_usage['random-sentence'] = """
 
     future:
       scale it up, and maybe write a gm-to-code converter?
+
+    source code:
+      load the-woman-saw.sw
 """
 
 examples_usage['active-logic'] = """
@@ -779,6 +898,9 @@ examples_usage['active-logic'] = """
         | not rained last night and not sprinkler was on | 3 don't know       | 2 no          | not rained last night, not sprinkler was on | not grass is wet                              |
         | not grass is wet                               | 3 don't know       | no            | not grass is wet                            |                                               |
         +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+
+    source code:
+      load improved-active-logic.sw
 """
 
 examples_usage['temperature-conversions'] = """
@@ -814,4 +936,61 @@ examples_usage['temperature-conversions'] = """
 
       to-F |C: 100>
         |F: 212>
+
+    source code:
+      load temperature-conversion.sw
+"""
+
+examples_usage['Fibonnaci-and-factorial'] = """
+    description:
+      simple recursive Fibonnaci and factorial
+      NB: we use !=> instead of #=>
+      ie, memoizing rules instead of plain stored-rules.
+      otherwise this code gets very slow, very fast.
+
+    code:
+      fib |0> => |0>
+      fib |1> => |1>
+      fib |*> !=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+      fib-ratio |*> !=> arithmetic( fib |_self> , |/>, fib minus[1] |_self> )
+
+      fact |0> => |1>
+      fact |*> !=> arithmetic(|_self>, |*>, fact minus[1] |_self>)
+
+    examples:
+      table[number, fib, fib-ratio, fact] range(|1>, |30>)
+        +--------+--------+--------------------+-----------------------------------+
+        | number | fib    | fib-ratio          | fact                              |
+        +--------+--------+--------------------+-----------------------------------+
+        | 1      | 1      |                    | 1                                 |
+        | 2      | 1      | 1.0                | 2                                 |
+        | 3      | 2      | 2.0                | 6                                 |
+        | 4      | 3      | 1.5                | 24                                |
+        | 5      | 5      | 1.6666666666666667 | 120                               |
+        | 6      | 8      | 1.6                | 720                               |
+        | 7      | 13     | 1.625              | 5040                              |
+        | 8      | 21     | 1.6153846153846154 | 40320                             |
+        | 9      | 34     | 1.619047619047619  | 362880                            |
+        | 10     | 55     | 1.6176470588235294 | 3628800                           |
+        | 11     | 89     | 1.6181818181818182 | 39916800                          |
+        | 12     | 144    | 1.6179775280898876 | 479001600                         |
+        | 13     | 233    | 1.6180555555555556 | 6227020800                        |
+        | 14     | 377    | 1.6180257510729614 | 87178291200                       |
+        | 15     | 610    | 1.6180371352785146 | 1307674368000                     |
+        | 16     | 987    | 1.618032786885246  | 20922789888000                    |
+        | 17     | 1597   | 1.618034447821682  | 355687428096000                   |
+        | 18     | 2584   | 1.6180338134001253 | 6402373705728000                  |
+        | 19     | 4181   | 1.618034055727554  | 121645100408832000                |
+        | 20     | 6765   | 1.6180339631667064 | 2432902008176640000               |
+        | 21     | 10946  | 1.6180339985218033 | 51090942171709440000              |
+        | 22     | 17711  | 1.618033985017358  | 1124000727777607680000            |
+        | 23     | 28657  | 1.6180339901755971 | 25852016738884976640000           |
+        | 24     | 46368  | 1.618033988205325  | 620448401733239439360000          |
+        | 25     | 75025  | 1.618033988957902  | 15511210043330985984000000        |
+        | 26     | 121393 | 1.6180339886704431 | 403291461126605635584000000       |
+        | 27     | 196418 | 1.6180339887802426 | 10888869450418352160768000000     |
+        | 28     | 317811 | 1.618033988738303  | 304888344611713860501504000000    |
+        | 29     | 514229 | 1.6180339887543225 | 8841761993739701954543616000000   |
+        | 30     | 832040 | 1.6180339887482036 | 265252859812191058636308480000000 |
+        +--------+--------+--------------------+-----------------------------------+
 """

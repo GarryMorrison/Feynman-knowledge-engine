@@ -84,8 +84,9 @@ built_in_table = {
 # and by "this", I mean all these different tables and so on.   
   "reverse-rank"     : "reverse().apply_sp_fn(rank).reverse",
   
-  "sdrop"            : "sdrop",
+  "sdrop"            : "sdrop",                           # can we define these in usage_tables.py?
   "spick-elt"        : "spick_elt",
+  "sreverse"         : "sreverse",
   
 }                                                                                      
 

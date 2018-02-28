@@ -1,4 +1,3 @@
-ones |0> #=> |>
 ones |1> => |one>
 ones |2> => |two>
 ones |3> => |three>
@@ -41,7 +40,19 @@ thousands |*> #=> hundreds-rule |_self> __ |thousand>
 millions |0> #=> |>
 millions |*> #=> hundreds-rule |_self> __ |million>
 
+billions |0> #=> |>
+billions |*> #=> hundreds-rule |_self> __ |billion>
+
+trillions |0> #=> |>
+trillions |*> #=> hundreds-rule |_self> __ |trillion>
+
+
 n2w |0> => |zero>
-n2w |*> #=> smerge[", "] sdrop (millions int-divide-by[1000000] mod[1000000000] |_self> . thousands int-divide-by[1000] mod[1000000] |_self> . hundreds-rule |_self>)
+
+op |seq> => |op: hundreds-rule> . |op: thousands> . |op: millions> . |op: billions> . |op: trillions>
+n2w |*> #=> smerge[", "] sreverse op-zip(op |seq>, split-num |_self>)
 
 
+split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
+process-if |less than 1000: *> #=> remove-leading-category |_self>
+process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>

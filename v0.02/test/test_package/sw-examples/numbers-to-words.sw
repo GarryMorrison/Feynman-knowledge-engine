@@ -1,52 +1,47 @@
-n2w |0> #=> |>
-n2w |1> => |one>
-n2w |2> => |two>
-n2w |3> => |three>
-n2w |4> => |four>
-n2w |5> => |five>
-n2w |6> => |six>
-n2w |7> => |seven>
-n2w |8> => |eight>
-n2w |9> => |nine>
-n2w |10> => |ten>
-n2w |11> => |eleven>
-n2w |12> => |twelve>
-n2w |13> => |thirteen>
-n2w |14> => |fourteen>
-n2w |15> => |fifteen>
-n2w |16> => |sixteen>
-n2w |17> => |seventeen>
-n2w |18> => |eighteen>
-n2w |19> => |nineteen>
-n2w |20> => |twenty>
-n2w |30> => |thirty>
-n2w |40> => |forty>
-n2w |50> => |fifty>
-n2w |60> => |sixty>
-n2w |70> => |seventy>
-n2w |80> => |eighty>
-n2w |90> => |ninety>
+ones |0> #=> |>
+ones |1> => |one>
+ones |2> => |two>
+ones |3> => |three>
+ones |4> => |four>
+ones |5> => |five>
+ones |6> => |six>
+ones |7> => |seven>
+ones |8> => |eight>
+ones |9> => |nine>
 
-big-n2w |3> => |hundred>
-big-n2w |4> => |thousand>
-big-n2w |6> => |million>
+tens |10> => |ten>
+tens |11> => |eleven>
+tens |12> => |twelve>
+tens |13> => |thirteen>
+tens |14> => |fourteen>
+tens |15> => |fifteen>
+tens |16> => |sixteen>
+tens |17> => |seventeen>
+tens |18> => |eighteen>
+tens |19> => |nineteen>
 
-learn-number |*> #=> learn(|op: current>, |number>, |_self>)
-n2w |*> #=> general-n2w extract-value ket-length learn-number |_self>
+ten |20> => |twenty>
+ten |30> => |thirty>
+ten |40> => |forty>
+ten |50> => |fifty>
+ten |60> => |sixty>
+ten |70> => |seventy>
+ten |80> => |eighty>
+ten |90> => |ninety>
 
-general-n2w |1> #=> n2w current |number>
-general-n2w |2> #=> n2w times-by[10] int-divide-by[10] current |number> __ n2w mod[10] current |number>
-general-n2w |3> #=> smerge[" and "] sdrop (n2w int-divide-by[100] current |number> __ |hundred> . n2w mod[100] current |number> )
-general-n2w |4> #=> n2w int-divide-by[1000] current |number> __ |thousand> __ n2w mod[1000] current |number>
+tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
+hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
 
+hundreds |0> #=> |>
+hundreds |*> #=> ones |_self> __ |hundred>
 
-hundred-rule |*> #=> smerge[" "] sdrop (n2w select-char[-3] |_self> . big-n2w ket-length current |_self>)
-thousand-rule |*> #=> smerge[" "] sdrop (n2w select-char[-4] |_self> . big-n2w ket-length current |_self>)
-million-rule |*> #=> smerge[" "] sdrop (n2w select-char[-6] |_self> . big-n2w ket-length current |_self>)
+thousands |0> #=> |>
+thousands |*> #=> hundreds-rule |_self> __ |thousand>
 
-general-n2w |1> #=> n2w current |number>
-general-n2w |2> #=> smerge[" "] sdrop n2w ( times-by[10] select-char[-2] current |number> . select-char[-1] current |number> )
-general-n2w |3> #=> smerge[" and "] sdrop ( hundred-rule current |number> . n2w mod[100] current |number> )
-general-n2w |4> #=> smerge[", "] sdrop ( thousand-rule current |number> . n2w mod[1000] current |number> )
+millions |0> #=> |>
+millions |*> #=> hundreds-rule |_self> __ |million>
+
+n2w |0> => |zero>
+n2w |*> #=> smerge[", "] sdrop (millions int-divide-by[1000000] mod[1000000000] |_self> . thousands int-divide-by[1000] mod[1000000] |_self> . hundreds-rule |_self>)
 
 

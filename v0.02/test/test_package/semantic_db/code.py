@@ -1490,6 +1490,11 @@ class sequence(object):
     seq = sequence([])
     seq.data = self.data[a:b]
     return seq
+    
+  def sreverse(self):
+    seq = sequence([])
+    seq.data = list(reversed(self.data))
+    return seq
 
   def is_not_empty(self):
     if len(self) == 0:
@@ -1594,11 +1599,12 @@ class memoizing_rule(object):
   # eventually I want support for all three cases.    
   def activate(self,context,op,self_label):                         
     try:
-      resulting_rule = extract_compound_superposition(context,self.rule,self_label)[0] # how does return work in try/except?
-      context.learn(op,self_label,resulting_rule)
+      #resulting_rule = extract_compound_superposition(context,self.rule,self_label)[0] # how does return work in try/except?
+      resulting_rule = extract_compound_sequence(context, self.rule, self_label)
+      context.learn(op, self_label, resulting_rule)
       return resulting_rule
-    except:                                                                   # works fine.
-      logger.warning("FYI: except in stored_rule")
+    except Exception as e:  
+      logger.warning("FYI: except in memoizing_rule\nReason: %s" % e)
       return superposition()  
   
   def multiply(self,value):

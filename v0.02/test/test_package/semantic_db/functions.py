@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-27
+# Update: 2018-2-28
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1387,37 +1387,7 @@ def number_to_words(one):
   
 
 
-# 13/4/2014:
-# Let's add an if/else statement to BKO.
-# Motivated by recursion works without even trying (though vastly inefficient at the moment).
-# So seems sensible to add if/else too.
-#
-# bko_if(|True>,|a>,|b>)  -- returns |a>
-# bko_if(|False>,|c>,|d>) -- returns |d>
-def bko_if(condition,one,two):
-  if condition[0].label.lower() in ["true","yes"]:
-    return one
-  else:
-    return two
 
-# 14/12/2014:
-# Let's add a weighted if to BKO.
-# eg: wif(0.7|True>,|a>,|b>)
-# returns: 0.7|a> + 0.3|b>
-# and
-# wif(0.8|False>,|a>,|b>)
-# returns: 0.2|a> + 0.8|b> 
-# assumes the coeff of True/False is in [0,1] otherwise we get negative coeffs.
-# though we can filter those using drop().
-# 
-def weighted_bko_if(condition,one,two):
-  condition_ket = condition.ket()
-  label = condition_ket.label 
-  value = condition_ket.value 
-  if label.lower() in ["true","yes"]:
-    return one.multiply(value) + two.multiply(1 - value)
-  else:
-    return one.multiply(1 - value) + two.multiply(value)     
 
   
 # 8/5/2014:
@@ -2896,75 +2866,8 @@ def extract_3_tail_chars(one):
 
   
   
-# TODO:
-# greater-than[51] SP
-# greater-equal-than[30] SP
-# less-than[3] SP
-# equal[37] SP
-# in-range[300,700]
-# we already have in-range sigmoid.
-# maybe they should all be sigmoids??
-# yeah, but then all the push-float, pop-float, and drop is needed.
-#
-# eg:
-# is-greater-than[3] |5> == |5>
-# is-greater-than[7] |6> == |>
-# is-greater-than[13] |age: 14> == |age: 14>
-# assumes one is a ket
-def greater_than(one,t):
-  try:    
-    value = float(one.label.rsplit(": ",1)[-1]) # NB: if one is not a ket, one.label fails, and the exception is tripped. Neat!
-  except:
-    return ket("",0)
-  if value > t:
-    return one
-  return ket("",0)
 
-def greater_equal_than(one,t):
-  try:    
-    value = float(one.label.rsplit(": ",1)[-1])
-  except:
-    return ket("",0)
-  if value >= t:
-    return one
-  return ket("",0)
 
-def less_than(one,t):
-  try:    
-    value = float(one.label.rsplit(": ",1)[-1])
-  except:
-    return ket("",0)
-  if value < t:
-    return one
-  return ket("",0)
-
-def less_equal_than(one,t):
-  try:    
-    value = float(one.label.rsplit(": ",1)[-1])
-  except:
-    return ket("",0)
-  if value <= t:
-    return one
-  return ket("",0)
-
-def equal(one,t):          # name clash with equal(SP1,SP2)??
-  epsilon = 0.0001         # Need code since equal and float don't work well together.
-  try:    
-    value = float(one.label.rsplit(": ",1)[-1])
-  except:
-    return ket("",0)
-  if (t - epsilon) <= value <= (t + epsilon):
-    return one
-  return ket("",0)
-
-def in_range(one,t1,t2):
-  try:    
-    value = float(one.label.rsplit(": ",1)[-1])
-  except:
-    return ket("",0)
-  if t1 <= value <= t2:
-    return one
-  return ket("",0)
 
 # 21/2/2015: round[3] |number: 3.1415> == |number: 3.142>
 # assumes one is a ket, t is an integer
@@ -2985,9 +2888,15 @@ def old_round_numbers(one,t):
 # 14/1/2016:
 # Instead of just round_numbers(), let's implement a more general numbers_fn().
 # Eventually we want: round[3], times-by[2], divide-by[7], plus[5.2], minus[9], and maybe others.
+# currently has a bug for large numbers!
+# sa: int-divide-by[1000] |12345678901234567890>
+# |12345678901234568>
+#
+# sa: mod[1000] |12345678901234567890>
+# |168>
 #
 # foo() is a 2 param fn, one is a ket, t is number
-def numbers_fn(foo,one,t):
+def old_numbers_fn(foo,one,t):
   try:
     cat, value = one.label.rsplit(': ', 1)
     value = float(value)
@@ -3004,33 +2913,7 @@ def numbers_fn(foo,one,t):
     result_value = int(result_value)
   return ket(cat + str(result_value),one.value)
 
-def round_numbers(one,t):               # cool, this one seems to work. Now need to do the rest.
-  return numbers_fn(round,one,t)
   
-def times_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
-  def multiply(a,b):
-    return a*b
-  return numbers_fn(multiply,one,t)
-
-def int_divide_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
-  def int_divide(a,b):
-    return a//b
-  return numbers_fn(int_divide, one, t)
-
-def plus_numbers(one,t):
-  def add(a,b):
-    return a+b
-  return numbers_fn(add,one,t)
-
-def mod_numbers(one,t):
-  def mod(a,b):
-    return a % b
-  return numbers_fn(mod,one,t)        
-
-def is_mod_numbers(one,t):
-  def mod(a,b):
-    return a % b
-  return equal(numbers_fn(mod,one,t),0).is_not_empty()        
 
 
 # to-coeff 12|> == |>
@@ -6857,4 +6740,467 @@ def sp2seq(one):
     seq += x
   return seq
   
-                             
+
+
+# TODO:
+# greater-than[51] SP
+# greater-equal-than[30] SP
+# less-than[3] SP
+# equal[37] SP
+# in-range[300,700]
+# we already have in-range sigmoid.
+# maybe they should all be sigmoids??
+# yeah, but then all the push-float, pop-float, and drop is needed.
+#
+# eg:
+# is-greater-than[3] |5> == |5>
+# is-greater-than[7] |6> == |>
+# is-greater-than[13] |age: 14> == |age: 14>
+# assumes one is a ket
+def greater_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1]) # NB: if one is not a ket, one.label fails, and the exception is tripped. Neat!
+  except:
+    return ket("",0)
+  if value > t:
+    return one
+  return ket("",0)
+
+def greater_equal_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if value >= t:
+    return one
+  return ket("",0)
+
+def less_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if value < t:
+    return one
+  return ket("",0)
+
+def less_equal_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if value <= t:
+    return one
+  return ket("",0)
+
+def equal(one,t):          # name clash with equal(SP1,SP2)??
+  epsilon = 0.0001         # Need code since equal and float don't work well together.
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if (t - epsilon) <= value <= (t + epsilon):
+    return one
+  return ket("",0)
+
+def in_range(one,t1,t2):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket("",0)
+  if t1 <= value <= t2:
+    return one
+  return ket("",0)
+
+# set invoke method:
+compound_table['is-greater-than'] = ".apply_fn(is_greater_than,{0})" 
+# set usage info:
+function_operators_usage['is-greater-than'] = """
+    description:
+      
+    examples:
+"""
+def is_greater_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1]) # NB: if one is not a ket, one.label fails, and the exception is tripped. Neat!
+  except:
+    return ket()
+  if value > t:
+    return ket('yes')
+  return ket('no')
+
+# set invoke method:
+compound_table['is-greater-equal-than'] = ".apply_fn(is_greater_equal_than,{0})" 
+# set usage info:
+function_operators_usage['is-greater-equal-than'] = """
+    description:
+      
+    examples:
+"""
+def is_greater_equal_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket()
+  if value >= t:
+    return ket('yes')
+  return ket('no')
+
+# set invoke method:
+compound_table['is-less-than'] = ".apply_fn(is_less_than,{0})" 
+# set usage info:
+function_operators_usage['is-less-than'] = """
+    description:
+      
+    examples:
+"""
+def is_less_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket()
+  if value < t:
+    return ket('yes')
+  return ket('no')
+
+# set invoke method:
+compound_table['is-less-equal-than'] = ".apply_fn(is_less_equal_than,{0})" 
+# set usage info:
+function_operators_usage['is-less-equal-than'] = """
+    description:
+      
+    examples:
+"""
+def is_less_equal_than(one,t):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket()
+  if value <= t:
+    return ket('yes')
+  return ket('no')
+
+# set invoke method:
+compound_table['is-equal'] = ".apply_fn(is_equal,{0})" 
+# set usage info:
+function_operators_usage['is-equal'] = """
+    description:
+      
+    examples:
+"""
+def is_equal(one,t):          # name clash with equal(SP1,SP2)??
+  epsilon = 0.0001         # Need code since equal and float don't work well together.
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket()
+  if (t - epsilon) <= value <= (t + epsilon):
+    return ket('yes')
+  return ket('no')
+
+# set invoke method:
+compound_table['is-in-range'] = ".apply_fn(is_in_range,{0})" 
+# set usage info:
+function_operators_usage['is-in-range'] = """
+    description:
+      
+    examples:
+"""
+def is_in_range(one,t1,t2):
+  try:    
+    value = float(one.label.rsplit(": ",1)[-1])
+  except:
+    return ket()
+  if t1 <= value <= t2:
+    return ket('yes')
+  return ket('no')
+
+
+# set invoke method:
+context_whitelist_table_2['op-zip'] = 'op_zip'
+# set usage info:
+sequence_functions_usage['op-zip'] = """
+    description:
+      zip together a sequence of operators and a sequence of objects
+      stops at the end of the shorter of the two sequences
+            
+    examples:
+      op1 |*> #=> |op1: > _ |_self>
+      op2 |*> #=> |op2: > _ |_self>
+      op3 |*> #=> |op3: > _ |_self>
+      op4 |*> #=> |op4: > _ |_self>
+      op |seq> => |op: op1> . |op: op2> . |op: op3> . |op: op4>
+      the |seq> => |a> . |b> . |c> . |d> . |e> . |f>
+      op-zip(op |seq>, the |seq>)
+      |op1: a> . |op2: b> . |op3: c> . |op4: d>
+      
+    see also:
+      n2w in the big-numbers-to-words example
+"""
+# one, two are sequences
+def op_zip(context, one, two):
+  min_len = min(len(one), len(two))
+  seq = sequence([])
+  for k in range(min_len):
+    op = one[k].label
+    sp = two[k]
+    if op.startswith('op: '):
+      op = op[4:]
+      r = sp.apply_op(context, op)
+      seq += r
+  return seq
+  
+  
+# set invoke method:
+whitelist_table_2['if'] = 'bko_if'
+# set usage info:
+sequence_functions_usage['if'] = """
+    description:
+      a crude approximation of an if function
+      NB: it does not work the way you think it does!
+      
+      For example:
+        if(some|condition>, branch|a>, branch|b>)
+      evaluates all sequences: some|condition>, branch|a>, branch|b> before it is even fed to the if function.
+      This is a big problem if you try to use it for recursion.
+      But it is possible if you do an extra couple of steps:
+        process-if if(some|condition>, |a>, |b>)
+        process-if |a> #=> foo1
+        process-if |b> #=> foo2
+      Or:
+        process-if if(some|condition>, |a:> __ |_self> , |b:> __ |_self>)
+        process-if |a: *> #=> foo1 remove-leading-category |_self>
+        process-if |b: *> #=> foo2 remove-leading-category |_self>
+                      
+    examples:
+      split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
+      process-if |less than 1000: *> #=> remove-leading-category |_self>
+      process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>
+
+      split-num |532>
+        |532>
+
+      split-num |12345>
+        |345> . |12>
+
+      split-num |12345678901234567890>
+        |890> . |567> . |234> . |901> . |678> . |345> . |12>
+
+    see also:
+      big-numbers-to-words example
+      wif
+"""
+# 13/4/2014:
+# Let's add an if/else statement to BKO.
+# Motivated by recursion works without even trying (though vastly inefficient at the moment).
+# So seems sensible to add if/else too.
+#
+# bko_if(|True>,|a>,|b>)  -- returns |a>
+# bko_if(|False>,|c>,|d>) -- returns |d>
+def bko_if(condition,one,two):
+  if condition[0].label.lower() in ["true","yes"]:
+    return one
+  else:
+    return two
+
+# set invoke method:
+whitelist_table_2['wif'] = 'weighted_bko_if'
+# set usage info:
+sequence_functions_usage['wif'] = """
+    description:
+      a weighted if
+      works just like standard 'if', but takes into consideration the coefficient of the condition
+      
+    examples:
+      wif(0.7|True>, |a>, |b>)
+        0.7|a> + 0.3|b>
+        
+      wif(0.8|False>, |a>, |b>)
+        0.2|a> + 0.8|b> 
+        
+    future:
+      fix! It doesn't work quite right yet.
+      
+    see also:
+      if
+"""
+# 14/12/2014:
+# Let's add a weighted if to BKO.
+# eg: wif(0.7|True>,|a>,|b>)
+# returns: 0.7|a> + 0.3|b>
+# and
+# wif(0.8|False>,|a>,|b>)
+# returns: 0.2|a> + 0.8|b> 
+# assumes the coeff of True/False is in [0,1] otherwise we get negative coeffs.
+# though we can filter those using drop().
+# 
+def weighted_bko_if(condition,one,two):
+  label = condition[0].label 
+  value = condition[0].value 
+  if label.lower() in ["true","yes"]:
+    return one.multiply(value) + two.multiply(1 - value)
+  else:
+    return one.multiply(1 - value) + two.multiply(value)     
+    
+
+def numbers_fn(foo, one, t):
+  cat, value = extract_category_value(one.label)
+  try:
+    value = int(value)
+  except:
+    try:
+      value = float(value)
+    except:
+      return one
+  if len(cat) > 0:
+    cat += ': '
+  result = foo(value, t)
+  return ket(cat + str(result), one.value)
+  
+# set invoke method:
+compound_table['round'] = ".apply_fn(round_numbers, {0})" 
+# set usage info:
+function_operators_usage['round'] = """
+    description:
+      round the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      round[3] |3.14159265>
+        |3.142>
+
+    see also:
+      times-by, divide-by, int-divide-by, plus, minus, mod, is-mod    
+"""
+def round_numbers(one,t):               # cool, this one seems to work. Now need to do the rest.
+  return numbers_fn(round,one,t)
+
+# set invoke method:
+compound_table['times-by'] = ".apply_fn(times_numbers, {0})" 
+# set usage info:
+function_operators_usage['times-by'] = """
+    description:
+      times the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      times-by[5] |6.1>
+        
+
+    see also:
+      round, divide-by, int-divide-by, plus, minus, mod, is-mod    
+"""
+
+# set invoke method:
+compound_table['divide-by'] = ".apply_fn(times_numbers, 1/{0})" 
+# set usage info:
+function_operators_usage['divide-by'] = """
+    description:
+      divide the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      divide-by[5] |625.5>
+        
+
+    see also:
+      round, times-by, int-divide-by, plus, minus, mod, is-mod    
+"""
+def times_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
+  def multiply(a,b):
+    return a*b
+  return numbers_fn(multiply,one,t)
+
+# set invoke method:
+compound_table['int-divide-by'] = ".apply_fn(int_divide_numbers, {0})" 
+# set usage info:
+function_operators_usage['int-divide-by'] = """
+    description:
+      integer divide the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      int-divide-by[1000] |123456>
+        
+
+    see also:
+      round, times-by, divide-by, plus, minus, mod, is-mod    
+"""
+def int_divide_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
+  def int_divide(a,b):
+    return a//b
+  return numbers_fn(int_divide, one, t)
+
+# set invoke method:
+compound_table['plus'] = ".apply_fn(plus_numbers, {0})" 
+# set usage info:
+function_operators_usage['plus'] = """
+    description:
+      add to the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      plus[5] |3.14159265>
+        
+
+    see also:
+      round, times-by, divide-by, int-divide-by, minus, mod, is-mod    
+"""
+
+# set invoke method:
+compound_table['minus'] = ".apply_fn(plus_numbers, -{0})" 
+# set usage info:
+function_operators_usage['minus'] = """
+    description:
+      subtract from the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      minus[2] |3.14159265>
+        
+
+    see also:
+      round, times-by, divide-by, int-divide-by, plus, mod, is-mod    
+"""
+def plus_numbers(one,t):
+  def add(a,b):
+    return a+b
+  return numbers_fn(add,one,t)
+
+# set invoke method:
+compound_table['mod'] = ".apply_fn(mod_numbers, {0})" 
+# set usage info:
+function_operators_usage['mod'] = """
+    description:
+      apply the modulus to the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      mod[1000] |1234567>
+        |567>
+
+    see also:
+      round, times-by, divide-by, int-divide-by, plus, minus, is-mod    
+"""
+def mod_numbers(one,t):
+  def mod(a,b):
+    return a % b
+  return numbers_fn(mod,one,t)        
+
+# set invoke method:
+compound_table['is-mod'] = ".apply_fn(is_mod_numbers, {0})" 
+# set usage info:
+function_operators_usage['is-mod'] = """
+    description:
+      round the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      is-mod[3] |96>
+        |yes>
+        
+      is-mod[17] |51>
+        |yes>
+        
+      is-mod[5] |51>
+        |no>
+      
+    see also:
+      round, times-by, divide-by, int-divide-by, plus, minus, mod    
+"""
+def is_mod_numbers(one,t):
+  def mod(a,b):
+    return a % b
+  return equal(numbers_fn(mod,one,t),0).is_not_empty()           # maybe needs |> option too??                                                   
