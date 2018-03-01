@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 26/2/2018
+# Update: 1/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1688,7 +1688,8 @@ class NewContext(object):
       self.ket_rules_dict[label][op] = rule
     else:
       if op not in self.ket_rules_dict[label]:
-        self.ket_rules_dict[label][op] = superposition()             # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
+        #self.ket_rules_dict[label][op] = superposition()             # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
+        self.ket_rules_dict[label][op] = sequence()             # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
 #      self.ket_rules_dict[label][op].clean_add(rule)
 #      self.ket_rules_dict[label][op].self_add(rule)                  # does this change break anything?? If it does, we will need another approach.
 #      self.ket_rules_dict[label][op].add_sp(rule)                    # Hrmm... how test if it breaks? We don't have full test cases yet!

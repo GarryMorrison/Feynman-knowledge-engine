@@ -950,7 +950,7 @@ def decimal_to_base(number,base):
 # here is a fun one. 
 # just a test function really for stored_rules().
 def shout(one):
-  string = (one if type(one) == str else one.the_label()).upper()
+  string = (one if type(one) == str else one.label).upper()
   print(string)
   return ket(string)
   #return ket("",0) 
@@ -5299,6 +5299,26 @@ def learn_sp(context, one, two, three):
   return three
 
 # set invoke method:
+context_whitelist_table_3['add-learn'] = 'add_learn_sp'
+# set usage info:
+sequence_functions_usage['add-learn'] = """
+    description:
+      wrapper around an add-learn rule, so we can use it in operators
+      
+    examples:
+      add_learn(|op: friends>, |Fred>, |Sam>)
+      implements: friends |Fred> +=> |Sam>
+"""
+def add_learn_sp(context, one, two, three):
+  for op in one[0]:
+    if op.label.startswith('op: '):
+      str_op = op.label[4:]
+      for object in two[0]:
+        context.add_learn(str_op, object.label, three)
+  return three
+
+
+# set invoke method:
 context_whitelist_table_2['apply'] = 'apply_sp'
 # set usage info:
 sequence_functions_usage['apply'] = """
@@ -5333,8 +5353,12 @@ def apply_sp(context, one, two):
     r = superposition()
     for x in sp:
       if x.label.startswith("op: "):
-        op = x.label[4:] 
-        r += two.apply_op(context,op).multiply(x.value)[0]     # hackily cast two-result from seq to sp, for now.
+        op = x.label[4:]
+        value = two.apply_op(context,op).multiply(x.value)
+        if len(value) > 0:
+          if type(value) is sequence:
+            value = value[0]                             # hackily cast two-result from seq to sp, for now. Breaks if value is an empty sequence!
+          r += value
     seq += r
   return seq
 
@@ -6998,6 +7022,9 @@ sequence_functions_usage['if'] = """
 # bko_if(|True>,|a>,|b>)  -- returns |a>
 # bko_if(|False>,|c>,|d>) -- returns |d>
 def bko_if(condition,one,two):
+  print('condition: %s' % condition)
+  print('one: %s' % one)
+  print('two: %s' % two)
   if condition[0].label.lower() in ["true","yes"]:
     return one
   else:
@@ -7203,4 +7230,106 @@ function_operators_usage['is-mod'] = """
 def is_mod_numbers(one,t):
   def mod(a,b):
     return a % b
-  return equal(numbers_fn(mod,one,t),0).is_not_empty()           # maybe needs |> option too??                                                   
+  return equal(numbers_fn(mod,one,t),0).is_not_empty()           # maybe needs |> option too??
+
+  
+# set invoke method:
+compound_table['learn-map'] = ".apply_naked_fn(learn_map, context, \"{0}\")" 
+# set usage info:
+function_operators_usage['learn-map'] = """
+    description:
+      learn a rectangular map
+      
+    examples:
+      learn-map[20,20]
+      
+    see also:
+      display-map
+"""
+def learn_map(context, parameters):
+  params = parameters.split(',')
+  if len(params) != 2:
+    return ket()
+  h,w = params
+  h = int(h)
+  w = int(w)
+
+  def ket_elt(j,i):
+    return ket("grid: " + str(j) + ": " + str(i))
+
+  # Makes use of the fact that context.learn() ignores rules that are the empty ket |>.
+  def ket_elt_bd(j,i,I,J):
+  # finite universe model:
+    if i <= 0 or j <= 0 or i > I or j > J:
+      return ket()
+  # torus model:
+  #  i = (i - 1)%I + 1
+  #  j = (j - 1)%J + 1
+    return ket_elt(j, i)
+
+  for j in range(1, w + 1):
+    for i in range(1, h + 1):
+      elt = ket_elt(j, i)
+      context.learn('value', elt, '0')
+      context.learn("N", elt, ket_elt_bd(j-1, i, h, w))
+      context.learn("NE", elt, ket_elt_bd(j-1, i+1, h, w))
+      context.learn("E", elt, ket_elt_bd(j, i+1, h, w))
+      context.learn("SE", elt, ket_elt_bd(j+1, i+1, h, w))
+      context.learn("S", elt, ket_elt_bd(j+1, i, h, w))
+      context.learn("SW", elt, ket_elt_bd(j+1, i-1, h, w))
+      context.learn("W", elt, ket_elt_bd(j, i-1, h, w))
+      context.learn("NW", elt, ket_elt_bd(j-1, i-1, w, w))
+  return ket('learn-map')
+
+# set invoke method:
+compound_table['display-map'] = ".apply_naked_fn(display_map, context, \"{0}\")" 
+# set usage info:
+function_operators_usage['display-map'] = """
+    description:
+      display a rectangular map
+      
+    examples:
+      display-map[20,20]
+      
+    see also:
+      learn-map
+"""
+def display_map(context, parameters):
+  params = parameters.split(',')
+  if len(params) < 2:
+    return ket()
+  if len(params) == 2:
+    h,w = params
+    op = 'value'
+  if len(params) == 3:
+    h,w,op = params
+  w = int(w)
+  h = int(h) 
+
+  def ket_elt(j,i):
+    return ket("grid: " + str(j) + ": " + str(i))
+
+  s = ""
+  s += "h: " + str(h) + "\n"
+  s += "w: " + str(w) + "\n"
+
+  for j in range(1, w + 1):
+    s += str(j).ljust(4)
+    for i in range(1, h + 1):
+      x = ket_elt(j,i)
+      current_cell = context.recall('current', 'cell')[0]
+      if current_cell.label == x.label:
+        value = '###'
+      else:
+        value = context.recall(op, x)
+        if type(value) is sequence:
+          value = value[0]
+        value = value.label
+      if value == "0":
+        value = "."
+        #value = ' '
+      s += value.rjust(3)
+    s += "\n"
+  print(s)
+  return ket('display-map')
+                                                                 

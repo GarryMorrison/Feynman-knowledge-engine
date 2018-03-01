@@ -66,7 +66,7 @@ built_in_table = {
   "discrim"          : "discrimination",
 
 # special:
-    "type"           : "type",                    # implemented for debugging purposes.
+#    "type"           : "type",                    # implemented for debugging purposes.
 
 # new 7/9/2014:
 #  "long"            : "long_display",
@@ -535,7 +535,7 @@ compound_table = {
   "display-frame-sequence"  : ".apply_sp_fn(display_frame_sequence,context,\"{0}\")", 
   
 # 19/12/2016:
-  "next"                   : ".apply_fn(sequence_predict_whats_next_skip,context,\"{0}\")",
+#  "next"                   : ".apply_fn(sequence_predict_whats_next_skip,context,\"{0}\")",
   
 # 6/6/2017:
   "float-sequence"         : ".apply_fn(float_sequence,context,\"{0}\")",                       # buggy ...
@@ -607,7 +607,7 @@ ket_context_table = {
 #  "follow-sequence"    : "follow_sequence",            # nope! wrong spot!
 
 # 30/11/2016:
-  "next"                : "sequence_predict_whats_next_skip",
+#  "next"                : "sequence_predict_whats_next_skip",
   
 # 6/6/2017:
   "float-sequence"      : "float_sequence",               

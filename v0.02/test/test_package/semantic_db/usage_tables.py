@@ -994,3 +994,141 @@ examples_usage['Fibonnaci-and-factorial'] = """
         | 30     | 832040 | 1.6180339887482036 | 265252859812191058636308480000000 |
         +--------+--------+--------------------+-----------------------------------+
 """
+
+examples_usage['walking-a-grid'] = """
+    description:
+      a fun little insect with minimal intelligence.
+      with current settings it heads mostly in a south direction (but this is easy to change)
+      when it thinks it has hit the edge of the map, it changes its heading by turning right
+      the numbers are how many time-steps the insect has been on that location
+      ### is the current location of our insect
+
+    code:
+      -- learn map:
+      |null> => learn-map[30,30]
+
+      -- learn current location:
+      current |cell> => |grid: 1: 22>
+
+      -- define turn-right operator:
+      turn-right |op: S> => |op: W>
+      turn-right |op: SW> => |op: NW>
+      turn-right |op: W> => |op: N>
+      turn-right |op: NW> => |op: NE>
+      turn-right |op: N> => |op: E>
+      turn-right |op: NE> => |op: SE>
+      turn-right |op: E> => |op: S>
+      turn-right |op: SE> => |op: SW>
+
+      -- define walk direction:
+      heading |ops> => 0.25|op: SW> + |op: S> + 0.25|op: SE>
+      -- heading |ops> => |op: S>
+      next |*> #=> set-to[1] apply(weighted-pick-elt heading |ops>, |_self>)
+
+      -- define turn-heading-right operator:
+      turn-heading-right |*> #=> learn(|op: heading>, |ops>, turn-right heading |ops>)
+
+      -- define step operator:
+      step |*> #=> process-if if(do-you-know next |_self>, |valid step:> __ |_self>, |not valid step:> __ |_self>)
+      process-if |valid step: *> #=> next remove-leading-category |_self>
+      process-if |not valid step: *> #=> sselect[1,1] (remove-leading-category |_self> . turn-heading-right |>)
+      -- process-if |not valid step: *> #=> sdrop (remove-leading-category |_self> . set-to[0] turn-heading-right |>)
+
+      -- update-map operators (increment current spot, take a step, and display map):
+      inc |*> #=> learn(|op: value>, current |cell>, plus[1] value current |cell>)
+      n |*> #=> learn(|op: current>, |cell>, step current |cell>)
+      d |*> #=> display-map[30,30]
+
+
+      -- single map update:
+      line |*> #=> inc |_self> . n |_self> . d |_self>
+
+      -- set max steps:
+      max |steps> => |30>
+
+      -- walk max steps:
+      walk |*> #=> sdrop set-to[0] line sp2seq range(|1>, max |steps>)
+
+    examples:
+      -- load the code:
+      load walk-grid-v2.sw
+
+      -- switch off info printing. 
+      -- this is important if you want a clean display of the maps
+      info off
+
+      -- walk the map:
+      walk
+      walk
+      walk
+        h: 30
+        w: 30
+        1     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        2     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        3     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+        4     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        5     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        6     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        7     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        8     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        9     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        10    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        11    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        12    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        13    2  1  1  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        14    .  1  .  1  1  1  .  1  1  1  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        15    .  .  1  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+        16    .  1  .  .  .  .  .  .  .  .  .  1  1  1  1  1  1###  .  .  .  .  1  .  .  .  .  .  .  .
+        17    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        18    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        19    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        20    2  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        21    1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        22    1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        23    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+        24    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+        25    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+        26    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+        27    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        28    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+        29    .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  1  .  .  .  .  1  .  .  .  .  .  .  .  .
+        30    .  .  2  1  2  1  1  1  1  1  1  1  2  .  1  .  .  1  1  1  2  3  .  .  .  .  .  .  .  .
+
+
+      walk^5
+        h: 30
+        w: 30
+        1     .  .  .  .  .  .  3  2  2  3  .  .  .  .  .  .  .  .  2  1  1  2  1  1  .  3  1  1  1  2
+        2     .  .  .  .  .  .  .  .  .  1  1  1  1  .  .  .  .  .  1  2  1  2  .  .  1  .  .  .  .  1
+        3     .  .  .  .  .  .  .  .  .  .  1  .  .  1  1  1  1  1  .  1  .  1  1  1  1  .  1  .  .  1
+        4     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  1  .  .  .  1  .  1  1  .
+        5     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  1  2
+        6     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
+        7     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
+        8     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        9     .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        10    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        11    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        12    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        13    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .  .
+        14    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .  .
+        15    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
+        16    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .  .
+        17    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+        18    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        19    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+        20    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+        21    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+        22    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .  .
+        23    .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  .  1  .  .  .  .  .
+        24    .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  .  1  .  .  .  .  .
+        25    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .
+        26    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .
+        27    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+        28    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .
+        29    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .
+        30    .  .  .  .  .###  1  1  2  1  1  2  .  .  .  .  .  .  .  .  .  .  2  1  1  2  .  .  .  .
+
+    source code:
+      load walk-grid-v2.sw
+"""
