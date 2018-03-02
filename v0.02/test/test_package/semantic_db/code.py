@@ -480,6 +480,9 @@ class ket(object):
     return ket(self.label,self.value)            # not sure if we need this:
     #return self                                 # or if this will suffice.
 
+  def to_sp(self):
+    return self
+
 
 # a superposition is a collection of float,string pairs, displayed using ket notation. 
 class superposition(object):
@@ -1066,6 +1069,9 @@ class superposition(object):
            
   def activate(self,context=None,op=None,self_label=None):
     return self
+    
+  def to_sp(self):
+    return self
 
 
 
@@ -1506,6 +1512,11 @@ class sequence(object):
 
   def similar_input(self,context,op):
     return context.pattern_recognition(self, op) 
+
+  def to_sp(self):
+    if len(self) == 0:
+      return ket()
+    return self.data[0]
 
 
 # code for the yet to be added stored function rules:

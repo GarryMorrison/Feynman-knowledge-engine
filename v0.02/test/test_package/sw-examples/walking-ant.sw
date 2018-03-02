@@ -19,14 +19,44 @@ current |cell> => |grid: 10: 22>
 -- learn home location:
 home |cell> => current |cell>
 
+-- start with no food:
+stored-food home |cell> => |0>
+
 -- learn path home:
 learn-current-direction |*> #=> add-learn(|op: path>, |home>, |_self>)
--- remove a step from the path home:
--- unlearn-current-direction |*> #=> add-learn(|op: path>, |home>, -|_self>)
 
 -- find return path
--- not yet sure how to step in a negative direction. 
 return-path |home> #=> subtraction-invert[0] expand path |home>
+
+-- place some food:
+food |grid: 2: 2> => |3>
+food |grid: 2: 3> => |3>
+food |grid: 2: 4> => |3>
+food |grid: 2: 5> => |3>
+food |grid: 3: 5> => |3>
+food |grid: 4: 5> => |3>
+food |grid: 5: 6> => |3>
+food |grid: 6: 6> => |3>
+
+show-food |*> #=> display-map[30, 30, food] |>
+tally-stored-food |*> #=> push-float pop-float stored-food |_self>
+show-stored-food |*> #=> display-map[30, 30, tally-stored-food] |>
+
+carry-the |food> #=> learn(|op: carry>, |food>, plus[1] carry |food>) learn(|op: food>, current |cell>, minus[1] food current |cell> )
+drop-the |food> #=> learn(|op: carry>, |food>, |0>) add-learn(|op: stored-food>, current |cell>, carry |food> )
+-- drop |food> #=> add-learn(|op: stored-food>, current |cell>, carry |food> ) . learn(|op: carry>, |food>, |0>)
+
+if-find-food |*> #=> process-if if(is-greater-than[0] food current |cell>, |found food>, |not found food> )
+process-if |found food> #=> carry-the |food> . switch-on-scent |> . switch-on-return |>
+process-if |not found food> #=> |>
+
+-- start by not carrying any food:
+carry |food> => |0>
+
+-- reach home operator:
+if-reach-home |*> #=> process-if sdrop wif(equal( current |cell>, home |cell>), |reached home>, |not reached home>)
+process-if |reached home> #=> drop-the |food> . switch-off-scent |> . switch-on-random |>
+process-if |not reached home> #=> |>
 
 
 -- start with scent trail off:
@@ -42,33 +72,53 @@ process-if |no to scent> #=> |>
 type |walk> => |op: random-walk>
 switch-on-random |*> #=> learn(|op: type>, |walk>, |op: random-walk>)
 switch-on-return |*> #=> learn(|op: type>, |walk>, |op: return-home>)
-switch-on-follow |*> #=> learn(|op: type>, |walk>, |op: follow-scent>)
-take-step |*> #=> learn(|op: current>, |cell>, apply( type |walk>, current |cell>))
+-- switch-on-follow |*> #=> learn(|op: type>, |walk>, |op: follow-scent>)
+take-step |*> #=> if-reach-home if-find-food learn(|op: current>, |cell>, apply( type |walk>, current |cell>))
 
-random-walk |*> #=> process-if if(do-you-know try-random-walk |_self>, |valid step:> __ |_self>, |not valid step:> __ |_self>)
+random-walk |*> #=> if-find-scent process-if if(do-you-know try-random-walk |_self>, |valid step:> __ |_self>, |not valid step:> __ |_self>)
 process-if |valid step: *> #=> apply(learn-current-direction next |direction>, remove-leading-category |_self>)
 process-if |not valid step: *> #=> sselect[1,1] (remove-leading-category |_self> . turn-heading-right |>)
 
 try-random-walk |*> #=> apply(random-next |direction>, |_self>)
-random-next |direction> #=> learn-next-direction clean weighted-pick-elt ( 0.25 turn-left + 1 + 0.25 turn-right) heading |ops>
+-- random-next |direction> #=> learn-next-direction clean weighted-pick-elt ( 0.1 turn-left^2 + 0.25 turn-left + 1 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
+random-next |direction> #=> learn-next-direction clean weighted-pick-elt ( 0.1 turn-left^2 + 0.25 turn-left + 1 + 0.25 turn-right + 0.1 turn-right^2 ) blur-heading heading |ops>
 learn-next-direction |*> #=> learn(|op: next>, |direction>, |_self>)
 
 -- define turn-heading-right operator:
-turn-heading-right |*> #=> learn(|op: heading>, |ops>, turn-right^2 heading |ops>)
+turn-heading-right |*> #=> learn(|op: heading>, |ops>, pick-elt ( turn-right + turn-right^2 ) heading |ops>)
+
+-- define blur-heading operator:
+blur-heading |*> #=> learn(|op: heading>, |ops>, clean weighted-pick-elt ( 0.1 turn-left^2 + 0.25 turn-left + 10 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>)
+
+
+if-find-scent |*> #=> process-if if(is-greater-than[0] value current |cell>, |found scent:> __ |_self> , |not found scent:> __ |_self>)
+process-if |found scent: *> #=> sselect[1,1] ( remove-leading-category |_self> . learn(|op: heading>, |ops>, reverse-if-neg push-float reverse-dir return-path |home> ) )
+process-if |not found scent: *> #=> remove-leading-category |_self>
 
 
 -- define return home operator:
 -- return-path |home>
 --   17|op: N> + 21|op: E>
 return-home |*> #=> apply(learn-current-direction return-next |direction>, |_self>)
--- return-next |direction> #=> learn-next-direction clean weighted-pick-elt reverse-if-neg return-path |home>
--- reverse-if-neg |*> #=> if(do-you-know drop clean |_self>, |_self>, - reverse-dir |_self>)
--- reverse-if-neg |*> #=> if(is-less-than[0] push-float |_self>, |_self>, - reverse-dir |_self>)
-return-next |direction> #=> learn-next-direction clean weighted-pick-elt reverse-if-neg push-float return-path |home>
+-- return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float return-path |home>
+return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float ( 0.25 turn-left + 1 + 0.25 turn-right ) return-path |home>
 reverse-if-neg |*> #=> if(is-greater-than[0] |_self>, pop-float |_self>, - reverse-dir pop-float |_self>)
 
+-- define follow scent operator:
+follow-scent |*> #=> apply(learn-current-direction follow-next |direction>, |_self>)
+-- weight-directions |*> #=> algebra(value apply( |_self>, current |cell>), |*>, |_self>)
+nghbr |*> #=> (N + NE + E + SE + S + SW + W + NW) |_self>
+weight-directions |*> #=> algebra(push-float pop-float value apply( |_self>, clean ( 1 + nghbr + nghbr^2 ) current |cell>), |*>, |_self>)
+
+
+-- follow-next |direction> #=> learn-next-direction clean weighted-pick-elt ( 0.25 turn-left + 1 + 0.25 turn-right ) weight-directions list-of |directions>
+-- follow-next |direction> #=> learn-next-direction clean pick-elt drop ( 0.25 turn-left + 1 + 0.25 turn-right ) weight-directions list-of |directions>
+-- follow-next |direction> #=> learn-next-direction clean pick-elt drop weight-directions list-of |directions>
+follow-next |direction> #=> learn-next-direction clean weighted-pick-elt ( 0.1 turn-left^2 + 0.25 turn-left + 1 + 0.25 turn-right + 0.1 turn-right^2 )  heading |ops>
+
 -- choose a heading when leaving the nest:
-choose-heading |*> #=> learn(|op: heading>, |ops>, pick-elt (|op: N> + |op: NE> + |op: E> + |op: SE> + |op: S> + |op: SW> + |op: W> + |op: NW>))
+list-of |directions> => |op: N> + |op: NE> + |op: E> + |op: SE> + |op: S> + |op: SW> + |op: W> + |op: NW>
+choose-heading |*> #=> learn(|op: heading>, |ops>, pick-elt list-of |directions>)
 |null> => choose-heading |>
 
 -- define turn-right operators:

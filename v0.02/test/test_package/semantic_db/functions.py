@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-2-28
+# Update: 2018-3-2
 # Copyright: GPLv3
 #
 # Usage: 
@@ -812,15 +812,15 @@ def parse_float_string(x):
     else:
         raise ValueError
 
+# assume one is a sp or ket:
 def category_number_to_number(one):         # find better name!
-  one = one.ket()
   cat, value = extract_category_value(one.label)
   try:
 #    n = float(value)
     n = parse_float_string(value)    
   except:
     if cat == 'number':                     # not 100% want to keep these two lines
-      return ket(" ",0)
+      return ket(" ")
     return one
   return ket(" ",one.value * n)
 
@@ -828,13 +828,15 @@ def category_number_to_number(one):         # find better name!
 # a|x> * b|y> => a*b |x*y>
 #
 def algebra_mult(one,two,Abelian=True):
-  one = superposition() + one  # hack so one and two are definitely sp, not ket
-  two = superposition() + two
+  if type(one) is sequence:
+    one = one[0]
+  if type(two) is sequence:
+    two = two[0]
 
-  result = superposition()
-  for x in one.data:
+  r = superposition()
+  for x in one:
     x = category_number_to_number(x)  
-    for y in two.data:
+    for y in two:
       y = category_number_to_number(y)
       print("x*y",x,"*",y)
       labels = [ L for L in x.label.split('*') + y.label.split('*') if L.strip() != '' ]
@@ -843,8 +845,8 @@ def algebra_mult(one,two,Abelian=True):
       label = "*".join(labels)
       if label == '':         # we can't have ket("",value), since it will be dropped.
         label = " "
-      result += ket(label,x.value * y.value)
-  return result
+      r += ket(label,x.value * y.value)
+  return r
 
 # (a|x> + b|y>)^|n>
 # eg: (|a> + |b> + |c>)^|2> = |a*a> + 2.000|a*b> + 2.000|a*c> + |b*b> + 2.000|b*c> + |c*c>
@@ -883,22 +885,22 @@ def algebra_power(one,two,Abelian=True):
 
 # implement basic algebra:
 def algebra(one,operator,two,Abelian=True):
-  op_label = operator if type(operator) == str else operator.the_label()
+  op_label = operator if type(operator) == str else operator[0].label
   null, op = extract_category_value(op_label)
 
   if op not in ['+','-','*','^']:
-    return ket(" ",0)
+    return ket()
 
   if op == '+':                                        # drop_zero() added so that terms with coeff 0 are dropped.
-    return algebra_add(one,two).drop_zero()            # Abelian option here too?
+    return algebra_add(one,two).drop()            # Abelian option here too?
   elif op == '-':
-    return algebra_subtract(one,two).drop_zero()       # ditto.
+    return algebra_subtract(one,two).drop()       # ditto.
   elif op == '*':
-    return algebra_mult(one,two,Abelian).drop_zero()
+    return algebra_mult(one,two,Abelian).drop()
   elif op == '^':
-    return algebra_power(one,two,Abelian).drop_zero()
+    return algebra_power(one,two,Abelian).drop()
   else:
-    return ket(" ",0)
+    return ket()
 
 # 2/2/2015: finally wire in non Abelian algebra:
 def non_Abelian_algebra(one,operator,two):
@@ -2124,8 +2126,8 @@ def chars(one):
 # values in between otherwise (makes use of unscaled_simm)
 # name change from test_equal() to equality_test() due to pytest.
 def equality_test(one,two):
-  value = unscaled_simm(one,two)            # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
-  return ket("True",value)
+  value = aligned_simm_value(one,two)            # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
+  return ket("True", value)
   
 
 # LOL. Seems we already have the equiv of push-float and pop-float at the start of this file!
@@ -7022,9 +7024,9 @@ sequence_functions_usage['if'] = """
 # bko_if(|True>,|a>,|b>)  -- returns |a>
 # bko_if(|False>,|c>,|d>) -- returns |d>
 def bko_if(condition,one,two):
-  print('condition: %s' % condition)
-  print('one: %s' % one)
-  print('two: %s' % two)
+#  print('condition: %s' % condition)
+#  print('one: %s' % one)
+#  print('two: %s' % two)
   if condition[0].label.lower() in ["true","yes"]:
     return one
   else:
@@ -7317,14 +7319,15 @@ def display_map(context, parameters):
     s += str(j).ljust(4)
     for i in range(1, h + 1):
       x = ket_elt(j,i)
-      current_cell = context.recall('current', 'cell')[0]
+      current_cell = context.recall('current', 'cell', True).to_sp()
       if current_cell.label == x.label:
         value = '###'
       else:
-        value = context.recall(op, x)
-        if type(value) is sequence:
-          value = value[0]
-        value = value.label
+        value = context.recall(op, x, True).to_sp()
+        if value.label == ' ':
+          value = float_to_int(value.value)
+        else:
+          value = value.label
       if value == "0":
         value = "."
         #value = ' '
