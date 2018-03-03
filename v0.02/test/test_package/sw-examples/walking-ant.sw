@@ -37,16 +37,19 @@ food |grid: 3: 5> => |3>
 food |grid: 4: 5> => |3>
 food |grid: 5: 6> => |3>
 food |grid: 6: 6> => |3>
+food |grid: 29: 29> => |20>
+food |grid: 28: 3> => |20>
 
 show-food |*> #=> display-map[30, 30, food] |>
-tally-stored-food |*> #=> push-float pop-float stored-food |_self>
+tally-stored-food |*> #=> merge-value stored-food |_self>
 show-stored-food |*> #=> display-map[30, 30, tally-stored-food] |>
 
 carry-the |food> #=> learn(|op: carry>, |food>, plus[1] carry |food>) learn(|op: food>, current |cell>, minus[1] food current |cell> )
 drop-the |food> #=> learn(|op: carry>, |food>, |0>) add-learn(|op: stored-food>, current |cell>, carry |food> )
 -- drop |food> #=> add-learn(|op: stored-food>, current |cell>, carry |food> ) . learn(|op: carry>, |food>, |0>)
 
-if-find-food |*> #=> process-if if(is-greater-than[0] food current |cell>, |found food>, |not found food> )
+-- if-find-food |*> #=> process-if if(is-greater-than[0] food current |cell>, |found food>, |not found food> )
+if-find-food |*> #=> process-if if( and(is-greater-than[0] food current |cell>, is-equal[0] carry |food>), |found food>, |not found food> )
 process-if |found food> #=> carry-the |food> . switch-on-scent |> . switch-on-return |>
 process-if |not found food> #=> |>
 
@@ -92,17 +95,20 @@ blur-heading |*> #=> learn(|op: heading>, |ops>, clean weighted-pick-elt ( 0.1 t
 
 
 if-find-scent |*> #=> process-if if(is-greater-than[0] value current |cell>, |found scent:> __ |_self> , |not found scent:> __ |_self>)
-process-if |found scent: *> #=> sselect[1,1] ( remove-leading-category |_self> . learn(|op: heading>, |ops>, reverse-if-neg push-float reverse-dir return-path |home> ) )
+process-if |found scent: *> #=> sselect[1,1] ( remove-leading-category |_self> . learn(|op: heading>, |ops>, random-if-zero reverse-if-neg push-float reverse-dir return-path |home> ) )
 process-if |not found scent: *> #=> remove-leading-category |_self>
 
+random-if-zero (*) #=> if(do-you-know sdrop |_self>, |_self>, pick-elt list-of |directions>)
 
 -- define return home operator:
 -- return-path |home>
 --   17|op: N> + 21|op: E>
 return-home |*> #=> apply(learn-current-direction return-next |direction>, |_self>)
--- return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float return-path |home>
-return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float ( 0.25 turn-left + 1 + 0.25 turn-right ) return-path |home>
-reverse-if-neg |*> #=> if(is-greater-than[0] |_self>, pop-float |_self>, - reverse-dir pop-float |_self>)
+return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float return-path |home>
+-- return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float ( 0.25 turn-left + 1 + 0.25 turn-right ) return-path |home>
+-- return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float ( 0.1 turn-left + 1 + 0.1 turn-right ) return-path |home>
+-- return-next |direction> #=> learn-next-direction drop clean weighted-pick-elt reverse-if-neg push-float ( 0.02 turn-left + 1 + 0.02 turn-right ) return-path |home>
+reverse-if-neg |*> #=> if(is-greater-equal-than[0] |_self>, pop-float |_self>, - reverse-dir pop-float |_self>)
 
 -- define follow scent operator:
 follow-scent |*> #=> apply(learn-current-direction follow-next |direction>, |_self>)

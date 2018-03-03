@@ -134,3 +134,8 @@ def floor(x):
   
 def ceiling(x):
   return math.ceil(x)      
+
+def not_zero(x):
+  if x <= 0:
+    return 1
+  return x

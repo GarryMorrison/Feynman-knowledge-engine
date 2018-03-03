@@ -1,0 +1,263 @@
+-- learn and randomly walk a grid
+-- keep a record of the pathway home
+-- if find food return home, leaving a scent trail
+-- once home, follow scent trail back to food (approximately)
+-- if find food again, return home, adding to the scent trail
+-- when food is gone, switch off scent trail, and start randomly walking again
+
+-- need three walk types:
+-- randomly
+-- return home
+-- follow scent trail
+
+-- learn map:
+|null> => learn-map[30, 30] |>
+
+-- learn current location:
+current |cell> => |grid: 10: 22>
+
+-- learn home location:
+home |cell> => current |cell>
+
+-- start with no food:
+stored-food home |cell> => |0>
+
+-- learn path home:
+save-direction |*> #=> 
+    path |home> +=> |_self>
+
+-- find return path
+return-path |home> #=> 
+    subtraction-invert[0] expand path |home>
+
+
+-- learn the list of directions:
+list-of |directions> => |op: N> + |op: NE> + |op: E> + |op: SE> + |op: S> + |op: SW> + |op: W> + |op: NW>
+
+-- choose a heading when leaving the nest:
+heading |ops> => pick-elt list-of |directions>
+
+-- start by not carrying any food:
+carry |food> => |0>
+
+
+-- place some food:
+food |grid: 2: 2> => |3>
+food |grid: 2: 3> => |3>
+food |grid: 2: 4> => |3>
+food |grid: 2: 5> => |3>
+food |grid: 3: 5> => |3>
+food |grid: 4: 5> => |3>
+food |grid: 5: 6> => |3>
+food |grid: 6: 6> => |3>
+food |grid: 29: 29> => |20>
+food |grid: 28: 3> => |20>
+
+
+-- show food and stored-food operators:
+show-food |*> #=>
+    display-map[30, 30, food] |>
+
+tally-stored-food |*> #=>
+    merge-value stored-food |_self>
+
+show-stored-food |*> #=>
+    display-map[30, 30, tally-stored-food] |>
+
+
+-- carry-the and drop-the food operators:
+carry-the |food> #=> 
+    food current |cell> => minus[1] food current |cell>
+    carry |food> => plus[1] carry |food>
+
+drop-the |food> #=> 
+    stored-food current |cell> +=> carry |food>
+    carry |food> => |0>
+
+
+if-find-food |*> #=>
+    process-if if( and(is-greater-than[0] food current |cell>, is-equal[0] carry |food>), |found food>, |not found food> )
+
+process-if |found food> #=>
+    carry-the |food>
+    lay |scent> => |yes>
+    type |walk> => |op: return-home>
+
+process-if |not found food> #=>
+    |>
+
+
+-- if reach home operator:
+if-reach-home |*> #=> 
+  process-if sdrop wif(equal( current |cell>, home |cell>), |reached home>, |not reached home>)
+
+process-if |reached home> #=>
+    drop-the |food>
+    lay |scent> => |no>
+    type |walk> => |op: random>
+
+process-if |not reached home> #=>
+    |>
+
+
+-- start with scent trail off:
+lay |scent> => |no>
+
+switch-on-scent |*> #=>
+    lay |scent> => |yes>
+
+switch-off-scent |*> #=>
+    lay |scent> => |no>
+
+apply-scent |*> #=>
+    value current |cell> => plus[1] value current |cell>
+
+
+record-scent |*> #=>
+    process-if if(lay |scent>, |yes to scent>, |no to scent>)
+
+process-if |yes to scent> #=>
+    value current |cell> => plus[1] value current |cell>
+
+process-if |no to scent> #=>
+    |>
+
+
+
+if-find-scent-change-heading |*> #=>
+    process-if if(is-greater-than[0] value current |cell>, |found scent> , |not found scent>)
+
+process-if |found scent> #=>
+    heading |ops> => random-if-zero reverse-if-neg push-float reverse-dir return-path |home>
+
+process-if |not found scent> #=>
+    |>
+
+random-if-zero (*) #=>
+    if(do-you-know sdrop |_self>, |_self>, pick-elt list-of |directions>)
+
+
+
+-- start with random walk type:
+type |walk> => |op: random-walk>
+
+switch-on-random |*> #=>
+    type |walk> => |op: random-walk>
+
+switch-on-return |*> #=>
+    type |walk> => |op: return-home>
+
+
+take-a-step |*> #=>
+    current |cell> => apply( type |walk>, current |cell>)
+    if-find-food |>
+    if-reach-home |>
+
+
+
+-- random-walk input is a grid location:
+-- random-walk has to return a direction:
+random-walk |*> #=>
+    if-find-scent-change-heading |>
+    blur-heading |>
+    try |direction> => clean weighted-pick-elt heading |ops>
+    if-valid-direction-step-else-turn-right |>
+
+if-valid-direction-step-else-turn-right |*> #=>
+    process-if if(do-you-know apply( try |direction>, current |cell>), |valid step>, |not valid step>)
+
+process-if |valid step> #=>
+    save-direction try |direction>    
+
+process-if |not valid step> #=>
+    turn-heading-right |>
+    |op: id>
+
+
+-- define turn-heading-right operator:
+turn-heading-right |*> #=> 
+    heading |ops> => pick-elt ( turn-right + turn-right^2 ) heading |ops>
+
+-- define blur-heading operator:
+blur-heading |*> #=>
+    heading |ops> => ( 0.1 turn-left^2 + 0.25 turn-left + 10 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
+
+
+-- return-home input is a grid location (which we ignore, instead making use of return-path |home>):
+-- return-home returns a direction one step closer to home:
+return-home |*> #=>
+    save-direction clean weighted-pick-elt reverse-if-neg push-float return-path |home>    
+
+reverse-if-neg |*> #=>
+    if(is-greater-equal-than[0] |_self>, pop-float |_self>, - reverse-dir pop-float |_self>)
+
+-- nghbr |*> #=>
+--     (N + NE + E + SE + S + SW + W + NW) |_self>
+
+-- weight-directions |*> #=>
+--     algebra(merge-value value apply( |_self>, clean ( 1 + nghbr ) current |cell>), |*>, |_self>)
+
+
+
+-- define identity direction operator:
+id |*> #=> |_self>
+
+-- define turn-right operators:
+turn-right |op: S> => |op: SW>
+turn-right |op: SW> => |op: W>
+turn-right |op: W> => |op: NW>
+turn-right |op: NW> => |op: N>
+turn-right |op: N> => |op: NE>
+turn-right |op: NE> => |op: E>
+turn-right |op: E> => |op: SE>
+turn-right |op: SE> => |op: S>
+
+-- define turn-left operators:
+turn-left |op: S> => |op: SE>
+turn-left |op: SW> => |op: S>
+turn-left |op: W> => |op: SW>
+turn-left |op: NW> => |op: W>
+turn-left |op: N> => |op: NW>
+turn-left |op: NE> => |op: N>
+turn-left |op: E> => |op: NE>
+turn-left |op: SE> => |op: E>
+
+-- define reverse operators:
+reverse-dir |op: S> => |op: N>
+reverse-dir |op: SW> => |op: NE>
+reverse-dir |op: W> => |op: E>
+reverse-dir |op: NW> => |op: SE>
+reverse-dir |op: N> => |op: S>
+reverse-dir |op: NE> => |op: SW>
+reverse-dir |op: E> => |op: W>
+reverse-dir |op: SE> => |op: NW>
+
+-- define expand operators:
+expand |op: S> => - |op: N>
+expand |op: SW> => - |op: N> - |op: E>
+expand |op: W> => - |op: E>
+expand |op: NW> => |op: N> - |op: E>
+expand |op: N> => |op: N>
+expand |op: NE> => |op: N> + |op: E>
+expand |op: E> => |op: E>
+expand |op: SE> => - |op: N> + |op: E>
+
+
+
+d |*> #=>
+    display-map[30,30]
+
+-- single map update:
+update |*> #=>
+    record-scent |>
+    take-a-step |>
+    d |>
+    |>
+
+-- set max steps:
+max |steps> => |20>
+
+-- walk max steps:
+walk |*> #=>
+    update sp2seq range(|1>, max |steps>)
+

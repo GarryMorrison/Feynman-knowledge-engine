@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2018-3-2
+# Update: 3/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -828,10 +828,8 @@ def category_number_to_number(one):         # find better name!
 # a|x> * b|y> => a*b |x*y>
 #
 def algebra_mult(one,two,Abelian=True):
-  if type(one) is sequence:
-    one = one[0]
-  if type(two) is sequence:
-    two = two[0]
+  one = one.to_sp()
+  two = two.to_sp()
 
   r = superposition()
   for x in one:
@@ -885,7 +883,7 @@ def algebra_power(one,two,Abelian=True):
 
 # implement basic algebra:
 def algebra(one,operator,two,Abelian=True):
-  op_label = operator if type(operator) == str else operator[0].label
+  op_label = operator if type(operator) == str else operator.to_sp().label
   null, op = extract_category_value(op_label)
 
   if op not in ['+','-','*','^']:
@@ -1338,7 +1336,7 @@ def console_active_buffer(one,context,parameters):  # one is the passed in super
 def sp_to_words(one):
   labels = [x.label for x in one]
   if len(labels) == 0:
-    return ket("",0)               # maybe something else instead of this?
+    return ket()               # maybe something else instead of this?
   if len(labels) == 1:
     result = labels[0]
   else:
@@ -5293,10 +5291,10 @@ sequence_functions_usage['learn'] = """
       implements: age |Fred> => |37>
 """
 def learn_sp(context, one, two, three):
-  for op in one[0]:
+  for op in one.to_sp():
     if op.label.startswith('op: '):
       str_op = op.label[4:]
-      for object in two[0]:
+      for object in two.to_sp():
         context.learn(str_op, object, three)
   return three
 
@@ -5312,10 +5310,10 @@ sequence_functions_usage['add-learn'] = """
       implements: friends |Fred> +=> |Sam>
 """
 def add_learn_sp(context, one, two, three):
-  for op in one[0]:
+  for op in one.to_sp():
     if op.label.startswith('op: '):
       str_op = op.label[4:]
-      for object in two[0]:
+      for object in two.to_sp():
         context.add_learn(str_op, object.label, three)
   return three
 
@@ -5358,8 +5356,7 @@ def apply_sp(context, one, two):
         op = x.label[4:]
         value = two.apply_op(context,op).multiply(x.value)
         if len(value) > 0:
-          if type(value) is sequence:
-            value = value[0]                             # hackily cast two-result from seq to sp, for now. Breaks if value is an empty sequence!
+          value = value.to_sp()
           r += value
     seq += r
   return seq
@@ -5384,7 +5381,7 @@ function_operators_usage['such-that'] = """
 def sp_such_that(one, context, ops):
   def valid_ket(one, context, ops):
     for op in ops.split(','):
-      e = one.apply_op(context,op)[0]                 # fix the [0] cast from sequence to superposition later!
+      e = one.apply_op(context,op).to_sp()
       if e.label not in ["true","yes"]:
         return False
       if e.value < 0.5:                # need to test this bit.
@@ -5574,10 +5571,9 @@ sequence_functions_usage['consume-reaction'] = """
 #
 # one, two and three are superpositions
 def process_reaction(one,two,three):
-  if type(one) is sequence and type(two) is sequence and type(three) is sequence:
-    one = one[0]                                                      # hackily cast sequence to superposition for now.
-    two = two[0]
-    three = three[0]
+  one = one.to_sp()
+  two = two.to_sp()
+  three = three.to_sp()
   def del_fn(x,y):   # NB: creates negative coeffs.
     return x - y
   if intersection(two,one).count_sum() != two.count_sum():
@@ -5868,12 +5864,9 @@ sequence_functions_usage['arithmetic'] = """
 # fixed, I hope.
 #
 def arithmetic(x, operator, y):
-  if type(x) is sequence:                   # for now, cast sequences to superpositions. Fix later!
-    x = x[0]
-  if type(operator) is sequence:
-    operator = operator[0]
-  if type(y) is sequence:
-    y = y[0]
+  x = x.to_sp()
+  operator = operator.to_sp()
+  y = y.to_sp()
   
   x_label = x if type(x) == str else x.label
   op_label = operator if type(operator) == str else operator.label
@@ -5937,13 +5930,10 @@ sequence_functions_usage['range'] = """
       range(|1>, |5>, |0.5>)
         |1> + |1.5> + |2> + |2.5> + |3> + |3.5> + |4> + |4.5> + |5>
 """
-def show_range(start,finish,step="1"):
-  if type(start) is sequence:                   # for now, cast sequences to superpositions. Fix later! Yup! Not happy with it at all.
-    start = start[0]
-  if type(finish) is sequence:
-    finish = finish[0]
-  if type(step) is sequence:
-    step = step[0]
+def show_range(start, finish, step = ket("1")):
+  start = start.to_sp()
+  finish = finish.to_sp()
+  step = step.to_sp()
 
   start_label = start if type(start) == str else start.label
   finish_label = finish if type(finish) == str else finish.label
@@ -6238,11 +6228,9 @@ sequence_functions_usage['distance'] = """
       maybe remove the number prefix too.
 """
 def Euclidean_distance(one,two):
-  if type(one) is sequence:                                     # cast to superposition, for now. Not sure ED over sequences makes sense.
-    one = one[0]
-  if type(two) is sequence:
-    two = two[0]
-  
+  one = one.to_sp()
+  two = two.to_sp()
+ 
   return ket("number: " + float_to_int(math.sqrt(intersection_fn(squared_difference,one,two).count_sum())))
 
 # 11/8/2015: the exclude function:
@@ -7027,7 +7015,7 @@ def bko_if(condition,one,two):
 #  print('condition: %s' % condition)
 #  print('one: %s' % one)
 #  print('two: %s' % two)
-  if condition[0].label.lower() in ["true","yes"]:
+  if condition.to_sp().label.lower() in ["true","yes"]:
     return one
   else:
     return two
@@ -7064,8 +7052,8 @@ sequence_functions_usage['wif'] = """
 # though we can filter those using drop().
 # 
 def weighted_bko_if(condition,one,two):
-  label = condition[0].label 
-  value = condition[0].value 
+  label = condition.to_sp().label 
+  value = condition.to_sp().value 
   if label.lower() in ["true","yes"]:
     return one.multiply(value) + two.multiply(1 - value)
   else:
@@ -7329,10 +7317,83 @@ def display_map(context, parameters):
         else:
           value = value.label
       if value == "0":
-        value = "."
-        #value = ' '
+        #value = "."
+        value = ' '
       s += value.rjust(3)
     s += "\n"
   print(s)
   return ket('display-map')
-                                                                 
+
+# set invoke method:
+sp_fn_table['merge-value'] = 'merge_value'                                 # maybe it should be in seq_fn_table?
+# set usage info:
+function_operators_usage['merge-value'] = """
+    description:
+      merges coeff's and label's into a single number
+      
+    examples:
+      merge-value (0|3> + 3|1> + 5|2>)
+        |13>
+"""
+# one is a superposition
+def merge_value(one):
+  r = 0
+  for x in one:
+    try:
+      r += float(x.label) * x.value
+    except:
+      pass
+  return ket(float_to_int(r))
+
+# set invoke method:
+whitelist_table_2['and'] = 'And'
+# set usage info:
+sequence_functions_usage['and'] = """
+    description:
+      simple 'and'
+      NB: it evaluates both sequences before being passed to the 'and' function
+      NB: it (currently?) only uses the first superposition in the given sequences
+      
+    examples:
+      and(|yes>, |yes>)
+        |yes>
+        
+      and(|yes>, |no>)
+        |no>
+    
+    see also:
+      if, or, xor
+"""
+def And(one, two):
+  if one.to_sp().label.lower() in ['true', 'yes'] and two.to_sp().label.lower() in ['true', 'yes']:
+    return ket('yes')
+  return ket('no')
+
+# set invoke method:
+whitelist_table_2['or'] = 'Or'
+# set usage info:
+sequence_functions_usage['or'] = """
+    description:
+      simple 'or'
+      NB: it evaluates both sequences before being passed to the 'or' function
+      NB: it (currently?) only uses the first superposition in the given sequences
+      
+    examples:
+      or(|yes>, |yes>)
+        |yes>
+        
+      or(|yes>, |no>)
+        |yes>
+        
+      or(|no>, |no>)
+        |no>
+    
+    see also:
+      if, and, xor
+"""
+def Or(one, two):
+  if one.to_sp().label.lower() in ['true', 'yes'] or two.to_sp().label.lower() in ['true', 'yes']:
+    return ket('yes')
+  return ket('no')
+  
+                                                                       

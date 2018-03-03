@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 1/3/2018
+# Update: 3/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -674,7 +674,7 @@ class superposition(object):
     return ket(key, value)
 
   def weighted_pick_elt(self):                    # quick test in the console, looks to be roughly right.
-    if len(self) == 0:
+    if len(self.drop()) == 0:
       return ket()
     total = sum(x.value for x in self)
     r = random.uniform(0,total)
@@ -684,7 +684,7 @@ class superposition(object):
       if upto + w > r:
         return x
       upto += w
-    assert False, "Shouldn't get here"    
+    assert False, "Shouldn't get here in weighted-pick-elt"    
     
 
   def get_value(self,str):                      # maybe convert to  __getitem__
