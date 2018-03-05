@@ -229,7 +229,8 @@ def test_predict_next_1():
   s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
   process_sw_file(context, s)
 #  context.print_universe()
-  r = predict_next(context, sequence('2') + ket('3'), 'seq,3')
+#  r = predict_next(context, sequence('2') + ket('3'), 'seq,3')
+  r = predict_next(sequence('2') + ket('3'), context, 'seq,3')
   assert str(r) == ''
 
 def test_predict_next_2():
@@ -237,7 +238,8 @@ def test_predict_next_2():
   s += 'seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>\n'
   s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
   process_sw_file(context, s)
-  r = predict_next(context, sequence('6') + ket('2'), 'seq,3')
+#  r = predict_next(context, sequence('6') + ket('2'), 'seq,3')
+  r = predict_next(sequence('6') + ket('2'), context, 'seq,3')
   assert str(r) == ''
 
 def test_predict_next_3():
@@ -245,6 +247,145 @@ def test_predict_next_3():
   s += 'seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>\n'
   s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
   process_sw_file(context, s)
-  r = predict_next(context, sequence('2') + ket('5'), 'seq,3')
+#  r = predict_next(context, sequence('2') + ket('5'), 'seq,3')
+  r = predict_next(sequence('2') + ket('5'), context, 'seq,3')
   assert str(r) == ''
 
+
+def test_multi_line_stored_rule_1():
+  s = "tally-stored-food |*> #=> merge-value stored-food |_self>"
+  r = op_grammar(s).stored_rule()
+  context.print_universe()
+  assert False
+
+def test_multi_line_stored_rule_2():
+  s = """tally-stored-food-2 |*> #=>
+    merge-value stored-food |_self>
+
+bah |x> => |fish>
+"""
+  r = op_grammar(s).multi_stored_rule()
+  context.print_universe()
+  assert False
+
+def test_multi_line_stored_rule_3():
+  s = """tally-stored-food-3 |*> #=>
+    merge-value stored-food |_self>
+
+bah |x> => |fish>
+"""
+  r = op_grammar(s).sw_file()
+  context.print_universe()
+  assert False
+
+
+def test_multi_line_stored_rule_4():
+  s = """process-if |reached home> #=>
+    drop-the |food>
+    lay |scent> => |no>
+    type |walk> => |op: random>
+    path |home> => |home>
+
+"""
+  r = op_grammar(s).sw_file()
+  context.print_universe()
+  assert False
+
+def test_single_stored_rule_1():
+  s = "foo |*> #=> |bah>"
+  r = op_grammar(s).sw_file()
+  context.print_universe()
+  assert False
+
+# yup, works!
+#def test_multi_line_stored_rule_recall_1():
+#  r = context.recall('process-if', 'reached home')
+#  assert str(r) == ''
+
+
+def test_multi_line_stored_rule_5():
+  s = """
+
+bah-a |*> #=>
+    |fishy>
+    |soupy>
+
+"""
+  r = op_grammar(s).sw_file()
+  context.print_universe()
+  assert False
+
+
+def test_sw_file_load_1():
+  context.load('sw-examples/test-multi-line.sw')
+  context.print_universe()
+  assert False
+
+def test_process_sw_file_1():
+  with open('sw-examples/test-multi-line.sw', 'r') as f:
+    text = f.read()
+    print('text: %s' % text)
+    process_sw_file(context, text)
+  assert True
+
+def test_process_empty_string_1():
+  s = ''
+  process_sw_file(context, s)
+
+def test_process_rule_line_multi_line_1():
+  context.load('sw-examples/test-multi-line.sw')
+  context.print_universe()
+  s = 'foo |x>'
+  r = process_input_line(context, s, ket())
+  assert str(r) == '|bah>'
+
+def test_process_stored_rule_1():
+  context.load('sw-examples/test-multi-line.sw')
+  context.print_universe()
+  s = 'foo |x>'
+  r = process_stored_rule(context, s, None)
+  assert str(r) == '|bah>'
+
+
+def test_stored_rule_line_1():
+  s = 'type |walk> => |op: random>'
+  r = op_grammar(s).stored_rule_line()
+  assert str(r) == '|op: random>'
+
+def test_stored_rule_line_2():
+  s = 'age |Fred>'
+  r = op_grammar(s).stored_rule_line()
+  assert r == [('+', [['age'], 'Fred'])]
+
+def test_stored_rule_line_3():
+  s = """
+
+-- a random comment
+
+type |walk> => |op: return-home>
+heading |ops> => |op: S>
+
+type |walk>
+"""
+  r = process_stored_rule(context, s)
+  context.print_universe()
+  assert str(r) == 'fish'
+
+def test_multi_value_stored_rules_1():
+  s = """
+
+foo (*,*) #=>
+    the |result> => 3|__self1> + 5|__self2>
+
+"""
+  r = process_sw_file(context, s)
+  context.print_universe()
+  s = 'foo(|a>, |b>)'
+  r = process_input_line(context, s, ket())
+  assert str(r) == 'fish'  
+
+
+def test_active_recall_1():
+  context.learn('age', 'sam', '2')
+  r = context.recall('age', ket('sam',3), True)
+  assert str(r) == '3|2>'

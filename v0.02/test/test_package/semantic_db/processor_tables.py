@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 3/3/2018
+# Update: 5/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -40,6 +40,7 @@ built_in_table = {
   "collapse"         : "collapse",
   "count"            : "number_count",
   "how-many"         : "number_count",
+  "show-many"        : "snumber_count",
   "count-sum"        : "number_count_sum",
   "sum"              : "number_count_sum",
   "measure-currency" : "number_count_sum",  

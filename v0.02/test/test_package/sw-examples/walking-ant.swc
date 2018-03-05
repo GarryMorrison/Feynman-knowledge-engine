@@ -95,6 +95,7 @@ process-if |reached home> #=>
     drop-the |food>
     lay |scent> => |no>
     type |walk> => |op: random>
+    path |home> => |home>
 
 process-if |not reached home> #=>
     |>

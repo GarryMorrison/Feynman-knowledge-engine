@@ -391,12 +391,15 @@ while True:
 
     start_time = time.time()    
 
-    result = process_input_line(C,line,x)  # maybe handling of comment lines should be in here?
-    print(result)
+    try:
+      result = process_input_line(C,line,x)
+      print(result)
+    except KeyboardInterrupt:                           # doesn't seem to work.
+      print('caught keyboard interrupt')
 
     end_time = time.time()
     delta_time = end_time - start_time
-    print("\n  Time taken:",display_time(delta_time))   # display_time() is in the sdb_functions.py file
+    print("\n  Time taken:",display_time(delta_time))   # display_time() is in the functions.py file
 
 
 

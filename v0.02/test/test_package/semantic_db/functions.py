@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 3/3/2018
+# Update: 5/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -6673,7 +6673,8 @@ sequence_functions_usage['predict'] = """
 
     see also: 
 """
-def predict_next(one, context, parameters):                     # maybe change invoke order, so context comes first??
+# def predict_next(context, one, parameters):                     # maybe change invoke order, so context comes first??
+def predict_next(one, context, parameters):                     # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
   params = parameters.split(',')                                # yeah, change invoke so we don't need to split the input. FIX!!
   op = params[0]
   if len(params) == 1:
@@ -6966,7 +6967,7 @@ def op_zip(context, one, two):
   
   
 # set invoke method:
-whitelist_table_2['if'] = 'bko_if'
+whitelist_table_3['if'] = 'bko_if'
 # set usage info:
 sequence_functions_usage['if'] = """
     description:
@@ -6985,6 +6986,12 @@ sequence_functions_usage['if'] = """
         process-if if(some|condition>, |a:> __ |_self> , |b:> __ |_self>)
         process-if |a: *> #=> foo1 remove-leading-category |_self>
         process-if |b: *> #=> foo2 remove-leading-category |_self>
+        
+      3 parameter version:
+        if(some|condition>, |branch a>, |branch b>, |branch c>)
+      returns |branch a> if some|condition> is 'true' or 'yes'
+      returns |branch b> if some|condition> is 'false' or 'no'
+      returns |branch c> otherwise
                       
     examples:
       split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
@@ -6999,7 +7006,19 @@ sequence_functions_usage['if'] = """
 
       split-num |12345678901234567890>
         |890> . |567> . |234> . |901> . |678> . |345> . |12>
-
+        
+      if(|True>, |a>, |b>, |c>)
+        |a>
+        
+      if(|False>, |a>, |b>, |c>)
+        |b>
+        
+      if(|>, |a>, |b>, |c>)
+        |c>
+      
+      if(|fish>, |a>, |b>, |c>)
+        |c>
+      
     see also:
       big-numbers-to-words example
       wif
@@ -7019,6 +7038,18 @@ def bko_if(condition,one,two):
     return one
   else:
     return two
+
+# set invoke method:
+whitelist_table_4['if'] = 'bko_if_3'
+def bko_if_3(condition, one, two, three):
+  condition = condition.to_sp().label.lower() 
+  if condition in ["true","yes"]:
+    return one
+  if condition in ["false","no"]:
+    return two
+  else:
+    return three
+  
 
 # set invoke method:
 whitelist_table_2['wif'] = 'weighted_bko_if'
@@ -7325,24 +7356,31 @@ def display_map(context, parameters):
   return ket('display-map')
 
 # set invoke method:
-sp_fn_table['merge-value'] = 'merge_value'                                 # maybe it should be in seq_fn_table?
+seq_fn_table['merge-value'] = 'merge_value'
 # set usage info:
 function_operators_usage['merge-value'] = """
     description:
       merges coeff's and label's into a single number
+      works with superpositions, and sequences:
       
     examples:
+      -- superposition example:
       merge-value (0|3> + 3|1> + 5|2>)
         |13>
+
+      -- sequence of superpositions example:        
+      merge-value (0|3> + 1|7> . 4|2> + 5|3> + 4|5>)
+        |50>
 """
-# one is a superposition
+# one is a sequence
 def merge_value(one):
   r = 0
-  for x in one:
-    try:
-      r += float(x.label) * x.value
-    except:
-      pass
+  for sp in one:
+    for x in sp:
+      try:
+        r += float(x.label) * x.value
+      except:
+        pass
   return ket(float_to_int(r))
 
 # set invoke method:

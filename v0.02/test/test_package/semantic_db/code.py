@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 3/3/2018
+# Update: 5/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1507,6 +1507,16 @@ class sequence(object):
       return ket("no")
     return ket("yes")
 
+  def snumber_count(self):
+    result = len(self)
+    return ket("number: " + str(result))
+    
+  def number_count(self):
+    seq = sequence([])
+    for x in self.data:
+      seq.data.append(x.number_count())
+    return seq
+
   def activate(self,context=None,op=None,self_label=None):
     return self
 
@@ -1550,10 +1560,11 @@ class stored_rule(object):
 
   # where currently self_object is a string. Breaks even with ket, let alone sp.
   # eventually I want support for all three cases.    
-  def activate(self, context, op, self_label=None):                         
+  def activate(self, context, op, self_object=None):                         
     try:
       #return extract_compound_superposition(context,self.rule,self_label)[0] # how does return work in try/except?
-      return extract_compound_sequence(context, self.rule, self_label)
+      #return extract_compound_sequence(context, self.rule, self_label)
+      return process_stored_rule(context, self.rule, self_object)
     except Exception as e:                                                                   # works fine.
       logger.warning("FYI: except in stored_rule\nReason: %s" % e)
       return superposition()  
@@ -1714,9 +1725,9 @@ class NewContext(object):
 #
   def recall(self,op,label,active=False):
     # some prelims:
-    if type(op) == ket:
+    if type(op) is ket:
       op = op.label[4:]                         # map |op: age> to "age"
-    if type(label) == ket:
+    if type(label) is ket:
       coeff = label.value
       ket_label = label.label
     else:
@@ -1734,12 +1745,14 @@ class NewContext(object):
     if not match:
       #logger.info("recall not found")
       #logger.info(op + " " + str(ket(ket_label)) + " not found")
-      logger.info("%s %s not found" % (op,ket(ket_label)))
-      rule = ket("",0)
+      logger.info("%s |%s> not found" % (op, ket_label))
+      rule = ket()
 
-    if active:
-      rule = rule.activate(self,op,ket_label)
-    return rule.multiply(coeff)
+    if active and type(rule) in [stored_rule, memoizing_rule]:
+      rule = rule.activate(self, op, ket(ket_label, coeff))
+    else:
+      rule = rule.multiply(coeff)
+    return rule
 
 # op is a string
 # label is a string or a ket
@@ -1750,10 +1763,10 @@ class NewContext(object):
     # some prelims:                                     # Plan to implement this in apply_op(context,"op")
     if op == "supported-ops":                    # never learn "supported-ops", it is auto-generated and managed
       return
-    if type(label) == ket:                       # label is string. if ket, convert back to string
+    if type(label) is ket:                       # label is string. if ket, convert back to string
       label = label.label
     #label = "*"                                  # hrmm... for now. Almost certainly tweak later!
-    if type(rule) == str:                        # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
+    if type(rule) is str:                        # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
       rule = ket(rule)                           # if string, cast to ket
     if len(rule) == 0:                           # do not learn rules that are |>
       return
@@ -1815,12 +1828,13 @@ class NewContext(object):
           logger.debug('rule: %s' % rule)
           logger.debug('seq: %s' % [str(x) for x in seq_list])
           #resulting_rule = extract_compound_superposition(self, rule , seq_list[0])[0]
-          resulting_rule = extract_compound_sequence(self, rule.rule , seq_list)
+          #resulting_rule = extract_compound_sequence(self, rule.rule , seq_list)
+          resulting_rule = rule.activate(self, op, seq_list)
         except Exception as e:
           resulting_rule = ket()
-          logger.warning("except while processing stored_rule: %s" % e)
-        if type(rule) is memoizing_rule:
-          self.sp_learn(op,sp,resulting_rule)
+          logger.warning("sp_recall: except while processing stored_rule: %s" % e)
+        #if type(rule) is memoizing_rule:
+        #  self.sp_learn(op,sp,resulting_rule)
         rule = resulting_rule
     logger.debug("leaving sp_recall")
     return rule                                
@@ -1926,7 +1940,12 @@ class NewContext(object):
       return
 
     rule = self.ket_rules_dict[label][op]
-    if type(rule) in [ket, superposition, fast_superposition]:      # don't learn inverse for stored_rules.
+    if type(rule) is sequence:
+      for sp in rule:
+        for x in sp:
+          if x.label != "":
+            self.add_learn("inverse-" + op, x, label)
+    if type(rule) in [ket, superposition]:      # don't learn inverse for stored_rules.
       for x in rule:
         if x.label != "":
           self.add_learn("inverse-" + op,x,label)                   # do we want ket(label)?
@@ -2146,7 +2165,7 @@ class NewContext(object):
     except:
       logger.info("failed to multi save: " + filename)
 
-  def load(self,filename):                                    # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context") 
+  def old_load(self,filename):                                    # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context") 
     try:                                                      # cool! I implemented new_context().set and seems to work now. 
       with open(filename,'r') as f:
         for line in f:
@@ -2156,6 +2175,16 @@ class NewContext(object):
           process_sw_file(self, line)             # this is broken! bug found when loading fragment-document.sw fragments
     except Exception as e:
       logger.info("failed to load: %s\nReason: %s" % (filename, e))
+
+  def load(self, filename):
+    try:
+      with open(filename, 'r') as f:
+        text = f.read()
+        logger.info('load text: %s' % text)
+        process_sw_file(self, text)
+    except Exception as e:
+      logger.info("failed to load: %s\nReason: %s" % (filename, e))
+        
 
 # 3/12/2015: new feature context.print_universe() and context.print_multiverse()
   def print_universe(self,exact_dump=False):
@@ -2316,7 +2345,7 @@ class ContextList(object):
     except:
       logger.info("failed to multi save: " + filename)
 
-  def load(self,filename):                                    # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context") 
+  def old_load(self,filename):                                    # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context") 
     try:                                                      # Well, here in context_list() it works just fine! C.load("sw-examples/fib-play.sw"); print(C.dump_multiverse())
       with open(filename,'r') as f:
         for line in f:
@@ -2325,8 +2354,17 @@ class ContextList(object):
           #parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
           process_sw_file(self, line)             # later maybe process entire file at once. Not sure which method is faster.
     except Exception as e:
-      logger.info("failed to load: " + filename)
+      logger.info("ContextList failed to load: " + filename)
       logger.info('reason: %s' % e)
+      
+  def load(self, filename):
+    try:
+      with open(filename, 'r') as f:
+        text = f.read()
+        process_sw_file(self, text)
+    except Exception as e:
+      logger.info("ContextList failed to load: %s\nreason: %s" % (filename, e))
+          
 
 # 3/12/2015: new feature context.print_universe() and context.print_multiverse()
   def print_universe(self,exact_dump=False):
@@ -2492,16 +2530,21 @@ new_line = ('\r\n' | '\r' | '\n')
 char = ~new_line anything
 line = <char*>:s -> s
 #line = <~new_line anything>*:s -> "".join(s)
+multiline = '  ' line:first new_line (~new_line multiline)*:rest -> '\\n  ' + first + ''.join(rest)    
 comment = ( '-'+ line | ws new_line)
 object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | full_compound_sequence ):obj -> obj
-stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws line:s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
+single_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws line:s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
+stored_rule = multi_stored_rule
+multi_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws (ws new_line multiline | line):s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
 #memoizing_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws '!=>' ws line:s -> learn_memoizing_rule(context, prefix_op, obj, s)
 #learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule ws compiled_compound_sequence:seq -> learn_standard_rule(context, prefix_op, obj, rule, seq)
 learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule_type ws full_compound_sequence:parsed_seq -> learn_standard_rule(context, prefix_op, obj, rule_type, parsed_seq)
 recall_rule = ws (simple_op | "\'\'" ):prefix_op ws object:obj -> recall_rule(context, prefix_op, obj)
 
-sw_file = (comment | learn_rule | stored_rule )*
+sw_file = (comment | learn_rule | multi_stored_rule )*
+#sw_file = (comment | compiled_compound_sequence | learn_rule | multi_stored_rule )*
 process_rule_line = (learn_rule | stored_rule | compiled_compound_sequence | new_line | comment)
+stored_rule_line = (learn_rule | stored_rule | full_compound_sequence ):seq -> seq
 """
 
 def float_int(x):
@@ -2741,13 +2784,15 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
     my_print('seq', str(seq))
 
     if op == '' and one == 'context' and rule_type == '=>':
-      name = seq[0].label
+      name = seq[0].label                                            # seq.to_sp().label instead?
       if name.startswith('context: '):
         context.set(name[9:])
     elif rule_type == '=>':
       context.learn(op, one, seq)
+      return seq
     elif rule_type == '+=>':
       context.add_learn(op, one, seq)
+      return seq
   elif type(one) is list:                          # indirect learn rule found
     indirect_object = compile_compound_sequence(context, one)
     my_print('indirect learn object', str(indirect_object))  
@@ -2758,7 +2803,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
           context.learn(op, one, seq)
         elif rule_type == '+=>':
           context.add_learn(op, one, seq)
-
+    return seq
 
 def recall_rule(context, op, one):
   return context.recall(op, one)
@@ -2782,10 +2827,39 @@ def process_input_line(context, line, x):
     logger.info('failed to process line: %s\nReason: %s' % (line, e))
     return ket('')
 
+def process_stored_rule(context, unparsed_rule, self_object = None):
+  if self_object is not None and '|__self' in unparsed_rule:
+    if type(self_object) is list:
+      str_self_object = [str(x) for x in self_object]
+      unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object[0] )                   # I hate this bit of code!! Please kill it!
+      for k, x in enumerate(str_self_object):                                                             # we need a cleaner way to handle |__self> and |__self3> rules!
+        pattern = '|__self%s>' % str(k+1)
+        unparsed_rule = unparsed_rule.replace(pattern, ' (%s) ' % x )                                     # I hate this bit of code!! Please kill it!
+    else:
+      if type(self_object) is str:
+        str_self_object = '|' + self_object + '>'
+      else:
+        str_self_object = str(self_object)
+      unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object )                      # I hate this bit of code!! Please kill it!   
+  print('self_object: %s' % str(self_object))
+  print('unparsed stored rule: %s' % unparsed_rule)
+  seq = sequence([])
+  for line in unparsed_rule.splitlines():
+    line = line.strip()
+    print('line: %s' % line)
+    if line != '' and not line.startswith('--'):
+      parsed_seq = op_grammar(line).stored_rule_line()
+      print('parsed_seq: %s' % parsed_seq)
+      if type(parsed_seq) in [ket, superposition, sequence]:
+        seq = parsed_seq
+      elif type(parsed_seq) is list:
+        seq = compile_compound_sequence(context, parsed_seq, self_object)
+  return seq
+
 def is_not_newline(c):
   return c not in ['\r', '\n']
 
-context = ContextList('in the processor')
+context = ContextList('global context')
 #context = ''
   
 bindings_dictionary = {
