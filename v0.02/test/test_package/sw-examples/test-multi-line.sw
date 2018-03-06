@@ -30,3 +30,10 @@ if-reach-home |*> #=>
 if-find-food |*> #=>
     lay |scent> => |yes>
     type |walk> => |op: return-home>
+
+swap-context |*> #=>
+    |context> => |context: testing>
+    learn |rule> => |value>
+    |context> => previous |context>
+    learn |rule 2> => |value 2>
+

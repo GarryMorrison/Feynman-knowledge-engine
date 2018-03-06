@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 5/3/2018
+# Update: 6/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1660,12 +1660,14 @@ class NewContext(object):
     self.ket_rules_dict = OrderedDict()
     self.sp_rules_dict = OrderedDict()
     self.supported_operators_dict = OrderedDict()
+    self.learn('', 'context', 'context: ' + self.name)
 
   def set(self,name):                           # not 100% sure this is the best way, or correct.
     self.name = name                            # BTW, it is intended to erase what is currently defined for the current context.
     self.ket_rules_dict = OrderedDict()
     self.sp_rules_dict = OrderedDict()
     self.supported_operators_dict = OrderedDict()
+    self.learn('', 'context', 'context: ' + self.name)
     
 # 3/12/2015:
   def context_name(self):
@@ -1845,9 +1847,9 @@ class NewContext(object):
 #
   def dump_rule(self,op,label,exact=False):
     # some prelims:
-    if type(op) == ket:
+    if type(op) is ket:
       op = op.label[4:]
-    ket_name = label if type(label) == ket else ket(label) # maybe tidy this.
+    ket_name = label if type(label) is ket else ket(label) # maybe tidy this. It is in dump, so no need to optimize really.
 
     rule = self.recall(op,label)
     rule_string = " => "
@@ -1855,14 +1857,17 @@ class NewContext(object):
       rule_string = " #=> "
     if type(rule) == memoizing_rule:
       rule_string = " !=> "
-      
 
-    return op + " " + ket_name.display() + rule_string + rule.display(exact)
+    star_new_line = ''
+    if ket_name.label == '*':
+      star_new_line = '\n'      
+
+    return op + " " + ket_name.display() + rule_string + rule.display(exact) + star_new_line
 
 # previously called dump_all_rules()
   def dump_ket_rules(self,label,exact=False):
     # some prelims:
-    if type(label) == ket:
+    if type(label) is ket:
       ket_label = label.label
     else:
       ket_label = label
@@ -1874,7 +1879,7 @@ class NewContext(object):
 
   def dump_sp_rule(self,op,label,exact=False):
     # some prelims:
-    if type(op) == ket:
+    if type(op) is ket:
       op = op.label[4:]
     sp_name = label
 
@@ -1912,10 +1917,12 @@ class NewContext(object):
 #    return sep + context_string + "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict ) + sep
     result_string = ""
     if len(self.ket_rules_dict) > 0:
-      result_string += "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict )
+      #result_string += "\n\n" + "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict )
+      result_string += "\n\n".join(self.dump_ket_rules(x,exact) for x in self.ket_rules_dict )
     if len(self.sp_rules_dict) > 0:
       result_string += "\n\n" + "\n\n".join(self.dump_sp_rules(x,exact) for x in self.sp_rules_dict )
-    return sep + context_string + result_string + sep  
+    #return sep + context_string + result_string + sep
+    return sep + result_string + sep  
 
 # not 100% sure we want this, but I'll add it for now:
 # See, new_context() only has 1 context, so dump_multiverse() doesn't make a whole lot of sense.
@@ -1982,16 +1989,21 @@ class NewContext(object):
             if x.label != "":
               self.add_learn("inverse-" + op,x,label)
 
-  def create_inverse_op(self,op):
-    if type(op) == ket:
+  def create_inverse_op(self, op):
+    if type(op) is ket:
       op = op.label[4:] 
     for label in self.ket_rules_dict:
       if op in self.ket_rules_dict[label]:
         rule = self.ket_rules_dict[label][op]
-        if type(rule) in [ket, superposition, fast_superposition]:      # don't learn inverse for stored_rules.
+        if type(rule) is sequence:
+          for sp in rule:
+            for x in sp:
+              if x.label != "":
+                self.add_learn("inverse-" + op, x, label)
+        elif type(rule) in [ket, superposition]:      # don't learn inverse for stored_rules.
           for x in rule:
             if x.label != "":
-              self.add_learn("inverse-" + op,x,label)
+              self.add_learn("inverse-" + op, x, label)
 
 
 # do we need unlearn stuff?
@@ -2203,6 +2215,7 @@ class ContextList(object):
     self.index = 0
 
   def set(self,name):                              # maybe write a set_index, where you specify index number, instead of context name
+    previous_context_name = self.context_name()
     match = False
     for k,context in enumerate(self.data):
       if context.name == name:
@@ -2213,6 +2226,7 @@ class ContextList(object):
       c = NewContext(name)
       self.data.append(c)
       self.index = len(self.data) - 1
+    self.data[self.index].learn('previous', 'context', 'context: ' + previous_context_name)
 
   def show_context_list(self):                      # maybe include a count of the number of kets known to that context
     text = "context list:\n"
@@ -2224,9 +2238,11 @@ class ContextList(object):
 # new 12/2/2015:
 # assumes k is an integer:
   def set_index(self,k):
+    previous_context_name = self.context_name()
     if k < 0 or k >= len(self.data):
       return False
     self.index = k
+    self.data[self.index].learn('previous', 'context', 'context: ' + previous_context_name)
     return True
     
   def show_context_list_index(self):
@@ -2675,6 +2691,8 @@ def process_operators(context, ops, seq, self_object = None):
       my_print('power', power)
       for _ in range(power):                                           # is there a better way to implement this?
         seq = process_operators(context, [tuple_op], seq, self_object)
+#    elif op == "\"\"" and seq.to_sp().label == 'context':
+#      seq = sequence('context: ' + context.context_name())
     else:
       python_code = process_single_op(op)
       if len(python_code) > 0:
@@ -2784,7 +2802,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
     my_print('seq', str(seq))
 
     if op == '' and one == 'context' and rule_type == '=>':
-      name = seq[0].label                                            # seq.to_sp().label instead?
+      name = seq.to_sp().label
       if name.startswith('context: '):
         context.set(name[9:])
     elif rule_type == '=>':

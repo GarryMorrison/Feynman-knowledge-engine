@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/3/2018
+# Update: 6/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -3079,6 +3079,7 @@ def find_unique(context,op):
 #
 def find_inverse(context,op):
   context.create_inverse_op(op)
+  return ket('find-inverse')
     
   
 
