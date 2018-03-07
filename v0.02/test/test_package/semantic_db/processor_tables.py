@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 5/3/2018
+# Update: 7/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -128,6 +128,8 @@ sigmoid_table = {
   "floor"              : "floor",
   "ceiling"            : "ceiling",
   "not-zero"           : "not_zero",
+  "inc"                : "inc",
+  "dec"                : "dec",
 }                                   
 
 # some ket -> ket functions:

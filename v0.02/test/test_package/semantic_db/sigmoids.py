@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 17/2/2018
+# Update: 7/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -135,7 +135,14 @@ def floor(x):
 def ceiling(x):
   return math.ceil(x)      
 
-def not_zero(x):
+def not_zero(x):               # probably delete this one!
   if x <= 0:
     return 1
   return x
+  
+def inc(x):
+  return x + 1
+  
+def dec(x):
+  return x - 1
+  

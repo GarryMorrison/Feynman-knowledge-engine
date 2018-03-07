@@ -366,6 +366,31 @@ sigmoid_table_usage['ceiling'] = """
         3|x> + 8|y>
 """
 
+sigmoid_table_usage['inc'] = """
+    description:
+      increment the coefficient by one
+
+    examples:
+      inc |x>
+        2|x>
+
+      inc^7 0|x>
+        7|x>
+"""
+
+sigmoid_table_usage['dec'] = """
+    description:
+      decrement the coefficient by one
+
+    examples:
+      dec |x>
+        0|x>
+
+      dec^10 0|x>
+        -10 |x>
+"""
+
+
 examples_usage['numbers-to-words'] = """
     description:
       convert integers into words
@@ -941,9 +966,9 @@ examples_usage['temperature-conversions'] = """
       load temperature-conversion.sw
 """
 
-examples_usage['Fibonnaci-and-factorial'] = """
+examples_usage['Fibonacci-and-factorial'] = """
     description:
-      simple recursive Fibonnaci and factorial
+      simple recursive Fibonacci and factorial
       NB: we use !=> instead of #=>
       ie, memoizing rules instead of plain stored-rules.
       otherwise this code gets very slow, very fast.

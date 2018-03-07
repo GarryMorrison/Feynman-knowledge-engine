@@ -20,15 +20,23 @@ current |cell> => |grid: 10: 22>
 home |cell> => current |cell>
 
 -- start with no food:
-stored-food home |cell> => |0>
+stored-food home |cell> => 0| >
 
 -- learn path home:
-save-direction |*> #=> 
-    path |home> +=> |_self>
+store-direction (*) #=> 
+    path |home> +=> |__self>
 
 -- find return path
 return-path |home> #=> 
-    subtraction-invert[0] expand path |home>
+    invert-direction expand path |home>
+
+-- NB: |_self> seems to work here, so don't need the slower |__self>
+invert-direction |*> #=>
+    if(is-less-than[0] push-float |_self>, - |_self>, reverse-dir |_self> )         
+
+-- reverse-if-neg |*> #=>
+--     if(is-greater-equal-than[0] push-float |_self>, |_self>, - reverse-dir |_self>)
+
 
 
 -- learn the list of directions:
@@ -38,45 +46,43 @@ list-of |directions> => |op: N> + |op: NE> + |op: E> + |op: SE> + |op: S> + |op:
 heading |ops> => pick-elt list-of |directions>
 
 -- start by not carrying any food:
-carry |food> => |0>
+carry |food> => 0| >
 
 
 -- place some food:
-food |grid: 2: 2> => |3>
-food |grid: 2: 3> => |3>
-food |grid: 2: 4> => |3>
-food |grid: 2: 5> => |3>
-food |grid: 3: 5> => |3>
-food |grid: 4: 5> => |3>
-food |grid: 5: 6> => |3>
-food |grid: 6: 6> => |3>
-food |grid: 29: 29> => |20>
-food |grid: 28: 3> => |20>
+food |grid: 2: 2> => 3| >
+food |grid: 2: 3> => 3| >
+food |grid: 2: 4> => 3| >
+food |grid: 2: 5> => 3| >
+food |grid: 3: 5> => 3| >
+food |grid: 4: 5> => 3| >
+food |grid: 5: 6> => 3| >
+food |grid: 6: 6> => 3| >
+food |grid: 29: 29> => 20| >
+food |grid: 28: 3> => 20| >
 
 
 -- show food and stored-food operators:
 show-food |*> #=>
     display-map[30, 30, food] |>
 
-tally-stored-food |*> #=>
-    merge-value stored-food |_self>
-
 show-stored-food |*> #=>
-    display-map[30, 30, tally-stored-food] |>
+    display-map[30, 30, stored-food] |>
 
 
--- carry-the and drop-the food operators:
+-- carry-the and drop-the food operators:                               
+-- currently assumes food current |cell> is greater than 0.
 carry-the |food> #=> 
-    food current |cell> => minus[1] food current |cell>
-    carry |food> => plus[1] carry |food>
+    food current |cell> => dec food current |cell>
+    carry |food> => inc carry |food>
 
 drop-the |food> #=> 
     stored-food current |cell> +=> carry |food>
-    carry |food> => |0>
+    carry |food> => 0| >
 
 
 if-find-food |*> #=>
-    process-if if( and(is-greater-than[0] food current |cell>, is-equal[0] carry |food>), |found food>, |not found food> )
+    process-if if( and(is-greater-than[0] push-float food current |cell>, is-equal[0] push-float carry |food>), |found food>, |not found food> )
 
 process-if |found food> #=>
     carry-the |food>
@@ -94,7 +100,7 @@ if-reach-home |*> #=>
 process-if |reached home> #=>
     drop-the |food>
     lay |scent> => |no>
-    type |walk> => |op: random>
+    type |walk> => |op: random-walk>
     path |home> => |home>
 
 process-if |not reached home> #=>
@@ -126,10 +132,10 @@ process-if |no to scent> #=>
 
 
 if-find-scent-change-heading |*> #=>
-    process-if if(is-greater-than[0] value current |cell>, |found scent> , |not found scent>)
+    process-if if(is-greater-than[0] value |_self>, |found scent> , |not found scent>)
 
 process-if |found scent> #=>
-    heading |ops> => random-if-zero reverse-if-neg push-float reverse-dir return-path |home>
+    heading |ops> => random-if-zero reverse-dir return-path |home>
 
 process-if |not found scent> #=>
     |>
@@ -150,7 +156,9 @@ switch-on-return |*> #=>
 
 
 take-a-step |*> #=>
-    current |cell> => apply( type |walk>, current |cell>)
+    current |direction> => apply( type |walk>, current |cell>)
+    path |home> +=> current |direction>
+    current |cell> => apply( current |direction>, current |cell>)
     if-find-food |>
     if-reach-home |>
 
@@ -159,21 +167,31 @@ take-a-step |*> #=>
 -- random-walk input is a grid location:
 -- random-walk has to return a direction:
 random-walk |*> #=>
-    if-find-scent-change-heading |>
-    blur-heading |>
+    if-find-scent-change-heading |__self>
+    
+    -- blur heading:
+    heading |ops> => normalize ( 0.1 turn-left^2 + 0.25 turn-left + 10 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
+    
+    -- try a direction:
     try |direction> => clean weighted-pick-elt heading |ops>
-    if-valid-direction-step-else-turn-right |>
-
-if-valid-direction-step-else-turn-right |*> #=>
-    process-if if(do-you-know apply( try |direction>, current |cell>), |valid step>, |not valid step>)
+    
+    -- if valid direction, step, else turn right:
+    process-if if(do-you-know apply( try |direction>, |__self>), |valid step>, |not valid step>) 
 
 process-if |valid step> #=>
-    save-direction try |direction>    
+    try |direction>
 
 process-if |not valid step> #=>
-    turn-heading-right |>
+    -- turn heading right:
+    heading |ops> => pick-elt ( turn-right + turn-right^2 ) heading |ops>
     |op: id>
 
+--     if-valid-direction-step-else-turn-right( try |direction>, |__self> )
+-- if-valid-direction-step-else-turn-right (*,*) #=>
+--     process-if if(do-you-know apply( |_self1>, |_self2>), |valid step>, |not valid step>)
+-- process-if |valid step> #=>
+--     try |direction>
+  
 
 -- define turn-heading-right operator:
 turn-heading-right |*> #=> 
@@ -187,17 +205,7 @@ blur-heading |*> #=>
 -- return-home input is a grid location (which we ignore, instead making use of return-path |home>):
 -- return-home returns a direction one step closer to home:
 return-home |*> #=>
-    save-direction clean weighted-pick-elt reverse-if-neg push-float return-path |home>    
-
-reverse-if-neg |*> #=>
-    if(is-greater-equal-than[0] |_self>, pop-float |_self>, - reverse-dir pop-float |_self>)
-
--- nghbr |*> #=>
---     (N + NE + E + SE + S + SW + W + NW) |_self>
-
--- weight-directions |*> #=>
---     algebra(merge-value value apply( |_self>, clean ( 1 + nghbr ) current |cell>), |*>, |_self>)
-
+    clean weighted-pick-elt return-path |home>    
 
 
 -- define identity direction operator:

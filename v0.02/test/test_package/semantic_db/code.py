@@ -2410,26 +2410,26 @@ def valid_op(op):                                                       # do we 
 def process_single_op(op):
   logger.debug("process_single_op: op: " + str(op)) 
 
-  if type(op) is list:                                         # compound op found:
-    logger.debug("compound op found")
-    the_op = op[0]
-    parameters = ",".join(op[1:])                         # not 100% sure this is the best way to handle parameters. eg, maybe we should pass a list? 
-    if the_op not in compound_table:
-      logger.debug(the_op + " not in compound_table")
-      python_code = ""
-    else:
-      python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here
-
-  elif type(op) is tuple:                                               # powered op found:
-    logger.debug("powered op found")
-    the_op, power = op
-    processed_op = process_single_op(the_op)                            # recursion, hope it works.
-    python_code = ""
-    for k in range(power):
-      python_code += processed_op
+#  if type(op) is list:                                         # compound op found:
+#    logger.debug("compound op found")                          # seems this branch is still used by my current code. I thought it was now redundant. Hrmm...  
+#    the_op = op[0]                                             # I thought process_operators handled this case? Need to fix this!
+#    parameters = ",".join(op[1:])                         # not 100% sure this is the best way to handle parameters. eg, maybe we should pass a list? 
+#    if the_op not in compound_table:
+#      logger.debug(the_op + " not in compound_table")
+#      python_code = ""
+#    else:
+#      python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here
+#
+#  elif type(op) is tuple:                                               # powered op found:
+#    logger.debug("powered op found")
+#    the_op, power = op
+#    processed_op = process_single_op(the_op)                            # recursion, hope it works.
+#    python_code = ""
+#    for k in range(power):
+#      python_code += processed_op
     
 #  elif is_number(op):                                                    # simple-float found
-  elif type(op) in [int, float]:  
+  if type(op) in [int, float]:  
     python_code = ".multiply({0})".format(str(op))
   
   elif op == '-':       # treat - |x> as mult[-1] |x>                   # not sure we want to keep this. I think simple-float has this covered. Just use '-1', not '-' 
@@ -2598,8 +2598,14 @@ def process_operators(context, ops, seq, self_object = None):
       my_print('op[0]', op[0])
       if op[0] is 'c_op':
         my_print('compound_op')
-        python_code = process_single_op(op[1:])
-        if len(python_code) > 0:
+        #python_code = process_single_op(op[1:])              # hopefully we haven't broken anything by this change. 
+        the_op = op[1]
+        parameters = ','.join(op[2:])
+        if the_op not in compound_table:
+          logger.debug(the_op + " not in compound_table")
+          seq = sequence([])
+        else:
+          python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here. Also, this is the place to change compound function invoke method. 
           seq = eval('seq' + python_code)
       elif op[0] is 'f_op':
         my_print('function_op')
@@ -2866,12 +2872,15 @@ def process_stored_rule(context, unparsed_rule, self_object = None):
     line = line.strip()
     print('line: %s' % line)
     if line != '' and not line.startswith('--'):
-      parsed_seq = op_grammar(line).stored_rule_line()
-      print('parsed_seq: %s' % parsed_seq)
-      if type(parsed_seq) in [ket, superposition, sequence]:
-        seq = parsed_seq
-      elif type(parsed_seq) is list:
-        seq = compile_compound_sequence(context, parsed_seq, self_object)
+      if line == '|>':
+        seq = ket()
+      else:
+        parsed_seq = op_grammar(line).stored_rule_line()
+        print('parsed_seq: %s' % parsed_seq)
+        if type(parsed_seq) in [ket, superposition, sequence]:
+          seq = parsed_seq
+        elif type(parsed_seq) is list:
+          seq = compile_compound_sequence(context, parsed_seq, self_object)
   return seq
 
 def is_not_newline(c):
