@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 6/3/2018
+# Update: 8/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1390,23 +1390,6 @@ def number_to_words(one):
 
 
   
-# 8/5/2014:
-# common[op] (|x> + |y> + |z>)
-# eg: common[friends] (|Fred> + |Sam>)
-# eg: common[actors] (|movie-1> + |movie-2>)
-# or indirectly
-# |list> => |Fred> + |Sam> + |Charles> 
-# common[friends] "" |list>
-def common(one,context,op):
-  if len(one) == 0:
-    return ket("",0)
-  for sp in one:
-    r = sp.apply_op(context,op)
-    break
-  for sp in one:
-    tmp = sp.apply_op(context,op)
-    r = intersection(r,tmp)
-  return r                 
 
 
 # 24/9/2015:
@@ -2767,30 +2750,6 @@ def old_sp_such_that(one,context,ops):
   result.data = [ x for x in one if valid_ket(x,context,ops) ]
   return result
       
-# 2/2/2015:
-# int-coeffs-to-sentence (3|apple> + 2|pear> + |orange> + 7|lemon>)
-# |3 apples, 2 pears, 1 orange and 7 lemons>
-#def int_coeffs_to_sentence(one,context):
-
-#2/2/2015:
-# int-ceoffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon>)
-# |3 apples> + |2 pears> + |1 orange> + |7 lemons>
-#
-# Here is one common usage, combine it with list-to-words:
-# sa: list-to-words int-coeffs-to-word (|apple> + 3|mouse> + 2|tooth> + 9|cat>)
-# |1 apple, 3 mice, 2 teeth and 9 cats>
-#
-# assumes one is a ket
-def int_coeffs_to_word(one,context):                      # at some point maybe we want float_coeffs_to_word??
-  label = one.label
-  value = int(one.value)
-  if value == 0:
-    value = "no"
-  if value != 1:
-    label = one.apply_op(context,"plural").the_label() # .the_label() to make sure it is a ket.    
-    if label == '':
-      label = one.label                                  # maybe return |> if plural not known? or the fed in ket? The fed in ket, is the correct way to do this.
-  return ket(str(value) + " " + label)
 
 
 from time import sleep
@@ -5083,6 +5042,7 @@ import math
 function_operators_usage = {}
 sequence_functions_usage = {}
 
+
 from pprint import pprint
 def my_print(name, value=''):
   return
@@ -5108,10 +5068,13 @@ def extract_category_value(x):
     val = x
   return cat, val
     
+
   
 # set invoke method:
 sp_fn_table['ssplit'] = 'ssplit'
-compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")'                  # maybe it should be an apply_fn??
+#compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")'                  # maybe it should be an apply_fn??
+#compound_table['ssplit'] = [apply_sp_fn, ssplit, '']
+compound_table['ssplit'] = ['apply_sp_fn', 'ssplit', '']
 # set usage info:
 function_operators_usage['ssplit'] = """
     description:
@@ -5148,9 +5111,11 @@ def ssplit(one, split_char = ''):
         seq += ket(c, x.value)
   return seq
 
+
 # set invoke method:
 seq_fn_table['smerge'] = 'smerge'
 compound_table['smerge'] = '.apply_seq_fn(smerge, \"{0}\")'
+compound_table['smerge'] = ['apply_seq_fn', 'smerge', '']
 # set usage info:
 function_operators_usage['smerge'] = """
     description:
@@ -5184,7 +5149,8 @@ def smerge(one, merge_char = ''):
 
 
 # set invoke method:
-compound_table['insert'] = '.apply_sp_fn(insert, \"{0}\")'
+#compound_table['insert'] = '.apply_sp_fn(insert, \"{0}\")'
+compound_table['insert'] = ['apply_sp_fn', 'insert', '']
 # set usage info:
 function_operators_usage['insert'] = """
     description:
@@ -5197,9 +5163,7 @@ function_operators_usage['insert'] = """
       insert["Fred", "Sam"] |Hello {1} and {2}.>
         |Hello Fred and Sam.>
 """
-def insert(one, text):
-  print('insert: %s' % text)
-  pieces = text.split(',')                                              # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
+def insert(one, *pieces):
   seq = sequence([])
   if type(one) in [ket, superposition]:
     for key, value in one.items():
@@ -5208,7 +5172,8 @@ def insert(one, text):
   return seq
 
 # set invoke method:
-compound_table['to-upper'] = '.apply_sp_fn(to_upper, \"{0}\")'
+#compound_table['to-upper'] = '.apply_sp_fn(to_upper, \"{0}\")'
+compound_table['to-upper'] = ['apply_sp_fn', 'to_upper', '']
 # set usage info:
 function_operators_usage['to-upper'] = """
     description:
@@ -5221,9 +5186,9 @@ function_operators_usage['to-upper'] = """
       to-upper[1,3,5] |abcdefg>
         |AbCdEfg>
 """
-def to_upper(one, positions):
+def to_upper(one, *positions):
   try:
-    positions = [int(x) -1 for x in positions.split(',')]               # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
+    positions = [int(x) -1 for x in positions]               # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
   except:
     return one
   r = superposition()
@@ -5234,7 +5199,8 @@ def to_upper(one, positions):
   return r
   
 # set invoke method:
-compound_table['remove-prefix'] = '.apply_fn(remove_prefix, \"{0}\")'
+#compound_table['remove-prefix'] = '.apply_fn(remove_prefix, \"{0}\")'
+compound_table['remove-prefix'] = ['apply_fn', 'remove_prefix', '']
 # set usage info:
 function_operators_usage['remove-prefix'] = """
     description:
@@ -5256,7 +5222,8 @@ def remove_prefix(one, prefix):
   return seq
   
 # set invoke method:
-compound_table['has-prefix'] = '.apply_fn(has_prefix, \"{0}\")'
+#compound_table['has-prefix'] = '.apply_fn(has_prefix, \"{0}\")'
+compound_table['has-prefix'] = ['apply_fn', 'has_prefix', '']
 # set usage info:
 function_operators_usage['has-prefix'] = """
     description:
@@ -5365,7 +5332,8 @@ def apply_sp(context, one, two):
   
 
 # set invoke method:
-compound_table['such-that'] = '.apply_sp_fn(sp_such_that, context, \"{0}\")'
+#compound_table['such-that'] = '.apply_sp_fn(sp_such_that, context, \"{0}\")'
+compound_table['such-that'] = ['apply_sp_fn', 'sp_such_that', 'context']
 # set usage info:
 function_operators_usage['such-that'] = """
     description:
@@ -5379,9 +5347,9 @@ function_operators_usage['such-that'] = """
       such-that[is-hungry] rel-kets[supported-ops] |>
         |Fred>            
 """
-def sp_such_that(one, context, ops):
+def sp_such_that(one, context, *ops):
   def valid_ket(one, context, ops):
-    for op in ops.split(','):
+    for op in ops:
       e = one.apply_op(context,op).to_sp()
       if e.label not in ["true","yes"]:
         return False
@@ -5411,7 +5379,8 @@ def print_table(table):
 
 
 # set invoke method:
-compound_table['table'] = ".apply_sp_fn(pretty_print_table,context,\"{0}\")"
+#compound_table['table'] = ".apply_sp_fn(pretty_print_table,context,\"{0}\")"
+compound_table['table'] = ['apply_sp_fn', 'pretty_print_table', 'context']
 # set usage info:
 function_operators_usage['table'] = """
     description:
@@ -5463,8 +5432,8 @@ function_operators_usage['table'] = """
     see also:
       such-that, sort-by
 """
-def pretty_print_table(one,context,params,strict=False,rank=False):
-  ops = params.split(',')         
+#def pretty_print_table(one,context,params,strict=False,rank=False):
+def pretty_print_table(one, context, *ops):
   #my_print('one', str(one))
   #my_print('ops', ops)
   one = one.apply_sigmoid(set_to,1)
@@ -5504,7 +5473,7 @@ def pretty_print_table(one,context,params,strict=False,rank=False):
 # code to save the table (useful for big ones that are too hard to cut and paste from the console)
   logger.info("saving to: saved-table.txt")
   file = open("saved-table.txt",'w')
-  file.write("sa: table[" + params + "]\n")
+  file.write("sa: table[%s]\n" % ','.join(ops))
   file.write(s)
   file.close()  
         
@@ -6625,7 +6594,8 @@ def aligned_simm_value(one, two):
   return r/len(one)
 
 # set invoke method:
-compound_table['predict'] = ".apply_seq_fn(predict_next, context, \"{0}\")"
+#compound_table['predict'] = ".apply_seq_fn(predict_next, context, \"{0}\")"
+compound_table['predict'] = ['apply_seq_fn', 'predict_next', 'context']
 # set usage info:
 sequence_functions_usage['predict'] = """
     description:
@@ -6675,8 +6645,7 @@ sequence_functions_usage['predict'] = """
     see also: 
 """
 # def predict_next(context, one, parameters):                     # maybe change invoke order, so context comes first??
-def predict_next(one, context, parameters):                     # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
-  params = parameters.split(',')                                # yeah, change invoke so we don't need to split the input. FIX!!
+def predict_next(one, context, *params):                     # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
   op = params[0]
   if len(params) == 1:
     count = False
@@ -6777,64 +6746,67 @@ def greater_than(one,t):
   try:    
     value = float(one.label.rsplit(": ",1)[-1]) # NB: if one is not a ket, one.label fails, and the exception is tripped. Neat!
   except:
-    return ket("",0)
+    return ket()
   if value > t:
     return one
-  return ket("",0)
+  return ket()
 
 def greater_equal_than(one,t):
   try:    
     value = float(one.label.rsplit(": ",1)[-1])
   except:
-    return ket("",0)
+    return ket()
   if value >= t:
     return one
-  return ket("",0)
+  return ket()
 
 def less_than(one,t):
   try:    
     value = float(one.label.rsplit(": ",1)[-1])
   except:
-    return ket("",0)
+    return ket()
   if value < t:
     return one
-  return ket("",0)
+  return ket()
 
 def less_equal_than(one,t):
   try:    
     value = float(one.label.rsplit(": ",1)[-1])
   except:
-    return ket("",0)
+    return ket()
   if value <= t:
     return one
-  return ket("",0)
+  return ket()
 
 def equal(one,t):          # name clash with equal(SP1,SP2)??
   epsilon = 0.0001         # Need code since equal and float don't work well together.
   try:    
     value = float(one.label.rsplit(": ",1)[-1])
   except:
-    return ket("",0)
+    return ket()
   if (t - epsilon) <= value <= (t + epsilon):
     return one
-  return ket("",0)
+  return ket()
 
 def in_range(one,t1,t2):
   try:    
     value = float(one.label.rsplit(": ",1)[-1])
   except:
-    return ket("",0)
+    return ket()
   if t1 <= value <= t2:
     return one
-  return ket("",0)
+  return ket()
 
 # set invoke method:
-compound_table['is-greater-than'] = ".apply_fn(is_greater_than,{0})" 
+#compound_table['is-greater-than'] = ".apply_fn(is_greater_than,{0})"
+compound_table['is-greater-than'] = ['apply_fn', 'is_greater_than', ''] 
 # set usage info:
 function_operators_usage['is-greater-than'] = """
     description:
       
     examples:
+      is-greater-than[3] |price: 3.50>
+        |yes>
 """
 def is_greater_than(one,t):
   try:    
@@ -6846,7 +6818,8 @@ def is_greater_than(one,t):
   return ket('no')
 
 # set invoke method:
-compound_table['is-greater-equal-than'] = ".apply_fn(is_greater_equal_than,{0})" 
+#compound_table['is-greater-equal-than'] = ".apply_fn(is_greater_equal_than,{0})"
+compound_table['is-greater-equal-than'] = ['apply_fn', 'is_greater_equal_than', ''] 
 # set usage info:
 function_operators_usage['is-greater-equal-than'] = """
     description:
@@ -6863,7 +6836,8 @@ def is_greater_equal_than(one,t):
   return ket('no')
 
 # set invoke method:
-compound_table['is-less-than'] = ".apply_fn(is_less_than,{0})" 
+#compound_table['is-less-than'] = ".apply_fn(is_less_than,{0})"
+compound_table['is-less-than'] = ['apply_fn', 'is_less_than', ''] 
 # set usage info:
 function_operators_usage['is-less-than'] = """
     description:
@@ -6880,7 +6854,8 @@ def is_less_than(one,t):
   return ket('no')
 
 # set invoke method:
-compound_table['is-less-equal-than'] = ".apply_fn(is_less_equal_than,{0})" 
+#compound_table['is-less-equal-than'] = ".apply_fn(is_less_equal_than,{0})"
+compound_table['is-less-equal-than'] = ['apply_fn', 'is_less_equal_than', ''] 
 # set usage info:
 function_operators_usage['is-less-equal-than'] = """
     description:
@@ -6897,7 +6872,8 @@ def is_less_equal_than(one,t):
   return ket('no')
 
 # set invoke method:
-compound_table['is-equal'] = ".apply_fn(is_equal,{0})" 
+#compound_table['is-equal'] = ".apply_fn(is_equal,{0})"
+compound_table['is-equal'] = ['apply_fn', 'is_equal', ''] 
 # set usage info:
 function_operators_usage['is-equal'] = """
     description:
@@ -6915,7 +6891,8 @@ def is_equal(one,t):          # name clash with equal(SP1,SP2)??
   return ket('no')
 
 # set invoke method:
-compound_table['is-in-range'] = ".apply_fn(is_in_range,{0})" 
+#compound_table['is-in-range'] = ".apply_fn(is_in_range,{0})"
+compound_table['is-in-range'] = ['apply_fn', 'is_in_range', ''] 
 # set usage info:
 function_operators_usage['is-in-range'] = """
     description:
@@ -7107,7 +7084,8 @@ def numbers_fn(foo, one, t):
   return ket(cat + str(result), one.value)
   
 # set invoke method:
-compound_table['round'] = ".apply_fn(round_numbers, {0})" 
+#compound_table['round'] = ".apply_fn(round_numbers, {0})" 
+compound_table['round'] = ['apply_fn', 'round_numbers', '']
 # set usage info:
 function_operators_usage['round'] = """
     description:
@@ -7124,7 +7102,8 @@ def round_numbers(one,t):               # cool, this one seems to work. Now need
   return numbers_fn(round,one,t)
 
 # set invoke method:
-compound_table['times-by'] = ".apply_fn(times_numbers, {0})" 
+#compound_table['times-by'] = ".apply_fn(times_numbers, {0})"
+compound_table['times-by'] = ['apply_fn', 'times_numbers', '']
 # set usage info:
 function_operators_usage['times-by'] = """
     description:
@@ -7132,14 +7111,19 @@ function_operators_usage['times-by'] = """
       
     examples:
       times-by[5] |6.1>
-        
+        |30.5>
 
     see also:
       round, divide-by, int-divide-by, plus, minus, mod, is-mod    
 """
+def times_numbers(one,t):
+  def multiply(a,b):
+    return a*b
+  return numbers_fn(multiply,one,t)
 
 # set invoke method:
-compound_table['divide-by'] = ".apply_fn(times_numbers, 1/{0})" 
+#compound_table['divide-by'] = ".apply_fn(times_numbers, 1/{0})"
+compound_table['divide-by'] = ['apply_fn', 'divide_numbers', '']
 # set usage info:
 function_operators_usage['divide-by'] = """
     description:
@@ -7152,13 +7136,15 @@ function_operators_usage['divide-by'] = """
     see also:
       round, times-by, int-divide-by, plus, minus, mod, is-mod    
 """
-def times_numbers(one,t):               # cool, times_numbers, and plus_numbers both seem to work!
-  def multiply(a,b):
-    return a*b
-  return numbers_fn(multiply,one,t)
+def divide_numbers(one,t):
+  def divide(a,b):
+    return a/b
+  return numbers_fn(divide, one, t)
+  
 
 # set invoke method:
-compound_table['int-divide-by'] = ".apply_fn(int_divide_numbers, {0})" 
+#compound_table['int-divide-by'] = ".apply_fn(int_divide_numbers, {0})"
+compound_table['int-divide-by'] = ['apply_fn', 'int_divide_numbers', ''] 
 # set usage info:
 function_operators_usage['int-divide-by'] = """
     description:
@@ -7166,7 +7152,7 @@ function_operators_usage['int-divide-by'] = """
       
     examples:
       int-divide-by[1000] |123456>
-        
+        |123>        
 
     see also:
       round, times-by, divide-by, plus, minus, mod, is-mod    
@@ -7177,7 +7163,8 @@ def int_divide_numbers(one,t):               # cool, times_numbers, and plus_num
   return numbers_fn(int_divide, one, t)
 
 # set invoke method:
-compound_table['plus'] = ".apply_fn(plus_numbers, {0})" 
+#compound_table['plus'] = ".apply_fn(plus_numbers, {0})"
+compound_table['plus'] = ['apply_fn', 'plus_numbers', ''] 
 # set usage info:
 function_operators_usage['plus'] = """
     description:
@@ -7185,25 +7172,10 @@ function_operators_usage['plus'] = """
       
     examples:
       plus[5] |3.14159265>
-        
+        |8.14159265>
 
     see also:
       round, times-by, divide-by, int-divide-by, minus, mod, is-mod    
-"""
-
-# set invoke method:
-compound_table['minus'] = ".apply_fn(plus_numbers, -{0})" 
-# set usage info:
-function_operators_usage['minus'] = """
-    description:
-      subtract from the value in the ket, leaving the coefficient unchanged
-      
-    examples:
-      minus[2] |3.14159265>
-        
-
-    see also:
-      round, times-by, divide-by, int-divide-by, plus, mod, is-mod    
 """
 def plus_numbers(one,t):
   def add(a,b):
@@ -7211,7 +7183,28 @@ def plus_numbers(one,t):
   return numbers_fn(add,one,t)
 
 # set invoke method:
-compound_table['mod'] = ".apply_fn(mod_numbers, {0})" 
+#compound_table['minus'] = ".apply_fn(plus_numbers, -{0})"
+compound_table['minus'] = ['apply_fn', 'minus_numbers', ''] 
+# set usage info:
+function_operators_usage['minus'] = """
+    description:
+      subtract from the value in the ket, leaving the coefficient unchanged
+      
+    examples:
+      minus[2] |3.14159265>
+        |1.1415926500000002>
+
+    see also:
+      round, times-by, divide-by, int-divide-by, plus, mod, is-mod    
+"""
+def minus_numbers(one,t):
+  def sub(a,b):
+    return a - b
+  return numbers_fn(sub, one, t)
+
+# set invoke method:
+#compound_table['mod'] = ".apply_fn(mod_numbers, {0})"
+compound_table['mod'] = ['apply_fn','mod_numbers', ''] 
 # set usage info:
 function_operators_usage['mod'] = """
     description:
@@ -7230,7 +7223,8 @@ def mod_numbers(one,t):
   return numbers_fn(mod,one,t)        
 
 # set invoke method:
-compound_table['is-mod'] = ".apply_fn(is_mod_numbers, {0})" 
+#compound_table['is-mod'] = ".apply_fn(is_mod_numbers, {0})"
+compound_table['is-mod'] = ['apply_fn','is_mod_numbers', ''] 
 # set usage info:
 function_operators_usage['is-mod'] = """
     description:
@@ -7256,7 +7250,8 @@ def is_mod_numbers(one,t):
 
   
 # set invoke method:
-compound_table['learn-map'] = ".apply_naked_fn(learn_map, context, \"{0}\")" 
+#compound_table['learn-map'] = ".apply_naked_fn(learn_map, context, \"{0}\")"
+compound_table['learn-map'] = ['apply_naked_fn','learn_map', 'context']
 # set usage info:
 function_operators_usage['learn-map'] = """
     description:
@@ -7268,8 +7263,7 @@ function_operators_usage['learn-map'] = """
     see also:
       display-map
 """
-def learn_map(context, parameters):
-  params = parameters.split(',')
+def learn_map(context, *params):
   if len(params) != 2:
     return ket()
   h,w = params
@@ -7304,20 +7298,28 @@ def learn_map(context, parameters):
   return ket('learn-map')
 
 # set invoke method:
-compound_table['display-map'] = ".apply_naked_fn(display_map, context, \"{0}\")" 
+#compound_table['display-map'] = ".apply_naked_fn(display_map, context, \"{0}\")"
+compound_table['display-map'] = ['apply_naked_fn', 'display_map', 'context'] 
 # set usage info:
 function_operators_usage['display-map'] = """
     description:
       display a rectangular map
       
     examples:
-      display-map[20,20]
+      learn-map[5,5]
+      display-map[5,5]
+        h: 5
+        w: 5
+        1     .  .  .  .  .
+        2     .  .  .  .  .
+        3     .  .  .  .  .
+        4     .  .  .  .  .
+        5     .  .  .  .  .
       
     see also:
       learn-map
 """
-def display_map(context, parameters):
-  params = parameters.split(',')
+def display_map(context, *params):
   if len(params) < 2:
     return ket()
   if len(params) == 2:
@@ -7349,8 +7351,8 @@ def display_map(context, parameters):
         else:
           value = value.label
       if value == "0":
-        #value = "."
-        value = ' '
+        value = "."
+        #value = ' '
       s += value.rjust(3)
     s += "\n"
   print(s)
@@ -7435,4 +7437,83 @@ def Or(one, two):
     return ket('yes')
   return ket('no')
   
+
+# set invoke method:
+compound_table['common'] = ['apply_sp_fn', 'common', 'context']
+# set usage info:
+sequence_functions_usage['common'] = """
+    description:
+      find kets in common, with respect to an operator
+      
+    examples:
+      friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+      friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+      common[friends] split |Fred Sam>
+        |Jack> + |Emma> + |Charlie>
+"""
+#
+# 8/5/2014:
+# common[op] (|x> + |y> + |z>)
+# eg: common[friends] (|Fred> + |Sam>)
+# eg: common[actors] (|movie-1> + |movie-2>)
+# or indirectly
+# |list> => |Fred> + |Sam> + |Charles> 
+# common[friends] "" |list>
+def common(one,context,op):
+  if len(one) == 0:
+    return ket()
+  for sp in one:
+    r = sp.apply_op(context,op)
+    break
+  for sp in one:
+    tmp = sp.apply_op(context,op)
+    r = intersection(r,tmp)
+  return r                 
+
+
+# 2/2/2015:
+# int-coeffs-to-sentence (3|apple> + 2|pear> + |orange> + 7|lemon>)
+# |3 apples, 2 pears, 1 orange and 7 lemons>
+#def int_coeffs_to_sentence(one,context):
+
+# set invoke method:
+ket_context_table['int-coeffs-to-word'] = 'int_coeffs_to_word'
+# set usage info:
+sequence_functions_usage['int-coeffs-to-word'] = """
+    description:
+      apply the coefficient to the word,
+      and map the word to plural as required
+      
+    examples:
+      plural |*> #=> |_self> _ |s>
+      plural |mouse> => |mice>
+      plural |tooth> => |teeth>
+      int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon> + 3|mouse> + 2|tooth> + 9|cat>)
+        |3 apples> + |2 pears> + |1 orange> + |7 lemons> + |3 mice> + |2 teeth> + |9 cats>
+      
+      list-to-words int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon> + 3|mouse> + 2|tooth> + 9|cat>)
+        |3 apples, 2 pears, 1 orange, 7 lemons, 3 mice, 2 teeth and 9 cats>   
+
+    see also:
+      list-to-words, words-to-list
+"""
+#2/2/2015:
+# int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon>)
+# |3 apples> + |2 pears> + |1 orange> + |7 lemons>
+#
+# Here is one common usage, combine it with list-to-words:
+# sa: list-to-words int-coeffs-to-word (|apple> + 3|mouse> + 2|tooth> + 9|cat>)
+# |1 apple, 3 mice, 2 teeth and 9 cats>
+#
+# assumes one is a ket
+def int_coeffs_to_word(one, context):                      # at some point maybe we want float_coeffs_to_word??
+  label = one.label
+  value = int(one.value)
+  if value == 0:
+    value = "no"
+  if value != 1:
+    label = one.apply_op(context,"plural").to_sp().label     
+    if label == '':
+      label = one.label                                  # maybe return |> if plural not known? or the fed in ket? The fed in ket, is the correct way to do this.
+  return ket(str(value) + " " + label)
                                                                        

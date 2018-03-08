@@ -26,13 +26,15 @@ logger.setLevel(logging.DEBUG)
 
 
 
+# deprecated:
 def test_process_single_op_literal_1():
-  r = process_single_op('friends')
+  r = deprecated_process_single_op('friends')
   assert r == '.apply_op(context,"friends")'
 
-def test_process_single_op_compound_1():
-  r = process_single_op(['common', 'friends'])
-  assert r == '.apply_sp_fn(common,context,"friends")'
+# deprecated:
+#def test_process_single_op_compound_1():
+#  r = deprecated_process_single_op(['common', 'friends'])
+#  assert r == 'fish'
 
 
 def test_sw_file_1():
@@ -389,3 +391,227 @@ def test_active_recall_1():
   context.learn('age', 'sam', '2')
   r = context.recall('age', ket('sam',3), True)
   assert str(r) == '3|2>'
+
+def test_new_compound_invoke_1():
+  s = 'ssplit[" and "] |a and b>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a> . |b>'
+
+def test_new_compound_invoke_2():
+  context.load('sw-examples/fred-sam-friends.sw')
+  s = 'common[friends] split |Fred Sam>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|Jack> + |Emma> + |Charlie>'
+
+def test_new_compound_invoke_3():
+  s = 'normalize[10] (3|a> + 2|b>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '6|a> + 4|b>'
+
+def test_new_compound_invoke_4():
+  s = 'threshold-filter[2] (3|a> + 2.2|b> - 3 |c> + |d>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '3|a> + 2.2|b> + 0|c> + 0|d>'
+
+
+
+
+# let's test all our compound_ops:
+def test_compound_invoke_smerge_1():
+  s = 'smerge[", "] (|a> . |b> . |c> . |d>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a, b, c, d>'
+
+def test_compound_invoke_insert_1():
+  s = 'insert["Fred"] |hey {1}!>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|hey Fred!>'
+
+def test_compound_invoke_insert_2():
+  s = 'insert["Fred", "Sam"] |Hello {1} and {2}.>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|Hello Fred and Sam.>'
+
+def test_compound_invoke_to_upper_1():
+  s = 'to-upper[1] |fred>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|Fred>'
+
+def test_compound_invoke_to_upper_2():
+  s = 'to-upper[1,3,5] |abcdefg>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|AbCdEfg>'
+
+def test_compound_invoke_remove_prefix_1():
+  s = 'remove-prefix["not "] |not sitting at the beach>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|sitting at the beach>'
+
+def test_compound_invoke_has_prefix_1():
+  s = 'has-prefix["not "] |not sitting at the beach>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|yes>'
+
+
+
+def test_compound_invoke_rel_kets_1():
+  context.learn('is-hungry', 'fred', 'yes')
+  context.learn('is-hungry', 'sam', 'no')
+  s = 'rel-kets[is-hungry] |>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|fred> + |sam>'
+
+def test_compound_invoke_such_that_1():
+  context.learn('is-hungry', 'fred', 'yes')
+  context.learn('is-hungry', 'sam', 'no')
+  s = 'such-that[is-hungry] rel-kets[supported-ops] |>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|fred>'
+
+def test_compound_invoke_table_1():
+  context.load('sw-examples/fred-sam-friends.sw')
+  s = 'table[person, friends] split |Fred Sam>'
+  r = extract_compound_sequence(context, s)
+  assert True                      # yup, it works.
+
+def test_compound_invoke_predict_1():
+  context.load('sw-examples/integer-sequences.sw')
+  s = 'predict[seq] (|2> . |5>)'
+  r = extract_compound_sequence(context, s)
+  assert True                       # yup, it works.
+
+def test_compound_invoke_predict_2():
+  context.load('sw-examples/integer-sequences.sw')
+  s = 'predict[seq,1] (|2> . |5>)'
+  r = extract_compound_sequence(context, s)
+  assert True                       # yup, it works.
+
+# only test this one out of the is-x family.
+# I presume if one works, the rest do too.
+def test_compound_invoke_is_greater_than_1():
+  s = 'is-greater-than[3] |price: 3.50>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|yes>'
+
+def test_compound_invoke_round_1():
+  s = 'round[3] |3.14159265>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|3.142>'
+
+def test_compound_invoke_times_by_1():
+  s = 'times-by[5] |6.1>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|30.5>'
+
+def test_compound_invoke_divide_by_1():
+  s = 'divide-by[5] |625.5>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|125.1>'
+
+def test_compound_invoke_int_divide_by_1():
+  s = 'int-divide-by[1000] |123456>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|123>'
+
+def test_compound_invoke_plus_1():
+  s = 'plus[5] |3.14159265>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|8.14159265>'
+
+def test_compound_invoke_minus_1():
+  s = 'minus[2] |3.14159265>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|1.1415926500000002>'
+
+def test_compound_invoke_mod_1():
+  s = 'mod[1000] |1234567>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|567>'
+
+def test_compound_invoke_is_mod_1():
+  s = 'is-mod[3] |96>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|yes>'
+
+def test_compound_invoke_learn_map_1():
+  s = 'learn-map[3, 3] |>'
+  r = extract_compound_sequence(context, s)
+  assert True
+
+def test_compound_invoke_learn_map_1():
+  s = 'learn-map[5, 5] |>'
+  r = extract_compound_sequence(context, s)
+  s = 'display-map[5, 5] |>'
+  r = extract_compound_sequence(context, s)
+  assert True
+
+def test_new_sequence_fn_invoke_1():
+  s = 'union(|a>, |b>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a> + |b>'
+
+def test_new_sequence_fn_invoke_tri_union_1():
+  s = 'union(|a>, |b>, |c>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a> + |b> + |c>'
+
+
+
+# test process_single_op replacement code:
+# one branch at a time
+def test_multiply_1():
+  s = '3^9 |x>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '19683|x>'
+
+def test_quote_operator_1():
+  context.learn('', 'foo', 'bah')
+  s = '"" |foo>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|bah>'
+
+def test_built_in_table_1():
+  s = 'normalize (|a> + |b> + |c>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '0.333|a> + 0.333|b> + 0.333|c>'
+
+def test_sigmoid_table_1():
+  s = 'clean (3|a> + 0.5|b> - 2 |c>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a> + |b> + 0|c>'
+
+def test_fn_table_1():
+  s = 'extract-category |a: b: c>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a: b>'
+
+def test_sp_fn_table_1():
+  s = 'rank (|a> + |b> + |c>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|a> + 2|b> + 3|c>'
+
+def test_seq_fn_table_1():
+  s = 'smerge (|F> . |r> . |e> . |d>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|Fred>'
+
+def test_ket_context_table_1():
+  s = 'int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|3 apple> + |2 pear> + |1 orange> + |7 lemon>'
+
+# don't have an example yet.
+#def test_sp_context_table_1():
+#  s = ''
+
+def test_literal_op_1():
+  context.learn('age', 'fred', '25')
+  s = 'age |fred>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|25>'
+
+def test_literal_op_1():
+  context.learn('age', 'fred', stored_rule('|37>'))
+  s = 'age |fred>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|37>'

@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 6/3/2018
+# Update: 8/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1476,10 +1476,10 @@ class sequence(object):
       seq.data.append(x.weighted_pick_elt())
     return seq
 
-  def normalize(self):
+  def normalize(self, t=1):
     seq = sequence([])
     for x in self.data:
-      seq.data.append(x.normalize())
+      seq.data.append(x.normalize(t))
     return seq
 
   def shuffle(self):
@@ -2407,29 +2407,29 @@ def valid_op(op):                                                       # do we 
 #
 # At some stage I want to rearchitect this beast. Instead of a million separate tables, I just want one. But that is for later.    
 #
-def process_single_op(op):
+def deprecated_process_single_op(op):
   logger.debug("process_single_op: op: " + str(op)) 
 
-#  if type(op) is list:                                         # compound op found:
-#    logger.debug("compound op found")                          # seems this branch is still used by my current code. I thought it was now redundant. Hrmm...  
-#    the_op = op[0]                                             # I thought process_operators handled this case? Need to fix this!
-#    parameters = ",".join(op[1:])                         # not 100% sure this is the best way to handle parameters. eg, maybe we should pass a list? 
-#    if the_op not in compound_table:
-#      logger.debug(the_op + " not in compound_table")
-#      python_code = ""
-#    else:
-#      python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here
-#
-#  elif type(op) is tuple:                                               # powered op found:
-#    logger.debug("powered op found")
-#    the_op, power = op
-#    processed_op = process_single_op(the_op)                            # recursion, hope it works.
-#    python_code = ""
-#    for k in range(power):
-#      python_code += processed_op
+  if type(op) is list:                                         # compound op found:
+    logger.debug("compound op found")                          # seems this branch is still used by my current code. I thought it was now redundant. Hrmm...  
+    the_op = op[0]                                             # I thought process_operators handled this case? Need to fix this!
+    parameters = ",".join(op[1:])                         # not 100% sure this is the best way to handle parameters. eg, maybe we should pass a list? 
+    if the_op not in compound_table:
+      logger.debug(the_op + " not in compound_table")
+      python_code = ""
+    else:
+      python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here
+
+  elif type(op) is tuple:                                               # powered op found:
+    logger.debug("powered op found")
+    the_op, power = op
+    processed_op = process_single_op(the_op)                            # recursion, hope it works.
+    python_code = ""
+    for k in range(power):
+      python_code += processed_op
     
 #  elif is_number(op):                                                    # simple-float found
-  if type(op) in [int, float]:  
+  elif type(op) in [int, float]:  
     python_code = ".multiply({0})".format(str(op))
   
   elif op == '-':       # treat - |x> as mult[-1] |x>                   # not sure we want to keep this. I think simple-float has this covered. Just use '-1', not '-' 
@@ -2513,7 +2513,8 @@ op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.')
 simple_op = op_start_char:first <op_char*>:rest -> first + rest
 filtered_char = anything:x ?(x not in '[]|><') -> x
 filtered_parameter_string = '"' ( ~'"' filtered_char)*:c '"' -> ''.join(c)
-parameters = (fraction | simple_op | filtered_parameter_string | '\"\"' | '*'):p -> str(p)
+#parameters = (fraction | simple_op | filtered_parameter_string | '\"\"' | '*'):p -> str(p)
+parameters = (fraction | simple_op | filtered_parameter_string | '\"\"' | '*'):p -> p
 
 compound_op = simple_op:the_op '[' parameters:first (',' ws parameters)*:rest ']' -> ['c_op', the_op] + [first] + rest
 #function_op = simple_op:the_op '(' ws literal_sequence:first (',' ws literal_sequence)*:rest ws ')' -> ['f_op', the_op] + [first] + rest
@@ -2598,48 +2599,81 @@ def process_operators(context, ops, seq, self_object = None):
       my_print('op[0]', op[0])
       if op[0] is 'c_op':
         my_print('compound_op')
-        #python_code = process_single_op(op[1:])              # hopefully we haven't broken anything by this change. 
-        the_op = op[1]
-        parameters = ','.join(op[2:])
+        #the_op = op[1]
+        #parameters = ','.join(op[2:])
+        the_op, *parameters = op[1:]
         if the_op not in compound_table:
           logger.debug(the_op + " not in compound_table")
           seq = sequence([])
         else:
-          python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here. Also, this is the place to change compound function invoke method. 
-          seq = eval('seq' + python_code)
+          #python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here. Also, this is the place to change compound function invoke method. 
+          #seq = eval('seq' + python_code)
+          method_name, str_fn_name, use_context = compound_table[the_op]  # heh, so we succesfully removed eval, but at what cost! Doing this for every invoke will hurt!
+          full_params = parameters                                        # can we preprocess and produce a compiled_compound_table?
+          if use_context is 'context':                                    # 
+            full_params = [context] + full_params
+          if str_fn_name is not '':
+            fn_name = globals()[str_fn_name]                              # Is this use of globals a security risk too? Quite possibly :(
+            full_params = [fn_name] + full_params
+          #print('method_name: %s' % str(method_name))
+          #print('use_context: %s' % use_context)
+          #print('str_fn_name: %s' % str_fn_name)
+          #print('full_params: %s' % str(full_params))
+
+          method = getattr(seq, method_name)
+          seq = method(*full_params)
+
       elif op[0] is 'f_op':
         my_print('function_op')
         null, fnk, *data = op
         my_print('fnk', fnk)
         my_print('data', data)
 
-        python_code = ''
+        #python_code = ''
+        our_fn = ''
+        seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
+        #my_print('str_seq_list', [str(x) for x in seq_list])
+
         if len(data) == 1:                                    # 1-parameter function:
           if fnk in whitelist_table_1:
-            python_code = "%s(*seq_list)" % whitelist_table_1[fnk]
-          else:
-            the_seq = compile_compound_sequence(context, data[0], self_object)
+            #python_code = "%s(*seq_list)" % whitelist_table_1[fnk]
+            our_fn = globals()[whitelist_table_1[fnk]]
+          else:                                                                        # is this branch still correct? How test?
+            #the_seq = compile_compound_sequence(context, data[0], self_object)
+            the_seq = seq_list[0]
             seq = process_operators(context, [fnk], the_seq, self_object)
         if len(data) == 2:                                    # 2-parameter function:
           if fnk in whitelist_table_2:                                                 # still not sure if I want whitelist_table and context_whitelist_table separate, or pass context to everything. 
-            python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
+            #python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
+            our_fn = globals()[whitelist_table_2[fnk]]
           elif fnk in context_whitelist_table_2:
-            python_code = "%s(context, *seq_list)" % context_whitelist_table_2[fnk]
+            #python_code = "%s(context, *seq_list)" % context_whitelist_table_2[fnk]
+            seq_list = [context] + seq_list
+            our_fn = globals()[context_whitelist_table_2[fnk]]            
         elif len(data) == 3:                                  # 3-parameter function:
           if fnk in whitelist_table_3:
-            python_code = "%s(*seq_list)" % whitelist_table_3[fnk]
+            #python_code = "%s(*seq_list)" % whitelist_table_3[fnk]
+            our_fn = globals()[whitelist_table_3[fnk]]
           elif fnk in context_whitelist_table_3:
-            python_code = "%s(context, *seq_list)" % context_whitelist_table_3[fnk]
+            #python_code = "%s(context, *seq_list)" % context_whitelist_table_3[fnk]
+            seq_list = [context] + seq_list
+            our_fn = globals()[context_whitelist_table_3[fnk]]
         elif len(data) == 4:                                  # 4-parameter function:
           if fnk in whitelist_table_4:
-            python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
-        seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
-        my_print('str_seq_list', [str(x) for x in seq_list])
-        if len(python_code) > 0:
-          my_print("whitelist_table: python code", python_code)
-          seq = eval(python_code)                                                       # can we implement this without using eval??
+            #python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
+            our_fn = globals()[whitelist_table_4[fnk]]
+        if our_fn is not '':
+          print('our_fn: %s' % str(our_fn))
+          seq = our_fn(*seq_list)
         else:
           seq = context.sp_recall(fnk, seq_list, True)
+        #seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
+        #my_print('str_seq_list', [str(x) for x in seq_list])
+        #if len(python_code) > 0:
+        #  my_print("whitelist_table: python code", python_code)
+        #  seq = eval(python_code)                                                       # can we implement this without using eval??
+        #else:
+        #  seq = context.sp_recall(fnk, seq_list, True)
         python_code = ''
       elif op[0][0] in ['+', '-', '_', '.']:
         my_print('bracket ops')
@@ -2697,12 +2731,42 @@ def process_operators(context, ops, seq, self_object = None):
       my_print('power', power)
       for _ in range(power):                                           # is there a better way to implement this?
         seq = process_operators(context, [tuple_op], seq, self_object)
-#    elif op == "\"\"" and seq.to_sp().label == 'context':
-#      seq = sequence('context: ' + context.context_name())
-    else:
-      python_code = process_single_op(op)
-      if len(python_code) > 0:
-        seq = eval('seq' + python_code)
+    elif type(op) in [int, float]:
+      seq = seq.multiply(op)
+    elif op == '-':
+      seq = seq.multiply(-1)                                            # is this branch still used anywhere?
+    elif op == "\"\"":
+      seq = seq.apply_op(context, "")
+#    elif op == 'ops':                                                  # comment out for now. I don't think we used it much.
+#      seq = seq.apply_op(context, "supported-ops")
+    elif op in built_in_table:
+      method = getattr(seq, built_in_table[op])
+      seq = method()
+    elif op in sigmoid_table:
+      our_fn = globals()[sigmoid_table[op]]
+      seq = seq.apply_sigmoid(our_fn)
+    elif op in fn_table:                                                 # left out code for fn_table2 for now.
+      our_fn = globals()[fn_table[op]]
+      seq = seq.apply_fn(our_fn)
+    elif op in sp_fn_table:
+      our_fn = globals()[sp_fn_table[op]]
+      seq = seq.apply_sp_fn(our_fn)
+    elif op in seq_fn_table:
+      our_fn = globals()[seq_fn_table[op]]
+      seq = seq.apply_seq_fn(our_fn)
+    elif op in ket_context_table:
+      our_fn = globals()[ket_context_table[op]]
+      seq = seq.apply_fn(our_fn, context)
+    elif op in sp_context_table:
+      our_fn = globals()[sp_context_table[op]]
+      seq = seq.apply_sp_fn(our_fn, context)
+    else:                                                             # literal op found. Also means literal ops have lower priority than all other operator types. Be aware!
+      logger.debug('literal op found: %s' % op)
+      seq = seq.apply_op(context, op)                                 # not sure why it is not .apply_op(context, op, True)?? Seems to work though.
+#    else:
+#      python_code = process_single_op(op)
+#      if len(python_code) > 0:
+#        seq = eval('seq' + python_code)
   return seq
 
 
@@ -2865,18 +2929,18 @@ def process_stored_rule(context, unparsed_rule, self_object = None):
       else:
         str_self_object = str(self_object)
       unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object )                      # I hate this bit of code!! Please kill it!   
-  print('self_object: %s' % str(self_object))
-  print('unparsed stored rule: %s' % unparsed_rule)
+  #print('self_object: %s' % str(self_object))
+  #print('unparsed stored rule: %s' % unparsed_rule)
   seq = sequence([])
   for line in unparsed_rule.splitlines():
     line = line.strip()
-    print('line: %s' % line)
+    #print('line: %s' % line)
     if line != '' and not line.startswith('--'):
       if line == '|>':
         seq = ket()
       else:
         parsed_seq = op_grammar(line).stored_rule_line()
-        print('parsed_seq: %s' % parsed_seq)
+        #print('parsed_seq: %s' % parsed_seq)
         if type(parsed_seq) in [ket, superposition, sequence]:
           seq = parsed_seq
         elif type(parsed_seq) is list:

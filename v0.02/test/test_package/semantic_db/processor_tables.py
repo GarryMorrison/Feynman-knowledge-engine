@@ -252,9 +252,10 @@ compound_table = {
   "select-elt"         : ".select_elt({0})",
 # "find-index"           # can't support these two until we have more advanced parsing.
 # "find-value            # eg: find-index[|person: Fred>] |x> currently would split on the space in the ket.
-  "normalize"          : ".normalize({0})",
-  "rescale"            : ".rescale({0})",
-  "similar"            : ".similar(context,\"{0}\")",
+  #"normalize"          : ".normalize({0})",
+  'normalize'          : ['normalize', '', ''],
+  "rescale"            : ['rescale', '', ''], 
+  "similar"            : ['similar', '', 'context'],  # ".similar(context,\"{0}\")",
 # 23/2/2015:
   "self-similar"       : ".self_similar(context,\"{0}\")",
   
@@ -271,8 +272,8 @@ compound_table = {
   "sselect"            : ".sselect_range({0})",
   
   "delete-elt"         : ".delete_elt({0})",
-  "threshold-filter"   : ".apply_sigmoid(threshold_filter,{0})",
-  "not-threshold-filter" : ".apply_sigmoid(not_threshold_filter,{0})",
+  "threshold-filter"   : ['apply_sigmoid', 'threshold_filter', ''],                           # ".apply_sigmoid(threshold_filter,{0})",
+  "not-threshold-filter" : ['apply_sigmoid', 'not_threshold_filter', ''],                     # ".apply_sigmoid(not_threshold_filter,{0})",
  
 #  "mult"              : ".apply_sigmoid(mult,{0})",  # this is now moved to ket/sp since it is common enough.
   "mult"               : ".multiply({0})",
@@ -305,7 +306,8 @@ compound_table = {
 # rel-kets tweaked 13/2/2015:
   "relevant-kets"      : ".apply_sp_fn(relevant_kets,context,\"{0}\")",
   "intn-relevant-kets" : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",
-  "rel-kets"           : ".apply_sp_fn(relevant_kets,context,\"{0}\")",    
+  #"rel-kets"           : ".apply_sp_fn(relevant_kets,context,\"{0}\")",
+  'rel-kets'           : ['apply_sp_fn', 'relevant_kets', 'context'],    
   "intn-rel-kets"      : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",    
 
 #  "matrix"            : ".apply_naked_fn(matrix,context,\"{0}\")",
@@ -581,7 +583,7 @@ sp_fn_table = {
 # 2/2/2015: new addition functions that map ket -> ket/sp but needs context info.
 ket_context_table_usage = {}
 ket_context_table = {
-  "int-coeffs-to-word" : "int_coeffs_to_word",
+#  "int-coeffs-to-word" : "int_coeffs_to_word",
 
 # 14/4/2015:
 #  "list-kets"          : "list_kets",    # deleted. Same funtionality as starts-with, essentially.
