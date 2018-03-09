@@ -1413,20 +1413,25 @@ class sequence(object):
     return fn(self, *args)
 
   def apply_op(self, context, op):
-    if len(self) == 0:
-      seq = sequence([]) + ket().apply_op(context, op)      # do we want this?
-    else:
-      seq = sequence([])
-      for x in self.data:
-        #my_print('type(x)', type(x))
-        #my_print('x', str(x))
-        y = x.apply_op(context, op)
-        #my_print('type(y)', type(y))
-        #my_print('y', str(y))
-        if type(y) in [ket, superposition]:
-          seq.data.append(y)
-        elif type(y) in [sequence]:
-          seq.data += y.data
+    #logger.debug('inside seq apply_op')
+    #logger.debug('seq: %s' % str(self))
+    #logger.debug('op: %s' % op)
+    seq = context.sp_recall(op, [self], active = True)
+    if len(seq) == 0:
+      if len(self) == 0:
+        seq = sequence([]) + ket().apply_op(context, op)      # do we want this?
+      else:
+        seq = sequence([])
+        for x in self.data:
+          #my_print('type(x)', type(x))
+          #my_print('x', str(x))
+          y = x.apply_op(context, op)
+          #my_print('type(y)', type(y))
+          #my_print('y', str(y))
+          if type(y) in [ket, superposition]:
+            seq.data.append(y)
+          elif type(y) in [sequence]:
+            seq.data += y.data
     return seq
 
   def apply_sigmoid(self, sigmoid, *args):
@@ -1890,7 +1895,7 @@ class NewContext(object):
     if type(rule) == memoizing_rule:
       rule_string = " !=> "
      
-    return op + " (" + sp_name + ")" + rule_string + rule.display(exact)
+    return op + " (" + sp_name + ")" + rule_string + rule.display(exact) + '\n'
 
   def dump_sp_rules(self,label,exact=False):
     if label not in self.sp_rules_dict:
@@ -2537,7 +2542,7 @@ bracket_ops = '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws symbol_op_
 bracket_sequence = '(' ws full_compound_sequence:seq ws ')' -> seq
 single_compound_sequence = op_sequence:ops (naked_ket | bracket_sequence | -> ''):first -> [ops, first]
 
-symbol_single_compound_sequence = ws op_symbol:symbol ws single_compound_sequence:seq -> (symbol, seq)
+symbol_single_compound_sequence = ~'+=>' ws op_symbol:symbol ws single_compound_sequence:seq -> (symbol, seq)
 full_compound_sequence = ws (op_symbol | -> '+'):symbol single_compound_sequence:first ws symbol_single_compound_sequence*:rest ws -> [(symbol, first)] + rest
 
 compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequence(context, seq)
@@ -2663,7 +2668,7 @@ def process_operators(context, ops, seq, self_object = None):
             #python_code = "%s(*seq_list)" % whitelist_table_4[fnk]
             our_fn = globals()[whitelist_table_4[fnk]]
         if our_fn is not '':
-          print('our_fn: %s' % str(our_fn))
+          #print('our_fn: %s' % str(our_fn))
           seq = our_fn(*seq_list)
         else:
           seq = context.sp_recall(fnk, seq_list, True)
@@ -2762,7 +2767,7 @@ def process_operators(context, ops, seq, self_object = None):
       seq = seq.apply_sp_fn(our_fn, context)
     else:                                                             # literal op found. Also means literal ops have lower priority than all other operator types. Be aware!
       logger.debug('literal op found: %s' % op)
-      seq = seq.apply_op(context, op)                                 # not sure why it is not .apply_op(context, op, True)?? Seems to work though.
+      seq = seq.apply_op(context, op)                                 
 #    else:
 #      python_code = process_single_op(op)
 #      if len(python_code) > 0:
@@ -2884,15 +2889,17 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
   elif type(one) is list:                          # indirect learn rule found
     indirect_object = compile_compound_sequence(context, one)
     my_print('indirect learn object', str(indirect_object))  
+    seq = sequence([])
     for sp in indirect_object:
       for one in sp:
         seq = compile_compound_sequence(context, parsed_seq, [one])
         if rule_type == '=>':
           context.learn(op, one, seq)
         elif rule_type == '+=>':
-          context.add_learn(op, one, seq)
-    return seq
-
+          context.add_learn(op, one, seq)                                      # bug hiding here! Fix! Bug: stored-food current |cell> +=> 5| >
+    return seq                                                                 # it was a very sneaky parser bug. The + in +=> was being treated as part of a symbol_single_compound_sequence parse rule
+                                                                               # So +=> was then a parse error, and hence defaulted back to =>.
+                                                                               # The fix was to add ~'+=>' to the front of the symbol_single_compound_sequence parse rule 
 def recall_rule(context, op, one):
   return context.recall(op, one)
 #  return ket(one).apply_op(context, op)

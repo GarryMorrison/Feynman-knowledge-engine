@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018-2-9
-# Update: 2018-2-26
+# Update: 2018-3-9
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -27,9 +27,9 @@ logger.setLevel(logging.DEBUG)
 
 
 # deprecated:
-def test_process_single_op_literal_1():
-  r = deprecated_process_single_op('friends')
-  assert r == '.apply_op(context,"friends")'
+#def test_process_single_op_literal_1():
+#  r = deprecated_process_single_op('friends')
+#  assert r == '.apply_op(context,"friends")'
 
 # deprecated:
 #def test_process_single_op_compound_1():
@@ -42,7 +42,7 @@ def test_sw_file_1():
   s = 'age |Julie> => |32> \n spelling |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> '
   process_sw_file(context, s)
   context.print_multiverse()
-  assert False
+  assert True
 
 def test_recall_1():
   s = 'spelling |Julie>'
@@ -52,13 +52,15 @@ def test_recall_1():
 def test_context_load_1():
   context.load('sw-examples/fred-sam-friends.sw')
   context.print_universe()
-  assert False
+  assert True
 
 def test_process_sw_file_1():
   s = 'age |Emma> => |42>'
   process_sw_file(context, s)
   context.print_universe()
-  assert False
+  s = 'age |Emma>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|42>'
 
 def test_common_friends_1():
   s = 'common[friends] split |Fred Sam> '
@@ -69,51 +71,67 @@ def test_self_learn_1():
   s = 'age |Bob> => 37 |_self>'
   process_sw_file(context, s)
   context.print_multiverse()
-  assert False
+  s = 'age |Bob>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '37|Bob>'
 
 def test_self_learn_2():
   s = 'age |Bob> => 32 |_self1>'
   process_sw_file(context, s)
   context.print_multiverse()
-  assert False
+  s = 'age |Bob>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '32|Bob>'
 
 def test_star_learn_1():
   s = 'foo (*) => |bah>'
   process_sw_file(context, s)
   context.print_multiverse()
-  assert False
+  s = 'foo (|a> + 2|b> . |c>)'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|bah>'                   # weird! Currently returns |bah> . |bah>. Fix! 
 
 def test_star_learn_2():
   s = 'foo-2 (*,*) => |bah 2>'
   process_sw_file(context, s)
   context.print_multiverse(True)
-  assert False
+  s = 'foo-2(|a> + 2|b> . |c>, |x> . 3|y> )'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '|bah 2>'
 
 
 def test_context_sp_learn_1():
   context.sp_learn('op-a', '*', 'value a')
   context.print_universe()
-  assert False
+  r = context.sp_recall('op-a', ['fish'])
+  assert str(r) == '|value a>'
 
 def test_context_sp_learn_2():
   context.sp_learn('op-b', '*,*', 'value b')
   context.print_universe(True)
-  assert False
+  r = context.sp_recall('op-b', ['fish', 'soup'])
+  assert str(r) == '|value b>'
 
 def test_context_sp_learn_3():
-  context.sp_learn('op-c', '*,*', ket('_self1'))
+  #context.sp_learn('op-c', '*,*', ket('_self1'))
+  context.sp_learn('op-c', '*,*', stored_rule('|_self1>'))
   context.print_universe(True)
-  assert False
+  r = context.sp_recall('op-c', ['fish', 'soup'], active = True)
+  assert str(r) == '|fish>'
 
 def test_context_sp_learn_4():
-  context.sp_learn('op-c', '*,*', ket('_self'))
+  #context.sp_learn('op-c', '*,*', ket('_self'))
+  context.sp_learn('op-c', '*,*', stored_rule('|_self>'))
   context.print_universe(True)
-  assert False
+  r = context.sp_recall('op-c', ['more', 'soup'], active = True)
+  assert str(r) == '|more>'
 
 def test_context_sp_learn_5():
-  context.sp_learn('op-c', '*', ket('_self'))
+  #context.sp_learn('op-c', '*', ket('_self'))
+  context.sp_learn('op-c', '*', stored_rule('|_self>'))
   context.print_universe(True)
-  assert False
+  r = context.sp_recall('op-c', ['soup'], active = True)
+  assert str(r) == '|soup>'
 
 
 def test_context_sp_recall_1():
@@ -125,17 +143,18 @@ def test_context_sp_recall_2():
   assert str(r) == '|value b>'
 
 
+# not sure these two add anything new. So, switched them off.
 def test_star_learn_3():
   s = 'foo-star (*) => |_self>'
   process_sw_file(context, s)
   context.print_multiverse()
-  assert False
+  assert True
 
 def test_star_learn_4():
   s = 'foo-2-star (*,*) => |_self>'
   process_sw_file(context, s)
   context.print_multiverse(True)
-  assert False
+  assert True
 
 def test_apply_sp_1():
   s = 'apply(|op: friends>, |Fred>)'
@@ -152,29 +171,30 @@ def test_union_1():
   assert str(r) == '|a> + |b>'
 
 
-def test_fast_simm_1():
+def test_superposition_simm_1():
   x = ket('a') + ket('b') + ket('c')
   y = ket('b')
-  r = fast_simm(x,y)
+  r = superposition_simm(x,y)
   assert r == 0.3333333333333333
 
-def test_fast_simm_2():
+def test_superposition_simm_2():
   x = ket('a') + ket('b') + ket('c')
   y = ket('b') + ket('a')
-  r = fast_simm(x,y)
+  r = superposition_simm(x,y)
   assert r == 0.6666666666666666
 
 def test_print_table_1():
   context.load('sw-examples/fred-sam-friends.sw')
   x = ket('Fred') + ket('Sam')
   x.apply_sp_fn(old_pretty_print_table,context,"person,friends")
-  assert False
+  assert True                                         # yup, works. And don't know a clean way to assert that.
 
 def test_print_table_2():
   context.load('sw-examples/fred-sam-friends.sw')
   x = ket('Fred') + ket('Sam')
-  x.apply_sp_fn(pretty_print_table,context,"person,friends")
-  assert False
+  #x.apply_sp_fn(pretty_print_table,context,"person,friends")            # old invoke method
+  x.apply_sp_fn(pretty_print_table, context, "person", "friends")        # new invoke method
+  assert True                                         # yup, works. And don't know a clean way to assert that.
 
 
 def test_extract_compound_sequence_1():
@@ -205,13 +225,13 @@ def test_op_sequence_2():
   context.load('sw-examples/test-operators.sw')
   s = 'op8 (op7) op6 |fish>'
   r = extract_compound_sequence(context, s)
-  assert str(r) == ''
+  assert str(r) == '|op8: op7: op6: fish>'
 
 def test_op_sequence_3():
   context.load('sw-examples/test-operators.sw')
   s = 'op8 (op7)'
   r = extract_compound_sequence(context, s)
-  assert str(r) == ''
+  assert str(r) == ''                                     # Don't know what we want returned here.
 
 
 def test_normalize_seq_len_1():
@@ -222,7 +242,8 @@ def test_normalize_seq_len_1():
   r1, r2 = normalize_seq_len(x, y)
   print(str(r1))
   print(str(r2))
-  assert False
+  assert str(r1) == '2|a> + 3.3|b> . |> . |>'
+  assert str(r2) == '|x> . |y> . |z>'
 
 
 def test_predict_next_1():
@@ -232,8 +253,9 @@ def test_predict_next_1():
   process_sw_file(context, s)
 #  context.print_universe()
 #  r = predict_next(context, sequence('2') + ket('3'), 'seq,3')
-  r = predict_next(sequence('2') + ket('3'), context, 'seq,3')
-  assert str(r) == ''
+  #r = predict_next(sequence('2') + ket('3'), context, 'seq,3') # old invoke method
+  r = predict_next(sequence('2') + ket('3'), context, 'seq', 3) # new invoke method
+  assert str(r) == '|count: 4 . 5 . 6> + |fib: 5 . 8 . 13> + 0.5|fact: 6 . 24 . 120>'
 
 def test_predict_next_2():
   s = 'seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>\n'
@@ -241,8 +263,9 @@ def test_predict_next_2():
   s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
   process_sw_file(context, s)
 #  r = predict_next(context, sequence('6') + ket('2'), 'seq,3')
-  r = predict_next(sequence('6') + ket('2'), context, 'seq,3')
-  assert str(r) == ''
+  #r = predict_next(sequence('6') + ket('2'), context, 'seq,3')  # old invoke method
+  r = predict_next(sequence('6') + ket('2'), context, 'seq', 3)  # new invoke method
+  assert str(r) == '0.5|count: 7> + 0.5|fib: 3 . 5 . 8> + 0.5|fact: 24 . 120>'
 
 def test_predict_next_3():
   s = 'seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7>\n'
@@ -250,15 +273,17 @@ def test_predict_next_3():
   s += 'seq |fact> => |1> . |2> . |6> . |24> . |120>'
   process_sw_file(context, s)
 #  r = predict_next(context, sequence('2') + ket('5'), 'seq,3')
-  r = predict_next(sequence('2') + ket('5'), context, 'seq,3')
-  assert str(r) == ''
+  #r = predict_next(sequence('2') + ket('5'), context, 'seq,3') # old invoke method
+  r = predict_next(sequence('2') + ket('5'), context, 'seq', 3)  # new invoke method
+  assert str(r) == '|count: 6 . 7> + |fib: 8 . 13> + 0.5|fact: 6 . 24 . 120>'
 
 
 def test_multi_line_stored_rule_1():
   s = "tally-stored-food |*> #=> merge-value stored-food |_self>"
   r = op_grammar(s).stored_rule()
   context.print_universe()
-  assert False
+  r = context.recall('tally-stored-food', '*')
+  assert str(r) == 'merge-value stored-food |_self>'
 
 def test_multi_line_stored_rule_2():
   s = """tally-stored-food-2 |*> #=>
@@ -266,23 +291,28 @@ def test_multi_line_stored_rule_2():
 
 bah |x> => |fish>
 """
-  r = op_grammar(s).multi_stored_rule()
+  r = op_grammar(s).multi_stored_rule()           # I think we want this one to fail. 
   context.print_universe()
-  assert False
+  assert False                                     
 
 def test_multi_line_stored_rule_3():
-  s = """tally-stored-food-3 |*> #=>
+  s = """
+tally-stored-food-3 |*> #=>
     merge-value stored-food |_self>
 
 bah |x> => |fish>
 """
   r = op_grammar(s).sw_file()
   context.print_universe()
-  assert False
+  r1 = context.recall('tally-stored-food-3', '*')
+  r2 = context.recall('bah', 'x')
+  assert str(r1) == '\n    merge-value stored-food |_self>'
+  assert str(r2) == '|fish>'
 
 
 def test_multi_line_stored_rule_4():
-  s = """process-if |reached home> #=>
+  s = """
+process-if |reached home> #=>
     drop-the |food>
     lay |scent> => |no>
     type |walk> => |op: random>
@@ -291,13 +321,15 @@ def test_multi_line_stored_rule_4():
 """
   r = op_grammar(s).sw_file()
   context.print_universe()
-  assert False
+  r = context.recall('process-if', 'reached home')
+  assert str(r) == '\n    drop-the |food>\n    lay |scent> => |no>\n    type |walk> => |op: random>\n    path |home> => |home>'
 
 def test_single_stored_rule_1():
   s = "foo |*> #=> |bah>"
   r = op_grammar(s).sw_file()
   context.print_universe()
-  assert False
+  r = context.recall('foo', 'x')
+  assert str(r) == '|bah>'
 
 # yup, works!
 #def test_multi_line_stored_rule_recall_1():
@@ -309,21 +341,22 @@ def test_multi_line_stored_rule_5():
   s = """
 
 bah-a |*> #=>
-    |fishy>
-    |soupy>
+    |fish>
+    |soup>
 
 """
   r = op_grammar(s).sw_file()
   context.print_universe()
-  assert False
+  r = context.recall('bah-a', 'x')
+  assert str(r) == '\n    |fish>\n    |soup>'
 
 
 def test_sw_file_load_1():
   context.load('sw-examples/test-multi-line.sw')
   context.print_universe()
-  assert False
+  assert True                                           # yup, works. Don't know how to assert that though.
 
-def test_process_sw_file_1():
+def test_process_sw_file_2():
   with open('sw-examples/test-multi-line.sw', 'r') as f:
     text = f.read()
     print('text: %s' % text)
@@ -371,7 +404,7 @@ type |walk>
 """
   r = process_stored_rule(context, s)
   context.print_universe()
-  assert str(r) == 'fish'
+  assert str(r) == '|op: return-home>'
 
 def test_multi_value_stored_rules_1():
   s = """
@@ -383,8 +416,11 @@ foo (*,*) #=>
   r = process_sw_file(context, s)
   context.print_universe()
   s = 'foo(|a>, |b>)'
-  r = process_input_line(context, s, ket())
-  assert str(r) == 'fish'  
+  r1 = process_input_line(context, s, ket())
+  s = 'foo(|a>.|b>, |x> + 7|y> )'
+  r2 = process_input_line(context, s, ket())
+  assert str(r1) == '3|a> + 5|b>'
+  assert str(r2) == '3|a> . 3|b> + 5|x> + 35|y>'  
 
 
 def test_active_recall_1():
@@ -478,13 +514,15 @@ def test_compound_invoke_predict_1():
   context.load('sw-examples/integer-sequences.sw')
   s = 'predict[seq] (|2> . |5>)'
   r = extract_compound_sequence(context, s)
-  assert True                       # yup, it works.
+  #assert True                       # yup, it works.
+  assert str(r) == '|count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>'
 
 def test_compound_invoke_predict_2():
   context.load('sw-examples/integer-sequences.sw')
   s = 'predict[seq,1] (|2> . |5>)'
   r = extract_compound_sequence(context, s)
-  assert True                       # yup, it works.
+  #assert True                       # yup, it works.
+  assert str(r) == '|count: 6> + |fib: 8> + |primes: 7> + 0.5|fact: 6>'
 
 # only test this one out of the is-x family.
 # I presume if one works, the rest do too.
@@ -615,3 +653,39 @@ def test_literal_op_1():
   s = 'age |fred>'
   r = extract_compound_sequence(context, s)
   assert str(r) == '|37>'
+
+
+
+# try to fix add-learn bug:
+# fixed it! It was a very sneaky parser bug.
+# indirect add-learn rules were parsing as invalid, and so treated as '=>'
+# I had to add ~'+=>' to the front of the symbol_single_compound_sequence parse rule to fix
+#
+def test_add_learn_bug_1():
+  s = """
+
+current |cell> => |grid: 5: 5>
+stored-food current |cell> +=> 5| >
+stored-food current |cell> +=> 5| >
+stored-food current |cell> +=> 5| >
+
+"""
+  r = process_sw_file(context, s)
+  s = 'stored-food current |cell>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '15| >'
+
+
+# this case has no issues:
+def test_add_learn_bug_2():
+  s = """
+
+stored-food |grid: 7: 7> +=> 7| >
+stored-food |grid: 7: 7> +=> 7| >
+stored-food |grid: 7: 7> +=> 7| >
+
+"""
+  r = process_sw_file(context, s)
+  s = 'stored-food |grid: 7: 7>'
+  r = extract_compound_sequence(context, s)
+  assert str(r) == '21| >'
