@@ -4,10 +4,11 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 7/3/2018
+# Update: 12/3/2018
 # Copyright: GPLv3
 #
-# Usage: 
+# a collection of 'sigmoids'
+# they only change the coefficients of kets, not the labels
 #
 #######################################################################
 
@@ -51,11 +52,9 @@ def pos(x):           # what about an "abs" sigmoid?
   else:
     return x
 
-# 4/5/2015:
-def sigmoid_abs(x):           
+def sigmoid_abs(x):
   return abs(x)
 
-# 4/5/2015:
 def max_filter(x,t):
   if x <= t:
     return x
@@ -88,23 +87,18 @@ def sigmoid_in_range(x,a,b):
   else:
     return 0
 
-# 14/4/2014: newly added:
 def invert(x):
   if x == 0:
     return 0
   else:
     return 1/x
     
-# 21/5/2014: newly added:
-# set all coeffs to t, even the 0'd ones.
 def set_to(x,t):
   return t
 
-# 4/1/2015:
 def subtraction_invert(x,t):
   return t - x
 
-# 15/12/2015:
 def log(x,t=None):
   if x <= 0:
     return 0
@@ -112,7 +106,6 @@ def log(x,t=None):
     return math.log(x)       # default is base e, ie natural logarithm
   return math.log(x,t)       # choose another base
 
-# 17/5/2016:                 # log(1 + x)
 def log_1(x,t=None):
   if x <= 0:                 # maybe tweak this, given that it is log(1 + x), not log(x)
     return 0
@@ -120,26 +113,18 @@ def log_1(x,t=None):
     return math.log(1+x)       # default is base e, ie natural logarithm
   return math.log(1+x,t)       # choose another base
 
-  
-# 14/1/2016:
 def square(x):
   return x*x
   
 def sqrt(x):
   return math.sqrt(x)
   
-# 12/9/2016:
 def floor(x):
   return math.floor(x)
   
 def ceiling(x):
   return math.ceil(x)      
 
-def not_zero(x):               # probably delete this one!
-  if x <= 0:
-    return 1
-  return x
-  
 def inc(x):
   return x + 1
   

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 17/2/2018
+# Update: 13/3/2018
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -96,6 +96,7 @@ help_string = """
 
 
 x = ket()
+result = ket()
 stored_line = ""
 command_history = []
 command_history_file = "sa-console-command-history.txt"  # file where we save the command history. Might be interesting.
@@ -119,6 +120,7 @@ def save_history(history,history_file):
 # the interactive semantic agent:
 while True:
   line = input("\nsa: ")
+  line = line.strip()
 
   if line == "i":
     n = 30
@@ -150,6 +152,9 @@ while True:
 
   if line in ['h','help']:
     print(help_string)
+
+  elif line.startswith('--'):
+    continue
 
   elif line == "context":
     print(C.show_context_list())
@@ -340,7 +345,7 @@ while True:
   elif line.startswith("x = "):
     var = line[4:]
     try:
-      x = extract_compound_superposition(C,var)[0]
+      x = extract_compound_superposition(C,var)[0] # needs updating. Fix!
     except:  
       x = ket(var)
 
@@ -387,19 +392,28 @@ while True:
   else:
     if line == ".":
       line = stored_line
-    stored_line = line
 
-    start_time = time.time()    
+    elif line.endswith(('#=>', '!=>')):
+      s = line
+      while True:
+        line = input(':     ')
+        if line.strip() == '':
+          break
+        s += '\n    ' + line
+      line = s + '\n'
+
+    stored_line = line
+    start_time = time.time()
 
     try:
-      result = process_input_line(C,line,x)
+      result = process_input_line(C, line, x)
       print(result)
     except KeyboardInterrupt:                           # doesn't seem to work.
       print('caught keyboard interrupt')
 
     end_time = time.time()
     delta_time = end_time - start_time
-    print("\n  Time taken:",display_time(delta_time))   # display_time() is in the functions.py file
-
+    print("\n  Time taken:", display_time(delta_time))   # display_time() is in the functions.py file
+                                                        # maybe shift it here.
 
 

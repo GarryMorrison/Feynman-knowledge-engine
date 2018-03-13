@@ -6,17 +6,12 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 8/3/2018
+# Update: 12/3/2018
 # Copyright: GPLv3
 #
-# Usage: 
+# A collection of functions that apply to kets, superpositions and sequences.
 #
 #######################################################################
-
-# a collection of functions that apply to kets and superpositions (and later sequences and so on).
-# the idea is that you add more of these with time.
-# I guess, with no upper bound on how many.
-# and of course to use them you need to enter them in the appropriate table in the processor.
 
 import sys
 import random
@@ -30,7 +25,6 @@ from semantic_db.code import *
 from semantic_db.sigmoids import *
 
 
-            
 
 # the range function
 # eg: show_range(|year: 1982>, |year: 1985>)
@@ -328,123 +322,7 @@ def collapse_read_text(one):
   
 
 
-# code from here:
-# http://stackoverflow.com/questions/16996217/prime-factorization-list  
-# pretty sure this is wrong! Yup! Broken!!
-# x = number: 98712948751984751983471953871983475198347519475
-# returns: |number: 5> + 34.000|number: 8> + |number: 19> + |number: 653> + |number: 313817949986>
-# since when is 8 a prime?
-# ditto: 313817949986
-def broken_primes(n):
-  factors = []
-  d = 2
-  while d*d <= n:
-    while (n % d) == 0:
-      factors.append(d)  # supposing you want multiple factors repeated
-      n /= d
-    d += 1
-  if n > 1:
-    factors.append(n)
-  return factors
 
-def another_broken_primes(n):
-  print("n:",n)
-  f, fs = 3, []
-  while n % 2 == 0:
-    fs.append(2)
-    n /= 2
-  while f * f <= n:
-    while n % f == 0:
-      fs.append(f)
-      n /= f
-    f += 2
-  if n > 1: fs.append(n)
-  print("factors:",fs)
-  return fs
-  
-def primes(n):
-  print("n:",n)
-  f, fs = 3, []
-  while n % 2 == 0:
-    fs.append(2)
-    n //= 2                 # this is the fix.
-  while f * f <= n:
-    while n % f == 0:
-      fs.append(f)
-      n //= f               # and this too.
-    f += 2
-  if n > 1: fs.append(n)
-  print("factors:",fs)
-  return fs  
-
-# returns |yes> if |x> is a prime, else |no>
-def is_prime(x):
-  x_label = x.label if type(x) == ket else x
-
-  cat, v = extract_category_value(x_label)
-  if cat != "number":
-    return ket("",0)
-  try:
-    n = int(v)
-  except:
-    return ket("",0)
-  if n <= 1:
-    return ket("",0)
-  
-  if n == primes(n)[0]:
-    return ket("yes")
-  else:
-    return ket("no")
-  
-
-# the factor number function
-# eg: factor |number: 30>  returns |number: 2> + |number: 3> + |number: 5>
-# interestingly, you could use this to find in a completely different space,
-# a set of objects that have the identical factor structure as positive integers.
-# a weird kind of duality between primes and that other space.
-# or I guess, an isomorphism.
-#                                                                                              
-# Though I guess that is a general idea.
-# An example is say the network structure of your friends network
-# can be identical to say the network structure of a certain set of websites.
-# The only differentiator is the ket labels of the components.
-# This also has the implication that reconstructing meaning
-# just from a (local) network of neurons is essentially impossible.
-# Without broader knowledge, the network could represent pretty much anything!
-# x must be a ket! Or it bugs out in wierd ways.
-def factor_number(x):
-  value = x.value if type(x) == ket else 1
-  x_label = x.label if type(x) == ket else x
-
-  cat, v = extract_category_value(x_label)
-  if cat != "number":
-    return ket("",0)
-  try:
-    n = int(v)
-  except:
-    return ket("",0)
-  if n <= 1:
-    return ket("",0)
-
-  result = superposition()
-  for p in primes(n):
-    result += ket("number: " + str(p),value)
-  return result
-
-
-# this one handles superpositions too!
-# bug, it chomps coefficients. Look into it later. Fixed in factor_number(x). See value = x.value ...
-# 24/1/2015: I have no idea why I wrote this function.
-# Seems completely pointless.
-# chomped it out of the fn_table2 table, and put in factor_number(x), NB no s at the end.  
-def factor_numbers(x):  # NB: the plural, the 's.
-  if type(x) == ket:
-    return factor_number(x)
-  if type(x) == superposition:
-    result = superposition()
-    for v in x.data:
-      result += factor_number(v)
-    return result
 
 # 24/1/2015: I have no idea the point for these next two functions!
 # I guess I wrote them when I was a newb.    
@@ -5333,7 +5211,7 @@ def apply_sp(context, one, two):
 
 # set invoke method:
 #compound_table['such-that'] = '.apply_sp_fn(sp_such_that, context, \"{0}\")'
-compound_table['such-that'] = ['apply_sp_fn', 'sp_such_that', 'context']
+compound_table['such-that'] = ['apply_seq_fn', 'seq_such_that', 'context']
 # set usage info:
 function_operators_usage['such-that'] = """
     description:
@@ -5345,22 +5223,38 @@ function_operators_usage['such-that'] = """
       is-hungry |Fred> => |yes>
       is-hungry |Sam> => |no>
       such-that[is-hungry] rel-kets[supported-ops] |>
-        |Fred>            
+        |Fred>
+        
+      is-a-day |Monday> => |yes>
+      is-a-day |Tuesday> => |yes>
+      is-a-day |Wednesday> => |yes>
+      is-a-day |Thursday> => |yes>
+      is-a-day |Friday> => |yes>
+      is-a-day |Saturday> => |yes>
+      is-a-day |Sunday> => |yes>
+      is-a-day |blah> => |no>
+      is-a-day |foo> => |no>
+      such-that[is-a-day] (|Monday> + |Tuesday> + |blah> . |Wednesday> . |Thursday> + |Friday> + |Saturday> . |foo> + |Sunday>)
+        |Monday> + |Tuesday> . |Wednesday> . |Thursday> + |Friday> + |Saturday> . |Sunday>
+                        
 """
-def sp_such_that(one, context, *ops):
-  def valid_ket(one, context, ops):
+def seq_such_that(one, context, *ops):
+  def valid_ket(one, context, *ops):
     for op in ops:
-      e = one.apply_op(context,op).to_sp()
-      if e.label not in ["true","yes"]:
+      e = one.apply_op(context, op).to_sp()
+      if e.label not in ["true", "yes"]:
         return False
       if e.value < 0.5:                # need to test this bit.
         return False
-    return True       
-  r = superposition()
-  for x in one:
-    if valid_ket(x, context, ops):
-      r += x
-  return r
+    return True
+  seq = sequence([])
+  for sp in sequence(one):
+    r = superposition()
+    for x in sp:
+      if valid_ket(x, context, *ops):
+        r.add_sp(x)
+    seq += r
+  return seq.sdrop()
 
 
     
@@ -6597,7 +6491,7 @@ def aligned_simm_value(one, two):
 #compound_table['predict'] = ".apply_seq_fn(predict_next, context, \"{0}\")"
 compound_table['predict'] = ['apply_seq_fn', 'predict_next', 'context']
 # set usage info:
-sequence_functions_usage['predict'] = """
+function_operators_usage['predict'] = """
     description:
       given an input sequence, predict what is next
       optionally specify the max sequence length you want returned
@@ -6725,6 +6619,20 @@ def sp2seq(one):
     seq += x
   return seq
   
+# set invoke method:
+seq_fn_table['seq2sp'] = 'seq2sp'
+# set usage info:
+function_operators_usage['seq2sp'] = """
+    description:
+      seq2sp flattens sequences into superpositions
+
+    examples:
+      seq2sp (|a> + 2.2|b> . 3|c> . 0.2|d> + |x> . 7|y> + 9|z>)
+        |a> + 2.2|b> + 3|c> + 0.2|d> + |x> + 7|y> + 9|z>
+"""
+# one is a sequence:
+def seq2sp(one):
+  return one.to_sp()
 
 
 # TODO:
@@ -7441,7 +7349,7 @@ def Or(one, two):
 # set invoke method:
 compound_table['common'] = ['apply_sp_fn', 'common', 'context']
 # set usage info:
-sequence_functions_usage['common'] = """
+function_operators_usage['common'] = """
     description:
       find kets in common, with respect to an operator
       
@@ -7479,7 +7387,7 @@ def common(one,context,op):
 # set invoke method:
 ket_context_table['int-coeffs-to-word'] = 'int_coeffs_to_word'
 # set usage info:
-sequence_functions_usage['int-coeffs-to-word'] = """
+function_operators_usage['int-coeffs-to-word'] = """
     description:
       apply the coefficient to the word,
       and map the word to plural as required
@@ -7516,4 +7424,149 @@ def int_coeffs_to_word(one, context):                      # at some point maybe
     if label == '':
       label = one.label                                  # maybe return |> if plural not known? or the fed in ket? The fed in ket, is the correct way to do this.
   return ket(str(value) + " " + label)
-                                                                       
+
+
+# code from here:
+# http://stackoverflow.com/questions/16996217/prime-factorization-list
+def primes(n):
+  print("n:", n)
+  f, fs = 3, []
+  while n % 2 == 0:
+    fs.append(2)
+    n //= 2  # this is the fix.
+  while f * f <= n:
+    while n % f == 0:
+      fs.append(f)
+      n //= f  # and this too.
+    f += 2
+  if n > 1: fs.append(n)
+  print("factors:", fs)
+  return fs
+
+
+# set invoke method:
+fn_table['is-prime'] = 'is_prime'
+# set usage info:
+function_operators_usage['is-prime'] = """
+    description:
+      returns |yes> or |no> if a prime or not
+
+    examples:
+      is-prime |379721>
+        |yes>
+
+    see also:
+      prime-factors
+"""
+# returns |yes> if |x> is a prime, else |no>
+# x is a ket
+def is_prime(x):
+  cat, v = extract_category_value(x.label)
+  try:
+    n = int(v)
+  except:
+    return ket()
+  if n <= 1:
+    return ket()
+
+  if len(primes(n)) == 1:
+    return ket("yes")
+  else:
+    return ket("no")
+
+
+# the factor number function
+# eg: factor |number: 30>  returns |number: 2> + |number: 3> + |number: 5>
+# interestingly, you could use this to find in a completely different space,
+# a set of objects that have the identical factor structure as positive integers.
+# a weird kind of duality between primes and that other space.
+# or I guess, an isomorphism.
+#
+# Though I guess that is a general idea.
+# An example is say the network structure of your friends network
+# can be identical to say the network structure of a certain set of websites.
+# The only differentiator is the ket labels of the components.
+# This also has the implication that reconstructing meaning
+# just from a (local) network of neurons is essentially impossible.
+# Without broader knowledge, the network could represent pretty much anything!
+# x must be a ket! Or it bugs out in weird ways.
+# set invoke method:
+fn_table['prime-factors'] = 'factor_number'
+# set usage info:
+function_operators_usage['prime-factors'] = """
+    description:
+      returns a list of prime factors
+
+    examples:
+      -- without specifying a category:
+      prime-factors |987654321>
+        2|3> + 2|17> + |379721>
+      
+      -- with specifying a category, here 'number: '
+      prime-factors |number: 123456789>
+        2|number: 3> + |number: 3607> + |number: 3803>
+
+    see also:
+      is-prime
+"""
+# x is a ket
+def factor_number(x):
+  cat, v = extract_category_value(x.label)
+  if len(cat) > 0:
+    cat += ': '
+  try:
+    n = int(v)
+  except:
+    return ket()
+  if n <= 1:
+    return ket()
+
+  r = superposition()
+  for p in primes(n):
+    r.add(cat + str(p), x.value)
+  return r
+
+
+# set invoke method:
+#compound_table['inherit'] = ['apply_sp_fn', 'inherit_op', 'context']
+compound_table['inherit'] = ['apply_fn', 'inherit_op', 'context']
+# set usage info:
+function_operators_usage['inherit'] = """
+    description:
+      inherit operator from parent data-types
+
+    examples:
+      -- learn a little about our old cat Trudy:
+      -- and the inheritance structure:
+      inherit |trudy> => |cat>
+      inherit |cat> => |feline>
+      inherit |feline> => |mammal>
+      inherit |mammal> => |animal>
+      has-fur |animal> => |yes>
+      has-teeth |animal> => |yes>
+      has-pointy-ears |feline> => |yes>
+      
+      -- Trudy has no teeth, which over-rides the animal has-teeth rule:
+      has-teeth |trudy> => |no>
+      
+      -- now ask some questions:
+      inherit[has-pointy-ears] |trudy>
+        |yes>
+
+      inherit[has-fur] |trudy>
+        |yes>
+
+      inherit[has-teeth] |trudy>
+        |no>
+"""
+def inherit_op(one, context, op):                       # maybe build this into the working of the new_context() class?
+  r = one.apply_op(context, op)
+  if len(r) != 0:
+    return r
+  while True:
+    one = one.apply_op(context, 'inherit')
+    if len(one) == 0:
+      return ket()
+    r = one.apply_op(context, op)
+    if len(r) != 0:
+      return r
