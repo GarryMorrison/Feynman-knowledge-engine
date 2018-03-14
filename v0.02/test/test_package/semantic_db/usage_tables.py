@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 28/2/2018
+# Update: 14/3/2018
 # Copyright: GPLv3
 #
 # Usage:
@@ -16,62 +16,59 @@ from semantic_db.functions import function_operators_usage, sequence_functions_u
 
 
 # define our usage report function:
-def usage(ops = None):
-  if ops is None:                  # print usage table
-    s = 'Usage:\n'
+def usage(ops=None):
+    if ops is None:  # print usage table
+        s = 'Usage:\n'
 
-    s += '  built in operators:\n'
-    for key in sorted(built_in_table_usage):
-      s += '    ' + key + '\n'
+        s += '  built in operators:\n'
+        for key in sorted(built_in_table_usage):
+            s += '    ' + key + '\n'
 
-    s += '\n  sigmoids:\n'
-    for key in sorted(sigmoid_table_usage):
-      s += '    ' + key + '\n'
+        s += '\n  sigmoids:\n'
+        for key in sorted(sigmoid_table_usage):
+            s += '    ' + key + '\n'
 
-    s += '\n  function operators:\n'
-    for key in sorted(function_operators_usage):
-      s += '    ' + key + '\n'
+        s += '\n  function operators:\n'
+        for key in sorted(function_operators_usage):
+            s += '    ' + key + '\n'
 
-    s += '\n  sequence functions:\n'
-    for key in sorted(sequence_functions_usage):
-      s += '    ' + key + '\n'
+        s += '\n  sequence functions:\n'
+        for key in sorted(sequence_functions_usage):
+            s += '    ' + key + '\n'
 
-    s += '\n  worked examples:\n'
-    for key in sorted(examples_usage):
-      s += '    ' + key + '\n'
+        s += '\n  worked examples:\n'
+        for key in sorted(examples_usage):
+            s += '    ' + key + '\n'
 
+    else:
+        s = 'Usage:\n'
+        for op in ops:
+            if op in built_in_table_usage:
+                s += 'built in operator:\n'
+                s += '  ' + op + ':\n'
+                s += built_in_table_usage[op] + '\n'
 
-  else:
-    s = 'Usage:\n'
-    for op in ops:
-      if op in built_in_table_usage:
-        s += 'built in operator:\n'
-        s += '  ' + op + ':\n'
-        s += built_in_table_usage[op] + '\n'
+            if op in sigmoid_table_usage:
+                s += 'sigmoid:\n'
+                s += '  ' + op + ':\n'
+                s += sigmoid_table_usage[op] + '\n'
 
-      if op in sigmoid_table_usage:
-        s += 'sigmoid:\n'
-        s += '  ' + op + ':\n'
-        s += sigmoid_table_usage[op] + '\n'
+            if op in function_operators_usage:
+                s += 'function operator:\n'
+                s += '  ' + op + ':\n'
+                s += function_operators_usage[op] + '\n'
 
-      if op in function_operators_usage:
-        s += 'function operator:\n'
-        s += '  ' + op + ':\n'
-        s += function_operators_usage[op] + '\n'
+            if op in sequence_functions_usage:
+                s += 'sequence function:\n'
+                s += '  ' + op + ':\n'
+                s += sequence_functions_usage[op] + '\n'
 
-      if op in sequence_functions_usage:
-        s += 'sequence function:\n'
-        s += '  ' + op + ':\n'
-        s += sequence_functions_usage[op] + '\n'
+            if op in examples_usage:
+                s += 'worked example:\n'
+                s += '  ' + op + ':\n'
+                s += examples_usage[op] + '\n'
 
-      if op in examples_usage:
-        s += 'worked example:\n'
-        s += '  ' + op + ':\n'
-        s += examples_usage[op] + '\n'
-
-
-  print(s, end='')
-
+    print(s, end='')
 
 
 # define our operator usage types:
@@ -133,7 +130,7 @@ built_in_table_usage['sdrop'] = """
       drop
 """
 
-#built_in_table['sreverse'] = 'sreverse'
+# built_in_table['sreverse'] = 'sreverse'
 built_in_table_usage['sreverse'] = """
     description:
       sequence version of reverse
@@ -144,15 +141,11 @@ built_in_table_usage['sreverse'] = """
       reverse
 """
 
-
-
 built_in_table_usage['z'] = """
     description:
 
     examples:
 """
-
-
 
 # let's build the sigmoid_table_usage dictionary:
 sigmoid_table_usage['clean'] = """
@@ -389,7 +382,6 @@ sigmoid_table_usage['dec'] = """
       dec^10 0|x>
         -10 |x>
 """
-
 
 examples_usage['numbers-to-words'] = """
     description:

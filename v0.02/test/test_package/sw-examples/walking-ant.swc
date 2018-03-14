@@ -3,12 +3,12 @@
 -- if find food return home, leaving a scent trail
 -- once home, follow scent trail back to food (approximately)
 -- if find food again, return home, adding to the scent trail
--- when food is gone, switch off scent trail, and start randomly walking again
+-- when reach home, store the food, switch off scent trail, and start randomly walking again
 
 -- need three walk types:
 -- randomly
 -- return home
--- follow scent trail
+-- follow scent trail (inside random-walk for now)
 
 -- learn map:
 |null> => learn-map[30, 30] |>
@@ -19,7 +19,7 @@ current |cell> => |grid: 10: 22>
 -- learn home location:
 home |cell> => current |cell>
 
--- start with no food:
+-- start with no food at home:
 stored-food home |cell> => 0| >
 
 -- learn path home:
@@ -30,13 +30,9 @@ store-direction (*) #=>
 return-path |home> #=> 
     invert-direction expand path |home>
 
--- NB: |_self> seems to work here, so don't need the slower |__self>
+-- NB: |_self> works here, so don't need the slower |__self>
 invert-direction |*> #=>
     if(is-less-than[0] push-float |_self>, - |_self>, reverse-dir |_self> )         
-
--- reverse-if-neg |*> #=>
---     if(is-greater-equal-than[0] push-float |_self>, |_self>, - reverse-dir |_self>)
-
 
 
 -- learn the list of directions:
@@ -85,7 +81,9 @@ if-find-food |*> #=>
     process-if if( and(is-greater-than[0] push-float food current |cell>, is-equal[0] push-float carry |food>), |found food>, |not found food> )
 
 process-if |found food> #=>
-    carry-the |food>
+    -- carry the food:
+    food current |cell> => dec food current |cell>
+    carry |food> => inc carry |food>
     lay |scent> => |yes>
     type |walk> => |op: return-home>
 
@@ -98,7 +96,9 @@ if-reach-home |*> #=>
   process-if sdrop wif(equal( current |cell>, home |cell>), |reached home>, |not reached home>)
 
 process-if |reached home> #=>
-    drop-the |food>
+    -- drop the food:
+    stored-food current |cell> +=> carry |food>
+    carry |food> => 0| >
     lay |scent> => |no>
     type |walk> => |op: random-walk>
     path |home> => |home>
@@ -110,15 +110,6 @@ process-if |not reached home> #=>
 -- start with scent trail off:
 lay |scent> => |no>
 
-switch-on-scent |*> #=>
-    lay |scent> => |yes>
-
-switch-off-scent |*> #=>
-    lay |scent> => |no>
-
-apply-scent |*> #=>
-    value current |cell> => plus[1] value current |cell>
-
 
 record-scent |*> #=>
     process-if if(lay |scent>, |yes to scent>, |no to scent>)
@@ -128,7 +119,6 @@ process-if |yes to scent> #=>
 
 process-if |no to scent> #=>
     |>
-
 
 
 if-find-scent-change-heading |*> #=>
@@ -170,13 +160,13 @@ random-walk |*> #=>
     if-find-scent-change-heading |__self>
     
     -- blur heading:
-    heading |ops> => normalize ( 0.1 turn-left^2 + 0.25 turn-left + 10 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
+    heading |ops> => normalize ( 0.1 turn-left^2 + 0.25 turn-left + 15 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
     
     -- try a direction:
     try |direction> => clean weighted-pick-elt heading |ops>
     
     -- if valid direction, step, else turn right:
-    process-if if(do-you-know apply( try |direction>, |__self>), |valid step>, |not valid step>) 
+    process-if if(do-you-know apply( try |direction>, |__self>), |valid step>, |not valid step>)
 
 process-if |valid step> #=>
     try |direction>
@@ -186,12 +176,6 @@ process-if |not valid step> #=>
     heading |ops> => pick-elt ( turn-right + turn-right^2 ) heading |ops>
     |op: id>
 
---     if-valid-direction-step-else-turn-right( try |direction>, |__self> )
--- if-valid-direction-step-else-turn-right (*,*) #=>
---     process-if if(do-you-know apply( |_self1>, |_self2>), |valid step>, |not valid step>)
--- process-if |valid step> #=>
---     try |direction>
-  
 
 -- define turn-heading-right operator:
 turn-heading-right |*> #=> 
