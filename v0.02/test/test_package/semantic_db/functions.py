@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 14/3/2018
+# Update: 15/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -243,41 +243,6 @@ def console_train_of_thought(one, context, n):
     return result  # return a record of the train-of-thought
 
 
-# first attempt at the read() function:
-# Yeah. For a "naked" read, it is fine.
-# I'm going to try for a more active read down lower.
-# NB: one should be string or ket.
-def read_text(one):
-    label = one.label if type(one) == ket else one
-
-    cat, text = extract_category_value(label)
-    if cat != "text":
-        return ket("")
-    # for now, comment this out.
-    #  print("text:",text)
-
-    #  text = text.lower().split()  # need more processing. Leading and trailing ", plus handle punctuation, etc.
-    # see here: http://stackoverflow.com/questions/265960/best-way-to-strip-punctuation-from-a-string-in-python
-    #  text = text.lower().translate(string.maketrans("",""), string.punctuation).split()
-    # fix here: http://www.gossamer-threads.com/lists/python/python/1053035
-    #  text = text.lower().translate(str.maketrans("","",string.punctuation)).split()
-    #  print("text:",text)
-    # 17/6/2014 update:
-    # keep case version:
-    #  text = "".join(c for c in text if c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\'- ').split()
-    # convert to lower case version:
-    text = "".join(c for c in text.lower() if c in 'abcdefghijklmnopqrstuvwxyz\'- ').split()
-
-    result = superposition()
-    # this version sums up repeated words. Sometimes useful, sometimes not.
-    #  for w in text:
-    #    result += ket("word: " + w)
-    #
-    # alternatively, this variant. This one does not add up the words, while the += version does.
-    # Hence, this is closer to how the sequence version would work.
-    # Heh, that is if I ever write the sequence version :)
-    result.data = [ket("word: " + w) for w in text]  # isn't this fundamentally broken!!!
-    return result
 
 
 # note the almost identical structure to read_text().
@@ -2636,44 +2601,6 @@ def old_pretty_print_table(one, context, params, strict=False, rank=False):
     return ket("table")
 
 
-# 3/2/2015: decided to natural sort for sort-by[], so need this:
-# http://stackoverflow.com/questions/4836710/does-python-have-a-built-in-function-for-string-natural-sort
-# 6/8/2014: Doh! There is a bug in sorting things like 0 vs 00 vs 000.
-def natural_sorted(list, key=lambda s: s):
-    """
-    Sort the list into natural alphanumeric order.
-    """
-
-    def get_alphanum_key_func(key):
-        convert = lambda text: int(text) if text.isdigit() else text
-        return lambda s: [convert(c) for c in re.split('([0-9]+)', key(s))]
-
-    sort_key = get_alphanum_key_func(key)
-    #    list.sort(key=sort_key)
-    return sorted(list, key=sort_key)
-
-
-#
-# 1/2/2015: sort-by[op] some-superposition
-#
-# what happens if some of the op |x> have differnet types from op |y> say?
-#
-# may tweak the method of sorting later. Not 100% happy yet, but close.
-# 3/2/2015: yup. Swapped in natural sort. Seems to work correctly.
-def sort_by(one, context, op):
-    def extract_ket_details(x):
-        return x.apply_op(context, op).the_label().lower()
-
-    try:  # maybe a sort by ket label?? Or is that just ket-sort?
-        working_sp = [[k, extract_ket_details(x)] for k, x in enumerate(one)]
-        sorted_sp = natural_sorted(working_sp, key=lambda x: x[1])
-        print("working sp:", working_sp)
-        print("sorted sp:", sorted_sp)
-        result = superposition()
-        result.data = [one.data[k] for k, null in sorted_sp]  # yup, broke sp abstraction twice in one line!
-        return result  # fix when we finally merge in fast_sp.
-    except:
-        return ket("", 0)
 
 
 # 22/2/2015:
@@ -8061,3 +7988,126 @@ def inherit_op(one, context, op):  # maybe build this into the working of the ne
         r = one.apply_op(context, op)
         if len(r) != 0:
             return r
+
+
+# decided to natural sort for sort-by[], so need this:
+# http://stackoverflow.com/questions/4836710/does-python-have-a-built-in-function-for-string-natural-sort
+# 6/8/2014: Doh! There is a bug in sorting things like 0 vs 00 vs 000.
+def natural_sorted(list, key=lambda s: s):
+    """
+    Sort the list into natural alphanumeric order.
+    """
+
+    def get_alphanum_key_func(key):
+        convert = lambda text: int(text) if text.isdigit() else text
+        return lambda s: [convert(c) for c in re.split('([0-9]+)', key(s))]
+
+    sort_key = get_alphanum_key_func(key)
+    #    list.sort(key=sort_key)
+    return sorted(list, key=sort_key)
+
+
+# set invoke method:
+compound_table['sort-by'] = ['apply_sp_fn', 'sort_by', 'context']
+# set usage info:
+function_operators_usage['sort-by'] = """
+    description:
+      sort the given superposition with respect to the given operator
+
+    examples:
+      load pretty-print-table-of-australian-cities.sw
+      
+      -- sort by area:
+      table[city, area, population, annual-rainfall] sort-by[area] "" |city list>
+        +-----------+------+------------+-----------------+
+        | city      | area | population | annual-rainfall |
+        +-----------+------+------------+-----------------+
+        | Darwin    | 112  | 120900     | 1714.7          |
+        | Adelaide  | 1295 | 1158259    | 600.5           |
+        | Hobart    | 1357 | 205556     | 619.5           |
+        | Melbourne | 1566 | 3806092    | 646.9           |
+        | Sydney    | 2058 | 4336374    | 1214.8          |
+        | Perth     | 5386 | 1554769    | 869.4           |
+        | Brisbane  | 5905 | 1857594    | 1146.4          |
+        +-----------+------+------------+-----------------+
+      
+      -- sort by population:
+      table[city, area, population, annual-rainfall] reverse sort-by[population] "" |city list>
+        +-----------+------+------------+-----------------+
+        | city      | area | population | annual-rainfall |
+        +-----------+------+------------+-----------------+
+        | Sydney    | 2058 | 4336374    | 1214.8          |
+        | Melbourne | 1566 | 3806092    | 646.9           |
+        | Brisbane  | 5905 | 1857594    | 1146.4          |
+        | Perth     | 5386 | 1554769    | 869.4           |
+        | Adelaide  | 1295 | 1158259    | 600.5           |
+        | Hobart    | 1357 | 205556     | 619.5           |
+        | Darwin    | 112  | 120900     | 1714.7          |
+        +-----------+------+------------+-----------------+
+
+"""
+# one is a superposition
+def sort_by(one, context, op):
+    def extract_ket_details(x):
+        return x.apply_op(context, op).to_sp().label.lower()
+
+    try:
+        working_sp = [[k, extract_ket_details(x)] for k, x in enumerate(one)]
+        sorted_sp = natural_sorted(working_sp, key=lambda x: x[1])
+        data = list(one.items())
+        r = superposition()
+        for k, _ in sorted_sp:
+            r.add(*data[k])
+        return r
+    except Exception as e:
+        logger.info('sort-by exception.\nReason: %s' % e)
+        return ket()
+
+
+# set invoke method:
+fn_table['read'] = 'read_text'
+# set usage info:
+function_operators_usage['read'] = """
+    description:
+      'read' a sentence
+
+    examples:
+"""
+# one is a ket or superposition:
+def read_text(one):
+    cat, text = extract_category_value(one.label)
+    text = "".join(c for c in text.lower() if c in 'abcdefghijklmnopqrstuvwxyz\'- ').split()
+
+    seq = sequence([])
+    for w in text:
+        seq += ket('word: ' + w)
+    return seq
+
+# set invoke method:
+compound_table['active-buffer'] = ['apply_seq_fn', 'active_buffer', 'context']
+# one is a sequence:
+def active_buffer(one, context, *params):
+    print('one: %s' % str(one))
+    print('params: %s' % str(params))
+    try:
+        N, t, op = params
+        N = int(N)
+        t = float(t)
+    except:
+        try:
+            N, t = params
+            N = int(N)
+            t = float(t)
+            op = ""
+        except:
+            return ket()
+    result = sequence([])
+    for k in range(len(one.data)):
+        for n in range(N):
+            if k + n < len(one.data):
+                y = sequence([])
+                y.data = one.data[k:k+n+1]
+                r = context.pattern_recognition(y, op).drop_below(t)
+                if len(r) > 0:
+                    result += r
+    return result

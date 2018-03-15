@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 13/3/2018
+# Update: 15/3/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -108,51 +108,51 @@ def test_star_learn_2():
     assert str(r) == '|bah 2>'
 
 
-def test_context_seq_learn_1():
-    context.seq_learn('op-a', '*', 'value a')
+def test_context_seq_fn_learn_1():
+    context.seq_fn_learn('op-a', '*', 'value a')
     context.print_universe()
-    r = context.seq_recall('op-a', ['fish'])
+    r = context.seq_fn_recall('op-a', ['fish'])
     assert str(r) == '|value a>'
 
 
-def test_context_seq_learn_2():
-    context.seq_learn('op-b', '*,*', 'value b')
+def test_context_seq_fn_learn_2():
+    context.seq_fn_learn('op-b', '*,*', 'value b')
     context.print_universe(True)
-    r = context.seq_recall('op-b', ['fish', 'soup'])
+    r = context.seq_fn_recall('op-b', ['fish', 'soup'])
     assert str(r) == '|value b>'
 
 
-def test_context_seq_learn_3():
-    # context.seq_learn('op-c', '*,*', ket('_self1'))
-    context.seq_learn('op-c', '*,*', stored_rule('|_self1>'))
+def test_context_seq_fn_learn_3():
+    # context.seq_fn_learn('op-c', '*,*', ket('_self1'))
+    context.seq_fn_learn('op-c', '*,*', stored_rule('|_self1>'))
     context.print_universe(True)
-    r = context.seq_recall('op-c', ['fish', 'soup'], active=True)
+    r = context.seq_fn_recall('op-c', ['fish', 'soup'], active=True)
     assert str(r) == '|fish>'
 
 
-def test_context_seq_learn_4():
-    # context.seq_learn('op-c', '*,*', ket('_self'))
-    context.seq_learn('op-c', '*,*', stored_rule('|_self>'))
+def test_context_seq_fn_learn_4():
+    # context.seq_fn_learn('op-c', '*,*', ket('_self'))
+    context.seq_fn_learn('op-c', '*,*', stored_rule('|_self>'))
     context.print_universe(True)
-    r = context.seq_recall('op-c', ['more', 'soup'], active=True)
+    r = context.seq_fn_recall('op-c', ['more', 'soup'], active=True)
     assert str(r) == '|more>'
 
 
-def test_context_seq_learn_5():
-    # context.seq_learn('op-c', '*', ket('_self'))
-    context.seq_learn('op-c', '*', stored_rule('|_self>'))
+def test_context_seq_fn_learn_5():
+    # context.seq_fn_learn('op-c', '*', ket('_self'))
+    context.seq_fn_learn('op-c', '*', stored_rule('|_self>'))
     context.print_universe(True)
-    r = context.seq_recall('op-c', ['soup'], active=True)
+    r = context.seq_fn_recall('op-c', ['soup'], active=True)
     assert str(r) == '|soup>'
 
 
-def test_context_seq_recall_1():
-    r = context.seq_recall('op-a', ['fish'])
+def test_context_seq_fn_recall_1():
+    r = context.seq_fn_recall('op-a', ['fish'])
     assert str(r) == '|value a>'
 
 
-def test_context_seq_recall_2():
-    r = context.seq_recall('op-b', ['fish', 'soup'])
+def test_context_seq_fn_recall_2():
+    r = context.seq_fn_recall('op-b', ['fish', 'soup'])
     assert str(r) == '|value b>'
 
 
@@ -637,12 +637,45 @@ def test_compound_invoke_learn_map_1():
     assert True
 
 
-def test_compound_invoke_learn_map_1():
+def test_compound_invoke_learn_map_2():
     s = 'learn-map[5, 5] |>'
     r = extract_compound_sequence(context, s)
     s = 'display-map[5, 5] |>'
     r = extract_compound_sequence(context, s)
     assert True
+
+def test_compound_invoke_sort_by_1():
+    context.load('sw-examples/pretty-print-table-of-australian-cities.sw')
+    s = 'sort-by[area] "" |city list>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|Darwin> + |Adelaide> + |Hobart> + |Melbourne> + |Sydney> + |Perth> + |Brisbane>'
+
+def test_compound_invoke_active_buffer_1():
+    s = """
+|body part: face> => 2|eye> + |nose> + 2|ear> + 2|lip> + |hair>
+"""
+    r = process_sw_file(context, s)
+    s = 'active-buffer[7,0] (2|eye> + |nose>)'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '0.375|body part: face>'
+
+def test_compound_invoke_active_buffer_2():
+    s = """
+|body part: face> => 2|eye> + |nose> + 2|ear> + 2|lip> + |hair>
+"""
+    r = process_sw_file(context, s)
+    s = 'active-buffer[7,0] (2|eye> + |nose> + 2|ear> + 2|lip> + |hair>)'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|body part: face>'
+
+def test_compound_invoke_active_buffer_3():
+    context.load('sw-examples/internet-acronyms.sw')
+    s = 'active-buffer[7,0] read |text: fwiw I think it is all fud imho, lol. thx.>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == 'fish'
+
+
+
 
 
 def test_new_sequence_fn_invoke_1():
@@ -780,3 +813,43 @@ def test_sequence_add_2():
     s = 'such-that[is-prime] ssplit |123456789>'
     r = extract_compound_sequence(context, s)
     assert str(r) == '|2> . |3> . |5> . |7>'
+
+# learn seq rules:
+# spell |fred> .=> |f>
+# spell |fred> .=> |r>
+# spell |fred> .=> |e>
+# spell |fred> .=> |d>
+def test_seq_learn_1():
+    context.seq_learn('spell', 'fred', 'f')
+    context.seq_learn('spell', 'fred', 'r')
+    context.seq_learn('spell', 'fred', 'e')
+    context.seq_learn('spell', 'fred', 'd')
+    r = context.recall('spell', 'fred')
+    assert str(r) == '|f> . |r> . |e> . |d>'
+
+def test_seq_learn_2():
+    context.seq_learn('pattern', 'a', ket('a',2) + ket('b', 0.3))
+    context.seq_learn('pattern', 'a', ket('x', 5.5) + ket('y', -7) + ket('z'))
+    r = context.recall('pattern', 'a')
+    assert str(r) == '2|a> + 0.3|b> . 5.5|x> - 7|y> + |z>'
+
+def test_seq_learn_3():
+    s = """
+pattern |b> .=> 0.4|a> + 0.9|b>
+pattern |b> .=> |x>  + 2|y> - |z>
+"""
+    r = process_sw_file(context, s)
+    r = context.recall('pattern', 'b')
+    assert str(r) == '0.4|a> + 0.9|b> . |x> + 2|y> - |z>'
+
+def test_indirect_seq_learn_1():
+    s = """
+indirect |foo> => |c>
+pattern indirect |foo> .=> 3|a>
+pattern indirect |foo> .=> 2|b> - 7|c>
+pattern indirect |foo> .=> |x> + |y> + |z>
+"""
+    r = process_sw_file(context, s)
+    r = context.recall('pattern', 'c')
+    assert str(r) == '3|a> . 2|b> - 7|c> . |x> + |y> + |z>'
+

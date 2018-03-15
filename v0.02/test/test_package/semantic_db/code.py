@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 14/3/2018
+# Update: 15/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -173,7 +173,7 @@ class ket(object):
     def apply_op(self, context,
                  op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
         logger.debug("inside ket apply_op")
-        r = context.seq_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
+        r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
         logger.debug("inside ket apply_op, sp: " + str(r))
         if len(r) == 0:
             r = context.recall(op, self, True)  # see much later in the code for definition of recall.
@@ -454,7 +454,7 @@ class superposition(object):
                     if key != '':  # r5 = superposition(another-sp)
                         self.dict[key] = value
 
-    def __str__(self):
+    def old_str(self):
         if len(self.dict) == 0:
             return '|>'
         list_of_kets = []
@@ -465,6 +465,22 @@ class superposition(object):
                 s = "%s|%s>" % (float_to_int(value), key)
             list_of_kets.append(s)
         return " + ".join(list_of_kets)
+
+    def __str__(self):
+        if len(self.dict) == 0:
+            return '|>'
+        s = ''
+        for key, value in self.dict.items():
+            sign = '+'
+            if value < 0:
+                sign = '-'
+            if abs(value) == 1:
+                s += " %s |%s>" % (sign, key)
+            else:
+                s += " %s %s|%s>" % (sign, float_to_int(abs(value)), key)
+        if s.startswith(' + '):
+            s = s[3:]
+        return s
 
     def __iter__(self):
         for key, value in self.dict.items():
@@ -936,7 +952,7 @@ class superposition(object):
     def apply_op(self, context,
                  op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
         logger.debug("inside sp apply_op")
-        r = context.seq_recall(op, [self], True)  # op (*) has higher precedence than op |*>
+        r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
         if len(r) == 0:
             r = sequence([])
             if len(self) == 0:
@@ -949,7 +965,7 @@ class superposition(object):
         logger.debug("sp apply_op: " + str(r))
         return r
 
-    def apply_sigmoid(self, sigmoid, t1=None, t2=None):  # use *args notation.
+    def apply_sigmoid(self, sigmoid, t1=None, t2=None):  # use *args notation. Fix!
         r = superposition()
         if t1 == None:
             for key, value in self.dict.items():
@@ -1312,7 +1328,7 @@ class sequence(object):
         # logger.debug('inside seq apply_op')
         # logger.debug('seq: %s' % str(self))
         # logger.debug('op: %s' % op)
-        seq = context.seq_recall(op, [self], active=True)
+        seq = context.seq_fn_recall(op, [self], active=True)
         if len(seq) == 0:
             if len(self) == 0:
                 seq = sequence([]) + ket().apply_op(context, op)  # do we want this?
@@ -1396,6 +1412,12 @@ class sequence(object):
         b = min(b, len(self.data))
         seq = sequence([])
         seq.data = self.data[a:b]
+        return seq
+
+    def reverse(self):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.reverse())
         return seq
 
     def sreverse(self):
@@ -1584,51 +1606,49 @@ class NewContext(object):
     # rule can be anything
     # add_learn is either True or False
     #
-    def learn(self, op, label, rule, add_learn=False):
+    def learn(self, op, label, rule, add_learn=False, seq_learn=False ):
         # some prelims:
         if op == "supported-ops":  # never learn "supported-ops", it is auto-generated and managed
             return
-        if type(label) == ket:  # label is string. if ket, convert back to string
+        if type(label) is ket:  # label is string. if ket, convert back to string
             label = label.label
-        if type(rule) == str:  # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
+        if type(rule) is str:  # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
             rule = ket(rule)  # if string, cast to ket
 
-        if type(rule) == list:  # if list, cast to superposition
+        if type(rule) is list:  # if list, cast to superposition
             r = superposition()
             for x in rule:
-                if type(x) == int or type(x) == float:
-                    r += ket("number: " + str(x))
-                elif type(x) == str:
-                    r += ket(x)
+                if type(x) in [int, float]:
+                    r.add("number: " + str(x))
+                elif type(x) is str:
+                    r.add(x)
             rule = r
 
         if len(rule) == 0:  # do not learn rules that are |>
             return
 
-        # 9/2/2016:
         self.supported_operators_dict[op] = True  # learn supported operators in this context
 
         if label not in self.ket_rules_dict:
             self.ket_rules_dict[label] = OrderedDict()
             self.ket_rules_dict[label]["supported-ops"] = superposition()
-        # self.ket_rules_dict[label]["supported-ops"].clean_add(ket("op: " + op))  # this is probably a speed bump now.
-        self.ket_rules_dict[label]["supported-ops"].max_add("op: " + op)  # this is probably a speed bump now.
-        # but if we merge over to fast_sp, that should fix itself.
-        if not add_learn:
-            self.ket_rules_dict[label][op] = rule
-        else:
+        self.ket_rules_dict[label]["supported-ops"].max_add("op: " + op)
+        if add_learn:
             if op not in self.ket_rules_dict[label]:
-                # self.ket_rules_dict[label][op] = superposition()             # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
-                self.ket_rules_dict[label][
-                    op] = sequence()  # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
-            #      self.ket_rules_dict[label][op].clean_add(rule)
-            #      self.ket_rules_dict[label][op].self_add(rule)                  # does this change break anything?? If it does, we will need another approach.
-            #      self.ket_rules_dict[label][op].add_sp(rule)                    # Hrmm... how test if it breaks? We don't have full test cases yet!
+                self.ket_rules_dict[label][op] = sequence()  # this breaks add_learn for stored_rules, and memoizing_rules. Do we want to fix it?
             self.ket_rules_dict[label][op].tail_add_seq(rule)  # maybe change to something else in the future.
-            # create inverse still seems to work, I think.
+        elif seq_learn:
+            if op not in self.ket_rules_dict[label]:
+                self.ket_rules_dict[label][op] = sequence()
+            self.ket_rules_dict[label][op] += rule
+        else:
+            self.ket_rules_dict[label][op] = rule
 
     def add_learn(self, op, label, rule):
         return self.learn(op, label, rule, add_learn=True)  # corresponds to "op |x> +=> |y>"
+
+    def seq_learn(self, op, label, rule):
+        return self.learn(op, label, rule, add_learn=False, seq_learn=True)  # corresponds to "op |x> .=> |y>"
 
     # op is a string, or a ket in form |op: some-operator>
     # label is a string or a ket
@@ -1653,8 +1673,6 @@ class NewContext(object):
                     match = True
                     break
         if not match:
-            # logger.info("recall not found")
-            # logger.info(op + " " + str(ket(ket_label)) + " not found")
             logger.info("%s |%s> not found" % (op, ket_label))
             rule = ket()
 
@@ -1666,17 +1684,15 @@ class NewContext(object):
 
     # op is a string
     # label is a string or a ket
-    # rule can be anything
+    # rule can be string (which is cast to ket), ket, superposition, sequence, stored_rule, memoizing_rule
     # add_learn is either True or False
     #
-    def seq_learn(self, op, label, rule,
-                  add_learn=False):  # op (*) => |y>. Note, the plan is for sp rules to have higher precedence than ket rules.
-        # some prelims:                                     # Plan to implement this in apply_op(context,"op")
+    def seq_fn_learn(self, op, label, rule, add_learn=False):  # op (*) => |y>. Note, seq_fn rules have higher precedence than ket rules.
+        # some prelims:                                        # also, op (*,*) and op (*,*,*)
         if op == "supported-ops":  # never learn "supported-ops", it is auto-generated and managed
             return
         if type(label) is ket:  # label is string. if ket, convert back to string
             label = label.label
-        # label = "*"                                  # hrmm... for now. Almost certainly tweak later!
         if type(rule) is str:  # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
             rule = ket(rule)  # if string, cast to ket
         if len(rule) == 0:  # do not learn rules that are |>
@@ -1685,8 +1701,7 @@ class NewContext(object):
         if label not in self.sp_rules_dict:
             self.sp_rules_dict[label] = OrderedDict()
             self.sp_rules_dict[label]["supported-ops"] = superposition()
-        self.sp_rules_dict[label]["supported-ops"].max_add("op: " + op)  # this is probably a speed bump now.
-        # but if we merge over to fast_sp, that should fix itself.
+        self.sp_rules_dict[label]["supported-ops"].max_add("op: " + op)
         if not add_learn:
             self.sp_rules_dict[label][op] = rule
         else:
@@ -1694,20 +1709,16 @@ class NewContext(object):
                 self.sp_rules_dict[label][op] = superposition()
             self.sp_rules_dict[label][op].clean_add(rule)
 
-    def sp_add_learn(self, op, label, rule):
-        return self.seq_learn(op, label, rule, True)  # corresponds to "op (*) +=> |y>"
+    def seq_fn_add_learn(self, op, label, rule):          # corresponds to "op (*) +=> |y>"
+        return self.seq_fn_learn(op, label, rule, True)  # is it even used anywhere? Does it even make sense?
 
     # op is a string, or a ket in form |op: some-operator>
     # seq_list is a list of sequences
     #
-    def seq_recall(self, op, seq_list, active=False):  # work in progress ...
-        logger.debug("inside seq_recall")
-        # return ket("",0)                         # currently the code that follows this is broken, so this is the temp work-around.
+    def seq_fn_recall(self, op, seq_list, active=False):  # work in progress ...
         # some prelims:
         if type(op) is ket:
             op = op.label[4:]  # map |op: age> to "age"
-        # ket_label = "*"                             # probably tweak later. Eg if I decide to implement op(*,*), op(*,*,*) etc. Also, maybe op(fixed-object) #=> ...
-        # ket_label = sp
         if type(seq_list) is str:
             ket_label = seq_list
         elif type(seq_list) is list:
@@ -1733,7 +1744,7 @@ class NewContext(object):
 
         if active:
             #      rule = rule.activate(self,op,sp)        # how handle op (*) #=> foo |_self> ??  op (|a> + |b>) returns foo (|a> + |b>)
-            #    return rule.multiply(coeff)              # I'm not sure multiply(coeff) makes sense for seq_recall().
+            #    return rule.multiply(coeff)              # I'm not sure multiply(coeff) makes sense for seq_fn_recall().
             if type(rule) in [memoizing_rule, stored_rule]:
                 try:
                     # resulting_rule = extract_compound_superposition(self,rule,sp)[0]  # we need to fix ECS so that it can handle superpositions as self-objects. Currently it can only handle strings.
@@ -1744,11 +1755,10 @@ class NewContext(object):
                     resulting_rule = rule.activate(self, op, seq_list)
                 except Exception as e:
                     resulting_rule = ket()
-                    logger.warning("seq_recall: except while processing stored_rule: %s" % e)
+                    logger.warning("seq_fn_recall: except while processing stored_rule: %s" % e)
                 # if type(rule) is memoizing_rule:
-                #  self.seq_learn(op,sp,resulting_rule)
+                #  self.seq_fn_learn(op,sp,resulting_rule)
                 rule = resulting_rule
-        logger.debug("leaving seq_recall")
         return rule
 
     # op is a string, or a ket in form |op: some-operator>
@@ -1794,7 +1804,7 @@ class NewContext(object):
             op = op.label[4:]
         sp_name = label
 
-        rule = self.seq_recall(op, label)
+        rule = self.seq_fn_recall(op, label)
         rule_string = " => "
         if type(rule) == stored_rule:
             rule_string = " #=> "
@@ -2173,17 +2183,20 @@ class ContextList(object):
     def add_learn(self, op, label, rule):
         self.data[self.index].add_learn(op, label, rule)
 
+    def seq_learn(self, op, label, rule):
+        self.data[self.index].seq_learn(op, label, rule)
+
     def recall(self, op, label, active=False):
         return self.data[self.index].recall(op, label, active)
 
-    def seq_learn(self, op, label, rule, add_learn=False):
-        self.data[self.index].seq_learn(op, label, rule, add_learn)
+    def seq_fn_learn(self, op, label, rule, add_learn=False):
+        self.data[self.index].seq_fn_learn(op, label, rule, add_learn)
 
     def sp_add_learn(self, op, label, rule):
         self.data[self.index].sp_add_learn(op, label, rule)
 
-    def seq_recall(self, op, label, active=False):
-        return self.data[self.index].seq_recall(op, label, active)
+    def seq_fn_recall(self, op, label, active=False):
+        return self.data[self.index].seq_fn_recall(op, label, active)
 
     def dump_ket_rules(self, label, exact=False):
         return self.data[self.index].dump_ket_rules(label, exact)
@@ -2373,7 +2386,7 @@ bracket_ops = '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws symbol_op_
 bracket_sequence = '(' ws full_compound_sequence:seq ws ')' -> seq
 single_compound_sequence = op_sequence:ops (naked_ket | bracket_sequence | -> ''):first -> [ops, first]
 
-symbol_single_compound_sequence = ~'+=>' ws op_symbol:symbol ws single_compound_sequence:seq -> (symbol, seq)
+symbol_single_compound_sequence = ~'+=>' ~'.=>' ws op_symbol:symbol ws single_compound_sequence:seq -> (symbol, seq)
 full_compound_sequence = ws (op_symbol | -> '+'):symbol single_compound_sequence:first ws symbol_single_compound_sequence*:rest ws -> [(symbol, first)] + rest
 
 compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequence(context, seq)
@@ -2391,7 +2404,7 @@ stored_rule = multi_stored_rule
 multi_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws (ws new_line multiline | line):s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
 #memoizing_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws '!=>' ws line:s -> learn_memoizing_rule(context, prefix_op, obj, s)
 #learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule ws compiled_compound_sequence:seq -> learn_standard_rule(context, prefix_op, obj, rule, seq)
-learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>'):rule_type ws full_compound_sequence:parsed_seq -> learn_standard_rule(context, prefix_op, obj, rule_type, parsed_seq)
+learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>' | '.=>'):rule_type ws full_compound_sequence:parsed_seq -> learn_standard_rule(context, prefix_op, obj, rule_type, parsed_seq)
 recall_rule = ws (simple_op | "\'\'" ):prefix_op ws object:obj -> recall_rule(context, prefix_op, obj)
 
 sw_file = (comment | learn_rule | multi_stored_rule )*
@@ -2506,14 +2519,14 @@ def process_operators(context, ops, seq, self_object=None):
                     # print('our_fn: %s' % str(our_fn))
                     seq = our_fn(*seq_list)
                 else:
-                    seq = context.seq_recall(fnk, seq_list, True)
+                    seq = context.seq_fn_recall(fnk, seq_list, True)
                 # seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
                 # my_print('str_seq_list', [str(x) for x in seq_list])
                 # if len(python_code) > 0:
                 #  my_print("whitelist_table: python code", python_code)
                 #  seq = eval(python_code)                                                       # can we implement this without using eval??
                 # else:
-                #  seq = context.seq_recall(fnk, seq_list, True)
+                #  seq = context.seq_fn_recall(fnk, seq_list, True)
                 python_code = ''
             elif op[0][0] in ['+', '-', '_', '.']:
                 my_print('bracket ops')
@@ -2578,8 +2591,6 @@ def process_operators(context, ops, seq, self_object=None):
             seq = seq.multiply(-1)  # is this branch still used anywhere?
         elif op == "\"\"":
             seq = seq.apply_op(context, "")
-        #    elif op == 'ops':                                                  # comment out for now. I don't think we used it much.
-        #      seq = seq.apply_op(context, "supported-ops")
         elif op in built_in_table:
             method = getattr(seq, built_in_table[op])
             seq = method()
@@ -2677,12 +2688,12 @@ def learn_stored_rule(context, op, one, rule_type, s):
     my_print('one', one)
     my_print('rule_type', rule_type)
     my_print('s', s)
-    if one in ['(*)', '(*,*)', '(*,*,*)']:  # seq_learn rule found. Tidy later!
+    if one in ['(*)', '(*,*)', '(*,*,*)']:  # seq_fn_learn rule found. Tidy later!
         one = one[1:-1]
         if rule_type == '#=>':
-            context.seq_learn(op, one, stored_rule(s))
+            context.seq_fn_learn(op, one, stored_rule(s))
         elif rule_type == '!=>':
-            context.seq_learn(op, one, memoizing_rule(s))
+            context.seq_fn_learn(op, one, memoizing_rule(s))
         return
     if rule_type == '#=>':
         context.learn(op, one, stored_rule(s))
@@ -2701,14 +2712,14 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
     if op == 'supported-ops':  # don't learn supported-ops lines.
         return
 
-    if one in ['(*)', '(*,*)', '(*,*,*)']:  # seq_learn rule found. Tidy later!
+    if one in ['(*)', '(*,*)', '(*,*,*)']:  # seq_fn_learn rule found. Tidy later!
         one = one[1:-1]
         # seq = compile_compound_sequence(context, parsed_seq, one)
         seq = compile_compound_sequence(context,
                                         parsed_seq)  # I don't currently know how to handle rules like: foo (*) => |_self>
         my_print('sp seq', str(seq))
         if rule_type == '=>':
-            context.seq_learn(op, one, seq)
+            context.seq_fn_learn(op, one, seq)
             return
 
     if type(one) is str:
@@ -2725,6 +2736,9 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
         elif rule_type == '+=>':
             context.add_learn(op, one, seq)
             return seq
+        elif rule_type == '.=>':
+            context.seq_learn(op, one, seq)
+            return seq
     elif type(one) is list:  # indirect learn rule found
         indirect_object = compile_compound_sequence(context, one)
         my_print('indirect learn object', str(indirect_object))
@@ -2735,10 +2749,10 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
                 if rule_type == '=>':
                     context.learn(op, one, seq)
                 elif rule_type == '+=>':
-                    context.add_learn(op, one, seq)  # bug hiding here! Fix! Bug: stored-food current |cell> +=> 5| >
-        return seq  # it was a very sneaky parser bug. The + in +=> was being treated as part of a symbol_single_compound_sequence parse rule
-        # So +=> was then a parse error, and hence defaulted back to =>.
-        # The fix was to add ~'+=>' to the front of the symbol_single_compound_sequence parse rule
+                    context.add_learn(op, one, seq)
+                elif rule_type == '.=>':
+                    context.seq_learn(op, one, seq)
+        return seq
 
 
 def recall_rule(context, op, one):

@@ -252,5 +252,5 @@ max |steps> => |20>
 
 -- walk max steps:
 walk |*> #=>
-    update sp2seq range(|1>, max |steps>)
+    update range(|1>, max |steps>)
 

@@ -229,7 +229,7 @@ fn_table = {
 # some other functions. Some are ket -> ket, some are ket -> superposition.
 fn_table2_usage = {}
 fn_table2 = {
-  "read"              : "read_text",
+#  "read"              : "read_text",
 #  "spell"             : "spell_word",                          # removed 16/9/2016. We have a new spell that uses high order sequences
 # don't get the point of this one!
 #  "factor"            : "factor_numbers",
@@ -330,7 +330,7 @@ compound_table = {
   "print-pixels"       : ".apply_sp_fn(print_pixels,context,\"{0}\")",
   
 # added 27/6/2014:
-  "active-buffer"      : ".apply_sp_fn(console_active_buffer,context,\"{0}\")",
+#  "active-buffer"      : ".apply_sp_fn(console_active_buffer,context,\"{0}\")",
   
 # added 28/7/2014:
   "train-of-thought"   : ".apply_sp_fn(console_train_of_thought,context,\"{0}\")",
@@ -351,7 +351,7 @@ compound_table = {
 #  "table"              : ".apply_sp_fn(pretty_print_table,context,\"{0}\")",
   
 # 1/2/2015:
-  "sort-by"            : ".apply_sp_fn(sort_by,context,\"{0}\")",
+#  "sort-by"            : ".apply_sp_fn(sort_by,context,\"{0}\")",
   
 # 2/2/2015:
   "strict-table"       : ".apply_sp_fn(pretty_print_table,context,\"{0}\",True)",
