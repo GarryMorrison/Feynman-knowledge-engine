@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/3/2018
+# Update: 16/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -1120,7 +1120,7 @@ def silent_active_read_text(context, one, pattern=""):
 # t is the drop-below threshold.
 #
 # We need to test this beast!
-def active_buffer(context, fn, one, N, pattern="", t=0):
+def old_active_buffer(context, fn, one, N, pattern="", t=0):
     result = superposition()
     data = fn(one).data
     for k in range(len(data)):
@@ -1143,7 +1143,7 @@ def active_buffer(context, fn, one, N, pattern="", t=0):
 #
 # Maybe a version that preserves currency?
 # Just using currency = one.count_sum(), then return result.normalize(currency)
-def console_active_buffer(one, context, parameters):  # one is the passed in superposition
+def old_console_active_buffer(one, context, parameters):  # one is the passed in superposition
     try:
         N, t, pattern = parameters.split(',')
         N = int(N)
@@ -6161,9 +6161,11 @@ def normalize_seq_len(one, two):
     if len(one) == len(two):
         return one, two
     empty = superposition()
-    max_len = max(len(one), len(two))
-    one.data = one.data + [empty] * (max_len - len(one))
-    two.data = two.data + [empty] * (max_len - len(two))
+    one = copy.deepcopy(one)
+    two = copy.deepcopy(two)
+    max_len = max(len(one.data), len(two.data))
+    one.data = one.data + [empty] * (max_len - len(one.data))
+    two.data = two.data + [empty] * (max_len - len(two.data))
     return one, two
 
 
@@ -8087,8 +8089,8 @@ def read_text(one):
 compound_table['active-buffer'] = ['apply_seq_fn', 'active_buffer', 'context']
 # one is a sequence:
 def active_buffer(one, context, *params):
-    print('one: %s' % str(one))
-    print('params: %s' % str(params))
+    #print('one: %s' % str(one))
+    #print('params: %s' % str(params))
     try:
         N, t, op = params
         N = int(N)
@@ -8101,13 +8103,16 @@ def active_buffer(one, context, *params):
             op = ""
         except:
             return ket()
-    result = sequence([])
+    seq = sequence([])
     for k in range(len(one.data)):
-        for n in range(N):
-            if k + n < len(one.data):
-                y = sequence([])
-                y.data = one.data[k:k+n+1]
-                r = context.pattern_recognition(y, op).drop_below(t)
-                if len(r) > 0:
-                    result += r
-    return result
+        sp = superposition()
+        for n in range(min(N, len(one.data) - k)):
+            y = sequence([])
+            y.data = one.data[k:k+n+1]
+            r = context.pattern_recognition(y, op).drop_below(t)
+            #print('y: %s' % str(y))
+            #print('r: %s\n' % str(r))
+            if len(r) > 0:
+                sp = union(sp, r)
+        seq += sp
+    return seq

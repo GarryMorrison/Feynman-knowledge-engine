@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 15/3/2018
+# Update: 16/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1335,12 +1335,14 @@ class sequence(object):
             else:
                 seq = sequence([])
                 for x in self.data:
-                    # my_print('type(x)', type(x))
-                    # my_print('x', str(x))
+                    # print('type(x): %s' % type(x))
+                    # print('x: %s' % str(x))
                     y = x.apply_op(context, op)
-                    # my_print('type(y)', type(y))
-                    # my_print('y', str(y))
-                    if type(y) in [ket, superposition]:
+                    # print('type(y): %s' % type(y))
+                    # print('y: %s' % str(y))
+                    if len(y) == 0:                          # keep |> terms in our sequences.
+                        seq.data.append(superposition())     # use sdrop if you want otherwise.
+                    elif type(y) in [ket, superposition]:
                         seq.data.append(y)
                     elif type(y) in [sequence]:
                         seq.data += y.data
@@ -1822,12 +1824,10 @@ class NewContext(object):
     # instead of dumping all the rules for a known ket, dump all the rules for all kets in the given superposition:
     # sp should be a ket, or superposition
     #
-    def dump_multiple_ket_rules(self, sp,
-                                exact=False):  # Hrmm... Long since forgotten what this is meant to do! Where is it even used?? Answer: in the console.
-        if type(
-                sp) == str:  # and the name conflicts with what I was going to call some-sp-op (*) #=> some-rule |_self>
-            sp = ket(sp)  # Let's find a better name! Done. dump_sp_rules => dump_multiple_ket_rules
-        return "\n\n".join(self.dump_ket_rules(x, exact) for x in sp)
+    def dump_multiple_ket_rules(self, seq, exact=False):  # Used in the console.
+        if type(seq) is str:
+            seq = ket(seq)
+        return "\n\n".join(self.dump_ket_rules(x, exact) for x in seq.to_sp())
 
     # dump everything we know about the current context:
     def dump_universe(self, exact=False, show_context_header=True):  # I think this is right, but need to test it.
@@ -2037,8 +2037,8 @@ class NewContext(object):
                 "  " + op.rjust(max_len) + sep + self.recall(op, label).readable_display() for op in op_list) + "\n"
         return head + frame
 
-    def display_sp(self, sp):  # sp is a ket or sp
-        return "\n".join(self.pretty_print_ket(x) for x in sp)
+    def display_seq(self, seq):  # seq is a ket, superposition, or sequence
+        return "\n".join(self.pretty_print_ket(x) for x in seq.to_sp())
 
     def display_all(self):
         head = "  context: " + self.name + "\n\n"
@@ -2204,8 +2204,8 @@ class ContextList(object):
     def dump_multiple_ket_rules(self, label, exact=False):  # is this really a label here, or a sp?
         return self.data[self.index].dump_multiple_ket_rules(label, exact)
 
-    def display_sp(self, sp):
-        return self.data[self.index].display_sp(sp)
+    def display_seq(self, seq):
+        return self.data[self.index].display_seq(seq)
 
     def display_all(self):
         return self.data[self.index].display_all()

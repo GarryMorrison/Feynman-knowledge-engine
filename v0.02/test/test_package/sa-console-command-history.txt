@@ -239,3 +239,19 @@
   history 100
   save history
 
+2018-03-16
+  load active-buffer-example-v2.sw
+  dump
+  active-buffer[7,0,pattern] read |text: Hey Freddie what's up?>
+  then active-buffer[7,0,pattern] read |text: Hey Freddie what's up?>
+  active-buffer[7,0,pattern] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+  then active-buffer[7,0,pattern] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+  info off
+  then active-buffer[7,0,pattern] read |text: Hey Freddie what's up?>
+  then active-buffer[7,0,pattern] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+  active-buffer[7,0,pattern] then active-buffer[7,0,pattern] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+  then active-buffer[7,0,pattern] then active-buffer[7,0,pattern] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+  seq2sp then active-buffer[7,0,pattern] then active-buffer[7,0,pattern] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+  history
+  save history
+

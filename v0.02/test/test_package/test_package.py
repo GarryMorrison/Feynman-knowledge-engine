@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 15/3/2018
+# Update: 16/3/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -672,8 +672,31 @@ def test_compound_invoke_active_buffer_3():
     context.load('sw-examples/internet-acronyms.sw')
     s = 'active-buffer[7,0] read |text: fwiw I think it is all fud imho, lol. thx.>'
     r = extract_compound_sequence(context, s)
-    assert str(r) == 'fish'
+    assert str(r) == "|phrase: For What It's Worth> . |> . |> . |> . |> . |> . |phrase: Fear, Uncertainty, Doubt> . |phrase: In My Humble Opinion> . |phrase: Laughing Out Loud> . |phrase: Thanks>"
 
+def test_compound_invoke_active_buffer_4():
+    context.load('sw-examples/breakfast-menu.sw')
+    s = 'active-buffer[7,0] read description |food: Homestyle Breakfast>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == "|number: 2> . |food: eggs> . |food: bacon> . |> . |food: sausage> . |food: toast> . |> . |> . |> . |food: hash browns> . |>"
+
+def test_compound_invoke_active_buffer_5():
+    context.load('sw-examples/active-buffer-example.sw')
+    s = "active-buffer[7,0] read |text: Hey Freddie what's up?>"
+    r = extract_compound_sequence(context, s)
+    assert str(r) == "|greeting: Hey!> . 0.25|person: Fred Smith> . |question: what is> . |direction: up> + 0.333|phrase: up the duff>"
+
+def test_compound_invoke_active_buffer_6():
+    context.load('sw-examples/active-buffer-example.sw')
+    s = "active-buffer[7,0] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>"
+    r = extract_compound_sequence(context, s)
+    assert str(r) == "|greeting: Hey!> . |person: Mary> . |> . |phrase: with child> . |> . |direction: up> + |phrase: up the duff> + 0.25|phrase: in the family way> . |> . |> . |phrase: in the family way> + 0.333|phrase: up the duff> . |> . |> . |> . |phrase: having a baby> . |> . |>"
+
+def test_compound_invoke_active_buffer_7():
+    context.load('sw-examples/active-buffer-example.sw')
+    s = "active-buffer[7,0] active-buffer[7,0] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>"
+    r = extract_compound_sequence(context, s)
+    assert str(r) == "|> . |> . |> . 0.25|concept: pregnancy> . |> . 0.361|concept: pregnancy> . |> . |> . 0.5|concept: pregnancy> . |> . |> . |> . 0.25|concept: pregnancy> . |> . |>"
 
 
 

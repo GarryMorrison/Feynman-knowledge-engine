@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 13/3/2018
+# Update: 16/3/2018
 # Copyright: GPLv3
 #
 # Usage: ./the_semantic_db_console.py [--debug] 
@@ -193,8 +193,8 @@ while True:
         var = line[5:]
         print("var:", var, "\n")
         try:
-            sp = extract_compound_superposition(C, var)[0]
-            print(C.dump_multiple_ket_rules(sp))
+            seq = extract_compound_sequence(C, var)
+            print(C.dump_multiple_ket_rules(seq))
         except:
             continue
 
@@ -205,8 +205,8 @@ while True:
         var = line[8:]
         print("var:", var, "\n")
         try:
-            sp = extract_compound_superposition(C, var)[0]
-            print(C.display_sp(sp))
+            seq = extract_compound_sequence(C, var)
+            print(C.display_seq(seq))
         except:
             continue
 

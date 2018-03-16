@@ -1,5 +1,4 @@
 {
-  "test_package.py::test_compound_invoke_active_buffer_3": true,
   "test_package.py::test_multi_line_stored_rule_2": true,
   "test_package.py::test_op_sequence_3": true
 }
