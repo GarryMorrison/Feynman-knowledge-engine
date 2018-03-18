@@ -147,9 +147,9 @@ def ceiling(x):
     return math.ceil(x)
 
 
-def inc(x):
+def increment(x):
     return x + 1
 
 
-def dec(x):
+def decrement(x):
     return x - 1

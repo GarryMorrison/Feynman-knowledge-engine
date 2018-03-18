@@ -127,9 +127,9 @@ sigmoid_table = {
 # 12/9/2016:
   "floor"              : "floor",
   "ceiling"            : "ceiling",
-  "not-zero"           : "not_zero",
-  "inc"                : "inc",
-  "dec"                : "dec",
+#  "not-zero"           : "not_zero",
+  "increment"          : "increment",
+  "decrement"          : "decrement",
 }                                   
 
 # some ket -> ket functions:
@@ -443,7 +443,8 @@ compound_table = {
   "find-unique"         : ".apply_naked_fn(find_unique,context,\"{0}\")",
 
 # 2/6/2015:
-  "find-inverse"        : ".apply_naked_fn(find_inverse,context,\"{0}\")",  
+#  "find-inverse"        : ".apply_naked_fn(find_inverse,context,\"{0}\")",
+    'find-inverse'       : ['apply_naked_fn', 'find_inverse', 'context'],
   
 # 2/4/2015:
   "intn-find-topic"         : ".intn_find_topic(context,\"{0}\")",

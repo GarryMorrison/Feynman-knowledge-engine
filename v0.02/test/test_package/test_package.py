@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 16/3/2018
+# Update: 17/3/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -876,3 +876,28 @@ pattern indirect |foo> .=> |x> + |y> + |z>
     r = context.recall('pattern', 'c')
     assert str(r) == '3|a> . 2|b> - 7|c> . |x> + |y> + |z>'
 
+
+def test_extract_compound_sequence_empty_learn_1():
+    s = '|>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|>'
+
+def test_extract_compound_sequence_empty_learn_2():
+    s = '|> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == 'fish'
+
+def test_extract_compound_sequence_empty_learn_3():
+    s = '|> . |> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == 'fish'
+
+def test_extract_compound_sequence_empty_learn_4():
+    s = '|a> . |b> . |c>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == 'fish'
+
+def test_extract_compound_sequence_empty_learn_5():
+    s = '|> . |> . |a> . |b> . |a> . |> . |> . |b> . |> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == 'fish'

@@ -69,8 +69,8 @@ show-stored-food |*> #=>
 -- carry-the and drop-the food operators:                               
 -- currently assumes food current |cell> is greater than 0.
 carry-the |food> #=> 
-    food current |cell> => dec food current |cell>
-    carry |food> => inc carry |food>
+    food current |cell> => decrement food current |cell>
+    carry |food> => increment carry |food>
 
 drop-the |food> #=> 
     stored-food current |cell> +=> carry |food>
@@ -82,8 +82,8 @@ if-find-food |*> #=>
 
 process-if |found food> #=>
     -- carry the food:
-    food current |cell> => dec food current |cell>
-    carry |food> => inc carry |food>
+    food current |cell> => decrement food current |cell>
+    carry |food> => increment carry |food>
     lay |scent> => |yes>
     type |walk> => |op: return-home>
 

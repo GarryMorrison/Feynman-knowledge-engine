@@ -110,7 +110,8 @@ built_in_table_usage['weighted-pick-elt'] = """
 
 built_in_table_usage['normalize'] = """
     description:
-      normalize the coefficients of the given superposition so they sum to 1
+      normalize the coefficients of the given superposition so they sum to t
+      if t is not specified, t defaults to 1
 
     examples:
       normalize split |a b c d e>
@@ -118,6 +119,9 @@ built_in_table_usage['normalize'] = """
 
       normalize (2|a> + |b>)
         0.667|a> + 0.333|b>
+        
+      normalize[100] (2|a> + |b>)
+        66.667|a> + 33.333|b>
 """
 
 built_in_table_usage['sdrop'] = """
@@ -359,27 +363,27 @@ sigmoid_table_usage['ceiling'] = """
         3|x> + 8|y>
 """
 
-sigmoid_table_usage['inc'] = """
+sigmoid_table_usage['increment'] = """
     description:
       increment the coefficient by one
 
     examples:
-      inc |x>
+      increment |x>
         2|x>
 
-      inc^7 0|x>
+      increment^7 0|x>
         7|x>
 """
 
-sigmoid_table_usage['dec'] = """
+sigmoid_table_usage['decrement'] = """
     description:
       decrement the coefficient by one
 
     examples:
-      dec |x>
+      decrement |x>
         0|x>
 
-      dec^10 0|x>
+      decrement^10 0|x>
         -10 |x>
 """
 

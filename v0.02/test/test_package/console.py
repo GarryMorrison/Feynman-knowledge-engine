@@ -6,10 +6,10 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/3/2018
+# Update: 18/3/2018
 # Copyright: GPLv3
 #
-# Usage: ./the_semantic_db_console.py [--debug] 
+# Usage: ./console.py [--debug]
 #
 #######################################################################
 
