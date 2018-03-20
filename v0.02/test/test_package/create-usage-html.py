@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 18/3/2018
-# Update: 18/3/2018
+# Update: 20/3/2018
 # Copyright: GPLv3
 #
 # Usage: ./create-usage-html.py
@@ -17,6 +17,7 @@ import os
 import glob
 import shutil
 import datetime
+from re import sub
 
 
 from semantic_db.usage_tables import built_in_table_usage, sigmoid_table_usage, examples_usage
@@ -97,6 +98,8 @@ def single_usage_to_html(op_name, op_type, location, usage, sw_files):
         text = text.replace(' %s^' % op, ' <a href="../%s/%s.html">%s</a>^' % (location[op], op, op))
     for base_name in sw_files:
         text = text.replace('load %s' % base_name, 'load <a href="../sw-examples/%s">%s</a>' % (base_name, base_name))
+    regex = r"web-load http://(.*)\.sw"
+    text = sub(regex, r"web-load <a href='http://\1.sw'>http://\1.sw</a>", text)
     s = '<pre>%s</pre>' % text
     return header + s + footer
 
@@ -122,27 +125,31 @@ email: garry -at- semantic-db.org
     s += '  <dt><b>built in operators:</b></dt>\n'
     for key in sorted(built_in_table_usage):
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
+    s += '</dl>\n'
 
-    s += '<br>\n  <dt><b>sigmoids:</b></dt>\n'
+    s += '<dl>\n  <dt><b>sigmoids:</b></dt>\n'
     for key in sorted(sigmoid_table_usage):
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
+    s += '</dl>\n'
 
-    s += '<br>\n  <dt><b>function operators:</b></dt>\n'
+    s += '<dl>\n  <dt><b>function operators:</b></dt>\n'
     for key in sorted(function_operators_usage):
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
+    s += '</dl>\n'
 
-    s += '<br>\n  <dt><b>sequence functions:</b></dt>\n'
+    s += '<dl>\n  <dt><b>sequence functions:</b></dt>\n'
     for key in sorted(sequence_functions_usage):
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
+    s += '</dl>\n'
 
-    s += '<br>\n  <dt><b>worked examples:</b></dt>\n'
+    s += '<dl>\n  <dt><b>worked examples:</b></dt>\n'
     for key in sorted(examples_usage):
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
+    s += '</dl>\n'
 
-    s += '<br>\n  <dt><b>sw examples:</b></dt>\n'
+    s += '<dl>\n  <dt><b>sw examples:</b></dt>\n'
     for key in sorted(sw_files):
         s += '    <dd><a href="sw-examples/%s">%s</a></dd>\n' % (key, key)
-
     s += '</dl>\n'
     return header + s + footer
 

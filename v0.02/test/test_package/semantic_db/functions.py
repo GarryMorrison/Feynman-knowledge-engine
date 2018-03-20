@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 16/3/2018
+# Update: 20/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -823,129 +823,7 @@ def discrimination(one):
     return ket(" ", result)
 
 
-# lets do some temp conversion, as seen here:
-# http://semantic-db.org/temperature-conversion.sw
-# NB: inline code as seen on that page is a long way off!
-# Hrmm... wondering if we want full names too. Celsius, Kelvin, Fahrenheit, or just the single letters?
-# Should be easy enough. Just temperature_type[0] == 'C' and so on. Done.
-# Is there any way to compact the logic down a bit?
-def to_temperature_type(one, convert_to_type='C'):  # I'm Aussie, so default is C.
-    print("one:", one)
-    p = one.the_label().split(": ")
-    if len(p) < 2:  # check for p[-2] out of index
-        return ket("", 0)
-    try:
-        t = float(p[-1])
-    except:
-        return ket("", 0)
-    label = ": ".join(p[:-2] + [convert_to_type])
-    label += ": "
-    temperature_type = p[-2]
-    if convert_to_type[0] == 'F':
-        if temperature_type[0] == 'F':
-            pass
-        elif temperature_type[0] == 'C':
-            t = t * 9 / 5 + 32
-        elif temperature_type[0] == 'K':
-            t = t * 9 / 5 - 459.67
-        else:
-            return ket("", 0)
 
-    elif convert_to_type[0] == 'C':
-        if temperature_type[0] == 'F':
-            t = (t - 32) * 5 / 9
-        elif temperature_type[0] == 'C':
-            pass
-        elif temperature_type[0] == 'K':
-            t = t - 273.15
-        else:
-            return ket("", 0)
-
-    elif convert_to_type[0] == 'K':
-        if temperature_type[0] == 'F':
-            t = (t + 459.67) * 5 / 9
-        elif temperature_type[0] == 'C':
-            t = t + 273.15
-        elif temperature_type[0] == 'K':
-            pass
-        else:
-            return ket("", 0)
-    else:
-        return ket("", 0)
-    return ket(label + "%.2f" % t)
-
-
-def to_Fahrenheit(one):
-    #  return to_temperature_type(one,'Fahrenheit')
-    return to_temperature_type(one, 'F')
-
-
-def to_Celsius(one):
-    return to_temperature_type(one, 'C')
-
-
-def to_Kelvin(one):
-    return to_temperature_type(one, 'K')
-
-
-# for now just km, m, and mi, but potential for a whole mess. mm, inches, cm, etc.
-# Also, is there a neater way to do this?
-def to_distance_type(one, convert_to_type='km'):  # I'm Aussie, so default is km
-    print("one:", one)
-    p = one.the_label().split(": ")
-    if len(p) < 2:  # check for p[-2] out of index
-        return ket("", 0)
-    try:
-        x = float(p[-1])
-    except:
-        return ket("", 0)
-    label = ": ".join(p[:-2] + [convert_to_type])
-    label += ": "
-    distance_type = p[-2]
-    if convert_to_type == 'km':
-        if distance_type == 'km':
-            pass
-        elif distance_type == 'm':
-            x = x / 1000
-        elif distance_type == 'miles':
-            x = x * 1.609344  # yeah, over precission!
-        else:  # from here: http://en.wikipedia.org/wiki/Mile#Comparison_table
-            return ket("", 0)
-
-    elif convert_to_type == 'm':
-        if distance_type == 'km':
-            x = x * 1000
-        elif distance_type == 'm':
-            pass
-        elif distance_type == 'miles':
-            x = x * 1609.344
-        else:
-            return ket("", 0)
-
-    elif convert_to_type == 'miles':
-        if distance_type == 'km':
-            x = x / 1.609344
-        elif distance_type == 'm':
-            x = x / 1609.344
-        elif distance_type == 'miles':
-            pass
-        else:
-            return ket("", 0)
-    else:
-        return ket("", 0)
-    return ket(label + "%.3f" % x)
-
-
-def to_km(one):
-    return to_distance_type(one, 'km')
-
-
-def to_meter(one):  # yeah, went for US spelling here.
-    return to_distance_type(one, 'm')
-
-
-def to_mile(one):
-    return to_distance_type(one, 'miles')
 
 
 # smooth[dx] a|x: 3> => a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
@@ -1169,62 +1047,7 @@ def old_console_active_buffer(one, context, parameters):  # one is the passed in
     return result
 
 
-#
-# the idea:
-# |x> => "x"
-# |x> + |y> => "x and y"
-# |x> + |y> + |z> => "x, y and z"
-# |x> + |y> + |z> + |p> => "x, y, z and p"
-#
-# Here is one common usage:
-# sa: friends |person: Eric>
-# |person: Fred> + |person: Sam> + |person: Harry> + |person: Mary> + |person: liz>
-#
-# sa: list-to-words extract-value friends |person: Eric>
-# |text: Fred, Sam, Harry, Mary and liz>
-#
-# sa: extract-value list-to-words extract-value friends |person: Eric>
-# |Fred, Sam, Harry, Mary and liz>
-#
-# Update: for now I have dropped the "text: " prefix.
-# 9/8/2015: update: maybe have an: "or" variant. So |x> + |y> + |z> => "x, y or z"
-#
-def sp_to_words(one):
-    labels = [x.label for x in one]
-    if len(labels) == 0:
-        return ket()  # maybe something else instead of this?
-    if len(labels) == 1:
-        result = labels[0]
-    else:
-        head = ", ".join(labels[:-1])
-        tail = labels[-1]
-        result = head + " and " + tail
-    #  return ket("text: " + result)
-    return ket(result)
 
-
-# 12/9/2016
-# let's implement the inverse of list-to-words
-# sa: words-to-list |a, b, c, d and e>
-# |a> + |b> + |c> + |d> + |e>
-# this will be the first very, very early step towards parsing incoming English into back-end BKO
-# That would need a LOT of thinking time though.
-#
-# one is a ket
-def words_to_sp(one):
-    try:
-        head, tail = one.label.split(' and ')
-        front = head.split(', ')
-        r = superposition()
-        for x in front + [tail]:
-            # r.data.append(ket(x))                        # yeah, breaking the class abstraction again. Later swap in: r += ket(x)
-            r += ket(x)
-        return r
-    except Exception as e:
-        logger.debug("words-to-list exception reason: " + str(e))
-        return one
-
-    # Hrmm.. sp_to_words() is an implementation of list-to-words.
 
 
 # Now I need its brother, number-to-words.
@@ -5316,7 +5139,6 @@ def to_upper(one, *positions):
 
 
 # set invoke method:
-# compound_table['remove-prefix'] = '.apply_fn(remove_prefix, \"{0}\")'
 compound_table['remove-prefix'] = ['apply_fn', 'remove_prefix', '']
 # set usage info:
 function_operators_usage['remove-prefix'] = """
@@ -5327,22 +5149,14 @@ function_operators_usage['remove-prefix'] = """
       remove-prefix["not "] |not sitting at the beach>
        |sitting at the beach>
 """
-
-
 def remove_prefix(one, prefix):
-    seq = sequence([])
-    if type(one) in [ket]:
-        for key, value in one.items():
-            text = key
-            if key.startswith(prefix):
-                prefix_len = len(prefix)
-                text = key[prefix_len:]
-            seq += ket(text, value)
-    return seq
+    if type(one) is ket:
+        if one.label.startswith(prefix):
+            return ket(one.label[len(prefix):], one.value)
+    return one
 
 
 # set invoke method:
-# compound_table['has-prefix'] = '.apply_fn(has_prefix, \"{0}\")'
 compound_table['has-prefix'] = ['apply_fn', 'has_prefix', '']
 # set usage info:
 function_operators_usage['has-prefix'] = """
@@ -5356,17 +5170,48 @@ function_operators_usage['has-prefix'] = """
       has-prefix["not "] |sitting at the beach>
         |no>
 """
-
-
 def has_prefix(one, prefix):
-    seq = sequence([])
-    if type(one) in [ket]:
-        for key, value in one.items():
-            text = 'no'
-            if key.startswith(prefix):
-                text = 'yes'
-            seq += ket(text, value)
-    return seq
+    if type(one) is ket:
+        if one.label.startswith(prefix):
+            return ket('yes', one.value)
+        return ket('no', one.value)
+    return ket()
+
+
+# set invoke method:
+compound_table['remove-suffix'] = ['apply_fn', 'remove_suffix', '']
+# set usage info:
+function_operators_usage['remove-suffix'] = """
+    description:
+      remove given suffix from the ket
+
+    examples:
+"""
+def remove_suffix(one, suffix):
+    if type(one) is ket:
+        if one.label.endswith(suffix):
+            return ket(one.label[:-len(suffix)], one.value)
+    return one
+
+
+# set invoke method:
+compound_table['has-suffix'] = ['apply_fn', 'has_suffix', '']
+# set usage info:
+function_operators_usage['has-suffix'] = """
+    description:
+      asks if the ket has the given suffix
+
+    examples:
+      has-suffix["day"] |Tuesday>
+        |yes>
+"""
+def has_suffix(one, suffix):
+    if type(one) is ket:
+        if one.label.endswith(suffix):
+            return ket('yes', one.value)
+        return ket('no', one.value)
+    return ket()
+
 
 
 # set invoke method:
@@ -5399,7 +5244,7 @@ sequence_functions_usage['add-learn'] = """
       wrapper around an add-learn rule, so we can use it in operators
       
     examples:
-      add_learn(|op: friends>, |Fred>, |Sam>)
+      add-learn(|op: friends>, |Fred>, |Sam>)
       implements: friends |Fred> +=> |Sam>
 """
 
@@ -5484,8 +5329,8 @@ function_operators_usage['such-that'] = """
       is-a-day |Sunday> => |yes>
       is-a-day |blah> => |no>
       is-a-day |foo> => |no>
-      such-that[is-a-day] (|Monday> + |Tuesday> + |blah> . |Wednesday> . |Thursday> + |Friday> + |Saturday> . |foo> + |Sunday>)
-        |Monday> + |Tuesday> . |Wednesday> . |Thursday> + |Friday> + |Saturday> . |Sunday>
+      such-that[is-a-day] (|Monday> + |Tuesday> + |blah> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |foo> + |Sunday>)
+        |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |Sunday>
                         
 """
 
@@ -5527,7 +5372,15 @@ compound_table['table'] = ['apply_sp_fn', 'pretty_print_table', 'context']
 # set usage info:
 function_operators_usage['table'] = """
     description:
-      display a nicely formated table
+      display a nicely formatted table
+      where: 
+        the first column are elements from the inputted superposition/sequence
+        the rest of the columns are the result of applying the given operator to the element in the first column
+
+      we also have some special operators:
+        '*' means use all supported-ops of the inputted superposition/sequence
+        'coeff' means return the coeff of the element in the first column
+        'rank' as the first operator means produce a rank table
     
     examples:
       load fred-sam-friends.sw
@@ -5571,6 +5424,20 @@ function_operators_usage['table'] = """
         | hungry                 |              |                | starving            |
         | friends                |              |                | Emma, Bella         |
         +------------------------+--------------+----------------+---------------------+
+      
+      load pretty-print-table-of-australian-cities.sw
+      table[rank, city, population, area, annual-rainfall] reverse sort-by[population] "" |city list>
+        +------+-----------+------------+------+-----------------+
+        | rank | city      | population | area | annual-rainfall |
+        +------+-----------+------------+------+-----------------+
+        | 1    | Sydney    | 4336374    | 2058 | 1214.8          |
+        | 2    | Melbourne | 3806092    | 1566 | 646.9           |
+        | 3    | Brisbane  | 1857594    | 5905 | 1146.4          |
+        | 4    | Perth     | 1554769    | 5386 | 869.4           |
+        | 5    | Adelaide  | 1158259    | 1295 | 600.5           |
+        | 6    | Hobart    | 205556     | 1357 | 619.5           |
+        | 7    | Darwin    | 120900     | 112  | 1714.7          |
+        +------+-----------+------------+------+-----------------+
         
     see also:
       such-that, sort-by
@@ -5581,14 +5448,32 @@ function_operators_usage['table'] = """
 def pretty_print_table(one, context, *ops):
     # my_print('one', str(one))
     # my_print('ops', ops)
-    one = one.apply_sigmoid(set_to, 1)
+    ops = list(ops)
+    rank = False
+    if ops[0] == 'rank':
+        rank = True
+        ops = ops[1:]
+    if len(ops) > 1 and ops[1] == '*':
+        supported_ops = one.apply_op(context, 'supported-ops').to_sp()    # sort this, or not?
+        ops = [ops[0]] + [x.label[4:] for x in supported_ops]
     header_row = ops
     rows = []
-    for x in one:
-        label = x.apply_fn(remove_leading_category).readable_display()
-        row = [label] + [x.apply_op(context, op).apply_fn(remove_leading_category).readable_display() for op in ops[1:]]
+    for k, x in enumerate(one):
+        label = x.apply_sigmoid(set_to, 1).apply_fn(remove_leading_category).readable_display()
+        # row = [label] + [x.apply_op(context, op).apply_fn(remove_leading_category).readable_display() for op in ops[1:]]
+        row = [label]
+        for op in ops[1:]:
+            if op == 'coeff':
+                elt = float_to_int(x.value)
+            else:
+                elt = x.apply_sigmoid(set_to, 1).apply_op(context, op).apply_fn(remove_leading_category).readable_display()
+            row.append(elt)
+        if rank:
+            row = [str(k + 1)] + row
         # my_print('row', row)
         rows.append(row)
+    if rank:
+        ops = ['rank'] + ops
     max_col_widths = []
     for i in range(len(ops)):
         col_width = len(ops[i])
@@ -5671,19 +5556,25 @@ sequence_functions_usage['consume-reaction'] = """
       which is equivalent to:
         input-sp - (2|H2> + |O2>) + 2|H2O>
       
-      if input-sp doesn't contain the reactants, then it is returned unchanged 
+      if input-sp doesn't contain the necessary reactants, then it is returned unchanged 
       
     examples:
       current |state> => words-to-list |can opener, closed can and hungry>
       learn-state (*) #=> learn(|op: current>, |state>, |_self>)
-      use |can opener> #=> learn-state consume-reaction(current |state>, |closed can>, |open can>)
+      use |can opener> #=> learn-state consume-reaction(current |state>, |can opener> + |closed can>, |can opener> + |open can>)
       eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
+      
       current |state>
         |can opener> + |closed can> + |hungry>
+      
       use |can opener>
         |can opener> + |hungry> + |open can>
+      
       eat-from |can>
         |can opener> + |empty can> + |not hungry>
+    
+    see also:
+      catalytic-reaction, eat-from-can, fission-uranium
 """
 
 
@@ -5709,8 +5600,8 @@ whitelist_table_3['catalytic-reaction'] = 'process_catalytic_reaction'
 # set usage info:
 sequence_functions_usage['catalytic-reaction'] = """
     description:
-      process a catalyzed reaction, that doesn't consume the reactants, 
-      but if they are not present, then the state is left unchanged.
+      process a catalyzed reaction (that doesn't consume the reactants) 
+      if the necessary reactants are not present, then the state is left unchanged.
       
       catalytic-reaction(input-sp, |a> + |b>, |c> +|d>)
       is equivalent to:
@@ -5719,6 +5610,9 @@ sequence_functions_usage['catalytic-reaction'] = """
       else, return input-sp
             
     examples:
+    
+    see also:
+      consume-reaction
 """
 
 
@@ -7531,7 +7425,7 @@ compound_table['is-mod'] = ['apply_fn', 'is_mod_numbers', '']
 # set usage info:
 function_operators_usage['is-mod'] = """
     description:
-      round the value in the ket, leaving the coefficient unchanged
+      answers yes or no, if the given number is mod n
       
     examples:
       is-mod[3] |96>
@@ -8116,3 +8010,212 @@ def active_buffer(one, context, *params):
                 sp = union(sp, r)
         seq += sp
     return seq
+
+
+# set invoke method:
+sp_fn_table['list-to-words'] = 'sp_to_words'
+# set usage info:
+function_operators_usage['list-to-words'] = """
+    description:
+      convert the given superposition into a comma-separated word list
+      it is the inverse of words-to-list
+
+    examples:
+      list-to-words |x>
+        |x>
+      
+      list-to-words (|x> + |y>)
+        |x and y>
+
+      list-to-words (|x> + |y> + |z>)
+        |x, y and z>
+        
+      list-to-words (|a> + |b> + |c> + |d> + |e>)
+        |a, b, c, d and e>
+
+      friends |Eric> => |Sam> + |Harry> + |Mary> + |Liz>
+      list-to-words friends |Eric>
+        |Sam, Harry, Mary and Liz>
+    
+      -- demonstration of inverse property:
+      words-to-list list-to-words (|a> + |b> + |c> + |d> + |e>)
+        |a> + |b> + |c> + |d> + |e>
+      
+    future:
+      maybe also have an 'or' version too: 'x, y or z' 
+
+    see also:
+      words-to-list
+"""
+# one is a superposition
+def sp_to_words(one):
+    labels = [x.label for x in one]
+    if len(labels) == 0:
+        return ket()
+    if len(labels) == 1:
+        result = labels[0]
+    else:
+        head = ", ".join(labels[:-1])
+        tail = labels[-1]
+        result = head + " and " + tail
+    return ket(result)
+
+
+# set invoke method:
+fn_table['words-to-list'] = 'words_to_sp'
+# set usage info:
+function_operators_usage['words-to-list'] = """
+    description:
+      splits the given ket on ', ' and ' and '
+      it is the inverse of list-to-words
+
+    examples:
+      words-to-list |a, b, c, d and e>
+        |a> + |b> + |c> + |d> + |e>
+    
+      -- demonstration of inverse property:
+      list-to-words words-to-list |a, b, c, d and e>
+        |a, b, c, d and e>
+    
+    see also:
+      list-to-words
+      
+"""
+# one is a ket
+def words_to_sp(one):
+    try:
+        head, tail = one.label.split(' and ')
+        front = head.split(', ')
+        r = superposition()
+        for x in front + [tail]:
+            r.add(x)
+        return r
+    except Exception as e:
+        logger.debug("words-to-list exception reason: " + str(e))
+        return one
+
+
+
+# lets do some temp conversion, as seen here:
+# http://semantic-db.org/temperature-conversion.sw
+# NB: inline code as seen on that page is a long way off!
+# Hrmm... wondering if we want full names too. Celsius, Kelvin, Fahrenheit, or just the single letters?
+# Should be easy enough. Just temperature_type[0] == 'C' and so on. Done.
+# Is there any way to compact the logic down a bit?
+def to_temperature_type(one, convert_to_type='C'):  # I'm Aussie, so default is C.
+    print("one:", one)
+    p = one.the_label().split(": ")
+    if len(p) < 2:  # check for p[-2] out of index
+        return ket("", 0)
+    try:
+        t = float(p[-1])
+    except:
+        return ket("", 0)
+    label = ": ".join(p[:-2] + [convert_to_type])
+    label += ": "
+    temperature_type = p[-2]
+    if convert_to_type[0] == 'F':
+        if temperature_type[0] == 'F':
+            pass
+        elif temperature_type[0] == 'C':
+            t = t * 9 / 5 + 32
+        elif temperature_type[0] == 'K':
+            t = t * 9 / 5 - 459.67
+        else:
+            return ket("", 0)
+
+    elif convert_to_type[0] == 'C':
+        if temperature_type[0] == 'F':
+            t = (t - 32) * 5 / 9
+        elif temperature_type[0] == 'C':
+            pass
+        elif temperature_type[0] == 'K':
+            t = t - 273.15
+        else:
+            return ket("", 0)
+
+    elif convert_to_type[0] == 'K':
+        if temperature_type[0] == 'F':
+            t = (t + 459.67) * 5 / 9
+        elif temperature_type[0] == 'C':
+            t = t + 273.15
+        elif temperature_type[0] == 'K':
+            pass
+        else:
+            return ket("", 0)
+    else:
+        return ket("", 0)
+    return ket(label + "%.2f" % t)
+
+
+def to_Fahrenheit(one):
+    #  return to_temperature_type(one,'Fahrenheit')
+    return to_temperature_type(one, 'F')
+
+
+def to_Celsius(one):
+    return to_temperature_type(one, 'C')
+
+
+def to_Kelvin(one):
+    return to_temperature_type(one, 'K')
+
+
+# for now just km, m, and mi, but potential for a whole mess. mm, inches, cm, etc.
+# Also, is there a neater way to do this?
+def to_distance_type(one, convert_to_type='km'):  # I'm Aussie, so default is km
+    print("one:", one)
+    p = one.the_label().split(": ")
+    if len(p) < 2:  # check for p[-2] out of index
+        return ket()
+    try:
+        x = float(p[-1])
+    except:
+        return ket()
+    label = ": ".join(p[:-2] + [convert_to_type])
+    label += ": "
+    distance_type = p[-2]
+    if convert_to_type == 'km':
+        if distance_type == 'km':
+            pass
+        elif distance_type == 'm':
+            x = x / 1000
+        elif distance_type == 'miles':
+            x = x * 1.609344  # yeah, over precision!
+        else:
+            return ket()
+
+    elif convert_to_type == 'm':
+        if distance_type == 'km':
+            x = x * 1000
+        elif distance_type == 'm':
+            pass
+        elif distance_type == 'miles':
+            x = x * 1609.344
+        else:
+            return ket()
+
+    elif convert_to_type == 'miles':
+        if distance_type == 'km':
+            x = x / 1.609344
+        elif distance_type == 'm':
+            x = x / 1609.344
+        elif distance_type == 'miles':
+            pass
+        else:
+            return ket()
+    else:
+        return ket()
+    return ket(label + float_to_int(x))
+
+
+def to_km(one):
+    return to_distance_type(one, 'km')
+
+
+def to_meter(one):  # yeah, went for US spelling here.
+    return to_distance_type(one, 'm')
+
+
+def to_mile(one):
+    return to_distance_type(one, 'miles')

@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 14/3/2018
+# Update: 20/3/2018
 # Copyright: GPLv3
 #
 # Usage:
@@ -602,18 +602,28 @@ examples_usage['eat-from-can'] = """
       use consume-reaction to open and then eat from a can
       
     code:
-      current |state> => words-to-list |can opener, closed can and hungry>
+      current |state> => words-to-list |closed can and hungry>
       learn-state (*) #=> learn(|op: current>, |state>, |_self>)
-      use |can opener> #=> learn-state consume-reaction(current |state>, |closed can>, |open can>)
+      use |can opener> #=> learn-state consume-reaction(current |state>, |can opener> + |closed can>, |can opener> + |open can>)
       eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
 
     examples:
+      -- start without a can-opener:
       current |state>
-        |can opener> + |closed can> + |hungry>
+        |closed can> + |hungry>
 
+      -- trying to use a can opener doesn't change our state, since we don't have one:
+      use |can opener>
+        |closed can> + |hungry>
+        
+      -- let's add a can opener:
+      current |state> +=> |can opener>
+      
+      -- now we can open our can:
       use |can opener>
         |can opener> + |hungry> + |open can>
 
+      -- now we can eat from the open can:
       eat-from |can>
         |can opener> + |empty can> + |not hungry>
 
@@ -963,6 +973,9 @@ examples_usage['temperature-conversions'] = """
 
     source code:
       load temperature-conversion.sw
+      
+    see also:
+      load distance-conversion.sw
 """
 
 examples_usage['Fibonacci-and-factorial'] = """

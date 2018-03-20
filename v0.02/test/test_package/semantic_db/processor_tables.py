@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 7/3/2018
+# Update: 20/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -147,13 +147,15 @@ fn_table = {
   "to-number"        : "category_number_to_number",
   "shout"            : "shout",
 #  "discrim"           : "discrimination",  # Broken. discrim (3|a> + 9|b>) returns 12| >. Doh! It should be 9 - 3, not 9 + 3.
-  "F"                : "to_Fahrenheit",     # should these be to-F, to-C, to-K?
-  "C"                : "to_Celsius",
-  "K"                : "to_Kelvin",
-  "to-km"            : "to_km",
-  "to-meter"         : "to_meter",
-  "to-mile"          : "to_mile",
-  "to-miles"         : "to_mile",
+
+# conversions are now done using .sw files:
+#  "F"                : "to_Fahrenheit",     # should these be to-F, to-C, to-K?
+#  "C"                : "to_Celsius",
+#  "K"                : "to_Kelvin",
+#  "to-km"            : "to_km",
+#  "to-meter"         : "to_meter",
+#  "to-mile"          : "to_mile",
+#  "to-miles"         : "to_mile",
   
   "to-value"         : "to_value",
   "to-category"      : "to_category",
@@ -221,7 +223,7 @@ fn_table = {
   "hash-compress"      : "hash_compress",
   
 # 12/9/2016:
-  "words-to-list"      : "words_to_sp",  
+#  "words-to-list"      : "words_to_sp",
 }
 
 
@@ -260,11 +262,13 @@ compound_table = {
   "self-similar"       : ".self_similar(context,\"{0}\")",
   
 # 18/1/2016:
-  "similar-input"      : ".similar_input(context,\"{0}\")",  
+#  "similar-input"      : ".similar_input(context,\"{0}\")",
+  "similar-input"      : ['similar_input', '', 'context'],
   
   "find-topic"         : ".find_topic(context,\"{0}\")",
-# "collapse-function"  : ".apply_fn_collapse({0})",  # broken for now. eg, how handle collapse-fn[spell] |x> ??
-  "drop-below"         : ".drop_below({0})",         # Not needed anyway. Just use: collapse spell |x>
+# "collapse-function"  : ".apply_fn_collapse({0})",
+#  "drop-below"         : ".drop_below({0})",
+  "drop-below"         : ['drop_below', '', ''],
   "drop-above"         : ".drop_above({0})",
   "select-range"       : ".select_range({0})",       # may comment this one out, but fine for now to have two versions.
   "select"             : ".select_range({0})",
@@ -561,7 +565,7 @@ compound_table = {
 # 30/6/2014: heh. I'd forgotten I had this! 
 sp_fn_table_usage = {}
 sp_fn_table = {
-  "list-to-words"      : "sp_to_words",
+#  "list-to-words"      : "sp_to_words",
   "read-letters"       : "read_letters",
   "read-words"         : "read_words", 
   "merge-labels"       : "merge_labels",
