@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 16/3/2018
+# Update: 21/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -70,6 +70,9 @@ class ket(object):
         if self.label == '':  # returns 0 for |>.
             return 0
         return 1
+
+    def slen(self):
+        return ket('number: 1')
 
     def __eq__(self, other):  # do we use this anywhere?
         return self.label == other.label and self.value == other.value
@@ -170,10 +173,11 @@ class ket(object):
     def apply_naked_fn(self, fn, *args):
         return fn(*args)
 
-    def apply_op(self, context,
-                 op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
+    def apply_op(self, context, op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
         logger.debug("inside ket apply_op")
-        r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
+        r = sequence([])
+        if op != 'supported-ops':
+            r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
         logger.debug("inside ket apply_op, sp: " + str(r))
         if len(r) == 0:
             r = context.recall(op, self, True)  # see much later in the code for definition of recall.
@@ -492,6 +496,9 @@ class superposition(object):
 
     def __len__(self):
         return len(self.dict)
+
+    def slen(self):
+        return ket('number: 1')
 
     def __getattr__(self, name):
         if name == 'label':
@@ -949,10 +956,11 @@ class superposition(object):
     def apply_naked_fn(self, fn, *args):
         return fn(*args)
 
-    def apply_op(self, context,
-                 op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
+    def apply_op(self, context, op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
         logger.debug("inside sp apply_op")
-        r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
+        r = sequence([])
+        if op != 'supported-ops':
+            r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
         if len(r) == 0:
             r = sequence([])
             if len(self) == 0:
@@ -1016,6 +1024,9 @@ class sequence(object):
         if len(self.data) == 1 and self.data[0].label == '':
             return 0
         return len(self.data)
+
+    def slen(self):
+        return ket('number: ' + str(len(self)))
 
     def __iter__(self):
         for x in self.data:
@@ -1328,7 +1339,9 @@ class sequence(object):
         # logger.debug('inside seq apply_op')
         # logger.debug('seq: %s' % str(self))
         # logger.debug('op: %s' % op)
-        seq = context.seq_fn_recall(op, [self], active=True)
+        seq = sequence([])
+        if op != 'supported-ops':
+            seq = context.seq_fn_recall(op, [self], active=True)
         if len(seq) == 0:
             if len(self) == 0:
                 seq = sequence([]) + ket().apply_op(context, op)  # do we want this?

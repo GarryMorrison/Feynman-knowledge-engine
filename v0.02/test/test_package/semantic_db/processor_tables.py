@@ -88,6 +88,7 @@ built_in_table = {
   "sdrop"            : "sdrop",                           # can we define these in usage_tables.py?
   "spick-elt"        : "spick_elt",
   "sreverse"         : "sreverse",
+    'slen': 'slen',
   
 }                                                                                      
 
@@ -625,7 +626,8 @@ ket_context_table = {
 }
 
 # for operators that take sequences as input:
-seq_fn_table = {}
+seq_fn_table = {
+}
 
 # 28/7/2016: new addition, functions that map sp -> sp but needs context info.
 # I tried putting it in the compound op table, but that failed since it has no parameters.

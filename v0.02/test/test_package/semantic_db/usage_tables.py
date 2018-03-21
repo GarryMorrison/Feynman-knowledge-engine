@@ -1169,3 +1169,89 @@ examples_usage['walking-a-grid'] = """
     source code:
       load walk-grid-v2.sw
 """
+
+
+examples_usage['finding-a-path-between-early-us-presidents'] = """
+    description:
+      a fun little application of find-path-between applied to early US presidents
+
+    code:
+      see find-path-between usage information
+      
+    examples:      
+      -- load the knowledge:
+      load early-us-presidents.sw
+      
+      -- switch off info statements:
+      info off
+      
+      -- learn some relevant inverses:
+      find-inverse[president-number]
+      find-inverse[president-era]
+      find-inverse[party]
+      find-inverse[full-name]
+
+      -- find the operator path between George Washington and John Adams:
+      find-path-between(|person: George Washington>, |person: John Adams>)
+        |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: full-name>
+    
+      -- now let's step through this operator sequence:
+      inverse-full-name |person: George Washington>
+        |Washington>
+              
+      president-era inverse-full-name |person: George Washington>
+        |year: 1789> + |year: 1790> + |year: 1791> + |year: 1792> + |year: 1793> + |year: 1794> + |year: 1795> + |year: 1796> + |year: 1797>
+      
+      inverse-president-era president-era inverse-full-name |person: George Washington>
+        9|Washington> + |Adams>
+              
+      full-name inverse-president-era president-era inverse-full-name |person: George Washington>
+        9|person: George Washington> + |person: John Adams>      
+
+      
+      
+      -- next example, find the operator path between George Washington and James Monroe:
+      find-path-between(|person: George Washington>, |person: James Monroe>)
+        |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: president-era> . |op: inverse-president-era> . |op: party> . |op: inverse-party> . |op: full-name>
+
+      -- now let's step through this operator sequence:
+      inverse-full-name |person: George Washington>
+        |Washington>
+
+      president-era inverse-full-name |person: George Washington>
+        |year: 1789> + |year: 1790> + |year: 1791> + |year: 1792> + |year: 1793> + |year: 1794> + |year: 1795> + |year: 1796> + |year: 1797>
+
+      inverse-president-era president-era inverse-full-name |person: George Washington>
+        9|Washington> + |Adams>
+
+      president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+        9|year: 1789> + 9|year: 1790> + 9|year: 1791> + 9|year: 1792> + 9|year: 1793> + 9|year: 1794> + 9|year: 1795> + 9|year: 1796> + 10|year: 1797> + |year: 1798> + |year: 1799> + |year: 1800> + |year: 1801>
+
+      inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+        82|Washington> + 14|Adams> + |Jefferson>
+
+      party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+        82|party: Independent> + 14|party: Federalist> + |party: Democratic-Republican>
+
+      inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+        82|Washington> + 14|Adams> + |Jefferson> + |Madison> + |Monroe> + |Q Adams>
+
+      full-name inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+        82|person: George Washington> + 14|person: John Adams> + |person: Thomas Jefferson> + |person: James Madison> + |person: James Monroe> + |person: John Quincy Adams>
+
+
+      -- next example, find the operator path between George Washington and number 6:
+      find-path-between(|person: George Washington>, |number: 6>)
+        |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: president-era> . |op: inverse-president-era> . |op: party> . |op: inverse-party> . |op: president-number>
+
+      -- this is almost identical to the example above, so we only need to change the last step 'president-number':
+      president-number inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+        82|number: 1> + 14|number: 2> + |number: 3> + |number: 4> + |number: 5> + |number: 6>
+
+
+    source code:
+      load early-us-presidents.sw
+    
+    see also:
+      find-path-between
+"""

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 20/3/2018
+# Update: 21/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -8219,3 +8219,117 @@ def to_meter(one):  # yeah, went for US spelling here.
 
 def to_mile(one):
     return to_distance_type(one, 'miles')
+
+
+# set invoke method:
+context_whitelist_table_2['find-path-between'] = 'find_path_between'
+# set usage info:
+sequence_functions_usage['find-path-between'] = """
+    description:
+      find the path between the given kets
+      potentially quite slow!
+      
+    examples:
+      load fred-sam-friends.sw
+      find-inverse[friends]
+      find-path-between(|Fred>, |Sam>)
+        |op: friends> . |op: inverse-friends>
+        
+      find-path-between(|Fred>, |Julie>)
+        |op: friends> . |op: inverse-friends> . |op: friends>
+
+        
+      learn-map[10,10]
+      find-path-between(|grid: 1: 1>, |grid: 3: 7>)
+        |op: E> . |op: E> . |op: E> . |op: E> . |op: SE> . |op: SE>
+
+    
+      load george.sw
+      find (*) #=> find-path-between(|person: George>, |_self>)
+      find |person: Andrew>
+        |op: friends>
+
+      find (|person: Sarah> + |person: David> + |person: Frank>)
+        |op: family>
+
+      find (|person: Emily> + |person: Fred>)
+        |op: family-and-friends>
+
+      find (|person: Frank> + |person: Emily>)
+        |op: siblings>
+
+    future:
+      optimize it!
+      make it work with path-ways between sequences too.
+
+    see also:
+      finding-a-path-between-early-us-presidents worked example
+"""
+def first_find_path_between(context, one, two):
+    max_steps = 10
+    one = one.to_sp()
+    two = two.to_sp()
+    # print('one: %s' % str(one))
+    # print('two: %s' % str(two))
+
+    def print_path_ways(path_ways):
+        for seq, r in path_ways:
+            print('seq: %s' % str(seq))
+            print('r: %s\n' % str(r))
+
+    def find_path(context, path_ways):
+        new_path_ways = []
+        for seq, r in path_ways:
+            for op in r.apply_op(context, 'supported-ops').to_sp():
+                new_seq = seq + sequence(op)
+                new_r = r.apply_op(context, op.label[4:])
+                if len(new_r) > 0:
+                    new_path_ways.append([new_seq, new_r])
+        return new_path_ways
+
+    def test_subset(A, B):              # test if one is a subset of two
+        A = A.apply_sigmoid(clean)      # ignore coeffs for now
+        B = B.apply_sigmoid(clean)
+        r2 = intersection(A, B)
+        if len(r2.to_sp()) == len(A.to_sp()):
+            return True
+        return False
+
+    path_ways = [[sequence([]), one]]
+    for _ in range(max_steps):
+        path_ways = find_path(context, path_ways)
+        # print_path_ways(path_ways)
+        for seq, r in path_ways:
+            if test_subset(two, r):
+                return seq.apply_sigmoid(clean)
+
+    return ket('path not found')
+
+
+def find_path_between(context, one, two):
+    max_steps = 10                      # put a hard limit on the max number of operator steps
+    one = one.to_sp()
+    two = two.to_sp()
+
+    def test_subset(A, B):              # test if one is a subset of two
+        A = A.apply_sigmoid(clean)      # ignore coeffs for now
+        B = B.apply_sigmoid(clean)
+        r = intersection(A, B)
+        if len(r.to_sp()) == len(A.to_sp()):
+            return True
+        return False
+
+    path_ways = [[sequence([]), one]]
+    for _ in range(max_steps):
+        new_path_ways = []
+        for seq, r in path_ways:
+            for op in r.apply_op(context, 'supported-ops').to_sp():
+                new_seq = seq + sequence(op)
+                new_r = r.apply_op(context, op.label[4:])
+                if len(new_r) > 0:
+                    if test_subset(two, new_r):
+                        return new_seq.apply_sigmoid(clean)
+                    new_path_ways.append([new_seq, new_r])
+        path_ways = new_path_ways
+    return ket('path not found')
+
