@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 21/3/2018
+# Update: 22/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -8305,19 +8305,18 @@ def first_find_path_between(context, one, two):
 
     return ket('path not found')
 
+def test_subset(A, B):              # test if one is a subset of two
+    A = A.apply_sigmoid(clean)      # ignore coeffs for now
+    B = B.apply_sigmoid(clean)
+    r = intersection(A, B)
+    if len(r.to_sp()) == len(A.to_sp()):
+        return True
+    return False
 
 def find_path_between(context, one, two):
     max_steps = 10                      # put a hard limit on the max number of operator steps
     one = one.to_sp()
     two = two.to_sp()
-
-    def test_subset(A, B):              # test if one is a subset of two
-        A = A.apply_sigmoid(clean)      # ignore coeffs for now
-        B = B.apply_sigmoid(clean)
-        r = intersection(A, B)
-        if len(r.to_sp()) == len(A.to_sp()):
-            return True
-        return False
 
     path_ways = [[sequence([]), one]]
     for _ in range(max_steps):
@@ -8332,4 +8331,48 @@ def find_path_between(context, one, two):
                     new_path_ways.append([new_seq, new_r])
         path_ways = new_path_ways
     return ket('path not found')
+
+
+# set invoke method:
+context_whitelist_table_2['find-steps-between'] = 'find_steps_between'
+# set usage info:
+sequence_functions_usage['find-steps-between'] = """
+    description:
+      find the steps between the given kets
+      potentially quite slow!
+
+    examples:
+      load early-us-presidents.sw
+      info off
+      find-inverse[president-number]
+      find-inverse[president-era]
+      find-inverse[full-name]
+
+      find-steps-between(|person: George Washington>, |number: 6>)
+        |person: George Washington> . |Washington> . |year: 1797> . |Adams> . |year: 1801> . |Jefferson> . |party: Democratic-Republican> . |year: 1825> . |Q Adams> . |number: 6>
+
+    see also:
+      find-path-between
+"""
+def find_steps_between(context, one, two):
+    op_path = find_path_between(context, one, two)
+    if type(op_path) is ket and op_path.label == 'path not found':
+        return ket('steps not found')
+    path_ways = [one]
+    for op in op_path:
+        new_path_ways = []
+        for step in path_ways:
+            seq = sequence(step)
+            for elt in step.apply_op(context, op.label[4:]).to_sp():
+                if len(elt) > 0:
+                    if test_subset(two, elt):
+                        return seq + elt
+                        # return (seq + elt).apply_sigmoid(clean)
+                    new_path_ways.append(seq + elt)
+        path_ways = new_path_ways
+        # for steps in path_ways:
+        #     print('steps: %s' % str(steps))
+    return ket('steps not found')
+
+
 

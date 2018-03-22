@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 21/3/2018
+# Update: 22/3/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -916,3 +916,16 @@ def test_find_path_between_2():
     r = find_path_between(context, ket('Fred'), ket('Julie'))
     assert str(r) == '|op: friends> . |op: inverse-friends> . |op: friends>'
 
+def test_find_steps_between_1():
+    context.load('sw-examples/fred-sam-friends.sw')
+    context.create_inverse_op('friends')
+    # context.print_universe()
+    r = find_steps_between(context, ket('Fred'), ket('Sam'))
+    assert str(r) == '|Fred> . |Jack> . |Sam>'
+
+def test_find_steps_between_2():
+    context.load('sw-examples/fred-sam-friends.sw')
+    context.create_inverse_op('friends')
+    # context.print_universe()
+    r = find_steps_between(context, ket('Fred'), ket('Julie'))
+    assert str(r) == 'fish'
