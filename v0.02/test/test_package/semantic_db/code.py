@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 21/3/2018
+# Update: 23/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -2295,18 +2295,15 @@ class ContextList(object):
         except:
             logger.info("failed to multi save: " + filename)
 
-    def old_load(self,
-                 filename):  # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context")
+    def line_load(self, filename):  # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context")
         try:  # Well, here in context_list() it works just fine! C.load("sw-examples/fib-play.sw"); print(C.dump_multiverse())
             with open(filename, 'r') as f:
                 for line in f:
                     if line.startswith("exit sw"):  # use "exit sw" as the code to stop processing a .sw file.
                         return
-                    # parse_rule_line(self,line)             # this is broken! bug found when loading fragment-document.sw fragments
-                    process_sw_file(self,
-                                    line)  # later maybe process entire file at once. Not sure which method is faster.
+                    process_sw_file(self, line)  # later maybe process entire file at once. Not sure which method is faster.
         except Exception as e:
-            logger.info("ContextList failed to load: " + filename)
+            logger.info("ContextList failed to line_load: " + filename)
             logger.info('reason: %s' % e)
 
     def load(self, filename):

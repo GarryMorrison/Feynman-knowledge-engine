@@ -6,10 +6,10 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 18/3/2018
+# Update: 23/3/2018
 # Copyright: GPLv3
 #
-# Usage: ./console.py [--debug]
+# Usage: ./sdb-console.py [--debug]
 #
 #######################################################################
 
@@ -282,6 +282,19 @@ while True:
         start_time = time.time()
         # load_sw(C,name)
         C.load(name)
+        end_time = time.time()
+        delta_time = end_time - start_time
+        print("\n  Time taken:", display_time(delta_time))
+
+    elif line.startswith("line-load "):
+        name = line[10:]
+        name = sw_file_dir + "/" + name  # load and save files to the sw_file_dir.
+        print("loading sw file:", name)
+
+        # time it!
+        start_time = time.time()
+        # load_sw(C,name)
+        C.line_load(name)
         end_time = time.time()
         delta_time = end_time - start_time
         print("\n  Time taken:", display_time(delta_time))

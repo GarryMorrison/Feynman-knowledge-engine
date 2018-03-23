@@ -33,5 +33,6 @@ can-swim |person: George> => 0.7 |yes>
 -- George's father is dead:
 is-dead |person: David Douglas> => |yes>
 
--- define our find operator:
-find (*) #=> find-path-between(|person: George>, |_self>)
+-- define our find operators:
+find-path (*) #=> find-path-between(|person: George>, |_self>)
+find-steps (*) #=> find-steps-between(|person: George>, |_self>)

@@ -928,4 +928,4 @@ def test_find_steps_between_2():
     context.create_inverse_op('friends')
     # context.print_universe()
     r = find_steps_between(context, ket('Fred'), ket('Julie'))
-    assert str(r) == 'fish'
+    assert str(r) == '|Fred> . |Jack> . |Sam> . |Julie>'

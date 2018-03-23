@@ -8354,7 +8354,7 @@ sequence_functions_usage['find-steps-between'] = """
     see also:
       find-path-between
 """
-def find_steps_between(context, one, two):
+def first_find_steps_between(context, one, two):
     op_path = find_path_between(context, one, two)
     if type(op_path) is ket and op_path.label == 'path not found':
         return ket('steps not found')
@@ -8374,5 +8374,23 @@ def find_steps_between(context, one, two):
         #     print('steps: %s' % str(steps))
     return ket('steps not found')
 
+def find_steps_between(context, one, two):
+    op_path = find_path_between(context, one, two)
+    if type(op_path) is ket and op_path.label == 'path not found':
+        return ket('steps not found')
+    path_ways = [one]
+    for op in op_path:
+        new_path_ways = []
+        for step in path_ways:
+            seq = sequence(step)
+            next_step = step.apply_op(context, op.label[4:]).to_sp()
+            if test_subset(two, next_step):
+                return seq + two
+                # return (seq + two).apply_sigmoid(clean)
+            for elt in next_step:
+                if len(elt) > 0:
+                    new_path_ways.append(seq + elt)
+        path_ways = new_path_ways
+    return ket('steps not found')
 
 
