@@ -332,7 +332,7 @@ while True:
 
         # walk the sw file:
         for x in C.relevant_kets("*"):  # find all kets in the sw file
-            x_node = x.label.replace('"', '\\"')  # escape quote characters.
+            x_node = x.label.replace('"', '\\"').replace(':', ';')  # escape quote characters, and rename colon
 
             for op in C.recall("supported-ops", x):  # find the supported operators for a given ket
                 op_label = op.label[4:]
@@ -347,12 +347,11 @@ while True:
                     sp = ket(sp.rule)
                     arrow_type = "tee"
 
-                if type(sp) is sequence: # handle sequences later! Fix!
+                if type(sp) is sequence:  # handle sequences later! Fix!
                     sp = sp.to_sp()
 
                 for y in sp:
-                    y_node = y.label.replace('"', '\\"')  # escape quote characters.
-                    y_node = y.label.replace(':', ';')  # remove colon, graphviz can't handle them!
+                    y_node = y.label.replace('"', '\\"').replace(':', ';')  # escape quote characters, and rename colon
                     dot.edge(x_node, y_node, label=op_label, arrowhead=arrow_type)
 
         # finish up:
