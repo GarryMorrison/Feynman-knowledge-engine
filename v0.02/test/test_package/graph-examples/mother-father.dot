@@ -1,0 +1,15 @@
+// global context
+digraph {
+	context -> "context; global context" [label="" arrowhead=normal]
+	sally -> trude [label=mother arrowhead=normal]
+	sally -> tom [label=father arrowhead=normal]
+	erica -> trude [label=mother arrowhead=normal]
+	erica -> tom [label=father arrowhead=normal]
+	trude -> sara [label=mother arrowhead=normal]
+	trude -> sam [label=father arrowhead=normal]
+	tom -> ruth [label=mother arrowhead=normal]
+	tom -> mike [label=father arrowhead=normal]
+	ruth -> gina [label=mother arrowhead=normal]
+	mike -> mary [label=mother arrowhead=normal]
+	mike -> mark [label=father arrowhead=normal]
+}

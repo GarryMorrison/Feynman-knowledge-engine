@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 18/3/2018
-# Update: 20/3/2018
+# Update: 25/3/2018
 # Copyright: GPLv3
 #
 # Usage: ./create-usage-html.py
@@ -104,7 +104,7 @@ def single_usage_to_html(op_name, op_type, location, usage, sw_files):
     return header + s + footer
 
 
-def create_index_html_page(location, sw_files):
+def create_index_html_page(location, sw_files, dot_files):
     header = """
 <html>
 <head><title>Semantic DB usage information</title></head>
@@ -151,6 +151,11 @@ email: garry -at- semantic-db.org
     for key in sorted(sw_files):
         s += '    <dd><a href="sw-examples/%s">%s</a></dd>\n' % (key, key)
     s += '</dl>\n'
+
+    s += '<dl>\n  <dt><b>graph examples:</b></dt>\n'
+    for key in sorted(dot_files):
+        s += '    <dd><a href="graph-examples/%s">%s</a></dd>\n' % (key, key)
+    s += '</dl>\n'
     return header + s + footer
 
 
@@ -163,6 +168,7 @@ def main():
     create_directory('sequence-functions')
     create_directory('worked-examples')
     create_directory('sw-examples')
+    create_directory('graph-examples')
 
     sw_files = []
     for sw_file in (glob.glob("../../sw-examples/*.swc") + glob.glob("../../sw-examples/*.sw")):
@@ -171,8 +177,15 @@ def main():
         print('Copied file: %s' % base_name)
         sw_files.append(base_name)
 
+    dot_files = []
+    for dot_file in (glob.glob("../../graph-examples/*.dot") + glob.glob("../../graph-examples/*.png")):
+        shutil.copy2(dot_file, 'graph-examples')
+        base_name = os.path.basename(dot_file)
+        print('Copied file: %s' % base_name)
+        dot_files.append(base_name)
+
     op_type, location, usage = load_usage_info()
-    h = create_index_html_page(location, sw_files)
+    h = create_index_html_page(location, sw_files, dot_files)
     save_file('index.html', h)
 
     for op in location:

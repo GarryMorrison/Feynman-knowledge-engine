@@ -313,7 +313,7 @@ compound_table = {
   "intn-relevant-kets" : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",
   #"rel-kets"           : ".apply_sp_fn(relevant_kets,context,\"{0}\")",
   'rel-kets'           : ['apply_sp_fn', 'relevant_kets', 'context'],    
-  "intn-rel-kets"      : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",    
+#  "intn-rel-kets"      : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",
 
 #  "matrix"            : ".apply_naked_fn(matrix,context,\"{0}\")",
 #  "multi-matrix"      : ".apply_naked_fn(multi_matrix,context,\"{0}\")",

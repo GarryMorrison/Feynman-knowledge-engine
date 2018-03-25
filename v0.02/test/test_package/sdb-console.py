@@ -19,6 +19,7 @@ import os
 import datetime
 import time
 import urllib.request
+from graphviz import Digraph
 # import logging
 
 # from the_semantic_db_code import *
@@ -43,7 +44,9 @@ if not os.path.exists(sw_file_dir):
     print("Creating " + sw_file_dir + " directory.")
     os.makedirs(sw_file_dir)
 
-print("Welcome!")
+dot_file_dir = 'graph-examples'
+
+print("Welcome to v0.02!")
 
 # C = ContextList("sw console")
 C = context
@@ -69,6 +72,7 @@ help_string = """
   load file.sw                 load file.sw
   save file.sw                 save current context to file.sw
   save multi file.sw           save context list to file.sw
+  save-as-dot file.dot         save current context in dot format to file.dot
   files                        show the available .sw files
   cd                           change and create if necessary the .sw directory
   ls, dir, dirs                show the available directories
@@ -313,8 +317,48 @@ while True:
         name = line[5:]
         name = sw_file_dir + "/" + name  # load and save files to the sw_file_dir.
         print("saving current context to:", name)
-        # save_sw(C,name)
         C.save(name)
+
+    elif line.startswith('save-as-dot '):
+        name = line[12:]
+        # check it exists, if not create it:
+        if not os.path.exists(dot_file_dir):
+            print("Creating %s directory." % dot_file_dir)
+            os.makedirs(dot_file_dir)
+        name = dot_file_dir + '/' + name
+        print('saving dot file: %s' % name)
+
+        dot = Digraph(comment=C.context_name(), format='png')
+
+        # walk the sw file:
+        for x in C.relevant_kets("*"):  # find all kets in the sw file
+            x_node = x.label.replace('"', '\\"')  # escape quote characters.
+
+            for op in C.recall("supported-ops", x):  # find the supported operators for a given ket
+                op_label = op.label[4:]
+                arrow_type = "normal"
+
+                sp = C.recall(op, x)  # find the superposition for a given operator applied to the given ket
+                if type(sp) is stored_rule:
+                    sp = ket(sp.rule)
+                    arrow_type = "box"
+
+                if type(sp) is memoizing_rule:
+                    sp = ket(sp.rule)
+                    arrow_type = "tee"
+
+                if type(sp) is sequence: # handle sequences later! Fix!
+                    sp = sp.to_sp()
+
+                for y in sp:
+                    y_node = y.label.replace('"', '\\"')  # escape quote characters.
+                    y_node = y.label.replace(':', ';')  # remove colon, graphviz can't handle them!
+                    dot.edge(x_node, y_node, label=op_label, arrowhead=arrow_type)
+
+        # finish up:
+        print('\nNow we use graphviz to display it')
+        print('graphviz: http://www.graphviz.org/')
+        dot.render(name, view=True)
 
     elif line == "files":
         sep = "   "

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 22/3/2018
+# Update: 25/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -1110,129 +1110,9 @@ def general_to_specific(average, specific):
     # return intersection_fn(absolute_difference_fn,average,specific)
 
 
-# 12/5/2014:
-# exp[child,n] |x>
-# maps to: (1 + child + child^2 + ... + child^n ) |x>
-# cf: exp(A) |Psi> in QM.
-# if n <= 0, return |x>
-#
-def exp(one, context, parameters):
-    try:
-        op, n = parameters.split(",")  # slightly hackish. Don't know a better way to do it ....
-        print("exp op " + op)
-        print("exp n  " + n)
-        n = int(n)
-    except:
-        return one
-
-    r = one
-    tmp = one
-    for k in range(n):
-        tmp = tmp.apply_op(context,
-                           op)  # this is broken for some operators, depends on details of that operator though!
-        r += tmp
-    return r
 
 
-# 4/8/2014:
-# exp-max[op] |x>
-# maps to (1 + op + op^2 + ... op^n) |x>
-# such that exp[op,n] |x> == exp[op,n+1] |x>
-# Warning: we have no idea before hand how many resources this will end up using. We don't know n, or how big the sp is going to be!
-#
-# Need to check it works. Cool. Seems to give the right result. eg, using binary-tree.sw
-# Done.
-#
-# Now, let's implement: exp-max[op,t] |x>
-# Now need to check this one works.
-#
-# Something I have wanted to do for a very long time is to split an academic field of study into categories.
-# Roughly: exp-max[references,t] |some seed physics paper>
-# where the "references" operator applied to a paper on arxiv.org returns the list of papers it references.
-# We may (though maybe not) need t > 0, else it might drag in all of arxiv.org
-# But won't know this for sure until we try.
-def exp_max(one, context, parameters):
-    try:
-        op, t = parameters.split(",")
-        t = int(t)
-    except:
-        op = parameters
-        t = 0
 
-    r = one
-    tmp = one
-    previous_size = len(r)  # yup. I finally implemented len() for superpositions/kets.
-    n = 0
-    while True:
-        tmp = tmp.apply_op(context, op)
-        r += tmp
-        #    if len(r) == previous_size:            # a variant is: len(r) - previous_size <= t
-        if len(r) - previous_size <= t:  # since kets add in sp, this difference is the number of newly discovered kets.
-            break  # so, if this is 0, then we have reached the end of the network.
-        previous_size = len(r)  # if this is say 1, then in this round we only found 1 new ket.
-        n += 1  # which in some cases is enough to say, this will suffice as the end of the network.
-    print("n:", n)
-    return r
-
-
-from math import factorial
-
-
-# 17/4/2015:
-# full-exp[child,n] |x>
-# maps to: (1 + child/1 + child^2/2 + ... + child^n/n! ) |x>
-# cf: exp(A) |Psi> in QM.
-# if n <= 0, return |x>
-#
-def full_exp(one, context, parameters):
-    try:
-        op, n = parameters.split(",")  # slightly hackish. Don't know a better way to do it ....
-        print("exp op " + op)
-        print("exp n  " + n)
-        n = int(n)
-    except:
-        return one
-
-    r = one
-    tmp = one
-    for k in range(n):
-        tmp = tmp.apply_op(context, op)
-        r += tmp.multiply(1 / factorial(k + 1))
-    return r
-
-
-# 19/5/2014:
-# relevant-kets[op]
-# eg: relevant-kets[friends]
-# returns |Fred> + |Sam>
-#
-# 13/2/2015: idea for a tweak:
-# relevant-kets[op] |> works as normal (ie, incoming superposition is the empty superposition)
-# but, a tweak:
-# relevant-kets[op2] relevant-kets[op1] |>
-# returns intersection(relevant-kets[op2],relevant-kets[op1])
-# also: relevant-kets[op] SP
-# returns intersection(relevant_kets[op],SP)
-# Cool! Seems to work!
-#
-# 17/2/2015: Nah. I was really mixing two ideas into the one function.
-# what happens if your restrict down to |> relevant-kets, then you apply one more layer, and bam all of those kets are valid? Not what we want.
-# So now a distinction: relevant-kets[op], and intn-relevant-kets[op]
-#
-# 22/2/2015: tweak: relevant-kets[op1,op2,...] SP
-# no need to do: relevant-kets[op1] relevant-kets[op2] SP
-#
-def intersection_relevant_kets(one, context, ops):
-    r = one
-    for op in ops.split(','):
-        kets_list = context.relevant_kets(op)
-        r = intersection(r, kets_list)
-    return r
-
-
-# 22/2/2015 tweaked: now if op == "*" it returns a sp of all known kets.
-def relevant_kets(one, context, op):
-    return context.relevant_kets(op)
 
 
 # convert the labels in a superposition to a pretty-print vector
@@ -4965,6 +4845,7 @@ def spell_out(one):
 # ---------------------------------------------------------------------------------------
 # start of new functions file:
 import math
+from math import factorial
 
 # define our usage dictionaries:
 function_operators_usage = {}
@@ -8322,13 +8203,16 @@ def find_path_between(context, one, two):
     for _ in range(max_steps):
         new_path_ways = []
         for seq, r in path_ways:
-            for op in r.apply_op(context, 'supported-ops').to_sp():
-                new_seq = seq + sequence(op)
-                new_r = r.apply_op(context, op.label[4:])
-                if len(new_r) > 0:
-                    if test_subset(two, new_r):
-                        return new_seq.apply_sigmoid(clean)
-                    new_path_ways.append([new_seq, new_r])
+            if len(r) > 0:              # this is probably redundant. Remove later.
+                # print('r: %s' % str(r))
+                # print('len(r): %s' % len(r))
+                for op in r.apply_op(context, 'supported-ops').to_sp():
+                    new_seq = seq + sequence(op)
+                    new_r = r.apply_op(context, op.label[4:])
+                    if len(new_r) > 0:
+                        if test_subset(two, new_r):
+                            return new_seq.apply_sigmoid(clean)
+                        new_path_ways.append([new_seq, new_r])
         path_ways = new_path_ways
     return ket('path not found')
 
@@ -8394,3 +8278,132 @@ def find_steps_between(context, one, two):
     return ket('steps not found')
 
 
+# set invoke method:
+compound_table['exp'] = ['apply_fn', 'exp', 'context']
+# 12/5/2014:
+# exp[child,n] |x>
+# maps to: (1 + child + child^2 + ... + child^n ) |x>
+# cf: exp(A) |Psi> in QM.
+# if n <= 0, return |x>
+#
+def exp(one, context, *params):
+    try:
+        op, n = params
+        print("exp op " + op)
+        print("exp n  " + n)
+        n = int(n)
+    except:
+        return one
+
+    r = one
+    tmp = one
+    for k in range(n):
+        tmp = tmp.apply_op(context, op).to_sp()  # this is broken for some operators, depends on details of that operator though!
+        r += tmp
+    return r
+
+
+# set invoke method:
+compound_table['exp-max'] = ['apply_fn', 'exp_max', 'context']
+# 4/8/2014:
+# exp-max[op] |x>
+# maps to (1 + op + op^2 + ... op^n) |x>
+# such that exp[op,n] |x> == exp[op,n+1] |x>
+# Warning: we have no idea before hand how many resources this will end up using. We don't know n, or how big the sp is going to be!
+#
+# Need to check it works. Cool. Seems to give the right result. eg, using binary-tree.sw
+# Done.
+#
+# Now, let's implement: exp-max[op,t] |x>
+# Now need to check this one works.
+#
+# Something I have wanted to do for a very long time is to split an academic field of study into categories.
+# Roughly: exp-max[references,t] |some seed physics paper>
+# where the "references" operator applied to a paper on arxiv.org returns the list of papers it references.
+# We may (though maybe not) need t > 0, else it might drag in all of arxiv.org
+# But won't know this for sure until we try.
+def exp_max(one, context, *params):
+    try:
+        op, t = params
+        t = int(t)
+    except:
+        op = params[0]
+        t = 0
+
+    r = one
+    tmp = one
+    previous_size = len(r)  # yup. I finally implemented len() for superpositions/kets.
+    n = 0
+    while True:
+        tmp = tmp.apply_op(context, op).to_sp()
+        r += tmp
+        #    if len(r) == previous_size:            # a variant is: len(r) - previous_size <= t
+        if len(r) - previous_size <= t:  # since kets add in sp, this difference is the number of newly discovered kets.
+            break  # so, if this is 0, then we have reached the end of the network.
+        previous_size = len(r)  # if this is say 1, then in this round we only found 1 new ket.
+        n += 1  # which in some cases is enough to say, this will suffice as the end of the network.
+    print("n:", n)
+    return r
+
+
+
+
+
+# 17/4/2015:
+# full-exp[child,n] |x>
+# maps to: (1 + child/1 + child^2/2 + ... + child^n/n! ) |x>
+# cf: exp(A) |Psi> in QM.
+# if n <= 0, return |x>
+#
+def full_exp(one, context, parameters):
+    try:
+        op, n = parameters.split(",")  # slightly hackish. Don't know a better way to do it ....
+        print("exp op " + op)
+        print("exp n  " + n)
+        n = int(n)
+    except:
+        return one
+
+    r = one
+    tmp = one
+    for k in range(n):
+        tmp = tmp.apply_op(context, op)
+        r += tmp.multiply(1 / factorial(k + 1))
+    return r
+
+
+# 19/5/2014:
+# relevant-kets[op]
+# eg: relevant-kets[friends]
+# returns |Fred> + |Sam>
+#
+# 13/2/2015: idea for a tweak:
+# relevant-kets[op] |> works as normal (ie, incoming superposition is the empty superposition)
+# but, a tweak:
+# relevant-kets[op2] relevant-kets[op1] |>
+# returns intersection(relevant-kets[op2],relevant-kets[op1])
+# also: relevant-kets[op] SP
+# returns intersection(relevant_kets[op],SP)
+# Cool! Seems to work!
+#
+# 17/2/2015: Nah. I was really mixing two ideas into the one function.
+# what happens if your restrict down to |> relevant-kets, then you apply one more layer, and bam all of those kets are valid? Not what we want.
+# So now a distinction: relevant-kets[op], and intn-relevant-kets[op]
+#
+# 22/2/2015: tweak: relevant-kets[op1,op2,...] SP
+# no need to do: relevant-kets[op1] relevant-kets[op2] SP
+#
+# set invoke method:
+compound_table['intn-rel-kets'] = ['apply_sp_fn', 'intersection_relevant_kets', 'context']
+
+def intersection_relevant_kets(one, context, *ops):
+    r = one
+    for op in ops:
+        kets_list = context.relevant_kets(op)
+        r = intersection(r, kets_list)
+    return r
+
+
+# 22/2/2015 tweaked: now if op == "*" it returns a sp of all known kets.
+def relevant_kets(one, context, op):
+    return context.relevant_kets(op)
