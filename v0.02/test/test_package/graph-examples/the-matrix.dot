@@ -1,0 +1,23 @@
+// global context
+digraph {
+	context -> "context; global context" [label="" arrowhead=normal]
+	"node; 1" -> "Thomas Anderson" [label=name arrowhead=normal]
+	"node; 1" -> 29 [label=age arrowhead=normal]
+	"node; 1" -> "node; 7" [label=knows arrowhead=normal]
+	"node; 1" -> "node; 2" [label=knows arrowhead=normal]
+	"node; 2" -> Trinity [label=name arrowhead=normal]
+	"node; 2" -> "node; 1" [label=loves arrowhead=normal]
+	"node; 7" -> Morpheus [label=name arrowhead=normal]
+	"node; 7" -> Captain [label=rank arrowhead=normal]
+	"node; 7" -> "Total badass" [label=occupation arrowhead=normal]
+	"node; 7" -> "node; 2" [label=knows arrowhead=normal]
+	"node; 7" -> "node; 3" [label=knows arrowhead=normal]
+	"node; 3" -> Cypher [label=name arrowhead=normal]
+	"node; 3" -> Reagan [label="last-name" arrowhead=normal]
+	"node; 3" -> "node; 13" [label=knows arrowhead=normal]
+	"node; 13" -> "Agent Smith" [label=name arrowhead=normal]
+	"node; 13" -> "1.0b" [label=version arrowhead=normal]
+	"node; 13" -> "C++" [label=language arrowhead=normal]
+	"node; 13" -> "node; 42" [label="coded-by" arrowhead=normal]
+	"node; 42" -> "The Architect" [label=name arrowhead=normal]
+}

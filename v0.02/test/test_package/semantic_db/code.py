@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 23/3/2018
+# Update: 26/3/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -175,9 +175,9 @@ class ket(object):
 
     def apply_op(self, context, op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
         logger.debug("inside ket apply_op")
-        r = sequence([])
-        if op != 'supported-ops':
-            r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
+        # r = sequence([])
+        # if op != 'supported-ops':
+        r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
         logger.debug("inside ket apply_op, sp: " + str(r))
         if len(r) == 0:
             r = context.recall(op, self, True)  # see much later in the code for definition of recall.
@@ -958,9 +958,9 @@ class superposition(object):
 
     def apply_op(self, context, op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
         logger.debug("inside sp apply_op")
-        r = sequence([])
-        if op != 'supported-ops':
-            r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
+        # r = sequence([])
+        # if op != 'supported-ops':
+        r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
         if len(r) == 0:
             r = sequence([])
             if len(self) == 0:
@@ -1339,9 +1339,9 @@ class sequence(object):
         # logger.debug('inside seq apply_op')
         # logger.debug('seq: %s' % str(self))
         # logger.debug('op: %s' % op)
-        seq = sequence([])
-        if op != 'supported-ops':
-            seq = context.seq_fn_recall(op, [self], active=True)
+        # seq = sequence([])
+        # if op != 'supported-ops':
+        seq = context.seq_fn_recall(op, [self], active=True)
         if len(seq) == 0:
             if len(self) == 0:
                 seq = sequence([]) + ket().apply_op(context, op)  # do we want this?
@@ -1680,6 +1680,13 @@ class NewContext(object):
             ket_label = label
         #    coeff = 1                                  # use this to switch off the multiply(coeff) feature
 
+        if op == 'supported-ops':
+            if ket_label in self.ket_rules_dict:
+                if op in self.ket_rules_dict[ket_label]:
+                    return self.ket_rules_dict[ket_label][op]
+            else:
+                return ket()
+
         match = False
         for trial_label in label_descent(ket_label):
             if trial_label in self.ket_rules_dict:
@@ -1734,6 +1741,9 @@ class NewContext(object):
         # some prelims:
         if type(op) is ket:
             op = op.label[4:]  # map |op: age> to "age"
+        if op == 'supported-ops':
+            return ket()
+
         if type(seq_list) is str:
             ket_label = seq_list
         elif type(seq_list) is list:

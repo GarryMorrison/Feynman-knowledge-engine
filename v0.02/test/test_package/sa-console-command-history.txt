@@ -255,3 +255,61 @@
   history
   save history
 
+2018-03-26
+  load simple-dog.sw
+  p3 (*) #=> coeff-sort predict[words,3] |_self>
+  p3 (*) #=> coeff-sort predict[words,3] ssplit[" "] |_self>
+  p3 |dogs are>
+  history
+  p3 |dogs are used>
+  history
+  p3 |dogs are called>
+  history
+  p3 |dogs can>
+  p3 |dogs can smell>
+  p3 |the>
+  p3 |the human>
+  p3 |human>
+  p3 |wolf>
+  p3 |wolves>
+  p3 |humans>
+  p3 |dogs are>
+  p3 |dog are usually>
+  p3 |wolves are>
+  history
+  p3 |dogs descended from>
+  history
+  p3 |cats>
+  p3 |wikipedia,>
+  p3 |the>
+  p3 |the free>
+  history
+  save history
+
+2018-03-27
+  load simple-dog.sw
+  p3 (*) #=> coeff-sort predict[words,3] ssplit[" "] |_self>
+  p3 |dogs>
+  info off
+  p3 |dogs>
+  p3 |dogs eat>
+  dump
+  p3 |dogs are>
+  p3 |dogs are often called>
+  p3 |dogs chase>
+  p3 |cats are>
+  p3 |dogs can>
+  p3 |dogs hunt>
+  p3 |the first dog>
+  p3 |dogs are called>
+  
+  p3 |dogs are>
+  p3 |dogs are bred>
+  p3 |dogs see>
+  p3 |dogs were>
+  
+  p3 |they are>
+  
+  history
+  q
+

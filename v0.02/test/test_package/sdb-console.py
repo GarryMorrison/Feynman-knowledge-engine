@@ -355,8 +355,8 @@ while True:
                     dot.edge(x_node, y_node, label=op_label, arrowhead=arrow_type)
 
         # finish up:
-        print('\nNow we use graphviz to display it')
-        print('graphviz: http://www.graphviz.org/')
+        print('\nNow we use graphviz to display it:')
+        print('http://www.graphviz.org/')
         dot.render(name, view=True)
 
     elif line == "files":

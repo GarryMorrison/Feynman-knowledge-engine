@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/3/2018
+# Update: 26/3/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -2797,8 +2797,7 @@ def make_ngrams(one, parameters, ngram_type):
         text = text[6:]
 
     if ngram_type == "word":
-        words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if
-                 w]  # do we want .lower() in there?
+        words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]  # do we want .lower() in there?
         create_ngram_fn = create_word_n_grams
     elif ngram_type == "letter":
         words = list(text)
@@ -6642,8 +6641,7 @@ function_operators_usage['predict'] = """
 
 
 # def predict_next(context, one, parameters):                     # maybe change invoke order, so context comes first??
-def predict_next(one, context,
-                 *params):  # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
+def predict_next(one, context, *params):  # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
     op = params[0]
     if len(params) == 1:
         count = False
@@ -7528,8 +7526,14 @@ sequence_functions_usage['or'] = """
 
 
 def Or(one, two):
-    if one.to_sp().label.lower() in ['true', 'yes'] or two.to_sp().label.lower() in ['true', 'yes']:
-        return ket('yes')
+    one = one.to_sp()
+    two = two.to_sp()
+    if one.label.lower() in ['true', 'yes'] and two.label.lower() in ['true', 'yes']:
+        return ket('yes', max(one.value, two.value))
+    if one.label.lower() in ['true', 'yes'] and not two.label.lower() in ['true', 'yes']:
+        return ket('yes', one.value)
+    if not one.label.lower() in ['true', 'yes'] and two.label.lower() in ['true', 'yes']:
+        return ket('yes', two.value)
     return ket('no')
 
 
@@ -8186,7 +8190,7 @@ def first_find_path_between(context, one, two):
 
     return ket('path not found')
 
-def test_subset(A, B):              # test if one is a subset of two
+def is_subset(A, B):              # test if one is a subset of two
     A = A.apply_sigmoid(clean)      # ignore coeffs for now
     B = B.apply_sigmoid(clean)
     r = intersection(A, B)
@@ -8210,7 +8214,7 @@ def find_path_between(context, one, two):
                     new_seq = seq + sequence(op)
                     new_r = r.apply_op(context, op.label[4:])
                     if len(new_r) > 0:
-                        if test_subset(two, new_r):
+                        if is_subset(two, new_r):
                             return new_seq.apply_sigmoid(clean)
                         new_path_ways.append([new_seq, new_r])
         path_ways = new_path_ways
@@ -8249,7 +8253,7 @@ def first_find_steps_between(context, one, two):
             seq = sequence(step)
             for elt in step.apply_op(context, op.label[4:]).to_sp():
                 if len(elt) > 0:
-                    if test_subset(two, elt):
+                    if is_subset(two, elt):
                         return seq + elt
                         # return (seq + elt).apply_sigmoid(clean)
                     new_path_ways.append(seq + elt)
@@ -8268,12 +8272,12 @@ def find_steps_between(context, one, two):
         for step in path_ways:
             seq = sequence(step)
             next_step = step.apply_op(context, op.label[4:]).to_sp()
-            if test_subset(two, next_step):
+            if is_subset(two, next_step):
                 return seq + two
                 # return (seq + two).apply_sigmoid(clean)
             for elt in next_step:
                 if len(elt) > 0:
-                    new_path_ways.append(seq + elt)
+                    new_path_ways.append(seq + elt.apply_sigmoid(clean))
         path_ways = new_path_ways
     return ket('steps not found')
 
