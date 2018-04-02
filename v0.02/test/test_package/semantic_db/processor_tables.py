@@ -272,8 +272,8 @@ compound_table = {
   "drop-below"         : ['drop_below', '', ''],
   "drop-above"         : ".drop_above({0})",
   "select-range"       : ".select_range({0})",       # may comment this one out, but fine for now to have two versions.
-  "select"             : ".select_range({0})",
-
+#  "select"             : ".select_range({0})",
+    'select'           : ['select_range', '', ''],
   "sselect"            : ".sselect_range({0})",
   
   "delete-elt"         : ".delete_elt({0})",

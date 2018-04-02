@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 23/3/2018
+# Update: 2/4/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -19,7 +19,9 @@ import os
 import datetime
 import time
 import urllib.request
-from graphviz import Digraph
+
+# disable graphviz for now:
+# from graphviz import Digraph
 # import logging
 
 # from the_semantic_db_code import *
@@ -46,7 +48,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to v0.02!")
+print("Welcome to v0.02!\nLast updated: 2 April, 2018")
 
 # C = ContextList("sw console")
 C = context
@@ -328,7 +330,10 @@ while True:
         name = dot_file_dir + '/' + name
         print('saving dot file: %s' % name)
 
-        dot = Digraph(comment=C.context_name(), format='png')
+        # disable for now:
+        # dot = Digraph(comment=C.context_name(), format='png')
+        print('save-as-dot is temporarily disabled')
+        continue
 
         # walk the sw file:
         for x in C.relevant_kets("*"):  # find all kets in the sw file

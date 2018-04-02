@@ -1,19 +1,28 @@
-#!/usr/bin/env python3
+#!c:/Python34/python.exe
 
 #######################################################################
-# let's find intersection classes, a nice step towards grammar
+# let's find intersection classes, a nice step towards grammar, and auto-learning from a corpus
+# though I don't yet know the next step
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2016-11-13
-# Update: 2016-11-15
+# Update: 2018-4-2
 # Copyright: GPLv3
 #
 # Usage: ./create-intersection-classes.py [filename.txt]
 #
-# Seems to work. Now need to think how to optimize it.
-# In testing only a bit faster than the console version!
-# That is bad, given the lack of optimization in the console version.
+# works great, especially on larger data sets like simple English wikipedia
+# it is slow, but I don't think that is an issue since we only really need to run it once
+# interestingly, it also does a somewhat okay job running on computer code too!
+# NB: bugs out with non-ascii chars. For now, pre-process text using:
+# https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/tools/clean-text.sh
+#
+# See also: paradigmatic words:
+#
+# The Computation of Word Associations:
+# Comparing Syntagmatic and Paradigmatic Approaches
+# http://www.aclweb.org/anthology/C02-1007
 #
 #######################################################################
 
@@ -22,9 +31,10 @@ import sys
 import re
 from collections import OrderedDict
 
-number_of_results = 20000
+# number_of_results = 20000
+number_of_results = 1000
 class_width = 12
-#tidy = False
+# tidy = False
 tidy = True
 strict = True
 
@@ -42,7 +52,9 @@ strict = True
 #filename = "text/ebook-Alices_Adventures_in_Wonderland_11.txt"
 #filename = "text/WP-Australia.txt"
 #filename = "text/high-order-sequence-paper.txt"
-filename = "text/code.txt"
+#filename = "text/code.txt"
+filename = 'data/simple-english-wikipedia.txt'
+
 
 if len(sys.argv) == 2:
   filename = sys.argv[1]
@@ -235,14 +247,12 @@ def create_word_classes(filename):
         class_2_2[head_2_2] = superposition()
       class_2_1[head_2_1].add(one)
       class_2_2[head_2_2].add(two)
-#    print_sorted_sw_dict(class_2_1, "class-2-1")
-#    print_sorted_sw_dict(class_2_2, "class-2-2")
   return class_1_1.coeff_sort(), class_2_1, class_2_2
 
 
-class_1_1, class_2_1, class_2_2 = create_word_classes(filename)
-#print("class_1_1:", class_1_1.select_top(5))
-#sys.exit(0)
+# class_1_1, class_2_1, class_2_2 = create_word_classes(filename)
+# print("class_1_1:", class_1_1.select_top(5))
+# sys.exit(0)
 
 def pre_class_op(class_2_1, word, class_width):
   try:
@@ -265,28 +275,36 @@ def post_class_op(class_2_2, word, class_width):
 def list_intersection(one,two):
   return [ x for x in one if x in two]
 
-# now the main event.
-# later make into a function?
-for word,value in class_1_1.select_top(number_of_results):
-  r1 = pre_class_op(class_2_1,  word, class_width)
-  r2 = post_class_op(class_2_2, word, class_width)
-  r3 = list_intersection(r1, r2)
-  if tidy:
-    if strict:
-      if len(r3) > 1:
-        print(", ".join(r3))
-    else:
-      print(", ".join(r3))
-  else:
-#    print("word:",word)
-    print("pre-class:         ", ", ".join(r1))
-    print("post-class:        ", ", ".join(r2))
-    print("intersection-class:", ", ".join(r3))
-    print()  
+# now the main event:
+def main(filename):
+    class_1_1, class_2_1, class_2_2 = create_word_classes(filename)
+    # print_sorted_sw_dict(class_2_1, "class-2-1")
+    # print_sorted_sw_dict(class_2_2, "class-2-2")
+
+    k = 0
+    for word, value in class_1_1.select_top(number_of_results):
+        r1 = pre_class_op(class_2_1,  word, class_width)
+        r2 = post_class_op(class_2_2, word, class_width)
+        r3 = list_intersection(r1, r2)
+        if tidy:
+            if strict:
+                if len(r3) > 1:
+                    print('%s:\t%s' % (k, ", ".join(r3)), flush=True)
+                    k += 1
+            else:
+                print(", ".join(r3))
+        else:
+            # print("word:",word)
+            print("pre-class:         ", ", ".join(r1))
+            print("post-class:        ", ", ".join(r2))
+            print("intersection-class:", ", ".join(r3))
+            print()
 
 
-
+main(filename)
 sys.exit(0)
+
+
 # superposition version follows.
 def pre_class_op(class_2_1,word,number_of_results):
   head = "X %s" % word
