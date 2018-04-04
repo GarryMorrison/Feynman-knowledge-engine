@@ -1414,6 +1414,12 @@ class sequence(object):
             seq.data.append(x.normalize(t))
         return seq
 
+    def coeff_sort(self):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.coeff_sort())
+        return seq
+
     def shuffle(self):
         seq = sequence([])
         for x in self.data:
