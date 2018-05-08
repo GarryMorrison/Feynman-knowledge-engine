@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 2/4/2018
+# Update: 8/5/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -48,7 +48,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to v0.02!\nLast updated: 4 April, 2018")
+print("Welcome to v0.02!\nLast updated: 8 May, 2018")
 
 # C = ContextList("sw console")
 C = context

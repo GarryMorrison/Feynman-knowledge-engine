@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/3/2018
+# Update: 8/5/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -826,36 +826,7 @@ def discrimination(one):
 
 
 
-# smooth[dx] a|x: 3> => a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
-# (where dx is an int or float)
-# Heh. It works. But let's just say it is sloooow....
-# Probably too slow for production use, as is.
-# Really need a version that applies to lists of floats,
-# with none of the this back and forth with kets, and str() and junk.
-# HRmm... in further testing, the speed seems fine. Just a glitch in the matrix I suppose.
-#
-# What about this tweak: smooth[dx,k] |x: 100>
-# instead of the current: smooth[dx]^k |x: 100>
-# Yup. Good idea. Problem is, not currently obvious to me how to do it!
-#
-# Note, BTW. This thing converges on a Guassian smooth if you apply it enough times.
-# Even smooth[d]^10 |x> should be well on the way to a Gaussian/bell curve.
-def smooth(one, dx):
-    one = one.ket()
-    coeff = one.value
-    label, value = extract_category_value(one.label)
-    if len(label) > 0:
-        label += ": "
-    try:
-        dx = float(dx)
-        x = float(value)
-    except:
-        #    return ket(one.label,one.value)    # possible alternative
-        return ket("", 0)
-    #  return ket(label + str(x - dx),coeff/4) + ket(label + str(x),coeff/2) + ket(label + str(x + dx),coeff/4)
-    # hrmm... in float world, not guaranteed to work as expected ....
-    return ket(label + float_to_int(x - dx), coeff / 4) + ket(label + float_to_int(x), coeff / 2) + ket(
-        label + float_to_int(x + dx), coeff / 4)
+
 
 
 # we need this for read_letters, and read_words, maybe other things in the future too.
@@ -1695,16 +1666,7 @@ def chars(one):
     return r.drop().multiply(one.value)
 
 
-# 4/1/2015:
-# equal(one,two), returns:                  # name clash with "equal[70] |number: 37>"
-# 1|True> if one == two
-# 0|True> if one and two are completely disjoint
-# values in between otherwise (makes use of unscaled_simm)
-# name change from test_equal() to equality_test() due to pytest.
-def equality_test(one, two):
-    value = aligned_simm_value(one,
-                               two)  # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
-    return ket("True", value)
+
 
 
 # LOL. Seems we already have the equiv of push-float and pop-float at the start of this file!
@@ -2645,45 +2607,7 @@ def find_inverse(context, op):
     return ket('find-inverse')
 
 
-# 26/3/2015:
-# just a simple one:
-# mbr(|x>,SP)
-# returns the coeff of |x> in SP, if 0 or not in set return |>
-# Note, you can consider this an optimization of: intn(|x>,SP), but having tested it, I'm not sure it is much of one!
-# though I haven't looked at exact timings. Maybe I should.
-# Note though that when we swap in fast_sp, this will drop from O(n) to roughly O(1).
-#
-def mbr(e, two):
-    e = e.ket()
-    value = two.find_value(e)
-    if value == 0:
-        return ket("", 0)
-    return ket(e.label, value)
 
-
-# 19/1/2/2016:
-# is-mbr(|x>,SP) returns |yes> if |x> is in the SP, |no> otherwise.
-# eg:
-# friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
-# sa: is-mbr(|Ed>,friends |Fred>)
-# |yes>
-# sa: is-mbr(|Frank>,friends |Fred>)
-# |no>
-#
-def is_mbr(e, two):
-    return mbr(e, two).is_not_empty()
-
-
-# 9/4/2015:
-# subset(one,two)
-# returns degree of subsetness of one with respect to two.
-# now, need to test it! Seems to work!
-#
-def subset(one, two):
-    if one.count_sum() == 0:  # prevent div by 0.
-        return ket("", 0)
-    value = intersection(one, two).count_sum() / one.count_sum()
-    return ket("subset", value)
 
 
 # 14/4/2015:
@@ -6574,7 +6498,8 @@ sequence_functions_usage['aligned-simm'] = """
 
 
 def aligned_simm(one, two):
-    return ket(float_to_int(aligned_simm_value(one, two)))
+    # return ket(float_to_int(aligned_simm_value(one, two)))  # not sure which version we want.
+    return ket('simm', aligned_simm_value(one, two))
 
 
 def aligned_simm_value(one, two):
@@ -8411,3 +8336,220 @@ def intersection_relevant_kets(one, context, *ops):
 # 22/2/2015 tweaked: now if op == "*" it returns a sp of all known kets.
 def relevant_kets(one, context, op):
     return context.relevant_kets(op)
+
+
+# FINISH!!
+# 26/3/2015:
+# just a simple one:
+# mbr(|x>,SP)
+# returns the coeff of |x> in SP, if 0 or not in set return |>
+# Note, you can consider this an optimization of: intn(|x>,SP), but having tested it, I'm not sure it is much of one!
+# though I haven't looked at exact timings. Maybe I should.
+# Note though that when we swap in fast_sp, this will drop from O(n) to roughly O(1).
+#
+
+# set invoke method:
+whitelist_table_2['mbr'] = 'mbr'
+# set usage info:
+sequence_functions_usage['mbr'] = """
+    description:
+        mbr(ket, sp) returns the coeff of 'ket' in 'sp'.
+        If 'ket' not in 'sp' then return |>
+        
+    examples:
+        mbr(|b>, |a> + |b> + |c>)
+            |b>
+        
+        mbr(|c>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
+            9.7|c>
+
+    see also:
+        is-mbr, intersection
+"""
+def mbr(e, two):
+    e_label = e.to_sp().label
+    value = two.to_sp().find_value(e_label)
+    if value == 0:
+        return ket()
+    return ket(e_label, value)
+
+
+# 19/1/2/2016:
+# is-mbr(|x>,SP) returns |yes> if |x> is in the SP, |no> otherwise.
+# eg:
+# friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+# sa: is-mbr(|Ed>,friends |Fred>)
+# |yes>
+# sa: is-mbr(|Frank>,friends |Fred>)
+# |no>
+#
+# set invoke method:
+whitelist_table_2['is-mbr'] = 'is_mbr'
+# set usage info:
+sequence_functions_usage['is-mbr'] = """
+    description:
+        is-mbr(ket, sp) returns |yes> if 'ket' is in 'sp', else |no>
+
+    examples:
+        is-mbr(|b>, |a> + |b> + |c>)
+            |yes>
+
+        is-mbr(|c>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
+            |yes>
+        
+        friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+        is-mbr(|Ed>, friends |Fred>)
+            |yes>
+        
+        is-mbr(|Frank>, friends |Fred>)
+            |yes>
+
+    see also:
+        mbr
+"""
+def is_mbr(e, two):
+    return mbr(e, two).is_not_empty()
+
+
+# 9/4/2015:
+# subset(one,two)
+# returns degree of subsetness of one with respect to two.
+# now, need to test it! Seems to work!
+#
+
+# set invoke method:
+whitelist_table_2['subset'] = 'subset'
+# set usage info:
+sequence_functions_usage['subset'] = """
+    description:
+        subset(one, two) returns the degree of subsetness of 'one' with respect to 'two'
+        NB: I don't understand what this function is trying to do!
+
+    examples:
+        subset(|b>, |a> + |b> + |c>)
+            |subset>
+
+        subset(|c>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
+            |subset>
+            
+        subset(|b> + |d>, |a> + |b> + |c>)
+            0.5|subset>
+
+    see also:
+"""
+def subset(one, two):
+    if one.to_sp().count_sum() == 0:  # prevent div by 0.
+        return ket()
+    value = intersection(one.to_sp(), two.to_sp()).count_sum() / one.to_sp().count_sum()
+    return ket("subset", value)
+
+
+# 4/1/2015:
+# equal(one,two), returns:                  # name clash with "equal[70] |number: 37>"
+# 1|True> if one == two
+# 0|True> if one and two are completely disjoint
+# values in between otherwise (makes use of unscaled_simm)
+# name change from test_equal() to equality_test() due to pytest.
+
+# set invoke method:
+whitelist_table_2['equal'] = 'equality_test'
+# set usage info:
+sequence_functions_usage['equal'] = """
+    description:
+        equal(one, two) returns:
+        1|True> if one == two
+        0|True> if one and two are completely disjoint
+        values in between otherwise
+        makes use of aligned-simm
+
+    examples:
+
+    see also:
+        aligned-simm, is-equal
+"""
+def equality_test(one, two):
+    value = aligned_simm_value(one, two)  # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
+    return ket("True", value)
+
+
+# set invoke method:
+whitelist_table_2['is-equal'] = 'is_equal'
+# set usage info:
+sequence_functions_usage['is-equal'] = """
+    description:
+        is-equal(one, two) returns:
+        |yes> if one == two
+        |no> if one and two are completely disjoint
+        values in between otherwise
+        makes use of aligned-simm 
+
+    examples:
+
+    see also:
+        aligned-simm, equal
+"""
+def is_equal(one, two):
+    value = aligned_simm_value(one, two)
+    if value > 0:
+        return ket('yes', value)
+    return ket('no')
+
+
+# smooth[dx] a|x: 3> => a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
+# (where dx is an int or float)
+# Heh. It works. But let's just say it is sloooow....
+# Probably too slow for production use, as is.
+# Really need a version that applies to lists of floats,
+# with none of the this back and forth with kets, and str() and junk.
+# Hrmm... in further testing, the speed seems fine. Just a glitch in the matrix I suppose.
+#
+# What about this tweak: smooth[dx,k] |x: 100>
+# instead of the current: smooth[dx]^k |x: 100>
+# Yup. Good idea. Problem is, not currently obvious to me how to do it!
+#
+# Note, BTW. This thing converges to a Guassian smooth if you apply it enough times.
+# Even smooth[d]^10 |x> should be well on the way to a Gaussian/bell curve.
+
+# set invoke method:
+compound_table['smooth'] = ['apply_fn', 'smooth', '']
+# set usage info:
+function_operators_usage['smooth'] = """
+    description:
+        smooths peaks into Gaussian's
+        smooth[dx] a|x: 3> => a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
+        usually invoked in form: smooth[dx]^power
+        also used to enable similarity between nearby integers
+
+    examples:
+        smooth[0.5] |age: 30>
+            0.25|age: 29.5> + 0.5|age: 30> + 0.25|age: 30.5>
+        
+        smooth[1]^5 |age: 40>
+            0.001|age: 35> + 0.01|age: 36> + 0.044|age: 37> + 0.117|age: 38> + 0.205|age: 39> + 0.246|age: 40> + 0.205|age: 41> + 0.117|age: 42> + 0.044|age: 43> + 0.01|age: 44> + 0.001|age: 45>
+        
+        rescale[1] smooth[1]^5 |age: 40>
+            0.004|age: 35> + 0.04|age: 36> + 0.179|age: 37> + 0.476|age: 38> + 0.833|age: 39> + |age: 40> + 0.833|age: 41> + 0.476|age: 42> + 0.179|age: 43> + 0.04|age: 44> + 0.004|age: 45>
+
+        age-simm (*,*) #=> aligned-simm(smooth[1]^5 |_self1>, smooth[1]^5 |_self2>)
+        age-simm(|age: 36>, |age: 40>)
+            0.227|simm>
+
+    see also:
+        rescale
+"""
+def smooth(one, dx):
+    one = one.to_sp()
+    coeff = one.value
+    label, value = extract_category_value(one.label)
+    if len(label) > 0:
+        label += ": "
+    try:
+        dx = float(dx)
+        x = float(value)
+    except:
+        #    return ket(one.label,one.value)    # possible alternative
+        return ket("", 0)
+    #  return ket(label + str(x - dx),coeff/4) + ket(label + str(x),coeff/2) + ket(label + str(x + dx),coeff/4)
+    # hrmm... in float world, not guaranteed to work as expected ....
+    return ket(label + float_to_int(x - dx), coeff / 4) + ket(label + float_to_int(x), coeff / 2) + ket(label + float_to_int(x + dx), coeff / 4)
+

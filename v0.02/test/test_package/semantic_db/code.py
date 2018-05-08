@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 26/3/2018
+# Update: 4/4/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -229,12 +229,12 @@ class ket(object):
     #      return 1
     #    return 0
     #
-    #  def find_value(self,one):
-    #    label = one.label if type(one) == ket else one
-    #    if self.label == label:
-    #      return self.value
-    #    return 0
-    #
+    def find_value(self, one):
+        label = one.label if type(one) is ket else one
+        if self.label == label:
+            return self.value
+        return 0
+
     #  def find_max_coeff(self):
     #    return self.value
     #
@@ -817,7 +817,7 @@ class superposition(object):
         return 0
 
     def find_value(self, one):
-        label = one.label if type(one) == ket else one
+        label = one.label if type(one) is ket else one
         if label in self.dict:
             return self.dict[label]
         return 0
@@ -1412,6 +1412,12 @@ class sequence(object):
         seq = sequence([])
         for x in self.data:
             seq.data.append(x.normalize(t))
+        return seq
+
+    def rescale(self, t=1):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.rescale(t))
         return seq
 
     def coeff_sort(self):

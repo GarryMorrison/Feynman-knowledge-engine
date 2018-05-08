@@ -313,3 +313,69 @@
   history
   q
 
+2018-05-08
+  load family.sw
+  load family-relations.sw
+  is-a-brother |sally>
+  is-a-sister |sally>
+  is-a-sister |erica>
+  is-a-brother |erica>
+  sister |sally>
+  sister |erica>
+  brother |sally>
+  rel-kets[*]
+  is-a-mother |trude>
+  is-a-parent |sally>
+  is-a-parent |tom>
+  such-that[is-a-parent] rel-kets[*]
+  child |trude>
+  how-many child |trude>
+  equal(|number: 2>, how-many child |trude>)
+  equal(|number: 2>, how-many child |mark>)
+  have-2-children |*> #=> do-you-know drop equal(|number: 2>, how-many child |_self>)
+  have-2-children |trude>
+  have-2-children |tom>
+  have-2-children |sally>
+  have-2-children |mark>
+  history
+  such-that[have-2-children] such-that[is-a-parent] rel-kets[*]
+  history
+  such-that[have-2-children] rel-kets[*]
+  history
+  save history
+
+2018-05-08
+  plot rescale[1] smooth[0.5]^10 |x: 10>
+  smooth[0.5]^10 |x: 10>
+  age |fred> => |age: 25>
+  age |sam> => |age: 24>
+  age |liz> => |age: 19>
+  age |robert> => |age: 42>
+  age |frank> => |age: 53>
+  dump
+  smooth-age |*> #=> rescale[1] smooth[0.5]^10 age |_self>
+  smooth-age |fred>
+  rel-kets[age]
+  map[smooth-age] rel-kets[age] |>
+  history
+  save history
+
+2018-05-08
+  age |fred> => |age: 25>
+  age |sam> => |age: 24>
+  age |liz> => |age: 19>
+  age |robert> => |age: 42>
+  age |frank> => |age: 53>
+  
+  smooth-age |*> #=> rescale[1] smooth[0.5]^10 age |_self>
+  map[smooth-age] rel-kets[age] |>
+  dump
+  similar-input[smooth-age] smooth-age |fred>
+  history
+  wide-smooth-age |*> #=> rescale[1] smooth[1]^10 age |_self>
+  map[wide-smooth-age] rel-kets[age] |>
+  similar-input[wide-smooth-age] wide-smooth-age |fred>
+  similar-input[wide-smooth-age] wide-smooth-age |robert>
+  history
+  q
+

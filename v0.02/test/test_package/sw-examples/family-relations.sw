@@ -41,3 +41,41 @@ sister-in-law |*> #=> wife brother |_self>
 mother-in-law |*> #=> mother wife |_self> + mother husband |_self>
 father-in-law |*> #=> father wife |_self> + father husband |_self>
 
+
+-- now a collection of is-a-x rules:
+is-a-father |*> #=> is-mbr(|_self>, clean father child |_self>)
+is-a-mother |*> #=> is-mbr(|_self>, clean mother child |_self>)
+is-a-parent |*> #=> do-you-know child |_self>
+is-a-son |*> #=> is-mbr(|_self>, clean son parent |_self>)
+is-a-daughter |*> #=> is-mbr(|_self>, clean daughter parent |_self>)
+
+is-a-grand-mother |*> #=> is-mbr(|_self>, clean mother parent child child |_self>)
+is-a-grand-father |*> #=> is-mbr(|_self>, clean father parent child child |_self>)
+is-a-grand-parent |*> #=> do-you-know child child |_self>
+
+is-a-great-grand-mother |*> #=> is-mbr(|_self>, clean mother parent parent child child child |_self>)
+is-a-great-grand-father |*> #=> is-mbr(|_self>, clean father parent parent child child child |_self>)
+is-a-great-grand-parent |*> #=> do-you-know child child child |_self>
+
+is-a-male |*> #=> or(is-a-son |_self>, is-a-father |_self>)
+is-a-female |*> #=> or(is-a-daughter |_self>, is-a-mother |_self>)
+
+is-an-uncle |*> #=> and(is-a-male |_self>, do-you-know child sibling |_self>)
+is-an-aunt |*> #=> and(is-a-female |_self>, do-you-know child sibling |_self>)
+
+is-a-husband |*> #=> and(is-a-male |_self>, do-you-know wife |_self>)
+is-a-wife |*> #=> and(is-a-female |_self>, do-you-know husband |_self>)
+
+is-a-brother |*> #=> and(is-a-male |_self>, do-you-know sibling |_self>)
+is-a-sister |*> #=> and(is-a-female |_self>, do-you-know sibling |_self>)
+
+
+-- now a collection of have-a-x rules:
+have-a-brother |*> #=> do-you-know brother |_self>
+have-a-sister |*> #=> do-you-know sister |_self>
+have-an-uncle |*> #=> do-you-know uncle |_self>
+have-an-aunt |*> #=> do-you-know aunt |_self>
+have-a-cousin |*> #=> do-you-know cousin |_self>
+have-a-niece |*> #=> do-you-know niece |_self>
+have-a-nephew |*> #=> do-you-know nephew |_self>
+

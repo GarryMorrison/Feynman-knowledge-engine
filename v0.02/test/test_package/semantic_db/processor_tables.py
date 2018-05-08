@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 20/3/2018
+# Update: 8/5/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -283,7 +283,8 @@ compound_table = {
 #  "mult"              : ".apply_sigmoid(mult,{0})",  # this is now moved to ket/sp since it is common enough.
   "mult"               : ".multiply({0})",
   "sigmoid-in-range"   : ".apply_sigmoid(sigmoid_in_range,{0})",
-  "smooth"             : ".apply_fn_collapse(smooth,{0})",
+#  "smooth"             : ".apply_fn_collapse(smooth,{0})",
+#    'smooth'           : ['apply_fn', 'smooth', ''],
   "set-to"             : ".apply_sigmoid(set_to,{0})",             
 
 # 4/1/2015:
@@ -324,7 +325,8 @@ compound_table = {
   "naked-matrix"       : ".apply_naked_fn(merged_naked_matrix,context,\"{0}\")",
 
 # newly added 22/5/2014:
-  "map"                : ".apply_sp_fn(map,context,\"{0}\")",
+# "map"                : ".apply_sp_fn(map,context,\"{0}\")",
+    'map'              : ['apply_sp_fn', 'map', 'context'],
 
 # newly added 28/5/2014:
   "categorize"         : ".apply_naked_fn(categorize,context,\"{0}\")",  
