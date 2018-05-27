@@ -1,5 +1,5 @@
 -- family relations:
--- define: mother, father, son, daughter, wife, husband
+-- define only: mother, father, son, daughter, wife, husband
 -- and the rest follows
 
 child |*> #=> son |_self> + daughter |_self>
@@ -36,10 +36,17 @@ cousin |*> #=> clean child aunt-and-uncle |_self>
 niece |*> #=> daughter brother-and-sister |_self>
 nephew |*> #=> son brother-and-sister |_self>
 
-brother-in-law |*> #=> husband sister |_self> 
-sister-in-law |*> #=> wife brother |_self>
+-- brother-in-law |*> #=> husband sister |_self>
+-- sister-in-law |*> #=> wife brother |_self>
+brother-in-law |*> #=> brother wife |_self> + brother husband |_self> + husband sister |_self>
+sister-in-law |*> #=> sister wife |_self> + sister husband |_self> + wife brother |_self>
 mother-in-law |*> #=> mother wife |_self> + mother husband |_self>
 father-in-law |*> #=> father wife |_self> + father husband |_self>
+spouse |*> #=> wife |_self> + husband |_self>
+is-married |*> #=> do-you-know spouse |_self>
+not |yes> => |no>
+not |no> => |yes>
+is-not-married |*> #=> not do-you-know spouse |_self>
 
 
 -- now a collection of is-a-x rules:
@@ -78,4 +85,25 @@ have-an-aunt |*> #=> do-you-know aunt |_self>
 have-a-cousin |*> #=> do-you-know cousin |_self>
 have-a-niece |*> #=> do-you-know niece |_self>
 have-a-nephew |*> #=> do-you-know nephew |_self>
+
+
+-- now a collection of how-many rules:
+how-many-children |*> #=> how-many child |_self>
+how-many-grand-children |*> #=> how-many child child |_self>
+how-many-great-grand-children |*> #=> how-many child child child |_self>
+how-many-brothers |*> #=> how-many brother |_self>
+how-many-sisters |*> #=> how-many sister |_self>
+how-many-uncles |*> #=> how-many uncle |_self>
+how-many-aunts |*> #=> how-many aunt |_self>
+how-many-cousins |*> #=> how-many cousin |_self>
+how-many-nieces |*> #=> how-many niece |_self>
+how-many-nephews |*> #=> how-many nephew |_self>
+
+
+-- some more rules about number of children:
+have-1-child |*> #=> is-equal[1] how-many-children |_self>
+have-2-children |*> #=> is-equal[2] how-many-children |_self>
+have-3-children |*> #=> is-equal[3] how-many-children |_self>
+
+have-k-children (*,*) #=> is-equal(|number:> __ |_self1>, how-many-children |_self2>)
 

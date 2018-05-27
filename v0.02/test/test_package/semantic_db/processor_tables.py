@@ -382,7 +382,7 @@ compound_table = {
   "is-greater-equal-than" : ".apply_fn(greater_equal_than,{0}).is_not_empty()",
   "is-less-than"          : ".apply_fn(less_than,{0}).is_not_empty()",
   "is-less-equal-than"    : ".apply_fn(less_equal_than,{0}).is_not_empty()",
-  "is-equal"              : ".apply_fn(equal,{0}).is_not_empty()",
+#  "is-equal"              : ".apply_fn(equal,{0}).is_not_empty()",
   "is-in-range"           : ".apply_fn(in_range,{0}).is_not_empty()",
 
 # 12/4/2015:
@@ -608,7 +608,7 @@ ket_context_table = {
   "recall-chunked-sequence"    : "recall_chunked_sequence",
   
 # 16/9/2016:
-  "spell"              : "spell",
+#  "spell"              : "spell",
   
 # 25/9/2016:
   "print-sequence"     : "print_sequence",

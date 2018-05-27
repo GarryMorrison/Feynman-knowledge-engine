@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 8/5/2018
+# Update: 27/5/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -4947,11 +4947,15 @@ compound_table['remove-prefix'] = ['apply_fn', 'remove_prefix', '']
 # set usage info:
 function_operators_usage['remove-prefix'] = """
     description:
-      remove given prefix from the ket
+        remove given prefix from the ket
             
     examples:
-      remove-prefix["not "] |not sitting at the beach>
-       |sitting at the beach>
+        remove-prefix["not "] |not sitting at the beach>
+            |sitting at the beach>
+    
+        remove-prefix["word: "] |word: fish>
+            |fish>      
+    
 """
 def remove_prefix(one, prefix):
     if type(one) is ket:
@@ -6833,7 +6837,7 @@ def is_less_equal_than(one, t):
 
 # set invoke method:
 # compound_table['is-equal'] = ".apply_fn(is_equal,{0})"
-compound_table['is-equal'] = ['apply_fn', 'is_equal', '']
+compound_table['is-equal'] = ['apply_fn', 'is_equal_op', '']
 # set usage info:
 function_operators_usage['is-equal'] = """
     description:
@@ -6842,7 +6846,7 @@ function_operators_usage['is-equal'] = """
 """
 
 
-def is_equal(one, t):  # name clash with equal(SP1,SP2)??
+def is_equal_op(one, t):  # name clash with equal(SP1,SP2)?? Yup!
     epsilon = 0.0001  # Need code since equal and float don't work well together.
     try:
         value = float(one.label.rsplit(": ", 1)[-1])

@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 8/5/2018
+# Update: 27/5/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -20,13 +20,14 @@ import datetime
 import time
 import urllib.request
 
-# disable graphviz for now:
-# from graphviz import Digraph
+try:
+    from graphviz import Digraph
+    have_graphviz = True
+except ImportError:
+    have_graphviz = False
+
 # import logging
 
-# from the_semantic_db_code import *
-# from the_semantic_db_functions import *
-# from the_semantic_db_processor import *
 from semantic_db import *
 from semantic_db.usage_tables import usage
 
@@ -35,7 +36,7 @@ if len(sys.argv) == 2:
     if sys.argv[1] == "--debug":
         logger.setLevel(logging.DEBUG)
     elif sys.argv[1] == "--info":
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO) # maybe switch info off by default?
 
 logger.debug('debug enabled')
 
@@ -48,7 +49,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to v0.02!\nLast updated: 8 May, 2018")
+print("Welcome to v0.02!\nLast updated: 27 May, 2018")
 
 # C = ContextList("sw console")
 C = context
@@ -180,7 +181,8 @@ while True:
     elif line == "reset":
         check = input("\n  Warning! This will erase all unsaved work! Are you sure? (y/n): ")
         if len(check) > 0 and check[0] == 'y':
-            C = context_list("sw console")
+            # C = ContextList("sw console") # this is correct approach, but broken due to parser!
+            C.reset('sw console')           # this seems to work.
             print("\n  Gone ... ")
 
     elif line == "dump":
@@ -322,6 +324,10 @@ while True:
         C.save(name)
 
     elif line.startswith('save-as-dot '):
+        if not have_graphviz:
+            print('save-as-dot is disabled\nPlease install graphviz')
+            continue
+
         name = line[12:]
         # check it exists, if not create it:
         if not os.path.exists(dot_file_dir):
@@ -330,10 +336,7 @@ while True:
         name = dot_file_dir + '/' + name
         print('saving dot file: %s' % name)
 
-        # disable for now:
-        # dot = Digraph(comment=C.context_name(), format='png')
-        print('save-as-dot is temporarily disabled')
-        continue
+        dot = Digraph(comment=C.context_name(), format='png')
 
         # walk the sw file:
         for x in C.relevant_kets("*"):  # find all kets in the sw file

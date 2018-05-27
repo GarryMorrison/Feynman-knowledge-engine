@@ -379,3 +379,53 @@
   history
   q
 
+2018-05-08
+  -- learn some shopping basket/user pairs:
+  basket |user 1> => |milk> + |bread> + |tea> + |bananas> + |carrots> + |chocolate>
+  basket |user 2> => 4|apple> + |milk> + |coffee> + |steak>
+  basket |user 3> => |chocolate> + |vegemite> + |olive oil> + |pizza> + |cheese>
+  basket |user 4> => |vegemite> + |cheese> + |bread> + |salami>
+  
+  -- a new basket is presented to the check-out. Which user is a best match?
+  basket |f> => 3|apple> + 5|oranges> + |milk> + |bread> + |coffee> + |steak>
+  
+  find-similar-basket |*> #=> 100 drop (similar-input[basket] basket |_self> - |_self>)
+  
+  dump
+  info off
+  find-similar-basket |f>
+  basket |f>
+  aligned-simm(basket |user 1>, basket |f>)
+  aligned-simm(basket |user 2>, basket |f>)
+  aligned-simm(basket |user 3>, basket |f>)
+  aligned-simm(basket |user 4>, basket |f>)
+  aligned-simm(basket |f>, basket |f>)
+  similar-input[basket] basket |f>
+  similar-input[basket] basket |f> - |f>
+  drop (similar-input[basket] basket |f> - |f>)
+  100 drop (similar-input[basket] basket |f> - |f>)
+  history
+  q
+
+2018-05-13
+  load family.sw
+  load family-relations.sw
+  have-2-children |*> #=> is-equal(|number: 2>, how-many child |_self>)
+  parents-with-2-children |*> #=> such-that[have-2-children] rel-kets[*] |>
+  
+  dump
+  info off
+  parents-with-2-children
+  age |sally> => |age: 20>
+  age |erica> => |age: 25>
+  age-in-range-18-23 |*> #=> is-in-range[18,23] age |_self>
+  have-daughter-in-age-range-18-23 |*> #=> do-you-know such-that[age-in-range-18-23] daughter |_self>
+  parents-with-daughter-in-age-range-18-23 |*> #=> such-that[have-daughter-in-age-range-18-23] rel-kets[*] |>
+  
+  parents-with-daughter-in-age-range-18-23
+  child |tom>
+  father child |tom>
+  clean father child |tom>
+  history
+  q
+

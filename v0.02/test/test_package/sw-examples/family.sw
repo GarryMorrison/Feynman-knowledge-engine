@@ -11,6 +11,9 @@ father |trude> => |sam>
 husband |trude> => |tom>
 daughter |trude> => |sally> + |erica>
 
+mother |peter> => |ruth>
+father |peter> => |mike>
+
 mother |tom> => |ruth>
 father |tom> => |mike>
 wife |tom> => |trude>
@@ -24,12 +27,12 @@ daughter |sam> => |trude>
 
 mother |ruth> => |gina>
 husband |ruth> => |mike>
-son |ruth> => |tom>
+son |ruth> => |tom> + |peter>
 
 mother |mike> => |mary>
 father |mike> => |mark>
 wife |mike> => |ruth>
-son |mike> => |tom>
+son |mike> => |tom> + |peter>
 
 daughter |gina> => |ruth>
 
@@ -38,4 +41,3 @@ son |mary> => |mike>
 
 wife |mark> => |mary>
 son |mark> => |mike>
-

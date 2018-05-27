@@ -1624,7 +1624,9 @@ class NewContext(object):
         self.supported_operators_dict = OrderedDict()
         self.learn('', 'context', 'context: ' + self.name)
 
-    # 3/12/2015:
+    def reset(self, name):
+        self.set(name)
+
     def context_name(self):
         return self.name
 
@@ -2166,6 +2168,12 @@ class NewContext(object):
 
 class ContextList(object):
     def __init__(self, name):
+        self.name = name
+        c = NewContext(name)
+        self.data = [c]
+        self.index = 0
+
+    def reset(self, name):  # maybe use __init__ instead?
         self.name = name
         c = NewContext(name)
         self.data = [c]
