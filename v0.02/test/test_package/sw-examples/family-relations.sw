@@ -1,6 +1,12 @@
 -- family relations:
--- define only: mother, father, son, daughter, wife, husband
+-- define only: mother, father, son, daughter, wife, husband, age
 -- and the rest follows
+
+-- define our not operator:
+not |yes> => |no>
+not |no> => |yes>
+not |don't know> => |don't know>
+
 
 child |*> #=> son |_self> + daughter |_self>
 parent |*> #=> mother |_self> + father |_self>
@@ -77,7 +83,20 @@ is-a-brother |*> #=> and(is-a-male |_self>, do-you-know sibling |_self>)
 is-a-sister |*> #=> and(is-a-female |_self>, do-you-know sibling |_self>)
 
 
+-- define some is-a-x rules that require knowledge of age:
+is-a-child |*> #=> is-in-range[0,17] age |_self>
+is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+is-a-man |*> #=> and(is-a-male |_self>, is-an-adult |_self>)
+is-a-woman |*> #=> and(is-a-female |_self>, is-an-adult |_self>)
+is-a-boy |*> #=> and(is-a-male |_self>, not is-an-adult |_self>)
+is-a-girl |*> #=> and(is-a-female |_self>, not is-an-adult |_self>)
+is-male-or-female |*> #=> or(is-a-male |_self>, is-a-female |_self>)
+is-a-senior-citizen |*> #=> not is-in-range[0,59] age |_self>
+
+
 -- now a collection of have-a-x rules:
+have-a-child |*> #=> do-you-know child |_self>
 have-a-brother |*> #=> do-you-know brother |_self>
 have-a-sister |*> #=> do-you-know sister |_self>
 have-an-uncle |*> #=> do-you-know uncle |_self>

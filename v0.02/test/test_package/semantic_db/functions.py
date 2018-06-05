@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 27/5/2018
+# Update: 5/6/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -18,6 +18,7 @@ import random
 import copy
 import string
 import re
+import os
 
 # from the_semantic_db_code import *
 # from the_semantic_db_processor import *
@@ -1326,58 +1327,6 @@ def vector(one, context, ops):
     return ket("matrix")
 
 
-# 23/5/2014:
-# let's implement a map function (since we can't have multi-line for loops, this will have to do!)
-# eg: map[op] (|x> + |y>)
-# runs:
-# op |x> => op |_self>
-# op |y> => op |_self>
-# ie, it converts function operators (op on the right hand side), in to literal operators (on the left hand side)
-# eg: map[fib] (|10> + |11>)
-# eg: map[child] (|x> + |0> + |1> + |00> + |01> + |10> + |11>)
-# or indirectly:
-# map[op] "" |list>
-# one is a ket/sp
-# op is a string
-#
-# tweak, now we can also do: map[fn,result] "" |list>  -- ie, we can now specify the destination, in this case "result"
-def map(one, context, op):
-    try:
-        fn, op = op.split(',')
-    except:
-        fn = op
-    print("fn:", fn)
-    print("op:", op)
-
-    for x in one:  # what if x has x.value != 1? x.apply_op handles that.
-        context.learn(op, x, x.apply_op(context, fn))  # currently fn must be of form: fn |*> #=> bah.
-    return ket("map")  # Would sometimes be useful to be able to use a full function here.
-    # Something we probably need to take up with .apply_op()
-    # As then (presumably) it could work for similar[op] |ket> too.
-    # Code change for this is probably hard, since would need pieces from the processor file.
-
-
-# 4/5/2015:
-# a new version of map. This one puts results in a temporary store while doing the calculatoin, then copies the result back after.
-# Basically to stop the code eating its own tail. eg, mapping a grid to a grid, you need a temporary grid.
-def copy_map(one, context, op):
-    try:
-        fn, op = op.split(',')
-    except:
-        fn = op
-    print("fn:", fn)
-    print("op:", op)
-    op_tmp = op + "-pDBUKObhYk"  # thanks: https://www.random.org/strings/
-    print("op-tmp:", op_tmp)
-
-    for x in one:
-        context.learn(op - tmp, x, x.apply_op(context, fn))  # store results on temporary grid
-    #  for x in one:
-    #    context.learn(op,x,x.apply_op(context,op-tmp))
-    #  context.copy_op(op_tmp,op)        # maybe ... still need some thinking time. What about context.mv_op(op_tmp,op)?
-    #  context.delete_op(op-tmp)         # need to implement this function.
-    context.move_op(op_tmp, op)
-    return ket("copy-map")
 
 
 # 28/5/2014:
@@ -8557,3 +8506,166 @@ def smooth(one, dx):
     # hrmm... in float world, not guaranteed to work as expected ....
     return ket(label + float_to_int(x - dx), coeff / 4) + ket(label + float_to_int(x), coeff / 2) + ket(label + float_to_int(x + dx), coeff / 4)
 
+
+
+# 23/5/2014:
+# let's implement a map function (since we can't have multi-line for loops, this will have to do!)
+# eg: map[op] (|x> + |y>)
+# runs:
+# op |x> => op |_self>
+# op |y> => op |_self>
+# ie, it converts function operators (op on the right hand side), in to literal operators (on the left hand side)
+# eg: map[fib] (|10> + |11>)
+# eg: map[child] (|x> + |0> + |1> + |00> + |01> + |10> + |11>)
+# or indirectly:
+# map[op] "" |list>
+# one is a ket/sp
+# op is a string
+#
+# tweak, now we can also do: map[fn,result] "" |list>  -- ie, we can now specify the destination, in this case "result"
+# set invoke method:
+compound_table['map'] = ['apply_sp_fn', 'map', 'context']
+# set usage info:
+function_operators_usage['map'] = """
+    description:
+        map a function operator to a literal operator
+        eg: map[fn, op] (|x> + |y> + |z>)
+        runs:
+        op |x> => fn |_self>
+        op |y> => fn |_self>
+        op |z> => fn |_self>
+
+    examples:
+        -- define the star operator:
+        star-op |*> #=> apply( supported-ops |_self>, |_self>)
+        map[star-op, star] rel-kets[*]
+        
+        -- define a binary tree:
+        -- define the head:
+        left |x> => |0>
+        right |x> => |1>
+        
+        -- define our operators:
+        child |*> #=> left |_self> + right |_self>
+        left-op |*> #=> |_self> _ |0>
+        right-op |*> #=> |_self> _ |1>
+        
+        -- now build the tree:
+        map[left-op, left] child |x>
+        map[right-op, right] child |x>
+
+        map[left-op, left] child^2 |x>
+        map[right-op, right] child^2 |x>
+        
+        map[left-op, left] child^3 |x>
+        map[right-op, right] child^3 |x>
+
+        map[left-op, left] child^4 |x>
+        map[right-op, right] child^4 |x>
+        ...
+
+    see also:
+        tree.sw, copy-map
+"""
+def map(one, context, *op):
+    try:
+        fn, op = op
+    except:
+        fn = op
+    print("fn:", fn)
+    print("op:", op)
+
+    for x in one:  # what if x has x.value != 1? x.apply_op handles that.
+        if x.label != '*':  # what about foo |category: *> #=> ... rules? Should they be excluded too?
+            context.learn(op, x, x.apply_op(context, fn))  # currently fn must be of form: fn |*> #=> bah.
+    return ket("map")  # Would sometimes be useful to be able to use a full function here.
+    # Something we probably need to take up with .apply_op()
+    # As then (presumably) it could work for similar[op] |ket> too.
+    # Code change for this is probably hard, since would need pieces from the processor file.
+
+
+# 4/5/2015:
+# a new version of map. This one puts results in a temporary store while doing the calculatoin, then copies the result back after.
+# Basically to stop the code eating its own tail. eg, mapping a grid to a grid, you need a temporary grid.
+def copy_map(one, context, op):
+    try:
+        fn, op = op.split(',')
+    except:
+        fn = op
+    print("fn:", fn)
+    print("op:", op)
+    op_tmp = op + "-pDBUKObhYk"  # thanks: https://www.random.org/strings/
+    print("op-tmp:", op_tmp)
+
+    for x in one:
+        context.learn(op - tmp, x, x.apply_op(context, fn))  # store results on temporary grid
+    #  for x in one:
+    #    context.learn(op,x,x.apply_op(context,op-tmp))
+    #  context.copy_op(op_tmp,op)        # maybe ... still need some thinking time. What about context.mv_op(op_tmp,op)?
+    #  context.delete_op(op-tmp)         # need to implement this function.
+    context.move_op(op_tmp, op)
+    return ket("copy-map")
+
+
+# set invoke method:
+compound_table['inverse'] = ['apply_sp_fn', 'active_inverse', 'context']
+# set usage info:
+function_operators_usage['inverse'] = """
+    description:
+        reverses the direction of a literal operator, even |*> rules
+        eg, say we have: op |A> => |B>
+        then: inverse[op] |B> returns |A>
+        and it really is an inverse, since:
+        op inverse[op] |B> returns |B>
+        and:
+        inverse[op] op |A> returns |A>
+        (though there are cases where it is not an exact inverse)
+        
+        NB: potentially quite slow, especially for |*> rules
+        
+    examples:
+        load family.sw
+        load family-relations.sw
+        inverse[spouse] |trude>
+            |tom>
+            
+        inverse[brother-in-law] |peter>
+            |trude>
+
+    see also:
+        find-inverse
+"""
+def active_inverse(one, context, op):
+    everyone = context.relevant_kets('*')
+    # print(everyone)
+    r = superposition()
+    for x in everyone:
+        y = x.apply_op(context, op)
+        # print('x: %s\ty: %s' % (x, y))
+        if y.to_sp().label == one.label:
+            r.add_sp(x)
+    return r
+
+
+# set invoke method:
+ket_context_table['load-file'] = 'load_file'
+# set usage info:
+function_operators_usage['load-file'] = """
+    description:
+        load a file from disk
+
+    examples:
+        load-file |family.sw>
+
+    see also:
+
+    future:
+        load a file from the web
+        eg: load-file |http://semantic-db.org/sw-examples/george.sw>
+"""
+def load_file(one, context):
+    name = one.label
+    basename = os.path.basename(name)
+    print('loading: sw-examples/%s' % basename)
+    context.load('sw-examples/' + basename)
+    return ket('load-file')

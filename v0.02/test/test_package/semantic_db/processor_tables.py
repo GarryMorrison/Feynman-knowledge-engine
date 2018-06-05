@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 8/5/2018
+# Update: 5/6/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -326,7 +326,7 @@ compound_table = {
 
 # newly added 22/5/2014:
 # "map"                : ".apply_sp_fn(map,context,\"{0}\")",
-    'map'              : ['apply_sp_fn', 'map', 'context'],
+#    'map'              : ['apply_sp_fn', 'map', 'context'],
 
 # newly added 28/5/2014:
   "categorize"         : ".apply_naked_fn(categorize,context,\"{0}\")",  
