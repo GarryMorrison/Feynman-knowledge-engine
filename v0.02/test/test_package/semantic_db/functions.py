@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 5/6/2018
+# Update: 7/6/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -8669,3 +8669,227 @@ def load_file(one, context):
     print('loading: sw-examples/%s' % basename)
     context.load('sw-examples/' + basename)
     return ket('load-file')
+
+
+# set invoke method:
+compound_table['sexp'] = ['apply_seq_fn', 'seq_exp', 'context']
+# set usage info:
+function_operators_usage['sexp'] = """
+    description:
+
+    examples:
+
+    see also:
+
+"""
+def seq_exp(one, context, *ops):
+    if len(ops) == 1:
+        op = ops[0]
+        max_depth = 10 # hard code in a max_depth for now. Maybe later make it infinity.
+    elif len(ops) == 2:
+        op, max_depth = ops
+    else:
+        return ket()
+
+    def single_step(one, context, op):
+        seq = sequence([])
+        for x in one:
+            # print('x: %s' % x)
+            child = x.apply_op(context, op)
+            if len(child) == 0:
+                child = x
+            seq += child
+        return seq
+
+    len_one = len(one)
+    for _ in range(max_depth):
+        one = single_step(one, context, op)
+        if len(one) == len_one:
+            break
+        len_one = len(one)
+    return one
+
+
+# set invoke method:
+compound_table['explain'] = ['apply_seq_fn', 'explain', 'context']
+# set usage info:
+function_operators_usage['explain'] = """
+    description:
+        given a cause structure, and an input sequence, find the possible cause
+        See here for why we would want to do this:
+        https://github.com/garrettkatz/copct
+
+    examples:
+        -- given this knowledge:
+        cause |c> => |a> . |b>
+        cause |d> => |a> . |b>
+        cause |e> => |d> . |f>
+
+        -- given this sequence: |a> . |b> . |f> . |a> . |b>
+        -- find possible causes:
+        explain[cause] ssplit |abfab>
+            e . c
+            e . d
+            e . a . b
+            c . f . c
+            c . f . d
+            d . f . c
+            d . f . d
+            c . f . a . b
+            a . b . f . c
+            a . b . f . d
+            d . f . a . b
+            a . b . f . a . b
+
+        -- given this knowledge:
+        cause |p> => |g> . |m> . |r>
+        cause |t> => |p> . |p>
+        cause |x> => |p> . |g>
+        cause |z> => |r> . |p>
+
+        -- find possible causes for: |g> . |m> . |r> . |g> . |m> . |r>
+        explain[cause] ssplit[" . "] |g . m . r . g . m . r>
+            t
+            p . p
+            g . m . z
+            x . m . r
+            g . m . r . p
+            p . g . m . r
+            g . m . r . g . m . r
+
+    see also:
+        sexp, cause1.sw, cause2.sw
+"""
+def first_explain(one, context, op):
+    max_depth = 10  # hard code in a max_depth for now. Maybe later make it infinity.
+
+    def single_step(one, context, op):
+        seq = sequence([])
+        for x in one:
+            # print('x: %s' % x)
+            child = x.apply_op(context, op)
+            if len(child) == 0:
+                child = x
+            seq += child
+        return seq
+
+    def learn_sexp_op(one, context, op): # one is a ket
+        elt = one
+        len_one = len(one)
+        for k in range(max_depth):
+            one = single_step(one, context, op)
+            if len(one) == len_one:
+                break
+            len_one = len(one)
+            context.learn('%s-%s' % (op, str(k+1)), elt.label, one)
+
+    # learn all the cause tree's:
+    for x in context.relevant_kets(op):
+        learn_sexp_op(x, context, op)
+
+    for N in range(1, len(one) + 1):
+        for seq in generate_seq_ngrams(one, N):
+            print('seq:', str(seq))
+
+    return ket('explain')
+
+
+def explain(one, context, *ops):
+    if len(ops) == 1:
+        op = ops[0]
+        merge_char = ' . '  # currently bugs out if merge_char == ""
+    else:
+        op, merge_char = ops
+
+    max_depth = 10  # hard code in a max_depth for now. Maybe later make it infinity.
+    target = smerge(one, merge_char).label
+    len_input = len(one)
+
+    def single_step(one, context, op):
+        seq = sequence([])
+        for x in one:
+            child = x.apply_op(context, op)
+            if len(child) == 0:
+                child = x
+            seq += child
+        return seq
+
+    forward_cause = {}
+
+    # learn input elements:
+    for x in one:
+        if x.label not in forward_cause:
+            forward_cause[x.label] = superposition() + x
+
+    # learn all the cause tree's:
+    for x in context.relevant_kets(op):
+        one = x
+        len_one = 1
+        for k in range(max_depth):
+            one = single_step(one, context, op)
+            if len(one) == len_one:
+                break
+            len_one = len(one)
+            if x.label not in forward_cause:
+                forward_cause[x.label] = superposition()
+            forward_cause[x.label].add_sp(smerge(one, merge_char))
+
+    # find causes:
+    def find_next_step(solutions, forward_cause):
+        new_solutions = []
+        for head_label, target in solutions:
+            if len(target) == 0:
+                new_solutions.append([head_label, target])
+            else:
+                for label, sp in forward_cause.items():
+                    for x in sp:
+                        if target.startswith(x.label):
+                            new_solutions.append([head_label + merge_char + label, target[len(x.label) + len(merge_char):]])
+        return new_solutions
+
+    # filter to valid first step solutions:
+    solutions = []
+    for label, sp in forward_cause.items():
+        for x in sp:
+            if target.startswith(x.label):
+                solutions.append([label, target[len(x.label) + len(merge_char):]])
+    print(solutions)
+
+    for _ in range(len_input + 1):
+        solutions = find_next_step(solutions, forward_cause)
+        print(solutions)
+
+    if len(merge_char) == 0:
+        sorted_solutions = sorted(solutions, key=lambda x: len(x[0]), reverse=False)  # Nope. Doesn't sort correctly.
+    else:
+        sorted_solutions = sorted(solutions, key=lambda x: len(x[0].split(merge_char)), reverse=False)
+
+    for label, _ in sorted_solutions:
+        print(label)
+    return ket(target)
+
+
+
+# set invoke method:
+compound_table['sngrams'] = ['apply_seq_fn', 'seq_ngrams', '']
+# set usage info:
+function_operators_usage['sngrams'] = """
+    description:
+        create sequence ngrams
+
+    examples:
+
+    see also:
+
+"""
+def generate_seq_ngrams(one, N):
+    for i in range(len(one)- N + 1):
+        data = one.data[i:i + N]
+        seq = sequence([])
+        seq.data = data
+        yield seq
+
+def seq_ngrams(one, N):
+    for seq in generate_seq_ngrams(one, N):
+        print('seq:', str(seq))
+    return ket('sngrams')
