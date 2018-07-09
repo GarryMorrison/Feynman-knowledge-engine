@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 7/6/2018
+# Update: 9/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -186,7 +186,7 @@ def fast_sp_intersection_fn(foo, one, two):
 
 
 # still can't use this in the console, since the context needs to be passed in too.
-# the train-of-though function, or perhaps a better name is "stream of conciousness"
+# the train-of-thought function, or perhaps a better name is "stream of consciousness"
 def train_of_thought(context, x, n):
     if type(n) != int:
         try:
@@ -214,34 +214,7 @@ def train_of_thought(context, x, n):
     return result  # return a record of the train-of-thought
 
 
-# 28/7/2014:
-# Let's finally implement console train of thought.
-# train-of-thought[n] some-superposition
-# eg: train-of-thought[20] |colour: red>
-# First up, I want to try it on this data set: http://semantic-db.org/next-gen/train_of_thought.py
-# OK. In early testing seems to work just fine.
-#
-# where n is an int.
-def console_train_of_thought(one, context, n):
-    try:
-        n = int(n)
-    except:
-        return ket("", 0)
 
-    print("context:", context.name)
-    print("one:", one)
-    print("n:", n)
-    X = one.pick_elt()
-    print("|X>:", X)
-    print()
-    result = superposition()
-
-    for k in range(n):
-        op = X.apply_op(context, "supported-ops").pick_elt()  # |op> => pick-elt supported-ops |X>
-        X = X.apply_op(context, op).pick_elt()  # |X> => pick-elt apply(|op>,|X>)
-        result.data.append(X)
-        print(X.display())
-    return result  # return a record of the train-of-thought
 
 
 
@@ -592,214 +565,10 @@ def map_to_topic(context, e, S):
     return result.drop().normalize(100).coeff_sort()
 
 
-# let's see if we can do some simple algebra in BKO.
-# a|x> + b|y> => a|x> + b|y>
-def algebra_add(one, two):
-    return one + two
 
 
-# 10/4/2014 new:
-def algebra_subtract(one, two):
-    return delete3(one, two)
 
 
-def old_algebra_mult(one, two, Abelian=True):
-    one = superposition() + one  # hack so one and two are definitely sp, not ket
-    two = superposition() + two
-
-    result = superposition()
-    for x in one.data:
-        for y in two.data:
-            print("x*y", x, "*", y)
-            labels = x.label.split('*') + y.label.split('*')
-            if Abelian:
-                labels.sort()
-            label = "*".join(labels)
-            result += ket(label, x.value * y.value)
-    return result
-
-
-# maps ket -> ket
-# to-number 3|x> == 3|x>
-# to-number |number: 7.2> == 7.2| >  # NB: the space in the ket label.
-# to-number 2|number: 3> == 6| >     # We can't use just |> because it is dropped all over the place!
-# to-number 8|number: text> == 0| >  # so the maths eqn: 3a + 7
-# to-number |3.7> == 3.7| >          # in my notation is 3|a> + 7| >
-# to-number 3|5> == 15| >
-def old_category_number_to_number(one):  # find better name!
-    one = one.ket()
-    cat, value = extract_category_value(one.label)
-    if cat != 'number':
-        return one
-    try:
-        n = float(value)
-    except:
-        return ket(" ", 0)
-    return ket(" ", one.value * n)
-
-
-# 26/3/2016:
-# so that algebra() can handle rationals too.
-# copied from here:
-# http://stackoverflow.com/questions/575925/how-to-convert-rational-and-decimal-number-strings-to-floats-in-python
-#
-def parse_float_string(x):
-    parts = x.split('/', 1)
-    if len(parts) == 1:
-        return float(x)
-    elif len(parts) == 2:
-        return float(parts[0]) / float(parts[1])
-    else:
-        raise ValueError
-
-
-# assume one is a sp or ket:
-def category_number_to_number(one):  # find better name!
-    cat, value = extract_category_value(one.label)
-    try:
-        #    n = float(value)
-        n = parse_float_string(value)
-    except:
-        if cat == 'number':  # not 100% want to keep these two lines
-            return ket(" ")
-        return one
-    return ket(" ", one.value * n)
-
-
-# a|x> * b|y> => a*b |x*y>
-#
-def algebra_mult(one, two, Abelian=True):
-    one = one.to_sp()
-    two = two.to_sp()
-
-    r = superposition()
-    for x in one:
-        x = category_number_to_number(x)
-        for y in two:
-            y = category_number_to_number(y)
-            print("x*y", x, "*", y)
-            labels = [L for L in x.label.split('*') + y.label.split('*') if L.strip() != '']
-            if Abelian:
-                labels.sort()
-            label = "*".join(labels)
-            if label == '':  # we can't have ket("",value), since it will be dropped.
-                label = " "
-            r += ket(label, x.value * y.value)
-    return r
-
-
-# (a|x> + b|y>)^|n>
-# eg: (|a> + |b> + |c>)^|2> = |a*a> + 2.000|a*b> + 2.000|a*c> + |b*b> + 2.000|b*c> + |c*c>
-def old_algebra_power(one, two):
-    one = superposition() + one
-    two_label = two.ket().label
-    null, power = extract_category_value(two_label)
-    try:
-        n = int(power)
-    except:
-        return ket("", 0)
-
-    if n <= 0:
-        return ket("1")
-
-    result = one
-    for k in range(n - 1):
-        result = algebra_mult(result, one)
-    return result
-
-
-def algebra_power(one, two, Abelian=True):
-    one = superposition() + one
-    two = category_number_to_number(two)
-    try:
-        n = int(two.value)
-    except:
-        return ket(" ", 0)
-
-    if n <= 0:
-        return ket(" ", 1)
-
-    result = one
-    for k in range(n - 1):
-        result = algebra_mult(result, one, Abelian)
-    return result
-
-
-# implement basic algebra:
-def algebra(one, operator, two, Abelian=True):
-    op_label = operator if type(operator) == str else operator.to_sp().label
-    null, op = extract_category_value(op_label)
-
-    if op not in ['+', '-', '*', '^']:
-        return ket()
-
-    if op == '+':  # drop_zero() added so that terms with coeff 0 are dropped.
-        return algebra_add(one, two).drop()  # Abelian option here too?
-    elif op == '-':
-        return algebra_subtract(one, two).drop()  # ditto.
-    elif op == '*':
-        return algebra_mult(one, two, Abelian).drop()
-    elif op == '^':
-        return algebra_power(one, two, Abelian).drop()
-    else:
-        return ket()
-
-
-# 2/2/2015: finally wire in non Abelian algebra:
-def non_Abelian_algebra(one, operator, two):
-    return algebra(one, operator, two, False)
-
-
-# simple complex number mult:
-def complex_algebra_mult(one, two):
-    one = superposition() + one  # hack so one and two are definitely sp, not ket
-    two = superposition() + two
-
-    result = superposition()
-    for x in one.data:
-        for y in two.data:
-            if x.label == 'real' and y.label == 'real':
-                result += ket("real", x.value * y.value)
-
-            if x.label == 'real' and y.label == 'imag':
-                result += ket("imag", x.value * y.value)
-
-            if x.label == 'imag' and y.label == 'real':
-                result += ket("imag", x.value * y.value)
-
-            if x.label == 'imag' and y.label == 'imag':
-                result += ket("real", -1 * x.value * y.value)
-    return result
-
-
-# convert decimal number to base b.
-# eg, b = 2, we have:
-# |10> => |2> + |8>
-# |7> => |1> + |2> + |4>
-#
-# number, base need to be kets. category_number_to_number() should take care of that.
-def decimal_to_base(number, base):
-    r = int(category_number_to_number(number).value)
-    b = int(category_number_to_number(base).value)
-    #  print("r:",r)
-    #  print("b:",b)
-    current_base = 1
-    result = superposition()
-    while r > 0:
-        rem = r % b
-        r //= b
-        result += ket(str(current_base), rem)
-        current_base *= b
-    return result
-
-
-# here is a fun one.
-# just a test function really for stored_rules().
-def shout(one):
-    string = (one if type(one) == str else one.label).upper()
-    print(string)
-    return ket(string)
-    # return ket("",0)
 
 
 # the discrimination function.
@@ -1039,20 +808,7 @@ def number_to_words(one):
     # details ...
 
 
-# 24/9/2015:
-# union[op] (|x> + |y> + |z>)  -- maybe needs a better name. I'm not sure the English counterpart.
-#
-def operator_union(one, context, op):
-    if len(one) == 0:
-        return ket("", 0)
-    for sp in one:
-        r = sp.apply_op(context, op)
-        break
-    for sp in one:
-        tmp = sp.apply_op(context, op)
-        r = union(r,
-                  tmp)  # we could probably make this a general function, and then pass in intersection(), union() etc.
-    return r  # ie, cast pair-fn(sp1,sp2) into fn(sp1,sp2,...,spn)
+
 
 
 def absolute_difference_fn(x, y):
@@ -1086,245 +842,6 @@ def general_to_specific(average, specific):
 
 
 
-
-# convert the labels in a superposition to a pretty-print vector
-def old_sp_to_vect(one):
-    max_len = 0
-    for x in one.data:
-        max_len = max(max_len, len(x.label))
-    for x in one.data:
-        print("[ " + x.label.ljust(max_len) + " ]")
-
-
-def sp_to_vect(one):
-    if one.count() <= 1:
-        vect = one.the_label()
-    else:
-        vect = "\n".join(x.label for x in one.data)
-    return paste_columns([vect], '[ ', '', ' ]')
-
-
-def sp_to_list(one):  # what happens if one is a ket? Fixed, I think.
-    if one.count() <= 1:
-        return one.the_label()
-    return "\n".join(x.label for x in one.data)
-
-
-# make 0.000 coeffs prettier!
-def old_coeff_to_str(x):
-    if x == 0:
-        return "0"
-    else:
-        return str("%.2f" % x)  # this means if we want to change precission, we only need to change it here.
-        # return str("%.0f" % x)                                         # this means if we want to change precission, we only need to change it here.
-        # return str("%.2f" % (100 - x))                                 # we use this version when graphing heat-maps of simm matrices, since 0 is black, 100 is white.
-
-
-def coeff_to_str(x):  # yeah, ugly code. Too scared of my code that depends on this, to do it the tidy way.
-    return float_to_int(x, 2)
-
-
-def sp_coeffs_to_list(one):  # what happens if one is a ket? Fixed, I think.
-    if one.count() <= 1:
-        return coeff_to_str(one.the_value())
-    return "\n".join(coeff_to_str(x.value) for x in one.data)
-
-
-# these two functions help to pretty-print tables, and matrices in particular:
-def normalize_column_return_list(s, n):
-    lines = (s.split('\n') + [''] * n)[:n]
-    max_len = max(len(x) for x in lines)
-    return [x.ljust(max_len) for x in lines]
-
-
-def paste_columns(data, pre='', sep=' ', post=''):
-    if len(data) == 0:
-        return ""
-    columns = len(data)
-    rows = max(s.count('\n') + 1 for s in data)
-    r = [normalize_column_return_list(s, rows) for s in data]
-    return "\n".join(pre + sep.join(r[j][k] for j in range(columns)) + post for k in range(rows))
-
-
-# first version of code to spit out a pretty printed matrix given BKO rules:
-def first_matrix(context, op):
-    one = context.relevant_kets(op).ket_sort()  # one is the list of kets that will be on the right hand side.
-    # usefully, relevant_kets() always returns a superposition.
-    if one.count() == 0:  # if one is empty, return the identity ket.
-        return ket("", 0)
-
-    two = superposition()  # two is the list of kets that will be on the left hand side.
-    for elt in one.data:
-        sp = elt.apply_op(context, op)
-        two = union(two, sp)
-    two = two.ket_sort()
-
-    empty = two.multiply(0)  # empty is the two list, with all coeffs set to 0
-
-    matrix_columns = []  # convert to list-comprehension?
-    for elt in one.data:
-        sp = (elt.apply_op(context, op) + empty).ket_sort()  # we add "empty" so the column has all the elements.
-        matrix_columns.append(sp_coeffs_to_list(sp))
-
-    x = sp_to_vect(one)
-    y = sp_to_vect(two)
-    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')
-    matrix = paste_columns([y, '=', M, x])
-    print(matrix)
-    # print("\n" + paste_columns(matrix_columns,'',' ',''))
-    return ket("matrix")  # Just here so it retuns a ket of some sort. Has no meaning, really.
-
-
-# code to return a single matrix, and the left-hand superposition:
-# one must be a superposition
-# op is a literal op
-# NB: the difference between this one, and the one below is it uses: x.apply_op(context,op)
-# the "new" one uses x.merged_apply_op(context,ops)
-def first_single_matrix(one, context, op):
-    one = one.apply_sigmoid(set_to, 1)
-    two = superposition()  # two is the list of kets that will be on the left hand side.
-    for elt in one.data:  # heh. using one.data kind of breaks the superposition abstract interface idea.
-        sp = elt.apply_op(context, op)
-        two = union(two, sp)
-    two = two.ket_sort().multiply(0)  # merged two, and empty into the same thing.
-    matrix_columns = [sp_coeffs_to_list((elt.apply_op(context, op) + two).ket_sort()) for elt in one.data]
-    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')  # M is the matrix
-    return two, M
-
-
-# second version of code to spit out a matrix:
-# seems to be correct.
-def matrix(context, op):
-    one = context.relevant_kets(op).ket_sort()  # one is the list of kets that will be on the right hand side.
-    # usefully, relevant_kets() always returns a superposition.
-    if one.count() == 0:  # if one is empty, return the identity ket.
-        return ket("", 0)
-
-    two, M = single_matrix(one, context, op)
-
-    x = sp_to_vect(one)
-    y = sp_to_vect(two)
-    matrix = paste_columns([y, '=', M, x])
-    print(matrix)
-    return ket("matrix")  # Just here so it retuns a ket of some sort. Has no meaning, really.
-
-
-# third version.
-# this one I want to handle multiple ops at once, and then chain the matrices.
-# eg: matrix[M2,M1]
-# or: matrix[friends,friends]  -- ie, matrix of second-order friends
-def multi_matrix(context, ops):
-    ops = ops.split(',')[::-1]
-    print("ops:", ops)
-
-    one = context.relevant_kets(ops[0]).ket_sort()  # one is the list of kets that will be on the right hand side.
-    # usefully, relevant_kets() always returns a superposition.
-    if one.count() == 0:  # if one is empty, return the identity ket.
-        return ket("", 0)
-
-    two, M = single_matrix(one, context, ops[0])
-    matrices = [M]
-    for op in ops[1:]:
-        two, M = single_matrix(two, context, op)
-        matrices.append(M)
-    x = sp_to_vect(one)
-    y = sp_to_vect(two)
-    line = [y, '='] + matrices[::-1] + [x]
-    matrix = paste_columns(line)
-    print(matrix)
-
-    # code to save the matrix (useful for big ones, too hard to cut and paste from the console)
-    print("saving to: saved-matrix.txt")
-    file = open("saved-matrix.txt", 'w')
-    file.write("sa: matrix[" + ",".join(ops[::-1]) + "]\n")
-    file.write(matrix)
-    file.close()
-
-    return ket("matrix")
-
-
-# uses x.merged_apply_op(context,ops) instead of x.apply_op(context,op)
-def single_matrix(one, context, op):
-    one = one.apply_sigmoid(set_to, 1)
-    two = superposition()  # two is the list of kets that will be on the left hand side.
-    for elt in one.data:  # heh. using one.data kind of breaks the superposition abstract interface idea.
-        sp = elt.merged_apply_op(context, op)
-        two = union(two, sp)
-    two = two.ket_sort().multiply(0)  # merged two, and empty into the same thing.
-    matrix_columns = [sp_coeffs_to_list((elt.merged_apply_op(context, op) + two).ket_sort()) for elt in one.data]
-    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')  # M is the matrix
-    return two, M
-
-
-# see if we can tidy this up later!
-# Heh. Doesn't need tidying up. This deprecates matrix(context,ops)
-def merged_multi_matrix(context, ops):
-    ops = ops.replace(',', ' ')  # we have to do this, as the current parser can't handle: matrix[op3 op2 op1],
-    # but can handle matrix[op3,op2,op1]. It would be nice to eventually fix this!
-    # Indeed, even op-sequence: matrix[op2 op1^k] kind of thing.
-    one = context.relevant_kets(
-        ops.split()[-1]).ket_sort()  # one is the list of kets that will be on the right hand side.
-    # usefully, relevant_kets() always returns a superposition.
-    if one.count() == 0:  # if one is empty, return the identity ket.
-        return ket("", 0)
-
-    two, M = single_matrix(one, context, ops)
-
-    x = sp_to_vect(one)
-    y = sp_to_vect(two)
-    matrix = paste_columns([y, '=', M, x])
-    print(matrix)
-    return ket("matrix")  # Just here so it retuns a ket of some sort. Has no meaning, really.
-
-
-def merged_naked_matrix(context, ops):
-    ops = ops.replace(',', ' ')
-    one = context.relevant_kets(
-        ops.split()[-1]).ket_sort()  # one is the list of kets that will be on the right hand side.
-    # usefully, relevant_kets() always returns a superposition.
-    if one.count() == 0:  # if one is empty, return the identity ket.
-        return ket("", 0)
-
-    two, M = single_matrix(one, context, ops)
-    print(M)
-    return ket("matrix")
-
-
-# 5/6/2014 update: Let's write vector[op] (|x> + |y>)
-# Same as merged-matrix, just you pass in the superpositions of interest, instead of using relevant_kets.
-# May need a better name.
-def first_vector(one, context, ops):
-    one = superposition() + one  # just make sure one is a sp.
-    if one.count() == 0:
-        return ket("", 0)
-    ops = ops.replace(',', ' ')
-    two, M = single_matrix(one, context, ops)
-    x = sp_to_vect(one)
-    y = sp_to_vect(two)
-    matrix = paste_columns([y, '=', M, x])
-    print(matrix)
-    return ket("matrix")
-
-
-def vector(one, context, ops):
-    ops = ops.replace(',', ' ')
-    one = superposition() + one  # just make sure one is a sp.
-    if one.count() == 0:  # this happens a) if the default ket is |>, or the passed in ket is |>
-        # sa: id
-        # 0.000|>
-        # sa: vector[op]
-        # or:
-        # sa: vector[op] |>
-        one = context.relevant_kets(ops.split()[-1]).ket_sort()
-        if one.count() == 0:
-            return ket("", 0)
-
-    two, M = single_matrix(one, context, ops)
-    x = sp_to_vect(one)
-    y = sp_to_vect(two)
-    matrix = paste_columns([y, '=', M, x])
-    print(matrix)
-    return ket("matrix")
 
 
 
@@ -4866,29 +4383,90 @@ compound_table['to-upper'] = ['apply_sp_fn', 'to_upper', '']
 # set usage info:
 function_operators_usage['to-upper'] = """
     description:
-      change i'th characters to upper case
+      either set all characters to upper case, or 
+      if i is specified, change i'th characters to upper case
          
     examples:
-      to-upper[1] |fred>
-        |Fred>
+        to-upper |fred>
+            |FRED>
+        
+        to-upper[1] |fred>
+            |Fred>
       
-      to-upper[1,3,5] |abcdefg>
-        |AbCdEfg>
+        to-upper[1,3,5] |abcdefg>
+            |AbCdEfg>
+    
+    see also:
+        to-lower
 """
 
 
 def to_upper(one, *positions):
+    try:
+        positions = [int(x) - 1 for x in positions]  # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
+    except:
+        return one
+    r = superposition()
+    if type(one) in [ket, superposition]:  # do we need this type check here?
+        for key, value in one.items():
+            text = "".join(key[i].upper() if i in positions else key[i] for i in range(len(key)))
+            r.add(text, value)
+    return r
+
+# set invoke method:
+fn_table['to-upper'] = 'to_all_upper'
+def to_all_upper(one):
+    r = superposition()
+    if type(one) in [ket, superposition]:  # do we need this type check here?
+        for key, value in one.items():
+            r.add(key.upper(), value)
+    return r
+
+
+# set invoke method:
+compound_table['to-lower'] = ['apply_sp_fn', 'to_lower', '']
+# set usage info:
+function_operators_usage['to-lower'] = """
+    description:
+      either set all characters to lower case, or 
+      if i is specified, change i'th characters to lower case
+
+    examples:
+        to-lower |FRED>
+            |fred>
+
+        to-lower[1] |Fred>
+            |fred>
+
+        to-lower[1,3,5] |ABCDEFG>
+            |aBcDeFG>
+            
+    see also:
+        to-upper            
+"""
+def to_lower(one, *positions):
     try:
         positions = [int(x) - 1 for x in
                      positions]  # maybe change the invoke pattern later, so don't need to split on ',' everywhere!
     except:
         return one
     r = superposition()
-    if type(one) in [ket, superposition]:
+    if type(one) in [ket, superposition]:  # do we need this type check here?
         for key, value in one.items():
-            text = "".join(key[i].upper() if i in positions else key[i] for i in range(len(key)))
+            text = "".join(key[i].lower() if i in positions else key[i] for i in range(len(key)))
             r.add(text, value)
     return r
+
+
+# set invoke method:
+fn_table['to-lower'] = 'to_all_lower'
+def to_all_lower(one):
+    r = superposition()
+    if type(one) in [ket, superposition]:  # do we need this type check here?
+        for key, value in one.items():
+            r.add(key.lower(), value)
+    return r
+
 
 
 # set invoke method:
@@ -7420,13 +6998,16 @@ compound_table['common'] = ['apply_sp_fn', 'common', 'context']
 # set usage info:
 function_operators_usage['common'] = """
     description:
-      find kets in common, with respect to an operator
+        find kets in common, with respect to an operator
       
     examples:
-      friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
-      friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
-      common[friends] split |Fred Sam>
-        |Jack> + |Emma> + |Charlie>
+        friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+        friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+        common[friends] split |Fred Sam>
+            |Jack> + |Emma> + |Charlie>
+            
+    see also:
+        union
 """
 #
 # 8/5/2014:
@@ -7446,6 +7027,34 @@ def common(one, context, op):
         tmp = sp.apply_op(context, op)
         r = intersection(r, tmp)
     return r
+
+
+# set invoke method:
+compound_table['union'] = ['apply_sp_fn', 'operator_union', 'context']
+# set usage info:
+function_operators_usage['union'] = """
+    description:
+        find the unions of kets, with respect to an operator
+
+    examples:
+        friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+        friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+        union[friends] split |Fred Sam>
+            |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie> + |George> + |Rober> + |Frank> + |Julie>
+
+    see also:
+        common
+"""
+def operator_union(one, context, op):
+    if len(one) == 0:
+        return ket("", 0)
+    for sp in one:
+        r = sp.apply_op(context, op)
+        break
+    for sp in one:
+        tmp = sp.apply_op(context, op)
+        r = union(r, tmp)  # we could probably make this a general function, and then pass in intersection(), union() etc.
+    return r  # ie, cast pair-fn(sp1,sp2) into fn(sp1,sp2,...,spn)
 
 
 # 2/2/2015:
@@ -8866,8 +8475,9 @@ def explain(one, context, *ops):
 
     for label, _ in sorted_solutions:
         print(label)
-    return ket(target)
+    # return ket(target)
 
+    return ssplit(ket(sorted_solutions[0][0]), merge_char)
 
 
 # set invoke method:
@@ -8893,3 +8503,732 @@ def seq_ngrams(one, N):
     for seq in generate_seq_ngrams(one, N):
         print('seq:', str(seq))
     return ket('sngrams')
+
+
+# 28/7/2014:
+# Let's finally implement console train of thought.
+# train-of-thought[n] some-superposition
+# eg: train-of-thought[20] |colour: red>
+# First up, I want to try it on this data set: http://semantic-db.org/next-gen/train_of_thought.py
+# OK. In early testing seems to work just fine.
+#
+# where n is an int.
+#
+# set invoke method:
+compound_table['train-of-thought'] = ['apply_sp_fn', 'console_train_of_thought', 'context']
+# set usage info:
+function_operators_usage['train-of-thought'] = """
+    description:
+        the train-of-thought function
+        given a seed ket, randomly walk through operator links to other kets
+        
+        The pseudo-code for this function is:
+
+        train-of-thought[n] (*) #=>
+            |X> => pick-elt |_self>
+            |train> .=> "" |X>
+            repeat[n]:
+                |X> => pick-elt apply(pick-elt supported-ops "" |X>, ""|X>)
+                print "" |X>
+                |train> .=> "" |X>
+            return "" |train>
+
+    examples:
+        load fred-sam-friends.sw
+        find-inverse[friends]
+        train-of-thought[10] |Fred>
+            context: global context
+            one: |Fred>
+            n: 10
+            |X>: |Fred>
+            ------------
+            |Mary>
+            |Fred>
+            |Rob>
+            |Fred>
+            |Jack>
+            |Fred>
+            |Charlie>
+            |Sam>
+            |Frank>
+            |Sam>
+            |Fred> . |Mary> . |Fred> . |Rob> . |Fred> . |Jack> . |Fred> . |Charlie> . |Sam> . |Frank> . |Sam>
+
+        load family.sw
+        find-inverse[age]
+        train-of-thought[10] |sara>
+            context: sw console
+            one: |sara>
+            n: 10
+            |X>: |sara>
+            ------------
+            |sam>
+            |56>
+            |sam>
+            |trude>
+            |sally>
+            |tom>
+            |40>
+            |tom>
+            |mike>
+            |60>
+            |sara> . |sam> . |56> . |sam> . |trude> . |sally> . |tom> . |40> . |tom> . |mike> . |60>
+
+    see also:
+
+"""
+def console_train_of_thought(one, context, n):
+    try:
+        n = int(n)
+    except:
+        return ket()
+
+    print("context:", context.name)
+    print("one:", one)
+    print("n:", n)
+    X = one.pick_elt()                                                          # |X> => pick-elt |_self>
+    train = sequence(X)                                                         # |train> .=> "" |X>
+    print("|X>:", X)
+    print('------------')
+
+    for k in range(n):
+        op = X.apply_op(context, "supported-ops").pick_elt().to_sp().label[4:]  # |op> => pick-elt supported-ops |X>
+        X = X.apply_op(context, op).pick_elt().to_sp()                          # |X> => pick-elt apply(|op>,|X>)
+        train += X                                                              # |train> .=> "" |X>
+        print(X)                                                                # print "" |X>
+    return train  # return a record of the train-of-thought
+
+
+# set invoke method:
+fn_table['shout'] = 'shout'
+# set usage info:
+function_operators_usage['shout'] = """
+    description:
+        mostly just a test function. Print the given kets in upper-case
+
+    examples:
+        shout |fish soup>
+            FISH SOUP
+            |FISH SOUP>
+
+    see also:
+        print, to-upper, to-lower
+"""
+def shout(one):
+    string = (one if type(one) == str else one.to_sp().label).upper()
+    print(string)
+    return ket(string)
+
+# set invoke method:
+fn_table['print'] = 'print_ket'
+# set usage info:
+function_operators_usage['print'] = """
+    description:
+        Print the given kets 
+
+    examples:
+        print |fish soup>
+            fish soup
+            |fish soup>
+
+    see also:
+        shout, to-upper, to-lower 
+"""
+def print_ket(one):
+    string = (one if type(one) == str else one.to_sp().label)
+    print(string)
+    return ket(string)
+
+
+
+# maps ket -> ket
+# to-number 3|x> == 3|x>
+# to-number |number: 7.2> == 7.2| >  # NB: the space in the ket label.
+# to-number 2|number: 3> == 6| >     # We can't use just |> because it is dropped all over the place!
+# to-number 8|number: text> == 0| >  # so the maths eqn: 3a + 7
+# to-number |3.7> == 3.7| >          # in my notation is 3|a> + 7| >
+# to-number 3|5> == 15| >
+def old_category_number_to_number(one):  # find better name!
+    one = one.ket()
+    cat, value = extract_category_value(one.label)
+    if cat != 'number':
+        return one
+    try:
+        n = float(value)
+    except:
+        return ket(" ", 0)
+    return ket(" ", one.value * n)
+
+
+# 26/3/2016:
+# so that algebra() can handle rationals too.
+# copied from here:
+# http://stackoverflow.com/questions/575925/how-to-convert-rational-and-decimal-number-strings-to-floats-in-python
+#
+def parse_float_string(x):
+    parts = x.split('/', 1)
+    if len(parts) == 1:
+        return float(x)
+    elif len(parts) == 2:
+        return float(parts[0]) / float(parts[1])
+    else:
+        raise ValueError
+
+
+# assume one is a sp or ket:
+def category_number_to_number(one):  # find better name!
+    cat, value = extract_category_value(one.label)
+    try:
+        #    n = float(value)
+        n = parse_float_string(value)
+    except:
+        if cat == 'number':  # not 100% want to keep these two lines
+            return ket(" ")
+        return one
+    return ket(" ", one.value * n)
+
+
+# let's see if we can do some simple algebra in BKO.
+# a|x> + b|y> => a|x> + b|y>
+def algebra_add(one, two):
+    return one + two
+
+
+# 10/4/2014 new:
+def algebra_subtract(one, two):
+    return delete3(one, two)
+
+
+def old_algebra_mult(one, two, Abelian=True):
+    one = superposition() + one  # hack so one and two are definitely sp, not ket
+    two = superposition() + two
+
+    result = superposition()
+    for x in one.data:
+        for y in two.data:
+            print("x*y", x, "*", y)
+            labels = x.label.split('*') + y.label.split('*')
+            if Abelian:
+                labels.sort()
+            label = "*".join(labels)
+            result += ket(label, x.value * y.value)
+    return result
+
+
+# a|x> * b|y> => a*b |x*y>
+#
+def algebra_mult(one, two, Abelian=True):
+    one = one.to_sp()
+    two = two.to_sp()
+
+    r = superposition()
+    for x in one:
+        x = category_number_to_number(x)
+        for y in two:
+            y = category_number_to_number(y)
+            # print("x*y", x, "*", y)
+            labels = [L for L in x.label.split('*') + y.label.split('*') if L.strip() != '']
+            if Abelian:
+                labels.sort()
+            label = "*".join(labels)
+            if label == '':  # we can't have ket("",value), since it will be dropped.
+                label = " "
+            r += ket(label, x.value * y.value)
+    return r
+
+
+# (a|x> + b|y>)^|n>
+# eg: (|a> + |b> + |c>)^|2> = |a*a> + 2.000|a*b> + 2.000|a*c> + |b*b> + 2.000|b*c> + |c*c>
+def old_algebra_power(one, two):
+    one = superposition() + one
+    two_label = two.ket().label
+    null, power = extract_category_value(two_label)
+    try:
+        n = int(power)
+    except:
+        return ket("", 0)
+
+    if n <= 0:
+        return ket("1")
+
+    result = one
+    for k in range(n - 1):
+        result = algebra_mult(result, one)
+    return result
+
+
+def algebra_power(one, two, Abelian=True):
+    one = superposition() + one
+    two = category_number_to_number(two)
+    try:
+        n = int(two.value)
+    except:
+        return ket(" ", 0)
+
+    if n <= 0:
+        return ket(" ", 1)
+
+    result = one
+    for k in range(n - 1):
+        result = algebra_mult(result, one, Abelian)
+    return result
+
+
+# implement basic algebra:
+# set invoke method:
+whitelist_table_3['algebra'] = 'algebra'
+# set usage info:
+sequence_functions_usage['algebra'] = """
+    description:
+        a minimalistic implementation of algebra over kets
+        
+    examples:
+        algebra(|a>, |+>, |b>)
+            |a> + |b>
+
+        algebra(3|a>, |*>, 5|b>)
+            15|a*b>
+
+        algebra(|a> + |b>, |^>, |3>)
+            |a*a*a> + 3|a*a*b> + 3|a*b*b> + |b*b*b>
+
+    see also:
+        non-Abelian-algebra, arithmetic
+"""
+def algebra(one, operator, two, Abelian=True):
+    op_label = operator if type(operator) == str else operator.to_sp().label
+    null, op = extract_category_value(op_label)
+    one = one.to_sp()  # cast objects to superpositions for now, since we don't know how to handle sequences!
+    two = two.to_sp()
+
+    if op not in ['+', '-', '*', '^']:
+        return ket()
+
+    if op == '+':  # drop_zero() added so that terms with coeff 0 are dropped.
+        return algebra_add(one, two).drop()  # Abelian option here too?
+    elif op == '-':
+        return algebra_subtract(one, two).drop()  # ditto.
+    elif op == '*':
+        return algebra_mult(one, two, Abelian).drop()
+    elif op == '^':
+        return algebra_power(one, two, Abelian).drop()
+    else:
+        return ket()
+
+
+# 2/2/2015: finally wire in non Abelian algebra:
+# set invoke method:
+whitelist_table_3['non-Abelian-algebra'] = 'non_Abelian_algebra'
+# set usage info:
+sequence_functions_usage['non-Abelian-algebra'] = """
+    description:
+        a minimalistic implementation of non Abelian algebra over kets
+
+    examples:
+        non-Abelian-algebra(|a>, |+>, |b>)
+            |a> + |b>
+
+        non-Abelian-algebra(3|a>, |*>, 5|b>)
+            15|a*b>
+
+        non-Abelian-algebra(2|a> + 3|b>, |*>, 5|c> + 7|d>)
+            10|a*c> + 14|a*d> + 15|b*c> + 21|b*d> 
+
+        non-Abelian-algebra(|a> + |b>, |^>, |3>)
+            |a*a*a> + |a*a*b> + |a*b*a> + |a*b*b> + |b*a*a> + |b*a*b> + |b*b*a> + |b*b*b>
+
+    see also:
+        algebra, arithmetic
+"""
+def non_Abelian_algebra(one, operator, two):
+    return algebra(one, operator, two, False)
+
+
+# simple complex number mult:
+def complex_algebra_mult(one, two):
+    one = superposition() + one  # hack so one and two are definitely sp, not ket
+    two = superposition() + two
+
+    result = superposition()
+    for x in one.data:
+        for y in two.data:
+            if x.label == 'real' and y.label == 'real':
+                result += ket("real", x.value * y.value)
+
+            if x.label == 'real' and y.label == 'imag':
+                result += ket("imag", x.value * y.value)
+
+            if x.label == 'imag' and y.label == 'real':
+                result += ket("imag", x.value * y.value)
+
+            if x.label == 'imag' and y.label == 'imag':
+                result += ket("real", -1 * x.value * y.value)
+    return result
+
+
+# set invoke method:
+whitelist_table_2['to-base'] = 'decimal_to_base'
+# set usage info:
+sequence_functions_usage['to-base'] = """
+    description:
+        convert a decimal number to the given base
+        
+    examples:
+        to-base(|10>, |2>)
+            0|1> + |2> + 0|4> + |8>
+
+        to-base(|123454678>, |1000>)
+            678|1> + 454|1000> + 123|1000000>
+
+        push-float to-base(|123454678>, |1000>)
+            |1: 678> + |1000: 454> + |1000000: 123>
+            
+    see also:
+"""
+def decimal_to_base(number, base):
+    r = int(category_number_to_number(number.to_sp()).value)
+    b = int(category_number_to_number(base.to_sp()).value)
+    #  print("r:",r)
+    #  print("b:",b)
+    current_base = 1
+    result = superposition()
+    while r > 0:
+        rem = r % b
+        r //= b
+        result += ket(str(current_base), rem)
+        current_base *= b
+    return result
+
+
+
+
+# convert the labels in a superposition to a pretty-print vector
+def old_sp_to_vect(one):
+    max_len = 0
+    for x in one.data:
+        max_len = max(max_len, len(x.label))
+    for x in one.data:
+        print("[ " + x.label.ljust(max_len) + " ]")
+
+
+def sp_to_vect(one):
+    # if one.count() <= 1:
+    #     vect = one.the_label()
+    # else:
+    vect = "\n".join(x.label for x in one)
+    return paste_columns([vect], '[ ', '', ' ]')
+
+
+def sp_to_list(one):  # what happens if one is a ket? Fixed, I think.
+    # if one.count() <= 1:
+    #     return one.the_label()
+    return "\n".join(x.label for x in one)
+
+
+# make 0.000 coeffs prettier!
+def old_coeff_to_str(x):
+    if x == 0:
+        return "0"
+    else:
+        return str("%.2f" % x)  # this means if we want to change precission, we only need to change it here.
+        # return str("%.0f" % x)                                         # this means if we want to change precission, we only need to change it here.
+        # return str("%.2f" % (100 - x))                                 # we use this version when graphing heat-maps of simm matrices, since 0 is black, 100 is white.
+
+
+def coeff_to_str(x):  # yeah, ugly code. Too scared of my code that depends on this, to do it the tidy way.
+    return float_to_int(x, 2)
+
+
+def sp_coeffs_to_list(one):  # what happens if one is a ket? Fixed, I think.
+    # if type(one) is ket:
+    #     return coeff_to_str(one.value)
+    return "\n".join(coeff_to_str(x.value) for x in one)
+
+
+# these two functions help to pretty-print tables, and matrices in particular:
+def normalize_column_return_list(s, n):
+    lines = (s.split('\n') + [''] * n)[:n]
+    max_len = max(len(x) for x in lines)
+    return [x.ljust(max_len) for x in lines]
+
+
+def paste_columns(data, pre='', sep=' ', post=''):
+    if len(data) == 0:
+        return ""
+    columns = len(data)
+    rows = max(s.count('\n') + 1 for s in data)
+    r = [normalize_column_return_list(s, rows) for s in data]
+    return "\n".join(pre + sep.join(r[j][k] for j in range(columns)) + post for k in range(rows))
+
+
+# first version of code to spit out a pretty printed matrix given BKO rules:
+def first_matrix(context, op):
+    one = context.relevant_kets(op).ket_sort()  # one is the list of kets that will be on the right hand side.
+    # usefully, relevant_kets() always returns a superposition.
+    if one.count() == 0:  # if one is empty, return the identity ket.
+        return ket("", 0)
+
+    two = superposition()  # two is the list of kets that will be on the left hand side.
+    for elt in one.data:
+        sp = elt.apply_op(context, op)
+        two = union(two, sp)
+    two = two.ket_sort()
+
+    empty = two.multiply(0)  # empty is the two list, with all coeffs set to 0
+
+    matrix_columns = []  # convert to list-comprehension?
+    for elt in one.data:
+        sp = (elt.apply_op(context, op) + empty).ket_sort()  # we add "empty" so the column has all the elements.
+        matrix_columns.append(sp_coeffs_to_list(sp))
+
+    x = sp_to_vect(one)
+    y = sp_to_vect(two)
+    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')
+    matrix = paste_columns([y, '=', M, x])
+    print(matrix)
+    # print("\n" + paste_columns(matrix_columns,'',' ',''))
+    return ket("matrix")  # Just here so it retuns a ket of some sort. Has no meaning, really.
+
+
+# code to return a single matrix, and the left-hand superposition:
+# one must be a superposition
+# op is a literal op
+# NB: the difference between this one, and the one below is it uses: x.apply_op(context,op)
+# the "new" one uses x.merged_apply_op(context,ops)
+def single_matrix_unmerged(one, context, op):
+    def sp_coeffs_to_list(one):  # what happens if one is a ket? Fixed, I think.
+        return "\n".join(coeff_to_str(x.value) for x in one)
+
+    one = one.to_sp().apply_sigmoid(set_to, 1)
+    two = superposition()  # two is the list of kets that will be on the left hand side.
+    for elt in one:
+        sp = elt.apply_op(context, op).to_sp()  # It would be nice to have a version that handles seq rules too!
+        two = union(two, sp)
+    two = two.ket_sort().multiply(0)  # merged two, and empty into the same thing.
+    matrix_columns = [sp_coeffs_to_list((elt.apply_op(context, op).to_sp() + two).ket_sort()) for elt in one]
+
+    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')  # M is the matrix
+    return two, M
+
+
+# second version of code to spit out a matrix:
+# seems to be correct.
+# set invoke method:
+compound_table['working-matrix'] = ['apply_naked_fn', 'matrix', 'context']
+# set usage info:
+function_operators_usage['working-matrix'] = """
+    description:
+        first attempt at mapping an operator to its adjacency matrix
+        
+    examples:
+
+    see also:
+"""
+def matrix(context, op):
+    def sp_to_vect(one):
+        vect = "\n".join(x.label for x in one)
+        return paste_columns([vect], '[ ', '', ' ]')
+
+    one = context.relevant_kets(op).ket_sort()  # one is the list of kets that will be on the right hand side.
+    # usefully, relevant_kets() always returns a superposition.
+    if len(one) == 0:  # if one is empty, return the identity ket.
+        return ket()
+
+    two, M = single_matrix_unmerged(one, context, op)
+    x = sp_to_vect(one)
+    y = sp_to_vect(two)
+
+    matrix = paste_columns([y, '=', M, x])
+    print(matrix)
+    return ket("matrix")
+
+
+# third version.
+# this one I want to handle multiple ops at once, and then chain the matrices.
+# eg: matrix[M2,M1]
+# or: matrix[friends,friends]  -- ie, matrix of second-order friends
+# set invoke method:
+compound_table['matrix'] = ['apply_sp_fn', 'multi_matrix', 'context']
+# set usage info:
+function_operators_usage['matrix'] = """
+    description:
+        maps operators to adjacency matrices
+
+    examples:
+        -- learn some knowledge:
+        -- load matrices.sw
+        M1 |x1> => 3|y2>
+        M1 |x2> => 7|y1> + 6|y2>
+        M1 |x3> => |y1> + 4|y2>
+        M1 |x4> => |y1>
+        M1 |x5> => 6|y1> + 4|y2>
+        M1 |x6> => 4|y1> + 8|y2>
+        M1 |x7> => |y1> + 2|y2>
+        
+        M2 |y1> => 6|z1> + 2|z2> + 7|z3> + 9|z4> + 5|z5>
+        M2 |y2> => 3|z2> + 4|z3> + |z5>
+
+    
+        -- display corresponding matrices:
+        sa: matrix[M1]
+        [ y1 ] = [  0  7  1  1  6  4  1  ] [ x1 ]
+        [ y2 ]   [  3  6  4  0  4  8  2  ] [ x2 ]
+                                           [ x3 ]
+                                           [ x4 ]
+                                           [ x5 ]
+                                           [ x6 ]
+                                           [ x7 ]
+        
+        sa: matrix[M2]
+        [ z1 ] = [  6  0  ] [ y1 ]
+        [ z2 ]   [  2  3  ] [ y2 ]
+        [ z3 ]   [  7  4  ]
+        [ z4 ]   [  9  0  ]
+        [ z5 ]   [  5  1  ]
+        
+        sa: matrix[M2, M1]
+        [ z1 ] = [  6  0  ] [  0  7  1  1  6  4  1  ] [ x1 ]
+        [ z2 ]   [  2  3  ] [  3  6  4  0  4  8  2  ] [ x2 ]
+        [ z3 ]   [  7  4  ]                           [ x3 ]
+        [ z4 ]   [  9  0  ]                           [ x4 ]
+        [ z5 ]   [  5  1  ]                           [ x5 ]
+                                                      [ x6 ]
+                                                      [ x7 ]
+        
+        sa: matrix[M1, M2]
+        [  ] = [            ] [  6  0  ] [ y1 ]
+                              [  2  3  ] [ y2 ]
+                              [  7  4  ]
+                              [  9  0  ]
+                              [  5  1  ]
+
+        -- only display matrix for desired inputs:
+        sa: matrix[M1] split |x1 x3 x5 x7>
+        [ y1 ] = [  0  1  6  1  ] [ x1 ]
+        [ y2 ]   [  3  4  4  2  ] [ x3 ]
+                                  [ x5 ]
+                                  [ x7 ]
+
+    see also:
+        merged-matrix
+"""
+def multi_matrix(one, context, *ops):
+    def sp_to_vect(one):
+        vect = "\n".join(x.label for x in one)
+        return paste_columns([vect], '[ ', '', ' ]')
+
+    ops = ops[::-1]
+    # print("ops:", ops)
+
+    if len(one) == 0:
+        one = context.relevant_kets(ops[0]).ket_sort()  # one is the list of kets that will be on the right hand side.
+        if len(one) == 0:
+            return ket()
+
+    two, M = single_matrix_unmerged(one, context, ops[0])
+    matrices = [M]
+    for op in ops[1:]:
+        two, M = single_matrix_unmerged(two, context, op)
+        matrices.append(M)
+    x = sp_to_vect(one)
+    y = sp_to_vect(two)
+    line = [y, '='] + matrices[::-1] + [x]
+    matrix = paste_columns(line)
+    print(matrix)
+
+    # code to save the matrix (useful for big ones that are too hard to cut and paste from the console)
+    print("saving to: saved-matrix.txt")
+    file = open("saved-matrix.txt", 'w')
+    file.write("sa: matrix[" + ",".join(ops[::-1]) + "]\n")
+    file.write(matrix)
+    file.close()
+
+    return ket("matrix")
+
+
+# uses x.merged_apply_op(context,ops) instead of x.apply_op(context,op)
+def single_matrix_merged(one, context, op):
+    def sp_coeffs_to_list(one):  # what happens if one is a ket? Fixed, I think.
+        return "\n".join(coeff_to_str(x.value) for x in one)
+
+    one = one.to_sp().apply_sigmoid(set_to, 1)
+    two = superposition()  # two is the list of kets that will be on the left hand side.
+    for elt in one:
+        sp = elt.merged_apply_op(context, op).to_sp()
+        two = union(two, sp)
+    two = two.ket_sort().multiply(0)
+    matrix_columns = [sp_coeffs_to_list((elt.merged_apply_op(context, op).to_sp() + two).ket_sort()) for elt in one]
+    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')  # M is the matrix
+    return two, M
+
+
+# see if we can tidy this up later!
+# Heh. Doesn't need tidying up. This deprecates matrix(context,ops)
+def merged_multi_matrix(context, ops):
+    ops = ops.replace(',', ' ')  # we have to do this, as the current parser can't handle: matrix[op3 op2 op1],
+    # but can handle matrix[op3,op2,op1]. It would be nice to eventually fix this!
+    # Indeed, even op-sequence: matrix[op2 op1^k] kind of thing.
+    one = context.relevant_kets(
+        ops.split()[-1]).ket_sort()  # one is the list of kets that will be on the right hand side.
+    # usefully, relevant_kets() always returns a superposition.
+    if one.count() == 0:  # if one is empty, return the identity ket.
+        return ket("", 0)
+
+    two, M = single_matrix_merged(one, context, ops)
+
+    x = sp_to_vect(one)
+    y = sp_to_vect(two)
+    matrix = paste_columns([y, '=', M, x])
+    print(matrix)
+    return ket("matrix")  # Just here so it retuns a ket of some sort. Has no meaning, really.
+
+
+def merged_naked_matrix(context, ops):
+    ops = ops.replace(',', ' ')
+    one = context.relevant_kets(
+        ops.split()[-1]).ket_sort()  # one is the list of kets that will be on the right hand side.
+    # usefully, relevant_kets() always returns a superposition.
+    if one.count() == 0:  # if one is empty, return the identity ket.
+        return ket("", 0)
+
+    two, M = single_matrix_merged(one, context, ops)
+    print(M)
+    return ket("matrix")
+
+
+# 5/6/2014 update: Let's write vector[op] (|x> + |y>)
+# Same as merged-matrix, just you pass in the superpositions of interest, instead of using relevant_kets.
+# May need a better name.
+def first_vector(one, context, ops):
+    one = superposition() + one  # just make sure one is a sp.
+    if one.count() == 0:
+        return ket("", 0)
+    ops = ops.replace(',', ' ')
+    two, M = single_matrix_merged(one, context, ops)
+    x = sp_to_vect(one)
+    y = sp_to_vect(two)
+    matrix = paste_columns([y, '=', M, x])
+    print(matrix)
+    return ket("matrix")
+
+
+def vector(one, context, ops):
+    ops = ops.replace(',', ' ')
+    one = superposition() + one  # just make sure one is a sp.
+    if one.count() == 0:  # this happens a) if the default ket is |>, or the passed in ket is |>
+        # sa: id
+        # 0.000|>
+        # sa: vector[op]
+        # or:
+        # sa: vector[op] |>
+        one = context.relevant_kets(ops.split()[-1]).ket_sort()
+        if one.count() == 0:
+            return ket("", 0)
+
+    two, M = single_matrix_merged(one, context, ops)
+    x = sp_to_vect(one)
+    y = sp_to_vect(two)
+    matrix = paste_columns([y, '=', M, x])
+    print(matrix)
+    return ket("matrix")
+

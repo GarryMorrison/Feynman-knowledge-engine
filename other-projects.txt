@@ -1,0 +1,9 @@
+PEBL:
+https://en.wikipedia.org/wiki/PEBL_(software)
+http://pebl.sourceforge.net/
+
+CLORTEX:
+https://github.com/htm-community/clortex
+https://www.youtube.com/watch?v=ObL6cbUn1aU
+
+ASMO:

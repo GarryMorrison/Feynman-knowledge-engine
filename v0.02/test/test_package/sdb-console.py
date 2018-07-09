@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 7/6/2018
+# Update: 9/7/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -31,14 +31,15 @@ except ImportError:
 from semantic_db import *
 from semantic_db.usage_tables import usage
 
-# if --debug, set logging level to DEBUG:
+logger.setLevel(logging.WARNING)  # switch off debug and info by default
 if len(sys.argv) == 2:
     if sys.argv[1] == "--debug":
         logger.setLevel(logging.DEBUG)
+        logger.debug('debug enabled')
     elif sys.argv[1] == "--info":
-        logger.setLevel(logging.INFO) # maybe switch info off by default?
+        logger.setLevel(logging.INFO)
+        logger.info('info enabled')
 
-logger.debug('debug enabled')
 
 # starting .sw directory:
 sw_file_dir = "sw-examples"
@@ -49,7 +50,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to v0.02!\nLast updated: 7 June, 2018")
+print("Welcome to v0.02!\nLast updated: 9 July, 2018")
 
 # C = ContextList("sw console")
 C = context

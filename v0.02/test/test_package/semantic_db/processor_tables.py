@@ -146,7 +146,7 @@ fn_table = {
   
 
   "to-number"        : "category_number_to_number",
-  "shout"            : "shout",
+#  "shout"            : "shout",
 #  "discrim"           : "discrimination",  # Broken. discrim (3|a> + 9|b>) returns 12| >. Doh! It should be 9 - 3, not 9 + 3.
 
 # conversions are now done using .sw files:
@@ -297,7 +297,7 @@ compound_table = {
 # newly added 8/5/2014:
   "common"             : ".apply_sp_fn(common,context,\"{0}\")",
 # newly added 24/9/2015:
-  "union"              : ".apply_sp_fn(operator_union,context,\"{0}\")",
+#  "union"              : ".apply_sp_fn(operator_union,context,\"{0}\")",
 
 # newly added 10/5/2016:
   "simm-add"           : ".apply_sp_fn(simm_add,context,\"{0}\")",
@@ -320,7 +320,7 @@ compound_table = {
 #  "multi-matrix"      : ".apply_naked_fn(multi_matrix,context,\"{0}\")",
 
 # newly added 21/5/2014:
-  "matrix"             : ".apply_naked_fn(multi_matrix,context,\"{0}\")",  # this deprecates/replaces the naked_fn(matrix,...) version.
+#  "matrix"             : ".apply_naked_fn(multi_matrix,context,\"{0}\")",  # this deprecates/replaces the naked_fn(matrix,...) version.
   "merged-matrix"      : ".apply_naked_fn(merged_multi_matrix,context,\"{0}\")",
   "naked-matrix"       : ".apply_naked_fn(merged_naked_matrix,context,\"{0}\")",
 
@@ -340,7 +340,7 @@ compound_table = {
 #  "active-buffer"      : ".apply_sp_fn(console_active_buffer,context,\"{0}\")",
   
 # added 28/7/2014:
-  "train-of-thought"   : ".apply_sp_fn(console_train_of_thought,context,\"{0}\")",
+#  "train-of-thought"   : ".apply_sp_fn(console_train_of_thought,context,\"{0}\")",
   
 # added 4/8/2014:
   "exp-max"            : ".apply_sp_fn(exp_max,context,\"{0}\")",
@@ -691,7 +691,7 @@ whitelist_table_2 = {
 #  "apply"               : "apply",                  # 10/11/2014: What is this function?? Commented out!
   "range"               : "show_range",
   "ket-simm"            : "ket_simm",
-  "to-base"             : "decimal_to_base",
+#  "to-base"             : "decimal_to_base",
   "general-to-specific" : "general_to_specific",
   
 # 4/1/2015:
@@ -729,12 +729,12 @@ whitelist_table_3 = {
   "union"         : "tri_union",
   "arithmetic"    : "arithmetic",
   "range"         : "show_range",
-  "algebra"       : "algebra",
+#  "algebra"       : "algebra",
   "if"            : "bko_if",
   "wif"           : "weighted_bko_if",
   "wsimm"         : "weighted_simm",
   "ket-wsimm"     : "ket_weighted_simm",
-  "non-Abelian-algebra" : "non_Abelian_algebra",         # 2/2/2015, finally wire this one in!
+#  "non-Abelian-algebra" : "non_Abelian_algebra",         # 2/2/2015, finally wire this one in!
   
 # 11/9/2015:
   "process-reaction" : "process_reaction",
