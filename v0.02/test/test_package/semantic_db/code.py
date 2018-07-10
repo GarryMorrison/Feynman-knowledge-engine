@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 4/4/2018
+# Update: 10/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1307,6 +1307,8 @@ class sequence(object):
         return seq
 
     def apply_fn(self, *args):
+        if len(self) == 0:
+            return sequence([]) + ket().apply_fn(*args)
         seq = sequence([])
         for x in self.data:
             y = x.apply_fn(*args)
@@ -2041,7 +2043,7 @@ class NewContext(object):
     # eg: starts-with |animal: > to list all animals.
     # e is a ket.
     def starts_with(self, e):
-        label = e.the_label()
+        label = e.label
         #    if len(label) == 0:
         #      return ket("",0)
         #    if label[-1] != "*":
@@ -2050,7 +2052,7 @@ class NewContext(object):
         result = superposition()
         for trial_label in self.ket_rules_dict:
             if trial_label.startswith(label):
-                result.data.append(ket(trial_label))
+                result.add(trial_label)
         return result
 
     # try and pretty print the sp data, instead of the BKO scheme.

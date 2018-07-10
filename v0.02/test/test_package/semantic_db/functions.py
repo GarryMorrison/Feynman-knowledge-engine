@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 9/7/2018
+# Update: 10/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -899,29 +899,7 @@ def categorize(context, parameters):
     return ket("categorize")
 
 
-import datetime
 
-
-# day of the week function:
-# day-of-the-week |date: 2014/06/3> => |day: Tuesday>
-# Code from here: http://stackoverflow.com/questions/9847213/which-day-of-week-given-a-date-python
-# Heh. Python makes this super easy!
-def day_of_the_week(one):
-    cat, value = extract_category_value(one.the_label())
-    if cat.split(': ')[-1] != "date":
-        return ket("", 0)
-
-    # 5/2/2015: tidy it up:
-    try:
-        year, month, day = (int(x) for x in value.split('/'))
-    except:
-        try:
-            year, month, day = (int(x) for x in value.split('-'))
-        except:
-            return ket("", 0)
-    day_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    the_day = day_list[datetime.date(year, month, day).weekday()]
-    return ket("day: " + the_day)
 
 
 # maybe do a version using pretty print columns code.
@@ -963,12 +941,7 @@ def old_split_ket(one):
     return result  # superficially it seems to work, because elsewhere tidies up our mess (probably the extract_compound_superposition code)
 
 
-def split_ket(one):
-    r = superposition()
-    for key, value in one.items():
-        for label in key.split():
-            r.add(label, value)
-    return r
+
 
 
 # 29/8/2015:
@@ -1067,44 +1040,10 @@ def old_apply_sp(context, one, two):
     return r
 
 
-# 17/1/2015:
-# clone(|x>,|y>)
-# copies rules from |x> and applies them to |y>
-# eg: age |x> => |31>
-# mother |x> => |Jane>
-# After clone(|x>,|y>) we have:
-# age |y> = |31>
-# mother |x> = |Jane>
-# not super sure the use of this yet though :)
-# quick test, and it works!
-def clone_ket(context, one, two):
-    one = one.ket()  # one needs to be a ket. two can be ket or sp.
-    operators = context.recall("supported-ops", one)
-    for op_ket in operators:
-        op = op_ket.label[4:]
-        rule = context.recall(op, one)  # we can't use one.apply_op(C,op) as that activates any stored rules.
-        for x in two:
-            context.learn(op, x, rule)
-    return ket("clone")
 
 
-# 10/11/2014:
-# expand-hierarchy (not that I can spell that word!)
-# expand-hierarchy |a: b: c: d>
-# maps to:
-# |a> + |a: b> + |a: b: c> + |a: b: c: d>
-#
-# example usage:
-# intersection(expand-hierarchy |a: b: c: d: e: f>, expand-hierarchy |a: b: c: x: y>)
-#
-# assumes "one" is a ket.
-def expand_hierarchy(one):
-    r = superposition()
-    L = []
-    for x in one.label.split(": "):
-        L.append(x)
-        r += ket(": ".join(L))
-    return r.multiply(one.value)
+
+
 
 
 # 10/11/2014:
@@ -1135,62 +1074,10 @@ def chars(one):
 
 
 
-# LOL. Seems we already have the equiv of push-float and pop-float at the start of this file!
-# Anyway, I think these are better versions.
-# push-float
-# examples:
-# push-float 3| > == |3>
-# push-float 3|x> == |x: 3>
-# push-float 3.2|x: y > == |x: y: 3.2> (not sure the number of decimal places to keep, initially all of them)
-#
-# 5/2/2015: hrmm... maybe push-float n|> == |> for any n?
-#
-def push_float(one):
-    if one.label == "":
-        return ket("", 0)
-    value = one.value
-    label = one.label.rstrip()
-    if float(value).is_integer():
-        value = str(int(value))
-    else:
-        value = str(value)
-    if label == "":
-        return ket(value)
-    return ket(label + ": " + value)
 
 
-# pop-float
-# examples:
-# pop-float |3.2> == 3.2| >
-# pop-float 5|7> == 35| >
-# pop-float |x: 2> == 2|x>
-# pop-float 5.1|x: y: 2> == 10.2|x: y>
-# pop-float |x: y> == |x: y>
-def pop_float(one):
-    coeff = one.value
-    label = one.label
-    try:
-        value = float(label)
-        label = " "
-    except:
-        try:
-            label, value = label.rsplit(": ", 1)
-            value = float(value)
-        except:
-            return one
-    return ket(label, coeff * value)
 
 
-# cat-depth
-# return the depth of the categories:
-# cat-depth |> == |number: 0>
-# cat-depth |x> == |number: 1>
-# cat-depth |x: y> == |number: 2>
-def category_depth(one):
-    #  return ket("number: " + str(len(one.label.split(": "))))
-    if one.label == "":
-        return ket("number: 0")
-    return ket("number: " + str(one.label.count(": ") + 1))
 
 
 # from PIL import Image
@@ -1608,12 +1495,7 @@ def new_image_save(one, filename):
     return ket("making progress!")
 
 
-# convert float to int if possible:
-def float_to_int(x, t=3):
-    if float(x).is_integer():
-        return str(int(x))
-    #  return str("%.3f" % x)
-    return str(round(x, t))
+
 
 
 # 29/1/2015:
@@ -1774,61 +1656,13 @@ def old_sp_such_that(one, context, ops):
     return result
 
 
-from time import sleep
 
 
-# 3/2/2015:
-# sleep for 5 seconds: sleep[5]
-def bko_sleep(one, time):
-    sleep(float(time))
-    return one
 
 
-# 4/2/2015:
-# map: 3752 -> 3,752
-# map: 29872 -> 29,872
-# and so on.
-# I don't understand how "{:,}".format(value) works, but copied from here:
-# http://stackoverflow.com/questions/1823058/how-to-print-number-with-commas-as-thousands-separators
-#
-# desired exmples:
-# to-comma-number |8825 => |8,825>
-# to-comma-number |population: 230000 => |population: 2,300,00>
-# to-comma-number |3759.27 => |3,759.27>
-# to-comma-number |km: 22956.53 => |km: 22,9356.53>
-# Tested, and it works!
-#
-# assumes one is a ket.
-def number_to_comma_number(one):
-    cat, value = extract_category_value(one.label)
-    try:
-        if float(value).is_integer():
-            value = int(value)
-        else:
-            value = float(value)
-    except:
-        return one
-    if len(cat) > 0:
-        cat += ": "
-    return ket(cat + "{:,}".format(value), one.value)
 
 
-# current date, and current time:
-import datetime
 
-
-def current_date(one):
-    return ket("date: " + str(datetime.date.today()))
-
-
-# buggy! Not my local time. Not sure how to fix yet!
-from time import gmtime, strftime
-
-
-def current_time(one):
-    #  return ket("time: " + str(datetime.datetime.now().time()))
-    #  return ket("time: " + str(datetime.datetime.now().strftime('%H:%M:%S')))
-    return ket("time: " + strftime('%H:%M:%S', gmtime()))
 
 
 # 9/2/2015: working towards a BKO rambler
@@ -1922,15 +1756,9 @@ def extract_year(one):
     return ket("year: " + year)
 
 
-# ket-length
-# eg: ket-length |abcde> == |number: 5>
-#
-def ket_length(one):
-    return ket("number: " + str(len(one.label)))
 
 
-# function to pretty print seconds
-# from here: http://stackoverflow.com/questions/4048651/python-function-to-convert-seconds-into-minutes-hours-and-days
+
 # eg:
 # >>> display_time(33)
 # '33 seconds'
@@ -1967,123 +1795,6 @@ def old_display_time(float_seconds):
     return ', '.join(result)
 
 
-# 11/3/2015: I tweaked so can handle ms too.
-intervals = (
-    ('weeks', 604800000),  # 1000 * 60 * 60 * 24 * 7
-    ('days', 86400000),  # 1000 * 60 * 60 * 24
-    ('hours', 3600000),  # 1000 * 60 * 60
-    ('minutes', 60000),  # 1000 * 60
-    ('seconds', 1000),  # 1000
-    ('milliseconds', 1),
-)
-
-
-def display_time(seconds):
-    ms = int(1000 * seconds)
-    result = []
-
-    for name, count in intervals:
-        value = ms // count
-        if value:
-            ms -= value * count
-            if value == 1:
-                name = name.rstrip('s')
-            result.append("{} {}".format(value, name))
-    if len(result) == 0:
-        return "0"
-    return ', '.join(result)
-
-
-# 6/3/2015:
-# display-algebra:
-# display-algebra (3|x*x> + 2|y> + |z> + 13| >)
-# 3*x*x + 2*y + z + 13
-#
-# what a mess! Surely we can write it neater than this!!!
-# seems to work though.
-#
-# one is a superposition
-def display_algebra(one):
-    result = []
-    for x in one:
-        if x.label == '':  # should never be true, since it should be taken care of elsewhere.
-            continue
-        if x.value == 1:
-            coeff = ""
-        else:
-            coeff = str(float_to_int(x.value)) + "*"
-        if x.label.strip() == '':
-            term = coeff.rstrip("*")
-            if term == "":
-                term = "1"
-        else:
-            term = coeff + x.label
-        result.append(term)
-    return ket(" + ".join(result))
-
-
-# 24/3/2015: we need this for find_unique
-# though if we had fast_superpostion in place, we probably wouldn't need it.
-# converts superposition to ordered dictionary
-#
-def sp_to_dict(one):
-    r = OrderedDict()
-    for elt in one:
-        r[elt.label] = elt.value
-    return r
-
-
-# 24/3/2015:
-# find-unique[names]
-#
-# unique-names |male name>
-# unique-names |female name>
-# unique-names |last name>
-#
-# yup. seems to work! And is fast! 4 days estimated for the names.sw data, down to 2 seconds, 753 milliseconds
-def find_unique(context, op):
-    kets = context.relevant_kets(op)
-    print("kets:", kets)
-    sp_list = [[x.label, sp_to_dict(x.apply_op(context, op))] for x in kets]
-    print("sp-list:", sp_list)
-
-    for your_label, your_dict in sp_list:
-        other_dict = {}
-        for label, the_dict in sp_list:
-            if label != your_label:
-                other_dict.update(the_dict)
-        result = superposition()
-        result.data = [ket(key, your_dict[key]) for key in your_dict if
-                       key not in other_dict]  # because we use dictionaries, presumably there will be no duplicate kets.
-        print(your_label, "result:", result)
-        context.learn("unique-" + op, your_label, result)
-    return ket("find-unique")
-
-
-# 2/6/2015:
-# find-inverse[op]
-#
-# hrmm... I wonder if it should be shifted from context class to here?
-# I mean, it does seem a very close brother with find-unique[op], yet that is here and not in context class. Shouldn't they be in the same spot?
-# Is it faster to have create-inverse[op] in the context class? Yeah, probably quite a bit faster than going via apply_op() and context.recall()!
-# does that mean I should move find_unique to the context class?
-#
-def find_inverse(context, op):
-    context.create_inverse_op(op)
-    return ket('find-inverse')
-
-
-
-
-
-# 14/4/2015:
-# starts-with |a: b: > returns |a: b: c>, |a: b: c: d> and so on.
-# eg, we can now do: starts-with |person: Fred > to list all people with first name Fred.
-#
-# e is a ket
-def starts_with(e, context):
-    return context.starts_with(e)
-
 
 # apply-weights[5,3,2] SP
 #
@@ -2097,15 +1808,7 @@ def apply_weights(one, weights):
     return result
 
 
-# rank (|a> + |b> + |c>)
-# 1|a> + 2|b> + 3|c>
-#
-# one is a superposition
-def rank(one):
-    r = superposition()
-    for k, (label, value) in enumerate(one.items()):
-        r.add(label, k + 1)
-    return r
+
 
 
 # lower-case, upper-case, sentence-case
@@ -2119,89 +1822,7 @@ def upper_case(one):
     return ket(one.label.upper(), one.value)
 
 
-# from the_semantic_db_code import fast_superposition
-# one-gram |text: just some text>
-# two-gram |text: just some more text>
-#
-# one is a ket
-def one_gram(one):
-    text = one.label
-    if text.startswith('text: '):
-        text = text[6:]
-    #  result = fast_superposition()
-    result = superposition()
-    for x in text.split():  # update to use the 2-gram word-split method?
-        for y in x.split('\\n'):  # what about escaped \n?
-            result += ket(
-                y)  # what about non-char words? eg, "This is a sentence." is returned as |this> + |is> + |a> + |sentence.>
-    #  return result.superposition()                # actually, maybe the "read" operator fixed this. Yup. Use that instead.
-    return result
 
-
-def create_word_n_grams(s, N):
-    return [" ".join(s[i:i + N]) for i in range(len(s) - N + 1)]
-
-
-def create_letter_n_grams(s, N):
-    return ["".join(s[i:i + N]) for i in range(len(s) - N + 1)]
-
-
-def two_gram(one):
-    text = one.label if type(one) == ket else one
-    if text.startswith('text: '):
-        text = text[6:]
-
-    #  text = "".join(c for c in text.lower() if c in 'abcdefghijklmnopqrstuvwxyz\'- ').split() # not sure this is exactly what we want!
-    words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]
-
-    result = superposition()
-    for w in create_word_n_grams(words, 2):
-        result += ket(w)
-    return result
-
-
-def three_gram(one):
-    text = one.label if type(one) == ket else one
-    if text.startswith('text: '):
-        text = text[6:]
-
-    words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]
-
-    result = superposition()
-    for w in create_word_n_grams(words, 3):
-        result += ket(w)
-    return result
-
-
-def make_ngrams(one, parameters, ngram_type):
-    logger.debug("one: " + str(one))
-    logger.debug("parameters: " + parameters)
-    logger.debug("ngram-type: " + ngram_type)
-    sizes = parameters.split(',')
-    for k in sizes:  # check our sizes are all integers. The list should be short, so the O(n) is very cheap.
-        if not k.isdigit():
-            return ket("", 0)
-
-    text = one.label if type(one) == ket else one
-    if text.startswith('text: '):
-        text = text[6:]
-
-    if ngram_type == "word":
-        words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]  # do we want .lower() in there?
-        create_ngram_fn = create_word_n_grams
-    elif ngram_type == "letter":
-        words = list(text)
-        create_ngram_fn = create_letter_n_grams
-    else:
-        return ket("", 0)
-
-    #  result = fast_superposition()           # seems to bug out.
-    result = superposition()
-    for k in sizes:
-        for w in create_ngram_fn(words, int(k)):
-            result += ket(w)
-    #  return result.superposition()
-    return result
 
 
 # 30/4/2015:
@@ -2515,61 +2136,7 @@ def select_chars(one, positions):
         return ket("", 0)
 
 
-import hashlib
 
-
-# 24/8/2015:
-# ket-hash[size] |some ket>
-#
-# one is a ket
-def ket_hash(one, size):
-    logger.debug("ket-hash one: " + str(one))
-    logger.debug("ket-hash size: " + size)
-    try:
-        size = int(size)
-    except:
-        return ket("", 0)
-    our_hash = hashlib.md5(one.label.encode('utf-8')).hexdigest()[-size:]
-    return ket(our_hash, one.value)
-
-
-import zlib
-
-
-# 19/6/2016:
-# hash-compress (|a> + |b> + |c> + |d>)
-#
-# sa: hash-compress split |a b c d>
-# |620062> + |630063> + |640064> + |650065>
-#
-# one is a ket
-def hash_compress(one):
-    our_hash = zlib.adler32(one.label.encode('utf-8'))
-    return ket("%0.2X" % our_hash, one.value)
-
-
-# 24/8/2015:
-# hash-data[size] SP
-#
-# one is a superposition
-def hash_data(one, size):
-    logger.debug("hash-data one: " + str(one))
-    logger.debug("hash-data size: " + size)
-    try:
-        size = int(size)
-    except:
-        return ket("", 0)
-    array = [0] * (16 ** size)
-    for x in one:
-        our_hash = hashlib.md5(x.label.encode('utf-8')).hexdigest()[-size:]
-        k = int(our_hash, 16)
-        array[k] += 1 * x.value
-    logger.info("hash-data writing to tmp-sp.dat")
-    f = open('tmp-sp.dat', 'w')
-    for k in array:
-        f.write(str(k) + '\n')
-    f.close()
-    return ket("hash-data")
 
 
 # eg: process-reaction(current-sp,2|H2> + |O2>,2|H2O>) == current-sp - (2|H2> + |O2>) + 2|H2O>
@@ -2959,26 +2526,7 @@ def have_in_common(one, context):
     # ... finish
 
 
-def bar_chart(one, width, sorted=False):
-    if len(one) == 0:
-        return ket("bar chart")
-    try:
-        width = int(width)
-    except:
-        return ket("bar chart")
-    max_len = max(len(x.label) for x in one)
-    #  print("max_len:",max_len)
-    #  two = one.coeff_sort().rescale(width).apply_sigmoid(floor)
-    if sorted:
-        two = one.coeff_sort().rescale(width)
-    else:
-        two = one.rescale(width)
-    mid = ' : '
-    print("----------")
-    for x in two:
-        print(x.label.ljust(max_len) + mid + '|' * int(x.value))
-    print("----------")
-    return ket("bar chart")
+
 
 
 # 15/9/2016:
@@ -4007,7 +3555,7 @@ def vsa_mult(one, two):
             print("pieces:", pieces)
             new_pieces = []
             for p in pieces:
-                if p in x_pieces and p in y_pieces:  # not pefect, but works for now.
+                if p in x_pieces and p in y_pieces:  # not perfect, but works for now.
                     continue
                 new_pieces.append(p)
             #      new_pieces.sort()
@@ -4269,6 +3817,35 @@ def extract_category_value(x):
     return cat, val
 
 
+# function to pretty print seconds
+# from here: http://stackoverflow.com/questions/4048651/python-function-to-convert-seconds-into-minutes-hours-and-days
+# 11/3/2015: I tweaked so can handle ms too.
+intervals = (
+    ('weeks', 604800000),  # 1000 * 60 * 60 * 24 * 7
+    ('days', 86400000),  # 1000 * 60 * 60 * 24
+    ('hours', 3600000),  # 1000 * 60 * 60
+    ('minutes', 60000),  # 1000 * 60
+    ('seconds', 1000),  # 1000
+    ('milliseconds', 1),
+)
+
+
+def display_time(seconds):
+    ms = int(1000 * seconds)
+    result = []
+
+    for name, count in intervals:
+        value = ms // count
+        if value:
+            ms -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("{} {}".format(value, name))
+    if len(result) == 0:
+        return "0"
+    return ', '.join(result)
+
+
 # set invoke method:
 sp_fn_table['ssplit'] = 'ssplit'
 # compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")'                  # maybe it should be an apply_fn??
@@ -4277,27 +3854,28 @@ compound_table['ssplit'] = ['apply_sp_fn', 'ssplit', '']
 # set usage info:
 function_operators_usage['ssplit'] = """
     description:
-      ssplit splits the superposition into a sequence
-      ssplit["str"] splits the superposition into a sequence at the 'str' substring
+        ssplit splits the superposition into a sequence
+        ssplit["str"] splits the superposition into a sequence at the 'str' substring
       
     examples:
-      ssplit |Fred>
-        |F> . |r> . |e> . |d>
+        ssplit |Fred>
+            |F> . |r> . |e> . |d>
       
-      ssplit (|a> + 2|bcd> + 3.1|efgh>)
-        |a> . 2|b> . 2|c> . 2|d> . 3.1|e> . 3.1|f> . 3.1|g> . 3.1|h>      
+        ssplit (|a> + 2|bcd> + 3.1|efgh>)
+            |a> . 2|b> . 2|c> . 2|d> . 3.1|e> . 3.1|f> . 3.1|g> . 3.1|h>      
 
-      ssplit[", "] |a, b, c>
-        |a> . |b> . |c>
+        ssplit[", "] |a, b, c>
+            |a> . |b> . |c>
 
-      ssplit[" and "] |a, b, c and d>
-        |a, b, c> . |d>
+        ssplit[" and "] |a, b, c and d>
+            |a, b, c> . |d>
 
-      ssplit[", "] ssplit[" and "] |a, b, c and d>
-        |a> . |b> . |c> . |d>
+        ssplit[", "] ssplit[" and "] |a, b, c and d>
+            |a> . |b> . |c> . |d>
+    
+    see also:
+        split
 """
-
-
 def ssplit(one, split_char=''):
     if split_char == '':
         def split_with(x):
@@ -4311,6 +3889,32 @@ def ssplit(one, split_char=''):
             for c in split_with(x.label):
                 seq += ket(c, x.value)
     return seq
+
+
+# set invoke method:
+fn_table['split'] = 'split_ket'
+# set usage info:
+function_operators_usage['split'] = """
+    description:
+        converts a ket to a superposition, splitting on the ' ' char.
+
+    examples:
+        split |a b c d e>
+            |a> + |b> + |c> + |d> + |e>
+
+    see also:
+        ssplit
+        
+    TODO:
+        make it consistent with ssplit?
+"""
+def split_ket(one):
+    r = superposition()
+    for key, value in one.items():
+        for label in key.split():
+            r.add(label, value)
+    return r
+
 
 
 # set invoke method:
@@ -4668,10 +4272,8 @@ function_operators_usage['such-that'] = """
         |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |Sunday>
                         
 """
-
-
 def seq_such_that(one, context, *ops):
-    def valid_ket(one, context, *ops):
+    def valid_ket(one, context, ops):
         for op in ops:
             e = one.apply_op(context, op).to_sp()
             if e.label not in ["true", "yes"]:
@@ -4684,7 +4286,7 @@ def seq_such_that(one, context, *ops):
     for sp in sequence(one):
         r = superposition()
         for x in sp:
-            if valid_ket(x, context, *ops):
+            if valid_ket(x, context, ops):
                 r.add_sp(x)
         seq += r
     return seq.sdrop()
@@ -4776,6 +4378,9 @@ function_operators_usage['table'] = """
         
     see also:
       such-that, sort-by
+      
+    TODO:
+        implement transpose table. eg, bots.sw would be much cleaner/simpler.
 """
 
 
@@ -4860,8 +4465,6 @@ function_operators_usage['plot'] = """
       plot rank split |a b c d e f>
       plot shuffle rank split |a b c d e f>
 """
-
-
 def plot(one):
     values = []
     labels = []
@@ -6602,12 +6205,49 @@ function_operators_usage['round'] = """
         |3.142>
 
     see also:
-      times-by, divide-by, int-divide-by, plus, minus, mod, is-mod    
+      times-by, divide-by, int-divide-by, plus, minus, mod, is-mod, to-comma-number    
 """
 
 
 def round_numbers(one, t):  # cool, this one seems to work. Now need to do the rest.
     return numbers_fn(round, one, t)
+
+
+# set invoke method:
+fn_table['to-comma-number'] = 'number_to_comma_number'
+# set usage info:
+function_operators_usage['to-comma-number'] = """
+    description:
+        insert thousands commas into numbers 
+
+    examples:
+        to-comma-number |8825>
+            |8,825>
+
+        to-comma-number |population: 2300000>
+            |population: 2,300,00>
+
+        to-comma-number |3759.27>
+            |3,759.27>
+
+        to-comma-number |km: 22956.53>
+            |km: 22,9356.53>
+
+    see also:
+        table, round
+"""
+def number_to_comma_number(one):
+    cat, value = extract_category_value(one.label)
+    try:
+        if float(value).is_integer():
+            value = int(value)
+        else:
+            value = float(value)
+    except:
+        return one
+    if len(cat) > 0:
+        cat += ": "
+    return ket(cat + "{:,}".format(value), one.value)
 
 
 # set invoke method:
@@ -8793,7 +8433,7 @@ sequence_functions_usage['algebra'] = """
             |a*a*a> + 3|a*a*b> + 3|a*b*b> + |b*b*b>
 
     see also:
-        non-Abelian-algebra, arithmetic
+        non-Abelian-algebra, arithmetic, display-algebra
 """
 def algebra(one, operator, two, Abelian=True):
     op_label = operator if type(operator) == str else operator.to_sp().label
@@ -8864,6 +8504,41 @@ def complex_algebra_mult(one, two):
             if x.label == 'imag' and y.label == 'imag':
                 result += ket("real", -1 * x.value * y.value)
     return result
+
+
+# set invoke method:
+sp_fn_table['display-algebra'] = 'display_algebra'
+# set usage info:
+function_operators_usage['display-algebra'] = """
+    description:
+        display algebra in slightly tidier form
+
+    examples:
+        display-algebra (3|x*x> + 2|y> + |z> + 13| >)
+            |3*x*x + 2*y + z + 13>
+        
+    see also:
+         algebra
+"""
+# one is a superposition
+def display_algebra(one):
+    result = []
+    for x in one:
+        if x.label == '':  # should never be true, since it should be taken care of elsewhere.
+            continue
+        if x.value == 1:
+            coeff = ""
+        else:
+            coeff = str(float_to_int(x.value)) + "*"
+        if x.label.strip() == '':
+            term = coeff.rstrip("*")
+            if term == "":
+                term = "1"
+        else:
+            term = coeff + x.label
+        result.append(term)
+    return ket(" + ".join(result))
+
 
 
 # set invoke method:
@@ -9011,35 +8686,97 @@ def single_matrix_unmerged(one, context, op):
     return two, M
 
 
+# uses x.merged_apply_op(context,ops) instead of x.apply_op(context,op)
+def single_matrix_merged(one, context, ops):
+    def sp_coeffs_to_list(one):  # what happens if one is a ket? Fixed, I think.
+        return "\n".join(coeff_to_str(x.value) for x in one)
+
+    def merged_apply_op(one, context, ops):
+        r = one
+        for op in ops[::-1]:
+            r = r.apply_op(context, op).to_sp()
+        return r
+
+    one = one.to_sp().apply_sigmoid(set_to, 1)
+    two = superposition()  # two is the list of kets that will be on the left hand side.
+    for elt in one:
+        sp = merged_apply_op(elt, context, ops)
+        two = union(two, sp)
+    two = two.ket_sort().multiply(0)
+    matrix_columns = [sp_coeffs_to_list((merged_apply_op(elt, context, ops) + two).ket_sort()) for elt in one]
+    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')  # M is the matrix
+    return two, M
+
+
 # second version of code to spit out a matrix:
 # seems to be correct.
 # set invoke method:
-compound_table['working-matrix'] = ['apply_naked_fn', 'matrix', 'context']
+compound_table['merged-matrix'] = ['apply_sp_fn', 'matrix', 'context']
 # set usage info:
-function_operators_usage['working-matrix'] = """
+function_operators_usage['merged-matrix'] = """
     description:
-        first attempt at mapping an operator to its adjacency matrix
+        merge the operators into a single merged matrix
         
     examples:
+        sa: load matrices.sw
+        sa: merged-matrix[M2,M1]
+        [ z1 ] = [  0   42  6   6  36  24  6   ] [ x1 ]
+        [ z2 ]   [  9   32  14  2  24  32  8   ] [ x2 ]
+        [ z3 ]   [  12  73  23  7  58  60  15  ] [ x3 ]
+        [ z4 ]   [  0   63  9   9  54  36  9   ] [ x4 ]
+        [ z5 ]   [  3   41  9   5  34  28  7   ] [ x5 ]
+                                                 [ x6 ]
+                                                 [ x7 ]
 
     see also:
+        matrix, naked-matrix
 """
-def matrix(context, op):
+def matrix(one, context, *ops):
     def sp_to_vect(one):
         vect = "\n".join(x.label for x in one)
         return paste_columns([vect], '[ ', '', ' ]')
 
-    one = context.relevant_kets(op).ket_sort()  # one is the list of kets that will be on the right hand side.
-    # usefully, relevant_kets() always returns a superposition.
-    if len(one) == 0:  # if one is empty, return the identity ket.
-        return ket()
+    if len(one) == 0:
+        one = context.relevant_kets(ops[-1]).ket_sort()  # one is the list of kets that will be on the right hand side.
+        if len(one) == 0:
+            return ket()
 
-    two, M = single_matrix_unmerged(one, context, op)
+    two, M = single_matrix_merged(one, context, ops)
     x = sp_to_vect(one)
     y = sp_to_vect(two)
 
     matrix = paste_columns([y, '=', M, x])
     print(matrix)
+    return ket("matrix")
+
+
+# set invoke method:
+compound_table['naked-matrix'] = ['apply_sp_fn', 'naked_matrix', 'context']
+# set usage info:
+function_operators_usage['naked-matrix'] = """
+    description:
+        display a single merged adjacency matrix
+
+    examples:
+        sa: load matrices.sw
+        sa: naked-matrix[M2,M1]
+        [  0   42  6   6  36  24  6   ]
+        [  9   32  14  2  24  32  8   ]
+        [  12  73  23  7  58  60  15  ]
+        [  0   63  9   9  54  36  9   ]
+        [  3   41  9   5  34  28  7   ]
+
+    see also:
+        matrix, merged-matrix
+"""
+def naked_matrix(one, context, *ops):
+    if len(one) == 0:
+        one = context.relevant_kets(ops[-1]).ket_sort()  # one is the list of kets that will be on the right hand side.
+        if len(one) == 0:
+            return ket()
+
+    two, M = single_matrix_merged(one, context, ops)
+    print(M)
     return ket("matrix")
 
 
@@ -9110,7 +8847,7 @@ function_operators_usage['matrix'] = """
                                   [ x7 ]
 
     see also:
-        merged-matrix
+        merged-matrix, naked-matrix
 """
 def multi_matrix(one, context, *ops):
     def sp_to_vect(one):
@@ -9145,21 +8882,6 @@ def multi_matrix(one, context, *ops):
 
     return ket("matrix")
 
-
-# uses x.merged_apply_op(context,ops) instead of x.apply_op(context,op)
-def single_matrix_merged(one, context, op):
-    def sp_coeffs_to_list(one):  # what happens if one is a ket? Fixed, I think.
-        return "\n".join(coeff_to_str(x.value) for x in one)
-
-    one = one.to_sp().apply_sigmoid(set_to, 1)
-    two = superposition()  # two is the list of kets that will be on the left hand side.
-    for elt in one:
-        sp = elt.merged_apply_op(context, op).to_sp()
-        two = union(two, sp)
-    two = two.ket_sort().multiply(0)
-    matrix_columns = [sp_coeffs_to_list((elt.merged_apply_op(context, op).to_sp() + two).ket_sort()) for elt in one]
-    M = paste_columns(matrix_columns, '[  ', '  ', '  ]')  # M is the matrix
-    return two, M
 
 
 # see if we can tidy this up later!
@@ -9232,3 +8954,776 @@ def vector(one, context, ops):
     print(matrix)
     return ket("matrix")
 
+
+
+import datetime
+
+# day of the week function:
+# day-of-the-week |date: 2014/06/3> => |day: Tuesday>
+# Code from here: http://stackoverflow.com/questions/9847213/which-day-of-week-given-a-date-python
+# Heh. Python makes this super easy!
+# set invoke method:
+fn_table['day-of-the-week'] = 'day_of_the_week'
+# set usage info:
+function_operators_usage['day-of-the-week'] = """
+    description:
+        convert the date into the day of the week
+        date must be in year/month/day format
+
+    examples:
+        sa: day-of-the-week |date: 2018/7/10>
+        |day: Tuesday>
+
+    see also:
+         current-date, current-time
+"""
+def day_of_the_week(one):
+    cat, value = extract_category_value(one.label)
+    if cat.split(': ')[-1] != "date":
+        return ket()
+
+    # 5/2/2015: tidy it up:
+    try:
+        year, month, day = (int(x) for x in value.split('/'))
+    except:
+        try:
+            year, month, day = (int(x) for x in value.split('-'))
+        except:
+            return ket()
+    day_list = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    the_day = day_list[datetime.date(year, month, day).weekday()]
+    return ket("day: " + the_day)
+
+
+# set invoke method:
+fn_table['current-date'] = 'current_date'
+# set usage info:
+function_operators_usage['current-date'] = """
+    description:
+        return today's date
+
+    examples:
+        sa: current-date
+        |date: 2018-07-10>
+
+    see also:
+        current-time, day-of-the-week
+"""
+def current_date(one):
+    return ket("date: " + str(datetime.date.today()))
+
+
+# buggy! Not my local time. Not sure how to fix yet!
+from time import gmtime, strftime, ctime, sleep
+
+# set invoke method:
+fn_table['current-time'] = 'current_time'
+# set usage info:
+function_operators_usage['current-time'] = """
+    description:
+        return the current time
+
+    examples:
+        sa: current-time
+        |Tue Jul 10 05:06:21 2018>
+
+    see also:
+        current-date, day-of-the-week
+    
+    TODO:
+        fix: currently it gets the local time-zone wrong
+"""
+def current_time(one):
+    #  return ket("time: " + str(datetime.datetime.now().time()))
+    #  return ket("time: " + str(datetime.datetime.now().strftime('%H:%M:%S')))
+    # return ket("time: " + strftime('%H:%M:%S', gmtime()))
+    return ket(ctime())
+
+
+# set invoke method:
+compound_table['sleep'] = ['apply_seq_fn', 'bko_sleep', '']
+# set usage info:
+function_operators_usage['sleep'] = """
+    description:
+        sleep[n] sleeps for n seconds
+        n is either an int or a float
+        returns the input sequence, so it can be easily chained
+
+    examples:
+        sleep[3.14]
+        
+        sleep[2] (|a> + |b> . |c>)
+            |a> + |b> . |c>
+
+    see also:
+
+"""
+def bko_sleep(one, time):
+    sleep(float(time))
+    return one
+
+
+# 17/1/2015:
+# clone(|x>,|y>)
+# copies rules from |x> and applies them to |y>
+# eg: age |x> => |31>
+# mother |x> => |Jane>
+# After clone(|x>,|y>) we have:
+# age |y> = |31>
+# mother |x> = |Jane>
+# not super sure the use of this yet though :)
+# quick test, and it works!
+# set invoke method:
+context_whitelist_table_2['clone'] = 'clone_ket'
+# set usage info:
+sequence_functions_usage['clone'] = """
+    description:
+        clone(|x>, |y>), copies rules from |x> and applies them to |y>
+
+    examples:
+        sa: context clone example
+        sa: age |Sarah> => |31>
+        sa: mother |Sarah> => |Jane>
+        sa: father |Sarah> => |Rob>
+        sa: clone(|Sarah>, |Emma>)
+        sa: dump
+        ----------------------------------------
+         |context> => |context: clone example>
+        previous |context> => |context: global context>
+        
+        age |Sarah> => |31>
+        mother |Sarah> => |Jane>
+        father |Sarah> => |Rob>
+        
+        age |Emma> => |31>
+        mother |Emma> => |Jane>
+        father |Emma> => |Rob>
+        ----------------------------------------
+
+    see also:
+
+"""
+def clone_ket(context, one, two):
+    one = one.to_sp()
+    two = two.to_sp()
+    for elt in one:
+        for op_ket in context.recall("supported-ops", elt):
+            op = op_ket.label[4:]
+            rule = context.recall(op, elt)
+            for x in two:
+                context.learn(op, x, rule)
+    return ket('clone')
+
+
+
+# set invoke method:
+fn_table['expand-hierarchy'] = 'expand_hierarchy'
+# set usage info:
+function_operators_usage['expand-hierarchy'] = """
+    description:
+        expand the category hierarchy
+        
+    examples:
+        expand-hierarchy |a: b: c: d>
+            |a> + |a: b> + |a: b: c> + |a: b: c: d>
+        
+        expand-hierarchy |a: b: c: d: e: f>
+            |a> + |a: b> + |a: b: c> + |a: b: c: d> + |a: b: c: d: e> + |a: b: c: d: e: f>
+        
+        expand-hierarchy |a: b: c: x: y>
+            |a> + |a: b> + |a: b: c> + |a: b: c: x> + |a: b: c: x: y>
+        
+        intersection(expand-hierarchy |a: b: c: d: e: f>, expand-hierarchy |a: b: c: x: y>)
+            |a> + |a: b> + |a: b: c>
+        
+        expand-hierarchy |animal: mammal: dog>
+            |animal> + |animal: mammal> + |animal: mammal: dog>
+       
+    see also:
+        extract-category, extract-value, category-depth
+"""
+# assumes "one" is a ket.
+def expand_hierarchy(one):
+    r = superposition()
+    L = []
+    for x in one.label.split(": "):
+        L.append(x)
+        r += ket(": ".join(L))
+    return r.multiply(one.value)
+
+
+# set invoke method:
+fn_table['category-depth'] = 'category_depth'
+# set usage info:
+function_operators_usage['category-depth'] = """
+    description:
+        return the depth of the categories
+
+    examples:
+        category-depth |>
+            |number: 0>
+            
+        category-depth |dog>
+            |number: 1>
+        
+        category-depth |animal: mammal: dog>
+            |number: 3>
+
+    see also:
+        extract-category, extract-value, expand-hierarchy
+    
+"""
+def category_depth(one):
+    if len(one) == 0:
+        return ket("number: 0")
+    return ket("number: " + str(one.label.count(": ") + 1))
+
+
+# ket-length
+# eg: ket-length |abcde> == |number: 5>
+#
+# set invoke method:
+fn_table['ket-length'] = 'ket_length'
+# set usage info:
+function_operators_usage['ket-length'] = """
+    description:
+        return the length of the ket
+
+    examples:
+        ket-length |>
+            |number: 0>
+    
+        ket-length |abcde>
+            |number: 5>
+
+    see also:
+        category-depth
+"""
+def ket_length(one):
+    return ket("number: " + str(len(one.label)))
+
+
+# set invoke method:
+fn_table['push-float'] = 'push_float'
+# set usage info:
+function_operators_usage['push-float'] = """
+    description:
+        pushes the float coefficient to a category
+
+    examples:
+        push-float 3|>
+            |>
+        
+        -- NB: the space in the ket:
+        push-float 3| >
+            |3>
+
+        push-float 3|x>
+            |x: 3>
+        
+        push-float 3.2|x: y: z>
+            |x: y: z: 3.2>
+        
+    see also:
+        pop-float
+"""
+def push_float(one):
+    if len(one) == 0:
+        return ket()
+    value = one.value
+    label = one.label.rstrip()
+    if float(value).is_integer():
+        value = str(int(value))
+    else:
+        value = str(value)
+    if label == "":
+        return ket(value)
+    return ket(label + ": " + value)
+
+
+# set invoke method:
+fn_table['pop-float'] = 'pop_float'
+# set usage info:
+function_operators_usage['pop-float'] = """
+    description:
+        pops the trailing float in the ket to the coefficient
+        if the starting ket has a coefficient then multiply it by this value
+        if the trailing value is not a float, then leave the ket unchanged
+
+    examples:
+        pop-float |3.2>
+            3.2| >
+        
+        -- coefficient of 5, so multiply by 7:
+        pop-float 5|7>
+            35| >
+        
+        pop-float |x: 2>
+            2|x>
+            
+        -- again, multiply the coefficient by the value
+        pop-float 5.1|x: y: 2>
+            10.2|x: y>
+            
+        -- y is not a float, so leave |x: y> unchanged
+        pop-float |x: y>
+            |x: y>
+
+    see also:
+        push-float
+"""
+def pop_float(one):
+    coeff = one.value
+    label = one.label
+    try:
+        value = float(label)
+        label = " "
+    except:
+        try:
+            label, value = label.rsplit(": ", 1)
+            value = float(value)
+        except:
+            return one
+    return ket(label, coeff * value)
+
+
+
+# 24/3/2015:
+# find-unique[names]
+#
+# unique-names |male name>
+# unique-names |female name>
+# unique-names |last name>
+#
+# yup. seems to work! And is fast! 4 days estimated for the names.sw data, down to 2 seconds, 753 milliseconds
+# set invoke method:
+compound_table['find-unique'] = ['apply_naked_fn', 'find_unique', 'context']
+# set usage info:
+function_operators_usage['find-unique'] = """
+    description:
+        learn the kets that are unique with respect to that operator
+        
+    examples:
+        -- load our data:
+        load fred-sam-friends.sw
+        
+        -- show the common friends between Fred and Sam:
+        -- (these are the ones that are not unique)
+        common[friends] split |Fred Sam>
+            |Jack> + |Emma> + |Charlie>
+
+        -- find the unique friends for Fred and Sam:
+        find-unique[friends]
+        
+        -- display the results:
+        dump
+            ----------------------------------------
+             |context> => |context: friends>
+            previous |context> => |context: global context>
+            
+            friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+            unique-friends |Fred> => |Harry> + |Ed> + |Mary> + |Rob> + |Patrick>
+            
+            friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+            unique-friends |Sam> => |George> + |Rober> + |Frank> + |Julie>
+            ----------------------------------------
+
+    see also:
+        find-inverse
+"""
+def find_unique(context, op):
+    sp_dict = {}
+    for x in context.relevant_kets(op):
+        sp_dict[x.label] = x.apply_op(context, op).to_sp()
+
+    for your_label, your_sp in sp_dict.items():
+        other_dict = {}
+        for label, sp in sp_dict.items():
+            if label != your_label:
+                for x in sp:
+                    other_dict[x.label] = True
+        r = superposition()
+        for x in your_sp:
+            if x.label not in other_dict:
+                r.add_sp(x)
+        context.learn('unique-' + op, your_label, r)
+
+    return ket('find-unique')
+
+
+
+# set invoke method:
+compound_table['find-inverse'] = ['apply_naked_fn', 'find_inverse', 'context']
+# set usage info:
+function_operators_usage['find-inverse'] = """
+    description:
+        learn the set of inverses for the given operator(s)       
+
+    examples:
+        sa: load fred-sam-friends.sw
+        sa: find-inverse[friends]
+        sa: dump
+        ----------------------------------------
+         |context> => |context: friends>
+        previous |context> => |context: global context>
+        
+        friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+        friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+        
+        inverse-friends |Jack> => |Fred> + |Sam>
+        inverse-friends |Harry> => |Fred>
+        inverse-friends |Ed> => |Fred>
+        inverse-friends |Mary> => |Fred>
+        inverse-friends |Rob> => |Fred>
+        inverse-friends |Patrick> => |Fred>
+        inverse-friends |Emma> => |Fred> + |Sam>
+        inverse-friends |Charlie> => |Fred> + |Sam>
+        inverse-friends |George> => |Sam>
+        inverse-friends |Rober> => |Sam>
+        inverse-friends |Frank> => |Sam>
+        inverse-friends |Julie> => |Sam>
+        ----------------------------------------
+        
+    see also:
+        find-unique
+"""
+def find_inverse(context, *ops):
+    for op in ops:
+        context.create_inverse_op(op)
+    return ket('find-inverse')
+
+
+# set invoke method:
+sp_fn_table['rank'] = 'rank'
+# set usage info:
+function_operators_usage['rank'] = """
+    description:
+        apply position in superposition to coefficient
+        ie, rank them
+
+    examples:
+        rank (|a> + |b> + |c>)
+            |a> + 2|b> + 3|c>
+        
+        rank split |a b c d e f>
+            |a> + 2|b> + 3|c> + 4|d> + 5|e> + 6|f>
+
+    see also:
+"""
+# one is a superposition
+def rank(one):
+    r = superposition()
+    for k, (label, value) in enumerate(one.items()):
+        r.add(label, k + 1)
+    return r
+
+
+# 14/4/2015:
+# starts-with |a: b: > returns |a: b: c>, |a: b: c: d> and so on.
+# eg, we can now do: starts-with |person: Fred > to list all people with first name Fred.
+#
+# set invoke method:
+ket_context_table['starts-with'] = 'starts_with'
+# set usage info:
+function_operators_usage['starts-with'] = """
+    description:
+        returns all relevant kets that start with the given prefix
+
+    examples:
+        -- learn some knowledge:
+        age |person: Fred Smith> => |47>
+        mother |person: Fred Jones> => |Mary>
+        age |person: Sam Hughes> => |49>
+
+        -- now ask some questions:
+        starts-with |>
+            |context> + |person: Fred Smith> + |person: Fred Jones> + |person: Sam Hughes>
+
+        starts-with |person: >
+            |person: Fred Smith> + |person: Fred Jones> + |person: Sam Hughes>
+
+        starts-with |person: Fred >
+            |person: Fred Smith> + |person: Fred Jones>
+
+    see also:
+        relevant-kets
+"""
+# e is a ket
+def starts_with(e, context):
+    return context.starts_with(e)
+
+
+
+# one is a ket
+def one_gram(one):
+    text = one.label
+    if text.startswith('text: '):
+        text = text[6:]
+    #  result = fast_superposition()
+    result = superposition()
+    for x in text.split():  # update to use the 2-gram word-split method?
+        for y in x.split('\\n'):  # what about escaped \n?
+            result += ket(
+                y)  # what about non-char words? eg, "This is a sentence." is returned as |this> + |is> + |a> + |sentence.>
+    #  return result.superposition()                # actually, maybe the "read" operator fixed this. Yup. Use that instead.
+    return result
+
+
+def create_word_n_grams(s, N):
+    return [" ".join(s[i:i + N]) for i in range(len(s) - N + 1)]
+
+
+def create_letter_n_grams(s, N):
+    return ["".join(s[i:i + N]) for i in range(len(s) - N + 1)]
+
+
+def two_gram(one):
+    text = one.label if type(one) == ket else one
+    if text.startswith('text: '):
+        text = text[6:]
+
+    #  text = "".join(c for c in text.lower() if c in 'abcdefghijklmnopqrstuvwxyz\'- ').split() # not sure this is exactly what we want!
+    words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]
+
+    result = superposition()
+    for w in create_word_n_grams(words, 2):
+        result += ket(w)
+    return result
+
+
+def three_gram(one):
+    text = one.label if type(one) == ket else one
+    if text.startswith('text: '):
+        text = text[6:]
+
+    words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]
+
+    result = superposition()
+    for w in create_word_n_grams(words, 3):
+        result += ket(w)
+    return result
+
+
+def make_ngrams(one, sizes, ngram_type):
+    text = one.label if type(one) == ket else one
+    if text.startswith('text: '):
+        text = text[6:]
+
+    if ngram_type == "word":
+        words = [w for w in re.split('[^a-z0-9_\']', text.lower().replace('\\n', ' ')) if w]  # do we want .lower() in there?
+        create_ngram_fn = create_word_n_grams
+
+    elif ngram_type == "letter":
+        words = list(text)
+        create_ngram_fn = create_letter_n_grams
+    else:
+        return ket()
+
+    result = superposition()
+    for k in sizes:
+        for w in create_ngram_fn(words, int(k)):
+            result.add(w)
+    return result
+
+
+# set invoke method:
+compound_table['word-ngrams'] = ['apply_fn', 'word_ngrams', '']
+# set usage info:
+function_operators_usage['word-ngrams'] = """
+    description:
+        create word ngrams, of specified sizes
+
+    examples:
+        word-ngrams[1] |happy to see you>
+            |happy> + |to> + |see> + |you>
+
+        word-ngrams[1,2,3] |happy to see you>
+            |happy> + |to> + |see> + |you> + |happy to> + |to see> + |see you> + |happy to see> + |to see you>
+
+    see also:
+        letter-ngrams
+"""
+def word_ngrams(one, *parameters):
+    return make_ngrams(one, parameters, 'word')
+
+
+# set invoke method:
+compound_table['letter-ngrams'] = ['apply_fn', 'letter_ngrams', '']
+# set usage info:
+function_operators_usage['letter-ngrams'] = """
+    description:
+        create letter ngrams, of specified sizes
+
+    examples:
+        letter-ngrams[1] |fish>
+            |f> + |i> + |s> + |h>
+
+        letter-ngrams[1] |happy>
+            |h> + |a> + 2|p> + |y>
+
+        letter-ngrams[1,2,3] |happy>
+            |h> + |a> + 2|p> + |y> + |ha> + |ap> + |pp> + |py> + |hap> + |app> + |ppy>
+
+    see also:
+        word-ngrams
+"""
+def letter_ngrams(one, *parameters):
+    return make_ngrams(one, parameters, 'letter')
+
+
+import hashlib
+
+# set invoke method:
+compound_table['ket-hash'] = ['apply_fn', 'ket_hash', '']
+# set usage info:
+function_operators_usage['ket-hash'] = """
+    description:
+        md5 hash the given ket, but only keep n characters
+
+    examples:
+        ket-hash[4] |fish>
+            |b309>
+        
+        ket-hash[10] |soup>
+            |ec72b9a612>
+
+    see also:
+
+"""
+# one is a ket
+def ket_hash(one, size):
+    try:
+        size = int(size)
+    except:
+        return ket()
+    our_hash = hashlib.md5(one.label.encode('utf-8')).hexdigest()[-size:]
+    return ket(our_hash, one.value)
+
+
+import zlib
+
+# 19/6/2016:
+# hash-compress (|a> + |b> + |c> + |d>)
+#
+# sa: hash-compress split |a b c d>
+# |620062> + |630063> + |640064> + |650065>
+#
+# one is a ket
+def hash_compress(one):
+    our_hash = zlib.adler32(one.label.encode('utf-8'))
+    return ket("%0.2X" % our_hash, one.value)
+
+
+# 24/8/2015:
+# hash-data[size] SP
+#
+# one is a superposition
+def hash_data(one, size):
+    logger.debug("hash-data one: " + str(one))
+    logger.debug("hash-data size: " + size)
+    try:
+        size = int(size)
+    except:
+        return ket("", 0)
+    array = [0] * (16 ** size)
+    for x in one:
+        our_hash = hashlib.md5(x.label.encode('utf-8')).hexdigest()[-size:]
+        k = int(our_hash, 16)
+        array[k] += 1 * x.value
+    logger.info("hash-data writing to tmp-sp.dat")
+    f = open('tmp-sp.dat', 'w')
+    for k in array:
+        f.write(str(k) + '\n')
+    f.close()
+    return ket("hash-data")
+
+
+# set invoke method:
+compound_table['bar-chart'] = ['apply_sp_fn', 'bar_chart', '']
+# set usage info:
+function_operators_usage['bar-chart'] = """
+    description:
+        ascii bar chart of the given superposition        
+        where n specifies max width of bar-chart
+        
+    examples:
+        bar-chart[30] rank split |a b c d e f>
+            ----------
+            a : |||||
+            b : ||||||||||
+            c : |||||||||||||||
+            d : ||||||||||||||||||||
+            e : |||||||||||||||||||||||||
+            f : ||||||||||||||||||||||||||||||
+            ----------
+
+        bar-chart[40] shuffle rank split |a b c d e f>
+            ----------
+            d : ||||||||||||||||||||||||||
+            a : ||||||
+            b : |||||||||||||
+            c : ||||||||||||||||||||
+            e : |||||||||||||||||||||||||||||||||
+            f : ||||||||||||||||||||||||||||||||||||||||
+            ----------
+
+    see also:
+        plot, sorted-bar-chart, coeff-sort, ket-sort
+"""
+def bar_chart(one, width, sorted=False):
+    if len(one) == 0:
+        return ket("bar chart")
+    try:
+        width = int(width)
+    except:
+        return ket("bar chart")
+    max_len = max(len(x.label) for x in one)
+    #  print("max_len:",max_len)
+    #  two = one.coeff_sort().rescale(width).apply_sigmoid(floor)
+    if sorted:
+        two = one.coeff_sort().rescale(width)
+    else:
+        two = one.rescale(width)
+    mid = ' : '
+    print("----------")
+    for x in two:
+        print(x.label.ljust(max_len) + mid + '|' * int(x.value))
+    print("----------")
+    return ket("bar chart")
+
+
+# set invoke method:
+compound_table['sorted-bar-chart'] = ['apply_sp_fn', 'sorted_bar_chart', '']
+# set usage info:
+function_operators_usage['sorted-bar-chart'] = """
+    description:
+        ascii bar chart of the given superposition, sorted by coefficient
+        where n specifies max width of bar-chart        
+        note, somewhat redundant, since we can apply coeff-sort, or ket-sort and then use standard bar-chart
+
+    examples:
+        sorted-bar-chart[30] rank split |a b c d e f>
+            ----------
+            f : ||||||||||||||||||||||||||||||
+            e : |||||||||||||||||||||||||
+            d : ||||||||||||||||||||
+            c : |||||||||||||||
+            b : ||||||||||
+            a : |||||
+            ----------
+        
+        sorted-bar-chart[40] shuffle rank split |a b c d e f>
+            ----------
+            f : ||||||||||||||||||||||||||||||||||||||||
+            e : |||||||||||||||||||||||||||||||||
+            d : ||||||||||||||||||||||||||
+            c : ||||||||||||||||||||
+            b : |||||||||||||
+            a : ||||||
+            ----------
+
+    see also:
+        plot, bar-chart, coeff-sort, ket-sort
+"""
+def sorted_bar_chart(one, width):
+    return bar_chart(one, width, True)

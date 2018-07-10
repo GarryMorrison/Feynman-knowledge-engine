@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 5/6/2018
+# Update: 10/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -162,11 +162,11 @@ fn_table = {
   "to-category"      : "to_category",
   
 # 3/6/2014:
-  "day-of-the-week"  : "day_of_the_week",
+#  "day-of-the-week"  : "day_of_the_week",
 
 # 23/6/2014:
   "long"             : "long_display",            # BUG! I have no idea why this insists on using the "37|ket>"" instead of "37 ket" notation!
-  "split"            : "split_ket",               # ahh.... it is running long_display with respect to kets, not superposition as I expected!
+#  "split"            : "split_ket",               # ahh.... it is running long_display with respect to kets, not superposition as I expected!
                                                   # maybe shift to another table to fix.
 # 29/8/2015:
   "clean-split"      : "clean_split_ket",                                                  
@@ -175,20 +175,20 @@ fn_table = {
 #  "sp-as-list"       : "sp_as_list",             # Nope! Belongs in the sp_fn_table.
 
 # 10/11/2014:
-  "expand-hierarchy" : "expand_hierarchy",
+#  "expand-hierarchy" : "expand_hierarchy",
   "chars"            : "chars",
   
 # 4/1/2015:
-  "pop-float"        : "pop_float",
-  "push-float"       : "push_float",
-  "cat-depth"        : "category_depth", 
+#  "pop-float"        : "pop_float",
+#  "push-float"       : "push_float",
+#  "cat-depth"        : "category_depth",
   
 # 4/2/2015:
-  "to-comma-number"  : "number_to_comma_number",
+#  "to-comma-number"  : "number_to_comma_number",
   
 # 5/2/2015:
-  "current-time"     : "current_time",
-  "current-date"     : "current_date",
+#  "current-time"     : "current_time",
+#  "current-date"     : "current_date",
   
 # 9/2/2015:
   "extract-3-tail"   : "extract_3_tail",
@@ -204,7 +204,7 @@ fn_table = {
 
 # 3/3/2015:
   "extract-movie-year" : "extract_year",
-  "ket-length"         : "ket_length", 
+#  "ket-length"         : "ket_length",
 
 # 27/4/2015:
   "lower-case"         : "lower_case",
@@ -321,8 +321,8 @@ compound_table = {
 
 # newly added 21/5/2014:
 #  "matrix"             : ".apply_naked_fn(multi_matrix,context,\"{0}\")",  # this deprecates/replaces the naked_fn(matrix,...) version.
-  "merged-matrix"      : ".apply_naked_fn(merged_multi_matrix,context,\"{0}\")",
-  "naked-matrix"       : ".apply_naked_fn(merged_naked_matrix,context,\"{0}\")",
+#  "merged-matrix"      : ".apply_naked_fn(merged_multi_matrix,context,\"{0}\")",
+#  "naked-matrix"       : ".apply_naked_fn(merged_naked_matrix,context,\"{0}\")",
 
 # newly added 22/5/2014:
 # "map"                : ".apply_sp_fn(map,context,\"{0}\")",
@@ -332,7 +332,7 @@ compound_table = {
   "categorize"         : ".apply_naked_fn(categorize,context,\"{0}\")",  
   
 # newly added 5/6/2014:
-  "vector"             : ".apply_sp_fn(vector,context,\"{0}\")",
+#  "vector"             : ".apply_sp_fn(vector,context,\"{0}\")",
 # added 6/6/2014:
   "print-pixels"       : ".apply_sp_fn(print_pixels,context,\"{0}\")",
   
@@ -364,7 +364,7 @@ compound_table = {
   "strict-table"       : ".apply_sp_fn(pretty_print_table,context,\"{0}\",True)",
   
 # 3/2/2015:
-  "sleep"              : ".apply_sp_fn(bko_sleep,\"{0}\")",
+#  "sleep"              : ".apply_sp_fn(bko_sleep,\"{0}\")",
   
 # 5/2/2015:
   "rank-table"         : ".apply_sp_fn(pretty_print_table,context,\"{0}\",False,True)",
@@ -447,11 +447,11 @@ compound_table = {
   "inhibition"            : ".inhibition({0})",               
 
 # 24/3/2015:
-  "find-unique"         : ".apply_naked_fn(find_unique,context,\"{0}\")",
+#  "find-unique"         : ".apply_naked_fn(find_unique,context,\"{0}\")",
 
 # 2/6/2015:
 #  "find-inverse"        : ".apply_naked_fn(find_inverse,context,\"{0}\")",
-    'find-inverse'       : ['apply_naked_fn', 'find_inverse', 'context'],
+#    'find-inverse'       : ['apply_naked_fn', 'find_inverse', 'context'],
   
 # 2/4/2015:
   "intn-find-topic"         : ".intn_find_topic(context,\"{0}\")",
@@ -489,7 +489,7 @@ compound_table = {
   "select-chars"           : ".apply_fn(select_chars,\"{0}\")",
 
 # 24/8/2015:
-  "ket-hash"               : ".apply_fn(ket_hash,\"{0}\")",
+#  "ket-hash"               : ".apply_fn(ket_hash,\"{0}\")",
   "hash-data"              : ".apply_sp_fn(hash_data,\"{0}\")",     
 
 # 25/8/2015: a couple of aliases
@@ -497,8 +497,8 @@ compound_table = {
   "sp-to-dat"              : ".apply_sp_fn(hash_data,\"{0}\")",
   
 # 26/11/2015:
-  "letter-ngrams"          : ".apply_fn(make_ngrams,\"{0}\",\"letter\")",       
-  "word-ngrams"            : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
+#  "letter-ngrams"          : ".apply_fn(make_ngrams,\"{0}\",\"letter\")",
+#  "word-ngrams"            : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
   
 # 15/12/2015:
   "log"                    : ".apply_sigmoid(log,{0})",
@@ -529,9 +529,9 @@ compound_table = {
 #  "have-in-common"         : ".apply_sp_fn(have_in_common,context)",   # have-in-common has no parameters, so wont work here!  
 
 # 12/9/2016:
-  "bar-chart"              : ".apply_sp_fn(bar_chart,\"{0}\")",
+#  "bar-chart"              : ".apply_sp_fn(bar_chart,\"{0}\")",
 # 29/9/2016:
-  "sbar-chart"              : ".apply_sp_fn(bar_chart,\"{0}\",True)",
+#  "sbar-chart"              : ".apply_sp_fn(bar_chart,\"{0}\",True)",
     
   
 # 26/9/2016:
@@ -575,10 +575,10 @@ sp_fn_table = {
   "sp-as-list"         : "sp_as_list",
 
 # 6/3/2015:
-  "display-algebra"    : "display_algebra",
+#  "display-algebra"    : "display_algebra",
 
 # 26-4-2015:
-  "rank"               : "rank",          
+#  "rank"               : "rank",
 
 # 19/5/2015:
   "image-show"         : "improved_image_save_show",  
@@ -595,7 +595,7 @@ ket_context_table = {
 
 # 14/4/2015:
 #  "list-kets"          : "list_kets",    # deleted. Same funtionality as starts-with, essentially.
-  "starts-with"        : "starts_with",
+#  "starts-with"        : "starts_with",
   
 # 4/5/2015:
   "show-image"         : "show_image", 
@@ -781,7 +781,7 @@ context_whitelist_table_2 = {
   "apply"    : "apply_sp",
 
 # 17/1/2015:
-  "clone"    : "clone_ket",
+#  "clone"    : "clone_ket",
 
 # 10/10/2016
   "whats-next" : "whats_next_two",
