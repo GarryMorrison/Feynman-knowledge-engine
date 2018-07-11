@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 10/7/2018
+# Update: 11/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -566,39 +566,6 @@ def map_to_topic(context, e, S):
 
 
 
-
-
-
-
-
-# the discrimination function.
-# returns the difference between largest coeff, and second largest coeff.
-# discrim (90|x> + 55|y>)
-# should return 35| >
-#
-# I now think this should be moved to ket/sp classes.
-# Done. This is now deprecated.
-# Alternatively, remove from ket/sp and put in "sp_fn_table" -- see the processor.
-def discrimination(one):
-    result = 0
-    if type(one) == ket:
-        result = one.value
-    elif len(one.data) == 0:
-        result = 0
-    elif len(one.data) == 1:
-        result = one.data[0].value
-    else:
-        one = one.coeff_sort()
-        result = one.data[0].value - one.data[1].value
-    return ket(" ", result)
-
-
-
-
-
-
-
-
 # we need this for read_letters, and read_words, maybe other things in the future too.
 def extract_letters(x):
     if x.startswith("letter: "):
@@ -833,16 +800,8 @@ def absolute_difference_fn(x, y):
 # 10/5/2015: work on images shows that abs() is not he best choice. pos(x) is much better!
 #
 def general_to_specific(average, specific):
-    return intersection_fn(absolute_difference_fn, average.normalize(),
-                           specific.normalize())  # NB: .normalize() is vital for this to work!
+    return intersection_fn(absolute_difference_fn, average.normalize(), specific.normalize())  # NB: .normalize() is vital for this to work!
     # return intersection_fn(absolute_difference_fn,average,specific)
-
-
-
-
-
-
-
 
 
 
@@ -981,42 +940,6 @@ def sp_as_list(sp):  # I think natural sort is buggy when you have negative valu
     return sp
 
 
-# 7/8/2014, let's write a sp-propagate function.
-# Takes an initial superposition, then takes an operator, and applies it repeatedly.
-# Then display this all as a matrix, maybe something we can plot in gnuplot.
-# First need this:
-def sp_coeffs_to_column(one):
-    one = superposition() + one  # cast kets to sp.
-
-    def to_str(n):
-        if n == 0:
-            return "0"
-            # return " "
-        else:
-            return str("%.2f" % n)
-            # return "1"
-
-    return "\n".join(to_str(x.value) for x in one.data)
-
-
-# usage: sp-propagate[op,k] "" |list>
-# op is an operator, k is the number of iterations.
-def sp_propagate(one, context, parameters):
-    try:
-        op, k = parameters.split(",")
-        k = int(k)
-    except:
-        return ket("", 0)
-
-    matrix = []
-    r = one
-    empty = r.apply_sigmoid(set_to, 0)
-    for idx in range(k):
-        matrix.append(sp_coeffs_to_column(
-            (r + empty).ket_sort()))  # making use of adding an sp of all 0's does not change the meaning
-        r = r.apply_op(context, op)
-    print(paste_columns(matrix, '', ' ', ''))
-    return ket("matrix")
 
 
 # 10/11/2014:
@@ -1069,14 +992,6 @@ def chars(one):
     for k, count in enumerate(L):
         r += ket(char_list[k], count)
     return r.drop().multiply(one.value)
-
-
-
-
-
-
-
-
 
 
 
@@ -1658,13 +1573,6 @@ def old_sp_such_that(one, context, ops):
 
 
 
-
-
-
-
-
-
-
 # 9/2/2015: working towards a BKO rambler
 # extract-3-tail |a b c d e f g h> == |f g h>
 # example usage:
@@ -1735,14 +1643,6 @@ def old_numbers_fn(foo, one, t):
     return ket(cat + str(result_value), one.value)
 
 
-# to-coeff 12|> == |>
-# to-ceoff 26|a: b> == 26| >
-#
-# assumes one is a ket
-def to_coeff(one):
-    if one.label == "":
-        return ket("", 0)
-    return ket(" ", one.value)
 
 
 # one off use:
@@ -1812,14 +1712,15 @@ def apply_weights(one, weights):
 
 
 # lower-case, upper-case, sentence-case
+# deprecated. See to-lower, to-upper
 #
 # one is a ket
-def lower_case(one):
-    return ket(one.label.lower(), one.value)
+# def lower_case(one):
+#     return ket(one.label.lower(), one.value)
 
 
-def upper_case(one):
-    return ket(one.label.upper(), one.value)
+# def upper_case(one):
+#     return ket(one.label.upper(), one.value)
 
 
 
@@ -2197,7 +2098,7 @@ def filter_fn(x, y):
     return y
 
 
-# filter-down-to(|b> + 3|c>,|a> + 5|b> + 0.7|c> + 9|d> + 3.2|e>) == 5|b> + 0.7|c>
+# filter-down-to(|b> + 3|c>, |a> + 5|b> + 0.7|c> + 9|d> + 3.2|e>) == 5|b> + 0.7|c>
 #
 # one, two are superpositions
 def filter_down_to(one, two):
@@ -2214,65 +2115,7 @@ def respond_to_pattern(one, two, three):
     return one + three.multiply(similarity)
 
 
-# 26/11/2015:
-# Let's try to implement edit-distance using operators.
-# https://en.wikipedia.org/wiki/Edit_distance
-#
-# def edit_insert(one,parameters):
-# def edit_delete():
-# def edit_substitute():
-#
-# 17/12/2015: let's finally get to this.
-# start with:
-# delete[k,0]
-# insert[s,0]
-#
-# It works:
-# LCS distance:
-# sa: insert[g,6] insert[i,4] delete[e,4] insert[s,0] delete[k,0] |kitten>
-# |sitting>
-#
-# Levenshtein distance:
-# sa: insert[g,6] substitute[i,e,4] substitute[s,k,0] |kitten>
-# |sitting>
-#
-# one is a ket
-# delete[k,0]
-def edit_delete(one, parameters):  # cool. Seems to work!
-    try:
-        char, k = parameters.split(',')
-        k = int(k)
-        text = one.label
-        if text[k] == char:
-            result = text[:k] + text[k + 1:]
-        return ket(result, one.value)
-    except:
-        return one
 
-
-# insert[s,0]
-def edit_insert(one, parameters):
-    try:
-        char, k = parameters.split(',')
-        k = int(k)
-        text = one.label
-        result = text[:k] + char + text[k:]
-        return ket(result, one.value)
-    except:
-        return one
-
-
-# substitue[s,k,0]
-def edit_substitute(one, parameters):
-    try:
-        char1, char2, k = parameters.split(',')
-        k = int(k)
-        text = one.label
-        if text[k] == char2:
-            text = text[:k] + char1 + text[k + 1:]
-        return ket(text, one.value)
-    except:
-        return one
 
 
 # 9/2/2016:
@@ -2337,23 +2180,6 @@ def guess_operator(context, parameters):
         return ket("", 0)
 
 
-# 9/2/2016:
-# rename_kets:
-# takes a superposition (one), and for each ket replaces the string in ket two with the string in ket three
-#
-# one is a superposition, two and three are kets.
-def rename_kets(one, two, three):
-    try:
-        s1 = two.the_label()
-        s2 = three.the_label()
-        result = superposition()
-        for x in one:
-            y = ket(x.label.replace(s1, s2), x.value)
-            #      result.data.append(y)                                         # later swap in result += y. data.append is buggy in case the string replace creates duplicate kets
-            result += y
-        return result
-    except:
-        return ket("", 0)
 
     # 20/3/2016:
 
@@ -2464,66 +2290,6 @@ def learn_ket_normalizations(context, parameters):
         context.learn(op2, y, y.multiply(t / x.value))
     return ket("ket-norms")
 
-
-# append-column[n] SP
-# for use in Hierarchical Temporal Memory sequence learning
-# append-column[5] |X> == |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>
-# Cool! In testing it works just fine.
-# and has the property:
-# extract-category append-column[10] |X> == 10 |X>
-#
-# one is a ket, N is a positive integer
-def append_column(one, N):
-    try:
-        N = int(N)
-    except:
-        return ket("", 0)
-
-    r = superposition()
-    for k in range(N):
-        r += ket("%s: %s" % (one.label, k), one.value)
-    return r
-
-
-import random
-
-
-# random-column[n] SP
-# for use in Hierarchical Temporal Memory sequence learning
-# random-column[5] |X> == pick-elt( |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>)
-# and has the property:
-# extract-category random-column[10] |X> == |X>
-#
-# one is a ket, N is a positive integer
-def random_column(one, N):
-    try:
-        N = int(N)
-    except:
-        return ket("", 0)
-
-    random_integer = random.randint(0, N - 1)
-    return ket("%s: %s" % (one.label, random_integer), one.value)
-
-
-# 28/7/16:
-# usage:
-# have-in-common (|Fred> + |Sam> + |Jack>)
-# 0.7 |op: friends> + |op: age> + 0.5|op: parents>
-#
-def have_in_common(one, context):
-    logger.debug("have-in-common one: %s" % str(one))
-
-    if len(one) == 0:
-        return ket("", 0)
-    for sp in one:
-        supported_ops = sp.apply_op(context, "supported-ops")
-        break
-    for sp in one:
-        tmp = sp.apply_op(context, "supported-ops")
-        supported_ops = intersection(supported_ops, tmp)
-    if len(supported_ops) == 0:
-        return ket("", 0)
-    # ... finish
 
 
 
@@ -3937,8 +3703,6 @@ function_operators_usage['smerge'] = """
       smerge[", "] (|a> + |b> + |c> . |d> + |e>)
         |a, b, c, d, e>
 """
-
-
 # one is a sequence
 #
 def smerge(one, merge_char=''):
@@ -3952,7 +3716,8 @@ def smerge(one, merge_char=''):
             for x in elt:
                 labels.append(x.label)
     s = merge_char.join(labels)
-    return ket(s)
+    # return ket(s)              # breaks: read (*) #=> |word:> __ smerge remove-prefix["letter: "] |_self>
+    return superposition(s)      # works. Not yet sure how to fix. Not yet sure if we hit it else-where. FIX!
 
 
 # set invoke method:
@@ -6973,11 +6738,12 @@ def sort_by(one, context, op):
 
 
 # set invoke method:
-fn_table['read'] = 'read_text'
+fn_table['read-text'] = 'read_text'
 # set usage info:
-function_operators_usage['read'] = """
+function_operators_usage['read-text'] = """
     description:
-      'read' a sentence
+        'read' a sentence
+        Not even sure this thing is useful!
 
     examples:
 """
@@ -8955,6 +8721,56 @@ def vector(one, context, ops):
     return ket("matrix")
 
 
+# 7/8/2014, let's write a sp-propagate function.
+# Takes an initial superposition, then takes an operator, and applies it repeatedly.
+# Then display this all as a matrix, maybe something we can plot in gnuplot.
+# First need this:
+def sp_coeffs_to_column(one):
+    def to_str(n):
+        if n == 0:
+            return "0"
+            # return " "
+        else:
+            return str("%.2f" % n)
+            # return "1"
+    return "\n".join(to_str(x.value) for x in one)
+
+# usage: sp-propagate[op,k] "" |list>
+# op is an operator, k is the number of iterations.
+# set invoke method:
+compound_table['propagate'] = ['apply_sp_fn', 'sp_propagate', 'context']
+# set usage info:
+function_operators_usage['propagate'] = """
+    description:
+        the propagate function
+        takes an initial superposition and an operator, and applies it repeatedly.
+
+    examples:
+
+    see also:
+
+    TODO:
+        work out what this is trying to do!!
+"""
+def sp_propagate(one, context, *parameters):
+    def sp_coeffs_to_column(one):
+        return "\n".join(float_to_int(x.value) for x in one)
+    try:
+        op, k = parameters
+        k = int(k)
+    except:
+        return ket()
+
+    matrix = []
+    r = one
+    empty = r.apply_sigmoid(set_to, 0)
+    for idx in range(k):
+        matrix.append(sp_coeffs_to_column((r + empty).ket_sort()))  # making use of adding an sp of all 0's does not change the meaning
+        r = r.apply_op(context, op).to_sp()
+    print(paste_columns(matrix, '', ' ', ''))
+    return ket("matrix")
+
+
 
 import datetime
 
@@ -9727,3 +9543,308 @@ function_operators_usage['sorted-bar-chart'] = """
 """
 def sorted_bar_chart(one, width):
     return bar_chart(one, width, True)
+
+
+
+# 26/11/2015:
+# Let's try to implement edit-distance using operators.
+# https://en.wikipedia.org/wiki/Edit_distance
+#
+# def edit_insert(one,parameters):
+# def edit_delete():
+# def edit_substitute():
+#
+# 17/12/2015: let's finally get to this.
+# start with:
+# delete[k,0]
+# insert[s,0]
+#
+# It works:
+# LCS distance:
+# sa: insert[g,6] insert[i,4] delete[e,4] insert[s,0] delete[k,0] |kitten>
+# |sitting>
+#
+# Levenshtein distance:
+# sa: insert[g,6] substitute[i,e,4] substitute[s,k,0] |kitten>
+# |sitting>
+#
+# one is a ket
+# delete[k,0]
+# set invoke method:
+compound_table['delete'] = ['apply_fn', 'edit_delete', '']
+# set usage info:
+function_operators_usage['delete'] = """
+    description:
+        delete, one of three edit distance operators
+        see: https://en.wikipedia.org/wiki/Edit_distance
+
+    examples:
+        delete["k", 0] |kitten>
+            |itten>
+        
+        insert["g", 6] insert["i", 4] delete["e", 4] insert["s", 0] delete["k", 0] |kitten>
+            |sitting>
+    
+    see also:
+        insert, substitute
+"""
+def edit_delete(one, *parameters):  # cool. Seems to work!
+    try:
+        char, k = parameters
+        k = int(k)
+        text = one.label
+        if text[k] == char:
+            result = text[:k] + text[k + 1:]
+        return ket(result, one.value)
+    except:
+        return one
+
+
+# insert[s,0]
+# set invoke method:
+compound_table['insert'] = ['apply_fn', 'edit_insert', '']
+# set usage info:
+function_operators_usage['insert'] = """
+    description:
+        insert, one of three edit distance operators
+        see: https://en.wikipedia.org/wiki/Edit_distance
+
+    examples:
+        insert["g", 6] insert["i", 4] delete["e", 4] insert["s", 0] delete["k", 0] |kitten>
+            |sitting>
+
+    see also:
+        delete, substitute
+"""
+def edit_insert(one, *parameters):
+    try:
+        char, k = parameters
+        k = int(k)
+        text = one.label
+        result = text[:k] + char + text[k:]
+        return ket(result, one.value)
+    except:
+        return one
+
+
+# substitute[s,k,0]
+# set invoke method:
+compound_table['substitute'] = ['apply_fn', 'edit_substitute', '']
+# set usage info:
+function_operators_usage['substitute'] = """
+    description:
+        substitute, one of three edit distance operators
+        see: https://en.wikipedia.org/wiki/Edit_distance
+
+    examples:
+        insert["g", 6] substitute["i", "e", 4] substitute["s", "k", 0] |kitten>
+            |sitting>
+
+    see also:
+        delete, insert
+"""
+def edit_substitute(one, *parameters):
+    try:
+        char1, char2, k = parameters
+        k = int(k)
+        text = one.label
+        if text[k] == char2:
+            text = text[:k] + char1 + text[k + 1:]
+        return ket(text, one.value)
+    except:
+        return one
+
+# set invoke method:
+seq_fn_table['print-type'] = 'print_type'
+def print_type(one):
+    print(type(one))
+    return one
+
+
+import itertools
+
+# the discrimination function.
+# returns the difference between largest coeff, and second largest coeff.
+# discrim (90|x> + 55|y>)
+# should return 35| >
+#
+# I now think this should be moved to ket/sp classes.
+# Done. This is now deprecated.
+# Alternatively, remove from ket/sp and put in "sp_fn_table" -- see the processor.
+# set invoke method:
+sp_fn_table['discrimination'] = 'discrimination'
+# set usage info:
+function_operators_usage['discrimination'] = """
+    description:
+        discrimination, returns the difference between the largest coeff, and the second largest coeff.
+
+    examples:
+        discrimination (90|x> + 55|y>)
+
+    see also:
+    
+    future:
+        maybe it should be built in to our ket/superposition/sequence classes?
+"""
+def discrimination(one):
+    result = 0
+    if type(one) is ket:
+        result = one.value
+    elif len(one) == 0:
+        result = 0
+    elif len(one) == 1:
+        result = one.value
+    else:  # assumes to get to this branch, one is a superposition, not a ket or sequence
+        one = one.coeff_sort()
+        # result = one.data[0].value - one.data[1].value
+        # list(itertools.islice(d.items(), 0, 4))
+        first, second = list(itertools.islice(one.dict.items(), 0, 2))
+        result = first[1] - second[1]
+    return ket(" ", result)
+
+
+# to-coeff 12|> == |>
+# to-ceoff 26|a: b> == 26| >
+#
+# assumes one is a ket
+# set invoke method:
+fn_table['to-coeff'] = 'to_coeff'
+# set usage info:
+function_operators_usage['to-coeff'] = """
+    description:
+        replace the ket text with ' '
+        ie, only keep the coefficient
+
+    examples:
+        to-coeff 12|>
+            |>
+        
+        to-coeff 26|a: b>
+            26| >
+
+        to-coeff (26|a: b> + 13|x>)
+            39| >
+
+    see also:
+
+"""
+def to_coeff(one):
+    if len(one) == 0:
+        return ket()
+    return ket(" ", one.value)
+
+
+
+# 9/2/2016:
+# rename_kets:
+# takes a superposition (one), and for each ket replaces the string in ket two with the string in ket three
+#
+# one is a superposition, two and three are kets.
+def old_rename_kets(one, two, three):
+    try:
+        s1 = two.the_label()
+        s2 = three.the_label()
+        result = superposition()
+        for x in one:
+            y = ket(x.label.replace(s1, s2), x.value)
+            #      result.data.append(y)                                         # later swap in result += y. data.append is buggy in case the string replace creates duplicate kets
+            result += y
+        return result
+    except:
+        return ket("", 0)
+
+
+# set invoke method:
+whitelist_table_3['string-replace'] = 'string_replace'
+# set usage info:
+sequence_functions_usage['string-replace'] = """
+    description:
+        string-replace(seq, sp, ket)
+        for the sequence seq, for every label in sp, replace with ket.label
+
+    examples:
+        string-replace(|a> . |sad> . |fellow>, |sad>, |happy>)
+            |a> . |happy> . |fellow>
+
+        string-replace(|Today's date is ${date}.>, |${date}>, extract-value current-date |> )
+            |Today's date is 2018-07-11.>
+
+    see also:
+
+"""
+def string_replace(one, two, three):
+    two = two.to_sp()
+    s2 = three.to_sp().label
+
+    seq = sequence([])
+    for sp in one:           # one is assumed to be a sequence
+        r = superposition()
+        for x in sp:         # x is a ket
+            for elt in two:  # elt is a ket
+                s1 = elt.label
+                y = ket(x.label.replace(s1, s2), x.value)
+                r.add_sp(y)
+        seq += r
+    return seq
+
+
+# append-column[n] SP
+# for use in Hierarchical Temporal Memory sequence learning
+# append-column[5] |X> == |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>
+# Cool! In testing it works just fine.
+# and has the property:
+# extract-category append-column[10] |X> == 10 |X>
+#
+# one is a ket, N is a positive integer
+def append_column(one, N):
+    try:
+        N = int(N)
+    except:
+        return ket("", 0)
+
+    r = superposition()
+    for k in range(N):
+        r += ket("%s: %s" % (one.label, k), one.value)
+    return r
+
+
+import random
+
+
+# random-column[n] SP
+# for use in Hierarchical Temporal Memory sequence learning
+# random-column[5] |X> == pick-elt( |X: 0> + |X: 1> + |X: 2> + |X: 3> + |X: 4>)
+# and has the property:
+# extract-category random-column[10] |X> == |X>
+#
+# one is a ket, N is a positive integer
+def random_column(one, N):
+    try:
+        N = int(N)
+    except:
+        return ket("", 0)
+
+    random_integer = random.randint(0, N - 1)
+    return ket("%s: %s" % (one.label, random_integer), one.value)
+
+
+# 28/7/16:
+# usage:
+# have-in-common (|Fred> + |Sam> + |Jack>)
+# 0.7 |op: friends> + |op: age> + 0.5|op: parents>
+#
+def have_in_common(one, context):
+    logger.debug("have-in-common one: %s" % str(one))
+
+    if len(one) == 0:
+        return ket("", 0)
+    for sp in one:
+        supported_ops = sp.apply_op(context, "supported-ops")
+        break
+    for sp in one:
+        tmp = sp.apply_op(context, "supported-ops")
+        supported_ops = intersection(supported_ops, tmp)
+    if len(supported_ops) == 0:
+        return ket("", 0)
+    # ... finish
+

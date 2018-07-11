@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 10/7/2018
+# Update: 11/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -63,8 +63,8 @@ built_in_table = {
 #  "min"              : "find_min",
 
 # new:
-  "discrimination"   : "discrimination",
-  "discrim"          : "discrimination",
+#  "discrimination"   : "discrimination",
+#  "discrim"          : "discrimination",
 
 # special:
 #    "type"           : "type",                    # implemented for debugging purposes.
@@ -197,25 +197,25 @@ fn_table = {
   
 
 # 1/3/2015:
-  "to-coeff"           : "to_coeff",
+#  "to-coeff"           : "to_coeff",
 # 12/10/2015: an alias:
   "clean-ket-label"    : "to_coeff",
   
 
 # 3/3/2015:
-  "extract-movie-year" : "extract_year",
+#  "extract-movie-year" : "extract_year",
 #  "ket-length"         : "ket_length",
 
 # 27/4/2015:
-  "lower-case"         : "lower_case",
-  "upper-case"         : "upper_case",
-  "one-gram"           : "one_gram",
+#  "lower-case"         : "lower_case",
+#  "upper-case"         : "upper_case",
+#  "one-gram"           : "one_gram",
 # 14/5/2015:
-  "two-gram"           : "two_gram",
-  "three-gram"         : "three_gram",  
+#  "two-gram"           : "two_gram",
+#  "three-gram"         : "three_gram",
 
 # 30/4/2015:
-  "plus-or-minus"      : "plus_or_minus",  
+#  "plus-or-minus"      : "plus_or_minus",
 
 # 5/8/2015:
   "split-chars"        : "split_chars",  
@@ -346,8 +346,8 @@ compound_table = {
   "exp-max"            : ".apply_sp_fn(exp_max,context,\"{0}\")",
   
 # added 7/8/2014:
-  "sp-propagate"       : ".apply_sp_fn(sp_propagate,context,\"{0}\")",
-  "op-propagate"       : ".apply_sp_fn(sp_propagate,context,\"{0}\")",  # an alias
+#  "sp-propagate"       : ".apply_sp_fn(sp_propagate,context,\"{0}\")",
+#  "op-propagate"       : ".apply_sp_fn(sp_propagate,context,\"{0}\")",  # an alias
 
 # 12/1/2015
   "load-image"         : ".apply_sp_fn(load_image,context,\"{0}\")",
@@ -507,9 +507,9 @@ compound_table = {
   
   
 # 17/12/2015:
-  "delete"                 : ".apply_fn(edit_delete,\"{0}\")",
-  "insert"                 : ".apply_fn(edit_insert,\"{0}\")",    
-  "substitute"             : ".apply_fn(edit_substitute,\"{0}\")",
+#  "delete"                 : ".apply_fn(edit_delete,\"{0}\")",
+#  "insert"                 : ".apply_fn(edit_insert,\"{0}\")",
+#  "substitute"             : ".apply_fn(edit_substitute,\"{0}\")",
   
 # 9/2/2016:
   "guess-ket"              : ".apply_fn(guess_ket,context,\"{0}\")",
@@ -569,8 +569,8 @@ compound_table = {
 sp_fn_table_usage = {}
 sp_fn_table = {
 #  "list-to-words"      : "sp_to_words",
-  "read-letters"       : "read_letters",
-  "read-words"         : "read_words", 
+#  "read-letters"       : "read_letters",
+#  "read-words"         : "read_words",
   "merge-labels"       : "merge_labels",
   "sp-as-list"         : "sp_as_list",
 

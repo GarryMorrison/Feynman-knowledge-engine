@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 10/7/2018
+# Update: 11/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -172,6 +172,9 @@ class ket(object):
 
     def apply_naked_fn(self, fn, *args):
         return fn(*args)
+
+    def apply_seq_fn(self, fn, *args):  # need to test this!
+        return fn(self, *args)
 
     def apply_op(self, context, op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
         logger.debug("inside ket apply_op")
@@ -955,6 +958,9 @@ class superposition(object):
 
     def apply_naked_fn(self, fn, *args):
         return fn(*args)
+
+    def apply_seq_fn(self, fn, *args):  # need to test this!
+        return fn(self, *args)
 
     def apply_op(self, context, op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
         logger.debug("inside sp apply_op")
