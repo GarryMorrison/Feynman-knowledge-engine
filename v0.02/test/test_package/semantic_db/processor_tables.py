@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 11/7/2018
+# Update: 13/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -158,8 +158,8 @@ fn_table = {
 #  "to-mile"          : "to_mile",
 #  "to-miles"         : "to_mile",
   
-  "to-value"         : "to_value",
-  "to-category"      : "to_category",
+#  "to-value"         : "to_value",
+#  "to-category"      : "to_category",
   
 # 3/6/2014:
 #  "day-of-the-week"  : "day_of_the_week",
@@ -176,7 +176,7 @@ fn_table = {
 
 # 10/11/2014:
 #  "expand-hierarchy" : "expand_hierarchy",
-  "chars"            : "chars",
+#  "chars"            : "chars",
   
 # 4/1/2015:
 #  "pop-float"        : "pop_float",
@@ -584,7 +584,7 @@ sp_fn_table = {
   "image-show"         : "improved_image_save_show",  
 
 # 8/2/2018:
-  'spell-out'          : 'spell_out',
+#  'spell-out'          : 'spell_out',
 #  'ssplit'             : 'ssplit',
 }
 

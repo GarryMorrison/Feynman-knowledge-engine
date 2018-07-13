@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 11/7/2018
+# Update: 13/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -25,47 +25,6 @@ import os
 from semantic_db.code import *
 from semantic_db.sigmoids import *
 
-
-# the range function
-# eg: show_range(|year: 1982>, |year: 1985>)
-# should spit out: |year: 1982> + |year: 1983> + |year: 1984> + |year: 1985>
-# maybe later a sequence version too/instead.
-# not sure what to do if the passed in kets have values other than 1.
-# later I might need a date range too.
-# eg: 2/11/2009 .. 7/12/2009
-# probably give it it's own function though.
-# if we want -1 steps, use superposition.reverse()
-
-# bug if start or finish are superpositions!
-# fix it.
-# introduced X.ket(). Breaks if X is a string!
-# Nope. Now using X.the_label()
-#
-def old_show_range(start, finish, step="n: 1"):
-    # tweak so full kets are optional, and labels are sufficient:
-    start_label = start if type(start) == str else start.the_label()
-    finish_label = finish if type(finish) == str else finish.the_label()
-    step_label = step if type(step) == str else step.the_label()
-
-    #  print("step_label:",step_label)
-
-    cat1, v1 = extract_category_value(start_label)
-    cat2, v2 = extract_category_value(finish_label)
-    cat3, v3 = extract_category_value(step_label)
-    #  print("v3:",v3)
-
-    if cat1 != cat2 or not v1.isdigit() or not v2.isdigit() or not v3.isdigit():  # maybe check v1, v2 for float instead of int?
-        return ket("")
-    label = ""
-    if len(cat1) > 0:
-        label = cat1 + ": "  # perhaps extract_category_value should append the ": " bit??
-    result = superposition()  # probably not.
-    for k in range(int(v1), int(v2) + 1, int(v3)):
-        result += ket(label + str(k))
-    return result
-
-
-# 23/4/2014: need float range:
 
 
 # test for set membership of |x> in |X>
@@ -185,97 +144,6 @@ def fast_sp_intersection_fn(foo, one, two):
     return r
 
 
-# still can't use this in the console, since the context needs to be passed in too.
-# the train-of-thought function, or perhaps a better name is "stream of consciousness"
-def train_of_thought(context, x, n):
-    if type(n) != int:
-        try:
-            cat, v = extract_category_value(n.the_label())
-            n = int(v)
-        except:
-            return superposition()  # return an empty superposition.
-
-    print("context:", context.name)
-    print("x:", x.display())
-    print("n:", n)
-    X = x.pick_elt()
-    print("|X>:", X.display())
-    print()
-    result = superposition()
-
-    for k in range(n):
-        op = X.apply_op(context, "supported-ops").pick_elt()  # |op> => pick-elt supported-ops |X>
-        #    print("op:",op.display())
-        X = X.apply_op(context, op).pick_elt()  # |X> => pick-elt apply(|op>,|X>)
-        #    result += X                            # this version adds repeated elements
-        result.data.append(X)  # this version preserves order
-        #    print("|X>:",a_ket.display())
-        print(X.display())
-    return result  # return a record of the train-of-thought
-
-
-
-
-
-
-
-# note the almost identical structure to read_text().
-# This is not a coincidence, and hints that this structure is very common
-# and operates at various levels in the brain.
-def spell_word(one):
-    label = one.label if type(one) == ket else one
-
-    cat, word = extract_category_value(label)
-    if cat != "word":
-        return ket("")
-
-    result = superposition()  # later when we finally implement sequence, use sequence() here.
-    result.data = [ket("letter: " + c) for c in word]
-    return result
-
-
-# 29/1/14, let's put in a collapse_read_text() here, eg, for the frequency of words thing.
-def collapse_read_text(one):
-    label = one.label if type(one) == ket else one
-
-    cat, text = extract_category_value(label)
-    if cat != "text":
-        return ket("", 0)
-    #  print("text:",text)
-    # don't keep case version:
-    text = text.lower().translate(str.maketrans("", "", string.punctuation)).split()
-    # keep case for now:
-    #  text = text.translate(str.maketrans("","",string.punctuation)).split()
-
-    result = superposition()
-    for w in text:
-        result += ket("word: " + w)
-    return result
-
-
-# 24/1/2015: I have no idea the point for these next two functions!
-# I guess I wrote them when I was a newb.
-# this is a general idea (have ket code mapped to handle superpositions too).
-# So:
-def old_ket_superposition(fn, x):
-    if type(x) == ket:
-        return fn(x)
-    if type(x) == superposition:
-        result = superposition()
-        for v in x.data:
-            result += fn(v)
-        return result
-
-
-# try again:
-def ket_superposition(fn, x):
-    result = superposition()
-    if type(x) == ket:
-        result += fn(x)
-    if type(x) == superposition:
-        for v in x.data:
-            result += fn(v)
-    return result
 
 
 # 24/1/2015: this this is weird and boring!
@@ -449,169 +317,9 @@ def strange_int_list(x):
     return result
 
 
-import math
-
-
-# the frequency class equation:
-# see: http://en.wikipedia.org/wiki/Frequency_list
-def frequency_class(e, X):
-    X = X.drop()  # filter out elements <= 0
-    smallest = X.find_min_coeff()
-    largest = X.find_max_coeff()
-    f = X.find_value(e)
-
-    print("e:", e)
-    print("largest:", largest)
-    print("value:", f)
-
-    # need a check in here that f > 0.
-    # Indeed, largest > 0 too.
-
-    if largest <= 0:
-        return 1
-
-    if f <= 0:  # what happens if smallest == 0?? X.drop() means largest == 0 too, hence already returned 1.
-        return math.floor(0.5 - math.log(smallest / largest, 2)) + 1
-
-    return math.floor(0.5 - math.log(f / largest, 2))
-
-
-# the normalized frequency class equation.
-# result is in [0,1]
-# 1 for exact match, 0 for not in set.
-#
-# works great! Indeed, it is a bit like a fuzzy set membership function.
-# eg, if all coeffs in X are equal, it gives Boolean 1 for membership, and 0 for non-membership.
-# and if the coeffs are not all equal, then it has fuzzier properties.
-#
-# 25/7/2014 note: Hrmm... I wonder if we can tweak this.
-# Currently you only get 20 odd different classes using the frequency class equation.
-# Is there a version that gives more graduations?
-# Though in practice this is usually not an issue.
-# It will almost certainly be of form foo(current/largest)
-#
-# e is a ket, X is a superposition
-# for best effect X should be a frequency list
-def normed_frequency_class(e, X):
-    e = e.ket()  # make sure e is a ket, not a superposition, else X.find_value(e) bugs out.
-    X = X.drop()  # drop elements with coeff <= 0
-    smallest = X.find_min_coeff()  # return the min coeff in X as float
-    largest = X.find_max_coeff()  # return the max coeff in X as float
-    f = X.find_value(e)  # return the value of ket e in superposition X as float
-
-    if largest <= 0 or f <= 0:  # otherwise the math.log() blows up!
-        return 0
-
-    fc_max = math.floor(0.5 - math.log(smallest / largest,
-                                       2)) + 1  # NB: the + 1 is important, else the smallest element in X gets reported as not in set.
-    #  print("fc_max: ",fc_max)
-    #  print("max log:",math.log(smallest/largest,2))
-    #  print("max val:",0.5 - math.log(smallest/largest,2))
-    #  print("ret log:",math.log(f/largest,2))
-    #  print("ret val:",0.5 - math.log(f/largest,2))
-    return 1 - math.floor(0.5 - math.log(f / largest, 2)) / fc_max
-
-
-# OK. I think this is the time sink with my MtT.
-# If we assume X[1] is the largest, and X[-1] is smallest,
-# then we don't need find_min and find_max.
-# I didn't time it, but it felt no faster....
-def faster_normed_frequency_class(e, X):
-    X = X.drop()
-    #  smallest = X.find_min_coeff()
-    #  largest = X.find_max_coeff()
-    smallest = X.select_elt(-1).value  # bug if X is empty??
-    largest = X.select_elt(1).value
-
-    f = X.find_value(e)
-
-    if largest <= 0 or f <= 0:
-        return 0
-
-    fc_max = math.floor(0.5 - math.log(smallest / largest, 2)) + 1
-    return 1 - math.floor(0.5 - math.log(f / largest, 2)) / fc_max
-
-
-# 19/3/2015:
-# e is a ket, X is a superposition
-# for best effect X should be a frequency list
-def ket_normed_frequency_class(e, X):
-    result = normed_frequency_class(e, X)
-    return ket("nfc", result)
-
-
-# describe this later ...
-# Heh. Structure wise, this is remarkably similar to pattern_recognition().
-# BTW, perhaps S should be a superposition instead of a list?
-#
-# I think this should be tidied up and most probably put in new_context next to pattern-recognition.
-# Also fix the hardwiring of "list".
-#
-# This is now deprecated, but leaving it here because a couple of my scripts.
-# See new_context.map_to_topic(e,"list") for the improved version.
-def map_to_topic(context, e, S):
-    result = superposition()
-    for X in S:
-        #    print("X:",X)
-        data = context.recall("list", X)
-        value = normed_frequency_class(e, data)
-        #    value = faster_normed_frequency_class(e,data)  # doesn't seem any faster.
-        #    result += ket(X.label,value)
-        result.data.append(ket(X.label, value))
-
-    #  return result.normalize(100)
-    # NB: .normalize(100) is a key component of this function.
-    # Half the magic is in nfc(), the other half in normalize(100).
-    return result.drop().normalize(100).coeff_sort()
 
 
 
-# we need this for read_letters, and read_words, maybe other things in the future too.
-def extract_letters(x):
-    if x.startswith("letter: "):
-        return x[8:]
-    if x.startswith("word: "):
-        return x[6:]
-    return ""
-
-
-# maybe this should be shifted closer to spell and read, but here will do for now.
-# I'm looking at the inverse of spell really.
-# so read-letters spell |word: frog> => |word: frog>
-#
-# Currently "one" must be a superposition.
-# We need to fix this at some stage! Fixed.
-def read_letters(one):
-    w = "".join(extract_letters(x.label) for x in one)
-    if len(w) == 0:
-        return ket("", 0)
-    return ket("word: " + w)
-
-
-# a full implementation of this would do capitilization and i to I, and a bunch of other stuff!
-# maybe I should put extract_letters() outside of these two functions?
-#
-# some examples from the console:
-# sa: read-words (|word: fish> + |word: dog>)
-# |text: fish dog>
-#
-# sa: read-words (|letter: I> + |word: don't> + |word: give> + |letter: a> + |word: fish>)
-# |text: I don't give a fish>
-#
-# sa: read-words (read |text: I don't give a fish>)
-# |text: i dont give a fish>
-#
-# Fixed, so read-words doesn't have to be in the table of functions with 1 parameter.
-# It is now in apply_sp_fn table.
-# so now can do:
-# sa: read-words read |text: I don't give a fish>
-# |text: i dont give a fish>
-# ie, we don't need to wrap the read |text: ... in brackets.
-def read_words(one):
-    w = " ".join(extract_letters(x.label) for x in one)
-    if len(w) == 0:
-        return ket("", 0)
-    return ket("text: " + w)
 
 
 # merge labels
@@ -778,30 +486,6 @@ def number_to_words(one):
 
 
 
-def absolute_difference_fn(x, y):
-    return abs(x - y)
-
-
-# general to specific.
-# The idea is you take an average of some object.
-# Let's say the slashdot-to-sp I've recently been playing with.
-# So: hashes |ave-slashdot> => hashes |slashdot-1> + hashes |slashdot-2> + hashes |slashdot-3> + hashes |slashdot-4>
-# Then, given |ave-slashdot>, find the bits that are unique to |slashdot-n>
-# Maybe something like:
-# hashes |slashdot: 5> => general-to-specific(hashes |ave-slashdot>, hashes |slashdot-5>)
-# NB: in the process we made a sub-category. And hashes|slashdot: 5> will look vastly different from hashes|slashdot-5>
-#
-# Update: probably works better if we have threshold filters in there before learning the average:
-# roughly: hashes |ave-slashdot> => TF[t1] hashes |slashdot-1> + TF[t2] hashes |slashdot-2> + TF[t3] hashes |slashdot-3> + TF[t4] hashes |slashdot-4>
-# Indeed, it is probably actually this:
-# hashes |ave-slashdot> => TF[t5] (TF[t1] hashes |slashdot-1> + TF[t2] hashes |slashdot-2> + TF[t3] hashes |slashdot-3> + TF[t4] hashes |slashdot-4> )
-# Not currently sure how to choose the values for tk
-#
-# 10/5/2015: work on images shows that abs() is not he best choice. pos(x) is much better!
-#
-def general_to_specific(average, specific):
-    return intersection_fn(absolute_difference_fn, average.normalize(), specific.normalize())  # NB: .normalize() is vital for this to work!
-    # return intersection_fn(absolute_difference_fn,average,specific)
 
 
 
@@ -884,21 +568,6 @@ def print_pixels(one, context,
     return ket("pixels")
 
 
-# long sp. Prints out the long_display form of a sp.
-def long_display(one):
-    print(one.long_display())
-    return one
-
-
-# split |word1 word2 word3 word4> => |word1> + |word2> + |word3> + |word4>
-# saves typing in some cases. eg, find-topic[words] split |word1 word2 word3>
-# assumes one is a ket
-def old_split_ket(one):
-    result = superposition()
-    result.data = [ket(w, one.the_value()) for w in
-                   one.the_label().split()]  # Buggy? eg, anything with duplicates. eg: split |a a b a b a a c a>
-    return result  # superficially it seems to work, because elsewhere tidies up our mess (probably the extract_compound_superposition code)
-
 
 
 
@@ -938,32 +607,6 @@ def sp_as_list(sp):  # I think natural sort is buggy when you have negative valu
     print([x.value for x in
            sp.ket_sort().data])  # NB: the ket_sort(). Even if we shuffle the sp, we get the same list back.
     return sp
-
-
-
-
-# 10/11/2014:
-# apply()
-# eg:
-# apply(|op: age> + |op: friends>,|Fred>)
-# maps to:
-# age |Fred> + friends |Fred>
-# a more common usage:
-# star |*> #=> apply(supported-ops|_self>,|_self>)
-def old_apply_sp(context, one, two):
-    print("one:", one)
-    print("two:", two)
-    r = superposition()
-    for x in one:  # yeah, about time we defined iterators or something for superpositions! Done!
-        print("x.label:", x.label)
-        print("x.value:", x.value)
-        if x.label.startswith("op: "):
-            op = x.label[4:]
-            r += two.apply_op(context, op).multiply(x.value)
-    return r
-
-
-
 
 
 
@@ -1531,47 +1174,6 @@ def old_pretty_print_table(one, context, params, strict=False, rank=False):
 
 
 
-# 22/2/2015:
-# such-that[op] SP
-# returns |x> if op is true/yes, |> otherwise.
-# assumes one is a ket
-#
-# tweak: such-that[op1,op2,...] SP
-# returns |x> if true/yes for all operators, |> otherwise.
-#
-# what happens if we have 0.3|yes>? ie, if coeff < 0.5 I think we want that ket ignored.
-#
-def ket_such_that(one, context, ops):  # what happens if coeff != 1, eg 0?
-    for op in ops.split(','):
-        #    label = one.apply_op(context,op).the_label().lower()
-        e = one.apply_op(context, op).ket()
-        label = e.label
-        value = e.value
-        if label not in ["true", "yes"]:
-            return ket("", 0)
-        if value < 0.5:  # need to test this bit.
-            return ket("", 0)
-    return one
-
-
-# 28/4/2016:
-# tweak such-that[op] so it is a sp -> sp function, instead of a ket -> ket function. Should be an optimization, with a better big-O.
-def old_sp_such_that(one, context, ops):
-    def valid_ket(one, context, ops):
-        for op in ops.split(','):
-            e = one.apply_op(context, op).ket()
-            if e.label not in ["true", "yes"]:
-                return False
-            if e.value < 0.5:  # need to test this bit.
-                return False
-        return True
-
-    result = superposition()
-    result.data = [x for x in one if valid_ket(x, context, ops)]
-    return result
-
-
-
 
 # 9/2/2015: working towards a BKO rambler
 # extract-3-tail |a b c d e f g h> == |f g h>
@@ -1597,52 +1199,6 @@ def extract_3_tail_chars(one):
     return ket(chars)
 
 
-# 21/2/2015: round[3] |number: 3.1415> == |number: 3.142>
-# assumes one is a ket, t is an integer
-#
-def old_round_numbers(one, t):
-    cat, value = extract_category_value(one.label)
-    try:
-        value = float(value)
-    except:
-        return one
-    if len(cat) > 0:
-        cat += ": "
-    rounded_value = round(value, t)
-    if rounded_value.is_integer():
-        rounded_value = int(rounded_value)
-    return ket(cat + str(rounded_value))
-
-
-# 14/1/2016:
-# Instead of just round_numbers(), let's implement a more general numbers_fn().
-# Eventually we want: round[3], times-by[2], divide-by[7], plus[5.2], minus[9], and maybe others.
-# currently has a bug for large numbers!
-# sa: int-divide-by[1000] |12345678901234567890>
-# |12345678901234568>
-#
-# sa: mod[1000] |12345678901234567890>
-# |168>
-#
-# foo() is a 2 param fn, one is a ket, t is number
-def old_numbers_fn(foo, one, t):
-    try:
-        cat, value = one.label.rsplit(': ', 1)
-        value = float(value)
-    except:
-        try:
-            cat = ''
-            value = float(one.label)
-        except:
-            return one  # not sure best thing to return for this case.
-    if len(cat) > 0:
-        cat += ": "
-    result_value = foo(value, t)
-    if result_value.is_integer():
-        result_value = int(result_value)
-    return ket(cat + str(result_value), one.value)
-
-
 
 
 # one off use:
@@ -1659,42 +1215,6 @@ def extract_year(one):
 
 
 
-# eg:
-# >>> display_time(33)
-# '33 seconds'
-# >>> display_time(3600)
-# '1 hour'
-# >>> display_time(3640)
-# '1 hour, 40 seconds'
-# >>> display_time(10987341908)
-# '18166 weeks, 6 days, 7 hours, 25 minutes, 8 seconds'
-#
-old_intervals = (
-    ('weeks', 604800),  # 60 * 60 * 24 * 7
-    ('days', 86400),  # 60 * 60 * 24
-    ('hours', 3600),  # 60 * 60
-    ('minutes', 60),
-    ('seconds', 1),
-)
-
-
-def old_display_time(float_seconds):
-    # cast to int:
-    seconds = int(float_seconds)  # it wasn't handling decimal places correctly anyway, so may as well cast to int.
-    result = []
-
-    for name, count in intervals:
-        value = seconds // count
-        if value:
-            seconds -= value * count
-            if value == 1:
-                name = name.rstrip('s')
-            result.append("{} {}".format(value, name))
-    if len(result) == 0:
-        return str("%.4f" % float_seconds) + " seconds"
-    return ', '.join(result)
-
-
 
 # apply-weights[5,3,2] SP
 #
@@ -1706,23 +1226,6 @@ def apply_weights(one, weights):
             break
         result += x.multiply(float(weights[k]))
     return result
-
-
-
-
-
-# lower-case, upper-case, sentence-case
-# deprecated. See to-lower, to-upper
-#
-# one is a ket
-# def lower_case(one):
-#     return ket(one.label.lower(), one.value)
-
-
-# def upper_case(one):
-#     return ket(one.label.upper(), one.value)
-
-
 
 
 
@@ -1996,19 +1499,6 @@ def bah__average_categorize_suppress(context, parameters):
     return ket("average categorize")
 
 
-# 5/8/2015:
-# split-chars |abcde> == |a> + |b> + |c> + |d> + |e>
-#
-# one is a ket
-def split_chars(one):
-    try:
-        chars = list(one.label)
-        result = superposition()
-        for c in chars:
-            result += ket(c)
-        return result
-    except:
-        return ket("", 0)
 
 
 # select-chars[a,b] |uvwxyz>
@@ -2074,29 +1564,12 @@ def old_process_catalytic_reaction(one, two, three):
         return one + three
 
 
-# 31/10/2016:
-# rewrite(SP,|s1>,|s2>)
-# replace all instances of string "s1" with "s2" in SP
-# simple, but powerful. cf. productions: https://en.wikipedia.org/wiki/Production_(computer_science)
-# Doh! Already implemented long ago as "rename_kets" with essentially identical code!
-#
-# one is a sp, s1 and s2 are kets
-def rewrite(one, s1, s2):
-    string1 = s1.the_label()
-    string2 = s2.the_label()
-    r = superposition()
-    for x in one:
-        y_label = x.label.replace(string1, string2)
-        r += ket(y_label, x.value)
-    return r
-
 
 # x,y are floats
 def filter_fn(x, y):
     if x == 0:
         return 0
     return y
-
 
 # filter-down-to(|b> + 3|c>, |a> + 5|b> + 0.7|c> + 9|d> + 3.2|e>) == 5|b> + 0.7|c>
 #
@@ -2118,72 +1591,9 @@ def respond_to_pattern(one, two, three):
 
 
 
-# 9/2/2016:
-# guess-ket |fred>          -- return the best matching known ket (using simm and so on)
-# guess-ket[3] |Sam>        -- return the best 3 matching known kets, providing simm > 0
-# guess-ket[*] |robbie>     -- return all matching known kets, providing simm > 0
-#
-# could do with some optimization!
-#
-# one is a ket
-def guess_ket(one, context, t='1'):
-    def process_string(s):
-        one = ket(s.lower())  # I presume we want s.lower(). Maybe sometimes we don't?
-        return make_ngrams(one, '1,2,3', 'letter')
-
-    try:
-        guess = process_string(one.label)
-        r = superposition()
-        for x in context.relevant_kets(
-                "*"):  # what about kets that are only on the right hand side of a learn rule? This misses them. One way is run "create inverse", but is there a better way?
-            #      similarity = silent_simm(guess,process_string(x.label))
-            similarity = fast_simm(guess, process_string(x.label))
-            if similarity > 0:
-                r.data.append(x.multiply(similarity))  # later swap in r += x.multiply(similarity)
-        if t == '*':
-            return r.coeff_sort()
-        else:
-            return r.coeff_sort().select_range(1, int(t))
-    except:
-        return ket("", 0)
 
 
-# 9/2/2016:
-# guess-operator[age]          -- return the best matching known operator (using simm and so on)
-# guess-operator[friend,3]     -- return the best 3 matching known operators, providing simm > 0
-# guess-operator[mother,*]     -- return all matching known operators, providing simm > 0
-#
-def guess_operator(context, parameters):
-    try:
-        op, t = parameters.split(',')
-        if t != '*':
-            t = int(t)
-    except:
-        op = parameters
-        t = 1
-
-    def process_string(s):
-        one = ket(s.lower())
-        return make_ngrams(one, '1,2,3', 'letter')
-
-    try:
-        guess = process_string(op)
-        r = superposition()
-        for x in context.supported_operators():
-            similarity = silent_simm(guess, process_string(x.label[4:]))  # need to convert 'op: age' to 'age'
-            r.data.append(x.multiply(similarity))  # later swap in r += x.multiply(similarity)
-        if t == '*':
-            return r.drop().coeff_sort()
-        else:
-            return r.drop().coeff_sort().select_range(1, t)
-    except:
-        return ket("", 0)
-
-
-
-    # 20/3/2016:
-
-
+# 20/3/2016:
 #
 # path-op[op] sp
 # eg:
@@ -2241,54 +1651,6 @@ def simm_add(one, context, parameters):
     return Rk
 
 
-# now, in our digit recognition task, it is clear that some features are far more common than others. eg white space
-# so the question is, how best to normalize this a bit.
-# Currently I'm using log(1 + x) which maps the test case of 1000 test images from 70.9% to 72.1%
-# Recall best algo's give 98%, so I have a lot of work to do yet!!
-# Next idea is ket normalization. ie, reweight kets so that on average, each ket "fires" at the same rate
-# Hopefully it will encode the idea that frequently firing kets are less interesting than rarely firing ones.
-# In BKO, this:
-# -- these are our starting superpositions:
-#    the |sp1> => a1|A> + b1|B> + c1|C>
-#    the |sp2> => a2|A> + b2|B> + c2|C>
-#    the |sp3> => a3|A> + b3|B> + c3|C>
-#    the |sp4> => a4|A> + b4|B> + c4|C>
-#
-# -- the sum of our superpositions:
-#    the-sum |sp> => the (|sp1> + |sp2> + |sp3> + |sp4)
-#
-# -- these are what we want our code to learn:
-#    norm-ket |A> => 1/(a1 + a2 + a3 + a4) |A>
-#    norm-ket |B> => 1/(b1 + b2 + b3 + b4) |B>
-#    norm-ket |C> => 1/(c1 + c2 + c3 + c4) |C>
-#
-# -- this is intended usage once we have them (probably implemented with map)
-#    the-normed |sp1> => norm-ket the |sp1>
-#    the-normed |sp2> => norm-ket the |sp2>
-#    the-normed |sp3> => norm-ket the |sp3>
-#    the-normed |sp4> => norm-ket the |sp4>
-#
-# -- test our code works:
-#    norm-ket the-sum |sp> == |A> + |B> + |C>
-#
-#
-def learn_ket_normalizations(context, parameters):
-    try:
-        op1, op2, t = parameters.split(',')
-        t = float(t)
-    except:
-        return ket("", 0)
-
-    the_kets = context.relevant_kets(op1)
-    the_sum = superposition()
-    for x in the_kets:
-        the_sum += x.apply_op(context, op1)
-    for x in the_sum:
-        if x.value <= 0:
-            continue
-        y = ket(x.label)
-        context.learn(op2, y, y.multiply(t / x.value))
-    return ket("ket-norms")
 
 
 
@@ -2551,19 +1913,6 @@ def new_print_sequence(one, context, start_node=None):
     return ket("end of sequence")
 
 
-# 29/9/2016:
-# discrimination. The difference in coeff between the highest and the next highest
-# Bah! Seems I have already implemented it over in the ket and sp classes.
-#
-def discrimination(one):
-    if len(one) == 0:
-        return ket("discrimination", 0)
-    if len(one) == 1:
-        return ket("discrimination")
-    r = one.coeff_sort().normalize()
-    first = r.data[0].value  # yeah, breaks the superposition class abstraction. Fix later!
-    second = r.data[1].value
-    return ket("discrimination", first - second)
 
 
 # 5/10/2016
@@ -3534,15 +2883,6 @@ def print_table(table):
         print()
 
 
-# spell-out |fish> => |f> . |i> . |s> . |h>
-# AKA: ssplit |fish> => |f> . |i> . |s> . |h>
-def spell_out(one):
-    seq = sequence([])
-    if type(one) in [ket, superposition]:
-        for x in one:
-            for c in list(x.label):
-                seq += ket(c, x.value)
-    return seq
 
 
 # ---------------------------------------------------------------------------------------
@@ -3610,6 +2950,33 @@ def display_time(seconds):
     if len(result) == 0:
         return "0"
     return ', '.join(result)
+
+
+# set invoke method:
+fn_table['display-time'] = 'pretty_display_time'
+# set usage info:
+function_operators_usage['display-time'] = """
+    description:
+        convert seconds to weeks/days/hours/minutes/seconds/milliseconds
+
+    examples:
+        display-time |3.1415>
+            |3 seconds, 141 milliseconds>
+        
+        display-time |1234567890>
+            |2041 weeks, 1 day, 23 hours, 31 minutes, 30 seconds>
+
+        ssplit[", "] display-time |1234567890>
+            |2041 weeks> . |1 day> . |23 hours> . |31 minutes> . |30 seconds>
+
+    see also:
+    
+"""
+
+
+def pretty_display_time(seconds):
+    s = display_time(float(seconds.label))
+    return ket(s)
 
 
 # set invoke method:
@@ -3844,19 +3211,36 @@ compound_table['remove-prefix'] = ['apply_fn', 'remove_prefix', '']
 function_operators_usage['remove-prefix'] = """
     description:
         remove given prefix from the ket
+        if prefix is a string, remove it
+        if prefix is an int, remove prefix chars
             
     examples:
+        -- remove prefix "not " if it exists:
         remove-prefix["not "] |not sitting at the beach>
             |sitting at the beach>
+            
+        -- do nothing if it doesn't have the right prefix:
+        remove-prefix["xyz"] |abcdefg>
+            |abcdefg>
     
         remove-prefix["word: "] |word: fish>
-            |fish>      
+            |fish>
+        
+        -- if prefix is an int, then remove n chars:
+        remove-prefix[3] |abcdefg>
+            |defg>
+    
+    see also:
+        remove-suffix      
     
 """
 def remove_prefix(one, prefix):
     if type(one) is ket:
-        if one.label.startswith(prefix):
-            return ket(one.label[len(prefix):], one.value)
+        if type(prefix) is str:
+            if one.label.startswith(prefix):
+                return ket(one.label[len(prefix):], one.value)
+        if type(prefix) is int:
+            return ket(one.label[prefix:], one.value)
     return one
 
 
@@ -3865,14 +3249,16 @@ compound_table['has-prefix'] = ['apply_fn', 'has_prefix', '']
 # set usage info:
 function_operators_usage['has-prefix'] = """
     description:
-      asks if the ket has the given prefix
+        asks if the ket has the given prefix
       
     examples:
-      has-prefix["not "] |not sitting at the beach>
-        |yes>
+        has-prefix["not "] |not sitting at the beach>
+            |yes>
         
-      has-prefix["not "] |sitting at the beach>
-        |no>
+        has-prefix["not "] |sitting at the beach>
+            |no>
+    
+    see also:
 """
 def has_prefix(one, prefix):
     if type(one) is ket:
@@ -3887,14 +3273,27 @@ compound_table['remove-suffix'] = ['apply_fn', 'remove_suffix', '']
 # set usage info:
 function_operators_usage['remove-suffix'] = """
     description:
-      remove given suffix from the ket
+        remove given suffix from the ket
+        if suffix is a string, remove it
+        if suffix is an int, remove suffix chars
 
     examples:
+        remove-suffix[" sentence."] |This is a sentence.>
+            |This is a>
+        
+        remove-suffix[3] |uvwxyz>
+            |uvw>
+    
+    see also:
+        remove-prefix
 """
 def remove_suffix(one, suffix):
     if type(one) is ket:
-        if one.label.endswith(suffix):
-            return ket(one.label[:-len(suffix)], one.value)
+        if type(suffix) is str:
+            if one.label.endswith(suffix):
+                return ket(one.label[:-len(suffix)], one.value)
+        if type(suffix) is int:
+            return ket(one.label[:-suffix], one.value)
     return one
 
 
@@ -4014,27 +3413,33 @@ compound_table['such-that'] = ['apply_seq_fn', 'seq_such_that', 'context']
 # set usage info:
 function_operators_usage['such-that'] = """
     description:
-      such-that[op] filters the given superposition to elements that return true for "op |element>"     
-    
-    examples:
-      such-that[is-a-woman] rel-kets[supported-ops] |>
-      
-      is-hungry |Fred> => |yes>
-      is-hungry |Sam> => |no>
-      such-that[is-hungry] rel-kets[supported-ops] |>
-        |Fred>
+        such-that[op] filters the given sequence to elements that return true for "op |element>"
+        where the coeff of |true> must be >= 0.5     
         
-      is-a-day |Monday> => |yes>
-      is-a-day |Tuesday> => |yes>
-      is-a-day |Wednesday> => |yes>
-      is-a-day |Thursday> => |yes>
-      is-a-day |Friday> => |yes>
-      is-a-day |Saturday> => |yes>
-      is-a-day |Sunday> => |yes>
-      is-a-day |blah> => |no>
-      is-a-day |foo> => |no>
-      such-that[is-a-day] (|Monday> + |Tuesday> + |blah> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |foo> + |Sunday>)
-        |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |Sunday>
+    examples:
+        such-that[is-a-woman] rel-kets[supported-ops] |>
+      
+        is-hungry |Fred> => |yes>
+        is-hungry |Sam> => |no>
+        such-that[is-hungry] rel-kets[supported-ops] |>
+            |Fred>
+        
+        is-a-day |Monday> => |yes>
+        is-a-day |Tuesday> => |yes>
+        is-a-day |Wednesday> => |yes>
+        is-a-day |Thursday> => |yes>
+        is-a-day |Friday> => |yes>
+        is-a-day |Saturday> => |yes>
+        is-a-day |Sunday> => |yes>
+        is-a-day |blah> => |no>
+        is-a-day |foo> => |no>
+        such-that[is-a-day] (|Monday> + |Tuesday> + |blah> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |foo> + |Sunday>)
+            |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |Sunday>
+    
+    see also:
+    
+    TODO:
+        test it works when given more than 1 operator
                         
 """
 def seq_such_that(one, context, *ops):
@@ -4074,75 +3479,105 @@ compound_table['table'] = ['apply_sp_fn', 'pretty_print_table', 'context']
 # set usage info:
 function_operators_usage['table'] = """
     description:
-      display a nicely formatted table
-      where: 
-        the first column are elements from the inputted superposition/sequence
-        the rest of the columns are the result of applying the given operator to the element in the first column
+        display a nicely formatted table
+        where: 
+            the first column are elements from the inputted superposition/sequence
+            the rest of the columns are the result of applying the given operator to the element in the first column
 
-      we also have some special operators:
-        '*' means use all supported-ops of the inputted superposition/sequence
-        'coeff' means return the coeff of the element in the first column
-        'rank' as the first operator means produce a rank table
-    
+        we also have some special operators:
+            '*' means use all supported-ops of the inputted superposition/sequence
+            'coeff' means return the coeff of the element in the first column
+            'rank' as the first operator means produce a rank table
+        
     examples:
-      load fred-sam-friends.sw
-      age |Fred> => |47>
-      age |Sam> => |45>
-      table[person, age, friends] split |Fred Sam>
-        +--------+-----+----------------------------------------------------+
-        | person | age | friends                                            |
-        +--------+-----+----------------------------------------------------+
-        | Fred   | 47  | Jack, Harry, Ed, Mary, Rob, Patrick, Emma, Charlie |
-        | Sam    | 45  | Charlie, George, Emma, Jack, Rober, Frank, Julie   |
-        +--------+-----+----------------------------------------------------+
+        load fred-sam-friends.sw
+        age |Fred> => |47>
+        age |Sam> => |45>
+        table[person, age, friends] split |Fred Sam>
+            +--------+-----+----------------------------------------------------+
+            | person | age | friends                                            |
+            +--------+-----+----------------------------------------------------+
+            | Fred   | 47  | Jack, Harry, Ed, Mary, Rob, Patrick, Emma, Charlie |
+            | Sam    | 45  | Charlie, George, Emma, Jack, Rober, Frank, Julie   |
+            +--------+-----+----------------------------------------------------+
         
-      web-load http://semantic-db.org/sw-examples/bots.sw
-      Bella |*> #=> apply(|_self>, |bot: Bella>)
-      Emma |*> #=> apply(|_self>, |bot: Emma>)
-      Madison |*> #=> apply(|_self>, |bot: Madison>)
-      table[op, Bella, Emma, Madison] supported-ops (|bot: Bella> + |bot: Emma> + |bot: Madison>)
-        +------------------------+--------------+----------------+---------------------+
-        | op                     | Bella        | Emma           | Madison             |
-        +------------------------+--------------+----------------+---------------------+
-        | name                   | Bella        | Emma           | Madison             |
-        | mother                 | Mia          | Madison        | Mia                 |
-        | father                 | William      | Nathan         | Ian                 |
-        | birth-sign             | Cancer       | Capricorn      | Cancer              |
-        | number-siblings        | 1            | 4              | 6                   |
-        | wine-preference        | Merlot       | Pinot Noir     | Pinot Noir          |
-        | favourite-fruit        | pineapples   | oranges        | pineapples          |
-        | favourite-music        | genre: punk  | genre: hip hop | genre: blues        |
-        | favourite-play         | Endgame      | No Exit        | Death of a Salesman |
-        | hair-colour            | gray         | red            | red                 |
-        | eye-colour             | hazel        | gray           | amber               |
-        | where-live             | Sydney       | New York       | Vancouver           |
-        | favourite-holiday-spot | Paris        | Taj Mahal      | Uluru               |
-        | make-of-car            | Porsche      | BMW            | Bugatti             |
-        | religion               | Christianity | Taoism         | Islam               |
-        | personality-type       | the guardian | the visionary  | the performer       |
-        | current-emotion        | fear         | kindness       | indignation         |
-        | bed-time               | 8pm          | 2am            | 10:30pm             |
-        | age                    | 31           | 29             | 23                  |
-        | hungry                 |              |                | starving            |
-        | friends                |              |                | Emma, Bella         |
-        +------------------------+--------------+----------------+---------------------+
+        web-load http://semantic-db.org/sw-examples/bots.sw
+        Bella |*> #=> apply(|_self>, |bot: Bella>)
+        Emma |*> #=> apply(|_self>, |bot: Emma>)
+        Madison |*> #=> apply(|_self>, |bot: Madison>)
+        table[op, Bella, Emma, Madison] supported-ops (|bot: Bella> + |bot: Emma> + |bot: Madison>)
+            +------------------------+--------------+----------------+---------------------+
+            | op                     | Bella        | Emma           | Madison             |
+            +------------------------+--------------+----------------+---------------------+
+            | name                   | Bella        | Emma           | Madison             |
+            | mother                 | Mia          | Madison        | Mia                 |
+            | father                 | William      | Nathan         | Ian                 |
+            | birth-sign             | Cancer       | Capricorn      | Cancer              |
+            | number-siblings        | 1            | 4              | 6                   |
+            | wine-preference        | Merlot       | Pinot Noir     | Pinot Noir          |
+            | favourite-fruit        | pineapples   | oranges        | pineapples          |
+            | favourite-music        | genre: punk  | genre: hip hop | genre: blues        |
+            | favourite-play         | Endgame      | No Exit        | Death of a Salesman |
+            | hair-colour            | gray         | red            | red                 |
+            | eye-colour             | hazel        | gray           | amber               |
+            | where-live             | Sydney       | New York       | Vancouver           |
+            | favourite-holiday-spot | Paris        | Taj Mahal      | Uluru               |
+            | make-of-car            | Porsche      | BMW            | Bugatti             |
+            | religion               | Christianity | Taoism         | Islam               |
+            | personality-type       | the guardian | the visionary  | the performer       |
+            | current-emotion        | fear         | kindness       | indignation         |
+            | bed-time               | 8pm          | 2am            | 10:30pm             |
+            | age                    | 31           | 29             | 23                  |
+            | hungry                 |              |                | starving            |
+            | friends                |              |                | Emma, Bella         |
+            +------------------------+--------------+----------------+---------------------+
       
-      load pretty-print-table-of-australian-cities.sw
-      table[rank, city, population, area, annual-rainfall] reverse sort-by[population] "" |city list>
-        +------+-----------+------------+------+-----------------+
-        | rank | city      | population | area | annual-rainfall |
-        +------+-----------+------------+------+-----------------+
-        | 1    | Sydney    | 4336374    | 2058 | 1214.8          |
-        | 2    | Melbourne | 3806092    | 1566 | 646.9           |
-        | 3    | Brisbane  | 1857594    | 5905 | 1146.4          |
-        | 4    | Perth     | 1554769    | 5386 | 869.4           |
-        | 5    | Adelaide  | 1158259    | 1295 | 600.5           |
-        | 6    | Hobart    | 205556     | 1357 | 619.5           |
-        | 7    | Darwin    | 120900     | 112  | 1714.7          |
-        +------+-----------+------------+------+-----------------+
-        
+        load pretty-print-table-of-australian-cities.sw
+        table[rank, city, population, area, annual-rainfall] reverse sort-by[population] "" |city list>
+            +------+-----------+------------+------+-----------------+
+            | rank | city      | population | area | annual-rainfall |
+            +------+-----------+------------+------+-----------------+
+            | 1    | Sydney    | 4336374    | 2058 | 1214.8          |
+            | 2    | Melbourne | 3806092    | 1566 | 646.9           |
+            | 3    | Brisbane  | 1857594    | 5905 | 1146.4          |
+            | 4    | Perth     | 1554769    | 5386 | 869.4           |
+            | 5    | Adelaide  | 1158259    | 1295 | 600.5           |
+            | 6    | Hobart    | 205556     | 1357 | 619.5           |
+            | 7    | Darwin    | 120900     | 112  | 1714.7          |
+            +------+-----------+------------+------+-----------------+
+
+        load temperature-conversion.sw
+        F |*> #=> to-F |_self>
+        K |*> #=> to-K |_self>
+        table[C, F, K] range(|C: 0>, |C: 100>, |5>)
+            +-----+-------+--------+
+            | C   | F     | K      |
+            +-----+-------+--------+
+            | 0   | 32.0  | 273.15 |
+            | 5   | 41.0  | 278.15 |
+            | 10  | 50.0  | 283.15 |
+            | 15  | 59.0  | 288.15 |
+            | 20  | 68.0  | 293.15 |
+            | 25  | 77.0  | 298.15 |
+            | 30  | 86.0  | 303.15 |
+            | 35  | 95.0  | 308.15 |
+            | 40  | 104.0 | 313.15 |
+            | 45  | 113.0 | 318.15 |
+            | 50  | 122.0 | 323.15 |
+            | 55  | 131.0 | 328.15 |
+            | 60  | 140.0 | 333.15 |
+            | 65  | 149.0 | 338.15 |
+            | 70  | 158.0 | 343.15 |
+            | 75  | 167.0 | 348.15 |
+            | 80  | 176.0 | 353.15 |
+            | 85  | 185.0 | 358.15 |
+            | 90  | 194.0 | 363.15 |
+            | 95  | 203.0 | 368.15 |
+            | 100 | 212.0 | 373.15 |
+            +-----+-------+--------+
+       
     see also:
-      such-that, sort-by
+        such-that, sort-by
       
     TODO:
         implement transpose table. eg, bots.sw would be much cleaner/simpler.
@@ -4252,32 +3687,36 @@ whitelist_table_3['consume-reaction'] = 'process_reaction'
 # set usage info:
 sequence_functions_usage['consume-reaction'] = """
     description:
-      process a chemical reaction that consumes the reactants
-      eg: 2 H_2 + O_2 -> 2 H_2 0
-      is represented by: 
-        consume-reaction(input-sp, 2|H2> + |O2>, 2|H2O>)
-      which is equivalent to:
-        input-sp - (2|H2> + |O2>) + 2|H2O>
+        process a chemical reaction that consumes the reactants
+        eg: 2 H_2 + O_2 -> 2 H_2 0
+        is represented by: 
+            consume-reaction(input-sp, 2|H2> + |O2>, 2|H2O>)
+        which is equivalent to:
+            input-sp - (2|H2> + |O2>) + 2|H2O>
       
-      if input-sp doesn't contain the necessary reactants, then it is returned unchanged 
+        if input-sp doesn't contain the necessary reactants, then it is returned unchanged 
       
     examples:
-      current |state> => words-to-list |can opener, closed can and hungry>
-      learn-state (*) #=> learn(|op: current>, |state>, |_self>)
-      use |can opener> #=> learn-state consume-reaction(current |state>, |can opener> + |closed can>, |can opener> + |open can>)
-      eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
+        -- learn some knowledge:
+        current |state> => words-to-list |can opener, closed can and hungry>
+        learn-state (*) #=> learn(|op: current>, |state>, |_self>)
+        use |can opener> #=> learn-state consume-reaction(current |state>, |can opener> + |closed can>, |can opener> + |open can>)
+        eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
       
-      current |state>
-        |can opener> + |closed can> + |hungry>
+        -- what is our starting state?
+        current |state>
+            |can opener> + |closed can> + |hungry>
       
-      use |can opener>
-        |can opener> + |hungry> + |open can>
+        -- what is the state after using the can-opener?
+        use |can opener>
+            |can opener> + |hungry> + |open can>
       
-      eat-from |can>
-        |can opener> + |empty can> + |not hungry>
+        -- what is the state after we eat-from the can?
+        eat-from |can>
+            |can opener> + |empty can> + |not hungry>
     
     see also:
-      catalytic-reaction, eat-from-can, fission-uranium
+        catalytic-reaction, eat-from-can, fission-uranium
 """
 
 
@@ -4470,6 +3909,7 @@ fn_table['to-value'] = 'to_value'
 function_operators_usage['to-value'] = """
     description:
       if the value is a float, remove from the ket, and apply it to the coefficient
+      otherwise, return the ket unchanged
             
     examples:
       to-value |>
@@ -4511,9 +3951,8 @@ def to_value(one):
     except:
         return one
 
-    # set invoke method:
 
-
+# set invoke method:
 fn_table['to-category'] = 'to_category'
 # set usage info:
 function_operators_usage['to-category'] = """
@@ -4666,21 +4105,56 @@ whitelist_table_3['range'] = 'show_range'
 # set usage info:
 sequence_functions_usage['range'] = """
     description:
-      the range function
+        the range function
             
     examples:
-      range(|1>, |10>)
-        |1> + |2> + |3> + |4> + |5> + |6> + |7> + |8> + |9> + |10>
+        -- range between 1 and 10:
+        range(|1>, |10>)
+            |1> + |2> + |3> + |4> + |5> + |6> + |7> + |8> + |9> + |10>
       
-      range(|1>, |5>, |0.5>)
-        |1> + |1.5> + |2> + |2.5> + |3> + |3.5> + |4> + |4.5> + |5>
+        -- range between 1 and 5, using step of 0.5:
+        range(|1>, |5>, |0.5>)
+            |1> + |1.5> + |2> + |2.5> + |3> + |3.5> + |4> + |4.5> + |5>
+        
+        -- specify a category:
+        range(|year: 1981>, |year: 1985>)
+            |year: 1981> + |year: 1982> + |year: 1983> + |year: 1984> + |year: 1985>
+            
+        range(|number: 7>, |number: 13>)
+            |number: 7> + |number: 8> + |number: 9> + |number: 10> + |number: 11> + |number: 12> + |number: 13>
+        
+        -- if the categories are not the same, return the don't know ket |>
+        range(|number: 3>, |price: 7>)
+            |>
+        
+        -- reverse-range, from 2018 to 2014:
+        range(|year: 2018>, |year: 2014>, - |year: 2>)
+            |year: 2018> + |year: 2016> + |year: 2014>
+            
+        -- if you need a sequence instead of a superposition, use superposition2sequence:
+        sp2seq range(|number: 17>, |number: 23>)
+            |number: 17> . |number: 18> . |number: 19> . |number: 20> . |number: 21> . |number: 22> . |number: 23>
+        
+        -- alternatively, you can define the srange function:
+        srange (*,*) #=> sp2seq range(|_self1>, |_self2>)
+        srange (*,*,*) #=> sp2seq range(|_self1>, |_self2>, |_self3>)
+        
+        srange(|5>, |9>)
+            |5> . |6> . |7> . |8> . |9>
+        
+        srange(|17>, |23>, |2>)
+            |17> . |19> . |21> . |23>
+        
+    see also:
+        sp2seq
 """
-
-
 def show_range(start, finish, step=ket("1")):
-    start = start.to_sp()
+    start = start.to_sp() # we don't know how to handle range for sequences, so for now, cast them all to superpositions
     finish = finish.to_sp()
-    step = step.to_sp()
+    step = step.to_sp()  # if step is a superposition, cast it to a ket
+
+    if step.value < 0:
+        return show_range(finish, start, ket(step.label)).reverse()
 
     start_label = start if type(start) == str else start.label
     finish_label = finish if type(finish) == str else finish.label
@@ -4690,7 +4164,7 @@ def show_range(start, finish, step=ket("1")):
     cat2, v2 = extract_category_value(finish_label)
     cat3, v3 = extract_category_value(step_label)
 
-    if cat1 != cat2:
+    if cat1 != cat2:  # do we want to check if cat3 == cat1/2 too?
         return ket()
 
     label = ""
@@ -5417,53 +4891,58 @@ compound_table['predict'] = ['apply_seq_fn', 'predict_next', 'context']
 # set usage info:
 function_operators_usage['predict'] = """
     description:
-      given an input sequence, predict what is next
-      optionally specify the max sequence length you want returned
+        given an input sequence, predict what is next
+        optionally specify the max sequence length you want returned
             
     examples:
-      seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7> . |8> . |9> . |10>
-      seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>
-      seq |fact> => |1> . |2> . |6> . |24> . |120>
-      seq |primes> => |2> . |3> . |5> . |7> . |11> . |13> . |17> . |19> . |23>
-      predict[seq] (|2> . |5>)
-        1.0     count   |6> . |7> . |8> . |9> . |10>
-        1.0     fib     |8> . |13>
-        1.0     primes  |7> . |11> . |13> . |17> . |19> . |23>
-        0.5     fact    |6> . |24> . |120>
-        |count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>
-
-      predict[seq,3] (|2> . |5>)
-        1.0     count   |6> . |7> . |8>
-        1.0     fib     |8> . |13>
-        1.0     primes  |7> . |11> . |13>
-        0.5     fact    |6> . |24> . |120>
-        |count: 6 . 7 . 8> + |fib: 8 . 13> + |primes: 7 . 11 . 13> + 0.5|fact: 6 . 24 . 120>
+        -- learn some short simple sequences:
+        seq |count> => |1> . |2> . |3> . |4> . |5> . |6> . |7> . |8> . |9> . |10>
+        seq |fib> => |1> . |1> . |2> . |3> . |5> . |8> . |13>
+        seq |fact> => |1> . |2> . |6> . |24> . |120>
+        seq |primes> => |2> . |3> . |5> . |7> . |11> . |13> . |17> . |19> . |23>
         
-      extract-category predict[seq] (|2> . |5> . |7>)
-        1.0     count   |8> . |9> . |10>
-        1.0     primes  |11> . |13> . |17> . |19> . |23>
-        0.5     fib     |8> . |13>
-        0.25    fact    |6> . |24> . |120>
-        |count> + |primes> + 0.5|fib> + 0.25|fact>
+        -- given the sequence 2 . 5 predict the sequences:
+        predict[seq] (|2> . |5>)
+            1.0     count   |6> . |7> . |8> . |9> . |10>
+            1.0     fib     |8> . |13>
+            1.0     primes  |7> . |11> . |13> . |17> . |19> . |23>
+            0.5     fact    |6> . |24> . |120>
+            |count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>
 
-      extract-value predict[seq] (|2> . |5> . |7>)
-        1.0     count   |8> . |9> . |10>
-        1.0     primes  |11> . |13> . |17> . |19> . |23>
-        0.5     fib     |8> . |13>
-        0.25    fact    |6> . |24> . |120>
-        |8 . 9 . 10> + |11 . 13 . 17 . 19 . 23> + 0.5|8 . 13> + 0.25|6 . 24 . 120>
+        -- again, given the sequence 2 . 5 predict the next 3 elements:
+        predict[seq,3] (|2> . |5>)
+            1.0     count   |6> . |7> . |8>
+            1.0     fib     |8> . |13>
+            1.0     primes  |7> . |11> . |13>
+            0.5     fact    |6> . |24> . |120>
+            |count: 6 . 7 . 8> + |fib: 8 . 13> + |primes: 7 . 11 . 13> + 0.5|fact: 6 . 24 . 120>
         
-      extract-value predict[seq,1] (|2> . |5> . |7>)
-        1.0     count   |8>
-        1.0     primes  |11>
-        0.5     fib     |8>
-        0.25    fact    |6>
-        1.5|8> + |11> + 0.25|6>
+        -- use extract-category to predict the names of the sequences:
+        extract-category predict[seq] (|2> . |5> . |7>)
+            1.0     count   |8> . |9> . |10>
+            1.0     primes  |11> . |13> . |17> . |19> . |23>
+            0.5     fib     |8> . |13>
+            0.25    fact    |6> . |24> . |120>
+            |count> + |primes> + 0.5|fib> + 0.25|fact>
+
+        -- use extract-value to predict just the sequences, with the names removed:
+        extract-value predict[seq] (|2> . |5> . |7>)
+            1.0     count   |8> . |9> . |10>
+            1.0     primes  |11> . |13> . |17> . |19> . |23>
+            0.5     fib     |8> . |13>
+            0.25    fact    |6> . |24> . |120>
+            |8 . 9 . 10> + |11 . 13 . 17 . 19 . 23> + 0.5|8 . 13> + 0.25|6 . 24 . 120>
+        
+        -- given the sequence 2 . 5 . 7 predict the next most likely value:
+        extract-value predict[seq,1] (|2> . |5> . |7>)
+            1.0     count   |8>
+            1.0     primes  |11>
+            0.5     fib     |8>
+            0.25    fact    |6>
+            1.5|8> + |11> + 0.25|6>
 
     see also: 
 """
-
-
 # def predict_next(context, one, parameters):                     # maybe change invoke order, so context comes first??
 def predict_next(one, context, *params):  # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
     op = params[0]
@@ -5901,22 +5380,22 @@ def bko_if_3(condition, one, two, three):
 
 
 # set invoke method:
-whitelist_table_2['wif'] = 'weighted_bko_if'
+whitelist_table_3['wif'] = 'weighted_bko_if'
 # set usage info:
 sequence_functions_usage['wif'] = """
     description:
-      a weighted if
-      works just like standard 'if', but takes into consideration the coefficient of the condition
+        a weighted if
+        works just like standard 'if', but takes into consideration the coefficient of the condition
       
     examples:
-      wif(0.7|True>, |a>, |b>)
-        0.7|a> + 0.3|b>
+        wif(0.7|True>, |a>, |b>)
+            0.7|a> + 0.3|b>
         
-      wif(0.8|False>, |a>, |b>)
-        0.2|a> + 0.8|b> 
+        wif(0.8|False>, |a>, |b>)
+            0.2|a> + 0.8|b> 
         
     future:
-      fix! It doesn't work quite right yet.
+        implement a version that works with sequences
       
     see also:
       if
@@ -5934,12 +5413,17 @@ sequence_functions_usage['wif'] = """
 # though we can filter those using drop().
 #
 def weighted_bko_if(condition, one, two):
-    label = condition.to_sp().label
-    value = condition.to_sp().value
+    condition = condition.to_sp()
+    one = one.to_sp()
+    two = two.to_sp()
+
+    label = condition.label
+    value = condition.value
     if label.lower() in ["true", "yes"]:
         return one.multiply(value) + two.multiply(1 - value)
     else:
         return one.multiply(1 - value) + two.multiply(value)
+
 
 
 def numbers_fn(foo, one, t):
@@ -7927,6 +7411,7 @@ function_operators_usage['train-of-thought'] = """
     description:
         the train-of-thought function
         given a seed ket, randomly walk through operator links to other kets
+        works best with a large, well connected network
         
         The pseudo-code for this function is:
 
@@ -9321,7 +8806,7 @@ def three_gram(one):
 
 
 def make_ngrams(one, sizes, ngram_type):
-    text = one.label if type(one) == ket else one
+    text = one.label if type(one) is ket else one
     if text.startswith('text: '):
         text = text[6:]
 
@@ -9339,7 +8824,7 @@ def make_ngrams(one, sizes, ngram_type):
     for k in sizes:
         for w in create_ngram_fn(words, int(k)):
             result.add(w)
-    return result
+    return result.multiply(one.value)
 
 
 # set invoke method:
@@ -9348,10 +8833,15 @@ compound_table['word-ngrams'] = ['apply_fn', 'word_ngrams', '']
 function_operators_usage['word-ngrams'] = """
     description:
         create word ngrams, of specified sizes
-
+        the result is multiplied by the coefficient of the ket
+        
     examples:
         word-ngrams[1] |happy to see you>
             |happy> + |to> + |see> + |you>
+            
+        -- same thing again, but this time the ket has coefficient of 5.1:
+        word-ngrams[1] 5.1|happy to see you>
+            5.1|happy> + 5.1|to> + 5.1|see> + 5.1|you>
 
         word-ngrams[1,2,3] |happy to see you>
             |happy> + |to> + |see> + |you> + |happy to> + |to see> + |see you> + |happy to see> + |to see you>
@@ -9369,10 +8859,15 @@ compound_table['letter-ngrams'] = ['apply_fn', 'letter_ngrams', '']
 function_operators_usage['letter-ngrams'] = """
     description:
         create letter ngrams, of specified sizes
+        the result is multiplied by the coefficient of the ket
 
     examples:
         letter-ngrams[1] |fish>
             |f> + |i> + |s> + |h>
+
+        -- same thing again, but this time the ket has coefficient of 3.2:
+        letter-ngrams[1] 3.2|fish>
+            3.2|f> + 3.2|i> + 3.2|s> + 3.2|h>
 
         letter-ngrams[1] |happy>
             |h> + |a> + 2|p> + |y>
@@ -9660,6 +9155,38 @@ def print_type(one):
     print(type(one))
     return one
 
+# long sp. Prints out the long_display form of a sp.
+# set invoke method:
+seq_fn_table['long-display'] = 'long_display'
+# set usage info:
+function_operators_usage['long-display'] = """
+    description:
+        long-display, a slightly easier to read display of sequences
+        
+    examples:
+        long-display ssplit 3.5 |abcd>
+            seq |0> => 3.5|a>
+            seq |1> => 3.5|b>
+            seq |2> => 3.5|c>
+            seq |3> => 3.5|d>
+            3.5|a> . 3.5|b> . 3.5|c> . 3.5|d>
+
+        long-display split 7|a b c d e>
+            seq |0> => 7|a> + 7|b> + 7|c> + 7|d> + 7|e>
+            7|a> + 7|b> + 7|c> + 7|d> + 7|e>
+
+        long-display (|a> + 3|b> . |c> . 5|d> + 7|e> + 11|f>)
+            seq |0> => |a> + 3|b>
+            seq |1> => |c>
+            seq |2> => 5|d> + 7|e> + 11|f>
+            |a> + 3|b> . |c> . 5|d> + 7|e> + 11|f>
+
+    see also:
+"""
+def long_display(one):
+    one.long_display()
+    return one
+
 
 import itertools
 
@@ -9687,7 +9214,6 @@ function_operators_usage['discrimination'] = """
         maybe it should be built in to our ket/superposition/sequence classes?
 """
 def discrimination(one):
-    result = 0
     if type(one) is ket:
         result = one.value
     elif len(one) == 0:
@@ -9696,8 +9222,6 @@ def discrimination(one):
         result = one.value
     else:  # assumes to get to this branch, one is a superposition, not a ket or sequence
         one = one.coeff_sort()
-        # result = one.data[0].value - one.data[1].value
-        # list(itertools.islice(d.items(), 0, 4))
         first, second = list(itertools.islice(one.dict.items(), 0, 2))
         result = first[1] - second[1]
     return ket(" ", result)
@@ -9754,6 +9278,7 @@ def old_rename_kets(one, two, three):
         return ket("", 0)
 
 
+# https://en.wikipedia.org/wiki/Production_(computer_science)
 # set invoke method:
 whitelist_table_3['string-replace'] = 'string_replace'
 # set usage info:
@@ -9848,3 +9373,351 @@ def have_in_common(one, context):
         return ket("", 0)
     # ... finish
 
+
+
+import math
+
+
+# the frequency class equation:
+# see: http://en.wikipedia.org/wiki/Frequency_list
+# set invoke method:
+whitelist_table_2['frequency-class'] = 'frequency_class_ket'
+# set usage info:
+sequence_functions_usage['frequency-class'] = """
+    description:
+        implement the frequency class equation
+        see: https://en.wikipedia.org/wiki/Word_lists_by_frequency#Statistics
+
+    the algorithm:
+        drop all elements <= 0 from X
+        smallest = the min coeff in X
+        largest = the max coeff in X
+        f = the value of e.label in X
+        
+        if largest <= 0:
+            return 0
+        if f <= 0:
+            return math.floor(0.5 - math.log(smallest / largest, 2)) + 1
+        return math.floor(0.5 - math.log(f / largest, 2))
+
+    examples:
+
+    see also:
+        normed-frequency-class, map-to-topic
+"""
+def frequency_class_ket(e, X):
+    value = frequency_class_value(e, X)
+    return ket('number: ' + str(value))
+
+def frequency_class_value(e, X):
+    e = e.to_sp().label
+    X = X.to_sp().drop()  # filter out elements <= 0
+    smallest = X.find_min_coeff()
+    largest = X.find_max_coeff()
+    f = X.find_value(e)
+
+    # need a check in here that f > 0.
+    # Indeed, largest > 0 too.
+
+    if largest <= 0:
+        return 1
+
+    if f <= 0:  # what happens if smallest == 0?? X.drop() means largest == 0 too, hence already returned 1.
+        return math.floor(0.5 - math.log(smallest / largest, 2)) + 1
+
+    return math.floor(0.5 - math.log(f / largest, 2))
+
+
+# the normalized frequency class equation.
+# result is in [0,1]
+# 1 for exact match, 0 for not in set.
+#
+# works great! Indeed, it is a bit like a fuzzy set membership function.
+# eg, if all coeffs in X are equal, it gives Boolean 1 for membership, and 0 for non-membership.
+# and if the coeffs are not all equal, then it has fuzzier properties.
+#
+# 25/7/2014 note: Hrmm... I wonder if we can tweak this.
+# Currently you only get 20 odd different classes using the frequency class equation.
+# Is there a version that gives more graduations?
+# Though in practice this is usually not an issue.
+# It will almost certainly be of form foo(current/largest)
+#
+# set invoke method:
+whitelist_table_2['normed-frequency-class'] = 'normed_frequency_class_ket'
+# set usage info:
+sequence_functions_usage['normed-frequency-class'] = """
+    description:
+        implement the normed frequency class equation:
+        normed-frequency-class(e, X)
+        where: e is a ket, X is a superposition, and the result is in [0,1]
+        1 for exact match, 0 for not in set, values in between otherwise
+        
+        if all coeffs in X are equal, it gives 1 for membership, and 0 for non-membership
+        if the coeffs are not all equal, then it has fuzzier properties
+
+        this function is the back-end to the map-to-topic function
+        and works particularly well when X is a frequency list
+        
+    the algorithm:
+        drop all elements <= 0 from X
+        smallest = the min coeff in X
+        largest = the max coeff in X
+        f = the value of e.label in X
+        
+        if largest <= 0 or f <= 0:
+            return 0
+        fc_max = math.floor(0.5 - math.log(smallest / largest, 2)) + 1
+        return 1 - math.floor(0.5 - math.log(f / largest, 2)) / fc_max
+        
+    examples:
+        -- all coeffs in X equal:
+        -- b is a member of |a> + |b> + |c> + |d> + |e>
+        normed-frequency-class(|b>, |a> + |b> + |c> + |d> + |e>)
+            |number: 1.0>
+
+        -- c is a member of 7.2 |a> + 7.2 |b> + 7.2 |c> + 7.2 |d>
+        normed-frequency-class(|c>, 7.2 |a> + 7.2 |b> + 7.2 |c> + 7.2 |d>)
+            |number: 1.0>
+
+        -- e is not a member of |a> + |b> + |c>
+        normed-frequency-class(|e>, |a> + |b> + |c>)
+            |number: 0>
+
+
+        -- a "not all coeffs equal" example:
+        -- consider: 
+        smooth[0.5]^5 |10>
+            0.001|7.5> + 0.01|8> + 0.044|8.5> + 0.117|9> + 0.205|9.5> + 0.246|10> + 0.205|10.5> + 0.117|11> + 0.044|11.5> + 0.01|12> + 0.001|12.5>
+
+        -- this has this shape:
+        bar-chart[40] smooth[0.5]^5 |10>
+            ----------
+            7.5  :
+            8    : |
+            8.5  : |||||||
+            9    : |||||||||||||||||||
+            9.5  : |||||||||||||||||||||||||||||||||
+            10   : ||||||||||||||||||||||||||||||||||||||||
+            10.5 : |||||||||||||||||||||||||||||||||
+            11   : |||||||||||||||||||
+            11.5 : |||||||
+            12   : |
+            12.5 :
+            ----------
+
+        -- now see the results:
+        fc |*> #=> round[3] frequency-class(|_self>, smooth[0.5]^5 |10>)
+        nfc |*> #=> round[3] normed-frequency-class(|_self>, smooth[0.5]^5 |10>)
+        table[number, fc, nfc] range(|6>, |14>, |0.5>)
+            +--------+----+-------+
+            | number | fc | nfc   |
+            +--------+----+-------+
+            | 6      | 9  | 0     |
+            | 6.5    | 9  | 0     |
+            | 7      | 9  | 0     |
+            | 7.5    | 8  | 0.111 |
+            | 8      | 5  | 0.444 |
+            | 8.5    | 2  | 0.778 |
+            | 9      | 1  | 0.889 |
+            | 9.5    | 0  | 1.0   |
+            | 10     | 0  | 1.0   |
+            | 10.5   | 0  | 1.0   |
+            | 11     | 1  | 0.889 |
+            | 11.5   | 2  | 0.778 |
+            | 12     | 5  | 0.444 |
+            | 12.5   | 8  | 0.111 |
+            | 13     | 9  | 0     |
+            | 13.5   | 9  | 0     |
+            | 14     | 9  | 0     |
+            +--------+----+-------+
+
+    see also:
+        frequency-class, map-to-topic
+"""
+def normed_frequency_class_ket(e, X):
+    value = normed_frequency_class_value(e, X)
+    return ket('number: ' + str(value))
+
+# e is a ket, X is a superposition
+# for best effect X should be a frequency list
+def normed_frequency_class_value(e, X):
+    e = e.to_sp().label  # make sure e is a ket, not a superposition, else X.find_value(e) bugs out.
+    X = X.to_sp().drop()  # drop elements with coeff <= 0
+    smallest = X.find_min_coeff()  # return the min coeff in X as float
+    largest = X.find_max_coeff()  # return the max coeff in X as float
+    f = X.find_value(e)  # return the value of ket e in superposition X as float
+
+    if largest <= 0 or f <= 0:  # otherwise the math.log() blows up!
+        return 0
+
+    fc_max = math.floor(0.5 - math.log(smallest / largest, 2)) + 1  # NB: the + 1 is important, else the smallest element in X gets reported as not in set.
+    return 1 - math.floor(0.5 - math.log(f / largest, 2)) / fc_max
+
+
+# OK. I think this is the time sink with my MtT.
+# If we assume X[1] is the largest, and X[-1] is smallest,
+# then we don't need find_min and find_max.
+# I didn't time it, but it felt no faster....
+def faster_normed_frequency_class(e, X):
+    X = X.drop()
+    #  smallest = X.find_min_coeff()
+    #  largest = X.find_max_coeff()
+    smallest = X.select_elt(-1).value  # bug if X is empty??
+    largest = X.select_elt(1).value
+
+    f = X.find_value(e)
+
+    if largest <= 0 or f <= 0:
+        return 0
+
+    fc_max = math.floor(0.5 - math.log(smallest / largest, 2)) + 1
+    return 1 - math.floor(0.5 - math.log(f / largest, 2)) / fc_max
+
+
+# 19/3/2015:
+# e is a ket, X is a superposition
+# for best effect X should be a frequency list
+def ket_normed_frequency_class(e, X):
+    result = normed_frequency_class(e, X)
+    return ket("nfc", result)
+
+
+
+def absolute_difference_fn(x, y):
+    return abs(x - y)
+
+# general to specific.
+# The idea is you take an average of some object.
+# Let's say the slashdot-to-sp I've recently been playing with.
+# So: hashes |ave-slashdot> => hashes |slashdot-1> + hashes |slashdot-2> + hashes |slashdot-3> + hashes |slashdot-4>
+# Then, given |ave-slashdot>, find the bits that are unique to |slashdot-n>
+# Maybe something like:
+# hashes |slashdot: 5> => general-to-specific(hashes |ave-slashdot>, hashes |slashdot-5>)
+# NB: in the process we made a sub-category. And hashes|slashdot: 5> will look vastly different from hashes|slashdot-5>
+#
+# Update: probably works better if we have threshold filters in there before learning the average:
+# roughly: hashes |ave-slashdot> => TF[t1] hashes |slashdot-1> + TF[t2] hashes |slashdot-2> + TF[t3] hashes |slashdot-3> + TF[t4] hashes |slashdot-4>
+# Indeed, it is probably actually this:
+# hashes |ave-slashdot> => TF[t5] (TF[t1] hashes |slashdot-1> + TF[t2] hashes |slashdot-2> + TF[t3] hashes |slashdot-3> + TF[t4] hashes |slashdot-4> )
+# Not currently sure how to choose the values for tk
+#
+# 10/5/2015: work on images shows that abs() is not he best choice. pos(x) is much better!
+#
+def general_to_specific(average, specific):
+    return intersection_fn(absolute_difference_fn, average.normalize(), specific.normalize())  # NB: .normalize() is vital for this to work!
+    # return intersection_fn(absolute_difference_fn,average,specific)
+
+
+
+
+# 9/2/2016:
+# guess-ket |fred>          -- return the best matching known ket (using simm and so on)
+# guess-ket[3] |Sam>        -- return the best 3 matching known kets, providing simm > 0
+# guess-ket[*] |robbie>     -- return all matching known kets, providing simm > 0
+#
+# could do with some optimization!
+#
+# one is a ket
+def guess_ket(one, context, t='1'):
+    def process_string(s):
+        one = ket(s.lower())  # I presume we want s.lower(). Maybe sometimes we don't?
+        return make_ngrams(one, '1,2,3', 'letter')
+
+    try:
+        guess = process_string(one.label)
+        r = superposition()
+        for x in context.relevant_kets(
+                "*"):  # what about kets that are only on the right hand side of a learn rule? This misses them. One way is run "create inverse", but is there a better way?
+            #      similarity = silent_simm(guess,process_string(x.label))
+            similarity = fast_simm(guess, process_string(x.label))
+            if similarity > 0:
+                r.data.append(x.multiply(similarity))  # later swap in r += x.multiply(similarity)
+        if t == '*':
+            return r.coeff_sort()
+        else:
+            return r.coeff_sort().select_range(1, int(t))
+    except:
+        return ket("", 0)
+
+
+# 9/2/2016:
+# guess-operator[age]          -- return the best matching known operator (using simm and so on)
+# guess-operator[friend,3]     -- return the best 3 matching known operators, providing simm > 0
+# guess-operator[mother,*]     -- return all matching known operators, providing simm > 0
+#
+def guess_operator(context, parameters):
+    try:
+        op, t = parameters.split(',')
+        if t != '*':
+            t = int(t)
+    except:
+        op = parameters
+        t = 1
+
+    def process_string(s):
+        one = ket(s.lower())
+        return make_ngrams(one, '1,2,3', 'letter')
+
+    try:
+        guess = process_string(op)
+        r = superposition()
+        for x in context.supported_operators():
+            similarity = silent_simm(guess, process_string(x.label[4:]))  # need to convert 'op: age' to 'age'
+            r.data.append(x.multiply(similarity))  # later swap in r += x.multiply(similarity)
+        if t == '*':
+            return r.drop().coeff_sort()
+        else:
+            return r.drop().coeff_sort().select_range(1, t)
+    except:
+        return ket("", 0)
+
+
+
+# now, in our digit recognition task, it is clear that some features are far more common than others. eg white space
+# so the question is, how best to normalize this a bit.
+# Currently I'm using log(1 + x) which maps the test case of 1000 test images from 70.9% to 72.1%
+# Recall best algo's give 98%, so I have a lot of work to do yet!!
+# Next idea is ket normalization. ie, reweight kets so that on average, each ket "fires" at the same rate
+# Hopefully it will encode the idea that frequently firing kets are less interesting than rarely firing ones.
+# In BKO, this:
+# -- these are our starting superpositions:
+#    the |sp1> => a1|A> + b1|B> + c1|C>
+#    the |sp2> => a2|A> + b2|B> + c2|C>
+#    the |sp3> => a3|A> + b3|B> + c3|C>
+#    the |sp4> => a4|A> + b4|B> + c4|C>
+#
+# -- the sum of our superpositions:
+#    the-sum |sp> => the (|sp1> + |sp2> + |sp3> + |sp4)
+#
+# -- these are what we want our code to learn:
+#    norm-ket |A> => 1/(a1 + a2 + a3 + a4) |A>
+#    norm-ket |B> => 1/(b1 + b2 + b3 + b4) |B>
+#    norm-ket |C> => 1/(c1 + c2 + c3 + c4) |C>
+#
+# -- this is intended usage once we have them (probably implemented with map)
+#    the-normed |sp1> => norm-ket the |sp1>
+#    the-normed |sp2> => norm-ket the |sp2>
+#    the-normed |sp3> => norm-ket the |sp3>
+#    the-normed |sp4> => norm-ket the |sp4>
+#
+# -- test our code works:
+#    norm-ket the-sum |sp> == |A> + |B> + |C>
+#
+#
+def learn_ket_normalizations(context, parameters):
+    try:
+        op1, op2, t = parameters.split(',')
+        t = float(t)
+    except:
+        return ket("", 0)
+
+    the_kets = context.relevant_kets(op1)
+    the_sum = superposition()
+    for x in the_kets:
+        the_sum += x.apply_op(context, op1)
+    for x in the_sum:
+        if x.value <= 0:
+            continue
+        y = ket(x.label)
+        context.learn(op2, y, y.multiply(t / x.value))
+    return ket("ket-norms")

@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 11/7/2018
+# Update: 13/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -1209,6 +1209,7 @@ class sequence(object):
                 print("seq |%s> => %s" % (k, x.coeff_sort()))
             else:
                 print("seq |%s> => %s" % (k, x))
+        # return self
 
     def display_minimalist(self):
         for x in self.data:
@@ -1980,17 +1981,15 @@ class NewContext(object):
     # what I'm calling pattern recognition.
     # just simm applied to relevant kets
     def pattern_recognition(self, pattern, op, t=0):  # this function should be quite easy to parallelize in the future.
-        if type(op) == ket:
+        if type(op) is ket:
             op = op.label[4:]
         result = superposition()  # later swap out superposition to fast_superposition
         for label in self.ket_rules_dict:  # though when I do so I will probably rename fast_sp to plain superposition.
             if op in self.ket_rules_dict[label]:
                 #        candidate_pattern = self.recall(op,label,True)                 # do we need active=True here? probably. OK. On a trial basis :)
-                candidate_pattern = self.ket_rules_dict[label][
-                    op]  # currently is an exception if any patterns are stored rules! Fixed.
+                candidate_pattern = self.ket_rules_dict[label][op]  # currently is an exception if any patterns are stored rules! Fixed.
                 if type(candidate_pattern) in [stored_rule, memoizing_rule]:
-                    candidate_pattern = candidate_pattern.activate(self, op,
-                                                                   label)  # do we really want to activate memoizing rules just by running similar-input[op]??
+                    candidate_pattern = candidate_pattern.activate(self, op, label)  # do we really want to activate memoizing rules just by running similar-input[op]??
                 #        value = silent_simm(pattern,candidate_pattern)
                 #        value = fast_simm(pattern,candidate_pattern)                    # see if this speeds things up!
                 value = aligned_simm_value(pattern, candidate_pattern)
@@ -2001,7 +2000,7 @@ class NewContext(object):
     # essentially identical in structure to pattern_recognition.
     # I wonder if they should be merged into one more generic function?? Not for now, at least.
     def map_to_topic(self, e, op, t=0):
-        if type(op) == ket:
+        if type(op) is ket:
             op = op.label[4:]
         result = superposition()  # later swap out superposition to fast_superposition
         for label in self.ket_rules_dict:
@@ -2009,13 +2008,13 @@ class NewContext(object):
                 #        frequency_list = self.recall(op,label,True)                    # do we need active=True here? probably. OK. On a trial basis :)
                 frequency_list = self.ket_rules_dict[label][op]  # this cut runtime in half!
                 if type(frequency_list) in [stored_rule, memoizing_rule]:
-                    frequency_list = frequency_list.activate(self, op,
-                                                             label)  # do we really want to activate memoizing rules just by running find-topic[op]??
-                value = normed_frequency_class(e, frequency_list)
+                    frequency_list = frequency_list.activate(self, op, label)  # do we really want to activate memoizing rules just by running find-topic[op]??
+                value = normed_frequency_class_value(e, frequency_list)
                 if value > t:  # "value >= t" instead?
-                    result.data.append(
-                        ket(label, value))  # "result += ket(label,value)" when swap in fast_superposition
+                    #result.data.append(ket(label, value))  # "result += ket(label,value)" when swap in fast_superposition
+                    result.add(label, value)
         return result.normalize(100).coeff_sort()
+
 
     # given an operator, return superposition of kets that support that operator:
     # slightly weird we have this here, and then a wrapper around it in the functions code, and this latter is what the processor uses.
