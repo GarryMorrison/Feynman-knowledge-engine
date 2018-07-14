@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 13/7/2018
+# Update: 14/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -264,9 +264,10 @@ compound_table = {
   
 # 18/1/2016:
 #  "similar-input"      : ".similar_input(context,\"{0}\")",
-  "similar-input"      : ['similar_input', '', 'context'],
+#  "similar-input"      : ['similar_input', '', 'context'],
   
-  "find-topic"         : ".find_topic(context,\"{0}\")",
+#  "find-topic"         : ".find_topic(context,\"{0}\")",
+    "find-topic"       : ['find_topic', '', 'context'],
 # "collapse-function"  : ".apply_fn_collapse({0})",
 #  "drop-below"         : ".drop_below({0})",
   "drop-below"         : ['drop_below', '', ''],
@@ -310,10 +311,10 @@ compound_table = {
   
 # newly added 19/5/2014
 # rel-kets tweaked 13/2/2015:
-  "relevant-kets"      : ".apply_sp_fn(relevant_kets,context,\"{0}\")",
-  "intn-relevant-kets" : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",
+#  "relevant-kets"      : ".apply_sp_fn(relevant_kets,context,\"{0}\")",
+#  "intn-relevant-kets" : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",
   #"rel-kets"           : ".apply_sp_fn(relevant_kets,context,\"{0}\")",
-  'rel-kets'           : ['apply_sp_fn', 'relevant_kets', 'context'],    
+#  'rel-kets'           : ['apply_sp_fn', 'relevant_kets', 'context'],
 #  "intn-rel-kets"      : ".apply_sp_fn(intersection_relevant_kets,context,\"{0}\")",
 
 #  "matrix"            : ".apply_naked_fn(matrix,context,\"{0}\")",

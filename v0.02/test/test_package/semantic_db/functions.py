@@ -6661,6 +6661,39 @@ def find_steps_between(context, one, two):
 
 # set invoke method:
 compound_table['exp'] = ['apply_fn', 'exp', 'context']
+# set usage info:
+function_operators_usage['exp'] = """
+    description:
+        exp[op, n] |x>
+        essentially the first n terms of exp(op) applied to |x>, ignoring factors of 1/n!
+        if you want the 1/n! too, then see full-exp
+        cf: exp(A) |Psi> in quantum mechanics
+        ie: (1 + op + op^2 + ... + op^n) |x>
+        if n <= 0, return |x>
+         
+    examples:
+        -- load a binary tree:
+        load tree.sw
+
+        -- find left branch of tree:
+        exp[left, 3] |x>
+            |x> + |0> + |00> + |000>
+
+        -- find right branch of tree:
+        NB: in this case exp[right, 4] would have sufficed
+        exp[right, 10] |x>
+            |x> + |1> + |11> + |111> + |1111>
+
+        -- find the head of the tree:
+        exp[child, 2] |x>
+            |x> + |0> + |1> + |00> + |01> + |10> + |11>
+
+    see also:
+        full-exp, exp-max
+        
+    TODO:
+        currently it doesn't handle sequences all that well.
+"""
 # 12/5/2014:
 # exp[child,n] |x>
 # maps to: (1 + child + child^2 + ... + child^n ) |x>
@@ -6670,22 +6703,53 @@ compound_table['exp'] = ['apply_fn', 'exp', 'context']
 def exp(one, context, *params):
     try:
         op, n = params
-        print("exp op " + op)
-        print("exp n  " + n)
         n = int(n)
     except:
         return one
 
-    r = one
+    r = superposition(one)
     tmp = one
     for k in range(n):
         tmp = tmp.apply_op(context, op).to_sp()  # this is broken for some operators, depends on details of that operator though!
-        r += tmp
+        r.add_sp(tmp)
     return r
 
 
 # set invoke method:
 compound_table['exp-max'] = ['apply_fn', 'exp_max', 'context']
+# set usage info:
+function_operators_usage['exp-max'] = """
+    description:
+        exp-max[op] |x>
+        exp(op) applied to |x>, ignoring factors of 1/n!
+        if you want the 1/n! too, then see full-exp
+        cf: exp(A) |Psi> in quantum mechanics
+        ie: (1 + op + op^2 + ... + op^n) |x>
+        where we go to full depth
+        ie, n is such that op^(n + 1) |x> == |>
+
+    examples:
+        -- load a binary tree:
+        load tree.sw
+
+        -- entire left branch of tree:
+        exp-max[left] |x>
+            n: 4
+            |x> + |0> + |00> + |000> + |0000>
+            
+        -- full tree starting from |11>:
+        exp-max[child] |11>
+            n: 2
+            |11> + |110> + |111> + |1100> + |1101> + |1110> + |1111>
+        
+        -- find the lengths of the node names in the full tree:
+        ket-length exp-max[child] |x>
+            n: 4
+            3|number: 1> + 4|number: 2> + 8|number: 3> + 16|number: 4>
+
+    see also:
+        exp, full-exp
+"""
 # 4/8/2014:
 # exp-max[op] |x>
 # maps to (1 + op + op^2 + ... op^n) |x>
@@ -6711,13 +6775,13 @@ def exp_max(one, context, *params):
         op = params[0]
         t = 0
 
-    r = one
+    r = superposition(one)
     tmp = one
     previous_size = len(r)  # yup. I finally implemented len() for superpositions/kets.
     n = 0
     while True:
         tmp = tmp.apply_op(context, op).to_sp()
-        r += tmp
+        r.add_sp(tmp)
         #    if len(r) == previous_size:            # a variant is: len(r) - previous_size <= t
         if len(r) - previous_size <= t:  # since kets add in sp, this difference is the number of newly discovered kets.
             break  # so, if this is 0, then we have reached the end of the network.
@@ -6727,29 +6791,57 @@ def exp_max(one, context, *params):
     return r
 
 
+# set invoke method:
+compound_table['full-exp'] = ['apply_fn', 'full_exp', 'context']
+# set usage info:
+function_operators_usage['full-exp'] = """
+    description:
+        full-exp[op, n] |x>
+        the first n terms of exp(op) applied to |x>, including factors of 1/n!
+        if you don't want the 1/n!, then see exp
+        cf: exp(A) |Psi> in quantum mechanics
+        ie: (1 + op/1! + op^2/2! + ... + op^n/n!) |x>
+        if n <= 0, return |x>
+        most of the time, you probably just want exp[op, n] or exp-max[op]
 
+    examples:
+        -- load a binary tree:
+        load tree.sw
 
+        -- find left branch of tree:
+        full-exp[left, 3] |x>
+            |x> + |0> + 0.5|00> + 0.167|000>            
 
+        -- find right branch of tree:
+        NB: in this case full-exp[right, 4] would have sufficed
+        full-exp[right, 10] |x>
+            |x> + |1> + 0.5|11> + 0.167|111> + 0.042|1111>
+
+        -- find the head of the tree:
+        full-exp[child, 3] |x>
+            |x> + |0> + |1> + 0.5|00> + 0.5|01> + 0.5|10> + 0.5|11> + 0.167|000> + 0.167|001> + 0.167|010> + 0.167|011> + 0.167|100> + 0.167|101> + 0.167|110> + 0.167|111>
+            
+    see also:
+        exp, exp-max
+"""
 # 17/4/2015:
 # full-exp[child,n] |x>
 # maps to: (1 + child/1 + child^2/2 + ... + child^n/n! ) |x>
 # cf: exp(A) |Psi> in QM.
 # if n <= 0, return |x>
 #
-def full_exp(one, context, parameters):
+def full_exp(one, context, *parameters):
     try:
-        op, n = parameters.split(",")  # slightly hackish. Don't know a better way to do it ....
-        print("exp op " + op)
-        print("exp n  " + n)
+        op, n = parameters
         n = int(n)
     except:
         return one
 
-    r = one
+    r = superposition(one)
     tmp = one
     for k in range(n):
-        tmp = tmp.apply_op(context, op)
-        r += tmp.multiply(1 / factorial(k + 1))
+        tmp = tmp.apply_op(context, op).to_sp()
+        r.add_sp(tmp.multiply(1 / factorial(k + 1)))
     return r
 
 
@@ -6775,10 +6867,65 @@ def full_exp(one, context, parameters):
 # no need to do: relevant-kets[op1] relevant-kets[op2] SP
 #
 # set invoke method:
-compound_table['intn-rel-kets'] = ['apply_sp_fn', 'intersection_relevant_kets', 'context']
+compound_table['rel-kets'] = ['apply_sp_fn', 'intersection_relevant_kets', 'context']
+# set usage info:
+function_operators_usage['rel-kets'] = """
+    description:
+        rel-kets[op]
+        return all relevant kets that have op specified
+        if op is * then return everything that has a literal operator specified for it
+        NB: rel-kets[op] does not return kets that are only specified on the right hand side of a learn rule 
+        
+        rel-kets[op1,op2, ..., opn]
+        return all relevant kets that have op1, ... , opn specified
+        
+        rel-kets[op1, ... , opn] SP
+        return all relevant kets, in the given superposition, that have op1, ... , opn specified
 
+    examples:
+        load fred-sam-friends.sw
+        rel-kets[friends]
+            |Fred> + |Sam>
+        
+        age |Sam> => |47>
+        rel-kets[friends, age]
+            |Sam>
+        
+        load family.sw
+        rel-kets[*]
+            |context> + |sally> + |erica> + |trude> + |peter> + |tom> + |sara> + |sam> + |ruth> + |mike> + |gina> + |mary> + |mark>
+        
+        load family-relations.sw
+        such-that[is-a-female] rel-kets[*]
+            |sally> + |erica> + |trude> + |sara> + |ruth> + |gina> + |mary>
+
+        such-that[is-an-uncle] rel-kets[*]
+            |peter>
+
+        such-that[have-a-sister] rel-kets[*]
+            |sally> + |erica>
+            
+        such-that[have-a-sister, is-a-teenager] rel-kets[*]
+            |sally>
+
+        such-that[have-a-brother] rel-kets[*]
+            |peter> + |tom>
+
+         such-that[have-a-wife] rel-kets[*]
+            |tom> + |sam> + |mike> + |mark>
+
+    see also:
+        such-that
+        
+    TODO:
+        fix sequence behaviour
+        maybe implement all-kets which returns even kets that are only specified on the right of a learn rule 
+"""
 def intersection_relevant_kets(one, context, *ops):
-    r = one
+    if len(one) == 0:
+        r = context.relevant_kets('*')
+    else:
+        r = one
     for op in ops:
         kets_list = context.relevant_kets(op)
         r = intersection(r, kets_list)
@@ -6786,8 +6933,129 @@ def intersection_relevant_kets(one, context, *ops):
 
 
 # 22/2/2015 tweaked: now if op == "*" it returns a sp of all known kets.
-def relevant_kets(one, context, op):
-    return context.relevant_kets(op)
+#def relevant_kets(one, context, op):
+#    return context.relevant_kets(op)
+
+
+# set invoke method:
+compound_table['similar-input'] = ['apply_seq_fn', 'similar_input', 'context']
+# set usage info:
+function_operators_usage['similar-input'] = """
+    description:
+        similar-input[op] seq
+        returns the similarity of seq with all kets that have op defined
+
+    examples:
+        -- learn the noises of cats and dogs:
+        sounds-it-makes |cat> => |purring> + |miaowing> + |scratching at the door>
+        sounds-it-makes |dog> => |panting> + |sniffing> + |scratching at the door>
+
+        -- which animal is at the door, given the input noise:
+        which-animal-given (*) #=> normalize[100] similar-input[sounds-it-makes] words-to-list |_self>
+
+        -- now ask some questions:
+        which-animal-given |panting>
+            100.0|dog>
+
+        which-animal-given |purring>
+            100.0|cat>
+
+        which-animal-given |scratching at the door>
+            50.0|cat> + 50.0|dog>
+
+        which-animal-given |sniffing and scratching at the door>
+            66.667|dog> + 33.333|cat>
+
+        -- predict which noises you will hear next, given the input noise:
+        predict-noise-given (*) #=> normalize[100] sounds-it-makes similar-input[sounds-it-makes] words-to-list |_self>
+
+        -- now ask some questions:
+        predict-noise-given |panting>
+            33.333|panting> + 33.333|sniffing> + 33.333|scratching at the door>
+
+        predict-noise-given |purring>
+            33.333|purring> + 33.333|miaowing> + 33.333|scratching at the door>
+
+        predict-noise-given |sniffing and scratching at the door>
+            22.222|panting> + 22.222|sniffing> + 33.333|scratching at the door> + 11.111|purring> + 11.111|miaowing>
+
+        bar-chart[40] predict-noise-given |sniffing and scratching at the door>
+            ----------
+            panting                : ||||||||||||||||||||||||||
+            sniffing               : ||||||||||||||||||||||||||
+            scratching at the door : ||||||||||||||||||||||||||||||||||||||||
+            purring                : |||||||||||||
+            miaowing               : |||||||||||||
+            ----------
+
+    see also:
+        find-topic
+"""
+def similar_input(self, context, op):
+    return context.pattern_recognition(self, op)
+
+
+
+# set invoke method:
+compound_table['find-topic'] = ['apply_fn', 'find_topic', 'context']
+# set usage info:
+function_operators_usage['find-topic'] = """
+    description:
+        find-topic[op] |x>
+        find most similar frequency list, defined with respect to op, of |x>
+
+    examples:
+        -- load some knowledge:
+        -- in this case US census frequency list of male, female and last names:
+        -- NB: unfortunately this is super memory hungry!
+        web-load http://semantic-db.org/sw-examples/names.sw
+        
+        -- define our operator:
+        guess-name-type |*> #=> find-topic[names] to-lower |_self>
+        
+        -- ask about 'Emma'
+        guess-name-type |Emma>
+            90.323|female name> + 9.677|last name>
+        
+        -- ask about 'Gina'
+        guess-name-type |Gina>
+            100|female name>
+                    
+        -- ask about 'Mark'
+        guess-name-type |Mark>
+            54.664|male name> + 28.633|last name> + 16.703|female name>
+
+        -- ask about 'Fred'
+        guess-name-type |Fred>
+            63.294|male name> + 28.418|last name> + 8.288|female name>
+        
+        -- ask about 'Branson'
+        guess-name-type |Branson>
+            100|last name>
+
+        -- define our guess-gender operator:
+        name-type |male name> => |male>
+        name-type |female name> => |female>
+        guess-gender |*> #=> clean select[1,1] name-type find-topic[names] to-lower |_self>
+        
+        guess-gender |Lisa>
+            |female>
+
+        guess-gender |Eric>
+            |male>
+
+        guess-gender |Jane>
+            |female>
+
+        guess-gender |Stephen>
+            |male>
+
+    see also:
+        similar-input
+"""
+# implements: find-topic[op] |x>
+def find_topic(self, context, op):
+    return context.map_to_topic(self, op)
 
 
 # FINISH!!
@@ -7071,8 +7339,6 @@ def map(one, context, *op):
         fn, op = op
     except:
         fn = op
-    print("fn:", fn)
-    print("op:", op)
 
     for x in one:  # what if x has x.value != 1? x.apply_op handles that.
         if x.label != '*':  # what about foo |category: *> #=> ... rules? Should they be excluded too?
