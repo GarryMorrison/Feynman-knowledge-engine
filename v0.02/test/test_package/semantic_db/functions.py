@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 13/7/2018
+# Update: 15/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -146,7 +146,7 @@ def fast_sp_intersection_fn(foo, one, two):
 
 
 
-# 24/1/2015: this this is weird and boring!
+# 24/1/2015: this thing is weird and boring!
 # Now, some weird maths thing.
 # A kind of "number is near", based on digits.
 # Yeah, hard-wired to base 10 for now.
@@ -321,14 +321,6 @@ def strange_int_list(x):
 
 
 
-
-# merge labels
-# merge-labels (|fish> + |soup>) returns |fishsoup>
-def merge_labels(one):
-    w = "".join(x.label for x in one)
-    return ket(w)
-
-
 # a thing called active read.
 # returns results from read_text, and word.apply_op(context,"")
 def first_active_read_text(context, one):
@@ -466,28 +458,6 @@ def old_console_active_buffer(one, context, parameters):  # one is the passed in
 
 
 
-# Now I need its brother, number-to-words.
-# eg:
-# number-to-words |number: 7> => |text: seven>
-# number-to-words |number: 35> => |text: thirty five>
-# number-to-words |number: 137> => |text: one hundred and thirty seven>
-# number-to-words |number: 8,921> => |text: eight thousand, nine hundred and twenty one>
-# number-to-words |number: 54,329> => |text: fifty four thousand, three hundred and twenty nine>
-# number-to-words |number: 673,421> => |text: six hundred and seventy three thousand, four hundred and twenty one>
-# number-to-words |number: 3,896,520> => |text: three million, eight hundred and ninety six thousand, five hundred and twenty>
-#
-# I think something here should do the job:
-# http://stackoverflow.com/questions/8982163/how-do-i-tell-python-to-convert-integers-into-words
-def number_to_words(one):
-    result = superposition()
-    # details ...
-
-
-
-
-
-
-
 
 # 28/5/2014:
 # working towards a BKO version of the categorize code.
@@ -572,19 +542,6 @@ def print_pixels(one, context,
 
 
 
-# 29/8/2015:
-# clean-split |word1 word2 word3> => |word1> + |word2> + |word3>
-# essentially the same as split_ket, except it sends punctuation to ' '
-#
-# one is a ket
-def clean_split_ket(one):
-    result = superposition()
-    text = re.sub('[.,!?$\"-]', ' ', one.label)
-    text = text.replace('\\n', ' ').replace('\\r', ' ')  # should this line be before the re.sub() line?
-    for word in text.split():
-        result += ket(word, one.value)
-    return result
-
 
 # quick play here: http://semantic-db.org/the-semantic-agent/play_with_list_to_sp.py
 def list_to_sp(s, list):
@@ -609,32 +566,6 @@ def sp_as_list(sp):  # I think natural sort is buggy when you have negative valu
     return sp
 
 
-
-
-
-# 10/11/2014:
-# chars |some text>
-# maps to:
-# | > + 2|e> + |m> + |o> + |s> + 2|t> + |x>
-#
-# example usage:
-# chars-fn |*> #=> chars |_self>
-# map[chars-fn,chars] "" |list>
-# similar[chars] |George>                      # NB: similar[op] bugs out if "op |*> #=> ... " is defined.
-#                                              # something to do with the stored-rule vs similar[].
-# assumes "one" is a ket.                      # related: maybe make similar work with ops other than literal ops?
-# Probably we can tidy it up a bit ... Nah. Looks about right. # probably a lot of work though!
-def chars(one):
-    char_list = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:-*"
-    L = [0] * len(char_list)
-    for c in one.label:
-        k = char_list.find(c)
-        if k >= 0:
-            L[k] += 1
-    r = superposition()
-    for k, count in enumerate(L):
-        r += ket(char_list[k], count)
-    return r.drop().multiply(one.value)
 
 
 
@@ -1525,69 +1456,6 @@ def select_chars(one, positions):
         return ket(text)
     except:
         return ket("", 0)
-
-
-
-
-
-# eg: process-reaction(current-sp,2|H2> + |O2>,2|H2O>) == current-sp - (2|H2> + |O2>) + 2|H2O>
-# Cool. Seems to work.
-# 16/2/2016: maybe process-consuming-reaction() is a better name, to tie in with process-catalytic-reacion()
-#
-# one, two and three are superpositions
-def old_process_reaction(one, two, three):
-    if type(one) is sequence and type(two) is sequence and type(three) is sequence:
-        one = one[0]  # hackily cast sequence to superposition for now.
-        two = two[0]
-        three = three[0]
-
-    def del_fn(x, y):  # NB: creates negative coeffs.
-        return x - y
-
-    if intersection(two, one).count_sum() != two.count_sum():
-        return one
-    else:
-        return intersection_fn(del_fn, one,
-                               two).drop() + three  # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
-
-
-# 16/2/2016:
-# process-catalytic-reaction(current-sp,|a> + |b>,|c> +|d>) = current-sp + |c> + |d> if |a> + |b> is in current-sp
-# What if |c> + |d> is already in current-sp? Do you add it again?
-# I suspect process-catalytic-reaction() can be used to encode maths proofs. One is the current state of knowledge. Two is the necessary conditions for the proof to be true. Three is the implications of that proof.
-# Another example is simple physics problems. You write down what you know, and any possibly relevant equations. Then try to figure out a pathway to the desired result.
-#
-def old_process_catalytic_reaction(one, two, three):
-    if intersection(two, one).count_sum() != two.count_sum():
-        return one
-    else:
-        return one + three
-
-
-
-# x,y are floats
-def filter_fn(x, y):
-    if x == 0:
-        return 0
-    return y
-
-# filter-down-to(|b> + 3|c>, |a> + 5|b> + 0.7|c> + 9|d> + 3.2|e>) == 5|b> + 0.7|c>
-#
-# one, two are superpositions
-def filter_down_to(one, two):
-    return intersection_fn(filter_fn, one, two).drop()
-
-
-# respond-to-pattern(current-sp,pattern,consequence)
-# heh. I forgot what this even does!
-#
-# one, two and three are superpositions
-def respond_to_pattern(one, two, three):
-    r = filter_down_to(two, one)
-    similarity = silent_simm(r, two)
-    return one + three.multiply(similarity)
-
-
 
 
 
@@ -2889,12 +2757,13 @@ def print_table(table):
 # start of new functions file:
 import math
 from math import factorial
+from pprint import pprint
+
 
 # define our usage dictionaries:
 function_operators_usage = {}
 sequence_functions_usage = {}
 
-from pprint import pprint
 
 
 def my_print(name, value=''):
@@ -2981,9 +2850,7 @@ def pretty_display_time(seconds):
 
 # set invoke method:
 sp_fn_table['ssplit'] = 'ssplit'
-# compound_table['ssplit'] = '.apply_sp_fn(ssplit, \"{0}\")'                  # maybe it should be an apply_fn??
-# compound_table['ssplit'] = [apply_sp_fn, ssplit, '']
-compound_table['ssplit'] = ['apply_sp_fn', 'ssplit', '']
+compound_table['ssplit'] = ['apply_sp_fn', 'ssplit', '']  # maybe it should be an apply_fn?
 # set usage info:
 function_operators_usage['ssplit'] = """
     description:
@@ -3007,7 +2874,7 @@ function_operators_usage['ssplit'] = """
             |a> . |b> . |c> . |d>
     
     see also:
-        split
+        split, smerge
 """
 def ssplit(one, split_char=''):
     if split_char == '':
@@ -3052,23 +2919,25 @@ def split_ket(one):
 
 # set invoke method:
 seq_fn_table['smerge'] = 'smerge'
-compound_table['smerge'] = '.apply_seq_fn(smerge, \"{0}\")'
 compound_table['smerge'] = ['apply_seq_fn', 'smerge', '']
 # set usage info:
 function_operators_usage['smerge'] = """
     description:
-      smerge merges a sequence into a single ket
-      smerge["str"] merges a sequence into a single ket, seperated by the str string
+        smerge merges a sequence into a single ket
+        smerge["str"] merges a sequence into a single ket, separated by the str string
       
     examples:
-      smerge (|F> . |r> . |e> . |d>)
-        |Fred>
+        smerge (|F> . |r> . |e> . |d>)
+            |Fred>
       
-      smerge[", "] (|a> . |b> . |c> . |d>)
-        |a, b, c, d>
+        smerge[", "] (|a> . |b> . |c> . |d>)
+            |a, b, c, d>
       
-      smerge[", "] (|a> + |b> + |c> . |d> + |e>)
-        |a, b, c, d, e>
+        smerge[", "] (|a> + |b> + |c> . |d> + |e>)
+            |a, b, c, d, e>
+    
+    see also:
+        ssplit
 """
 # one is a sequence
 #
@@ -3714,13 +3583,43 @@ sequence_functions_usage['consume-reaction'] = """
         -- what is the state after we eat-from the can?
         eat-from |can>
             |can opener> + |empty can> + |not hungry>
+
     
+        -- next, see: shopping.sw
+        -- learn the prices for some items:
+        the-price-for |apple> => 0.6|dollar>
+        the-price-for |orange> => 0.8|dollar>
+        the-price-for |milk> => 2.3|dollar>
+        the-price-for |coffee> => 5.5|dollar>
+        the-price-for |steak> => 9|dollar>
+        
+        -- learn our shopping list:
+        the |shopping list> => |orange> + 4|apple> + |milk> + |coffee> + |steak>
+        
+        -- check if we know the price for an item:       
+        price-is-defined |*> #=> do-you-know the-price-for |_self>
+        
+        -- filter our shopping list down to available items:
+        the-list-of |available items> #=> such-that[price-is-defined] the |shopping list>
+        
+        -- define our buy operator:
+        buy (*,*) #=> consume-reaction( |_self2>, the-price-for |_self1>, |_self1>)
+        
+        -- ask, what are the available items?
+        the-list-of |available items>
+            |orange> + 4|apple> + |milk> + |coffee> + |steak>
+        
+        -- now ask, what is the price for the available items?
+        the-price-for the-list-of |available items>
+            20|dollar>
+                    
+        -- now go shopping with $30:
+        buy(the-list-of |available items>, 30 |dollar>)
+            10|dollar> + |orange> + 4|apple> + |milk> + |coffee> + |steak>
+
     see also:
         catalytic-reaction, eat-from-can, fission-uranium
 """
-
-
-#
 # one, two and three are superpositions
 def process_reaction(one, two, three):
     one = one.to_sp()
@@ -3733,8 +3632,7 @@ def process_reaction(one, two, three):
     if intersection(two, one).count_sum() != two.count_sum():
         return one
     else:
-        return intersection_fn(del_fn, one,
-                               two).drop() + three  # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
+        return intersection_fn(del_fn, one, two).drop() + three  # can we do superposition subtraction? Maybe implement it?? Meaning: one - two + three
 
 
 # set invoke method:
@@ -3742,33 +3640,61 @@ whitelist_table_3['catalytic-reaction'] = 'process_catalytic_reaction'
 # set usage info:
 sequence_functions_usage['catalytic-reaction'] = """
     description:
-      process a catalyzed reaction (that doesn't consume the reactants) 
-      if the necessary reactants are not present, then the state is left unchanged.
+        process a catalyzed reaction (that doesn't consume the reactants) 
+        if the necessary reactants are not present, then the state is left unchanged.
       
-      catalytic-reaction(input-sp, |a> + |b>, |c> +|d>)
-      is equivalent to:
-        input-sp + |c> + |d>,
-      provided |a> + |b> is in input-sp
-      else, return input-sp
+        catalytic-reaction(input-sp, |a> + |b>, |c> +|d>)
+        is equivalent to:
+            input-sp + |c> + |d>
+        provided |a> + |b> is in input-sp
+        else, return input-sp
             
     examples:
     
     see also:
       consume-reaction
 """
-
-
 # 16/2/2016:
 # process-catalytic-reaction(current-sp,|a> + |b>,|c> +|d>) = current-sp + |c> + |d> if |a> + |b> is in current-sp
 # What if |c> + |d> is already in current-sp? Do you add it again?
-# I suspect process-catalytic-reaction() can be used to encode maths proofs. One is the current state of knowledge. Two is the necessary conditions for the proof to be true. Three is the implications of that proof.
-# Another example is simple physics problems. You write down what you know, and any possibly relevant equations. Then try to figure out a pathway to the desired result.
+#
+# I suspect process-catalytic-reaction() can be used to encode maths proofs.
+# One is the current state of knowledge.
+# Two is the necessary conditions for the proof to be true.
+# Three is the implications of that proof.
+# Another example is simple physics problems.
+# You write down what you know, and any possibly relevant equations.
+# Then try to figure out a pathway to the desired result.
 #
 def process_catalytic_reaction(one, two, three):
     if intersection(two, one).count_sum() != two.count_sum():
         return one
     else:
         return one + three
+
+
+# x,y are floats
+def filter_fn(x, y):
+    if x == 0:
+        return 0
+    return y
+
+# filter-down-to(|b> + 3|c>, |a> + 5|b> + 0.7|c> + 9|d> + 3.2|e>) == 5|b> + 0.7|c>
+#
+# one, two are superpositions
+def filter_down_to(one, two):
+    return intersection_fn(filter_fn, one, two).drop()
+
+
+# respond-to-pattern(current-sp,pattern,consequence)
+# heh. I forgot what this even does!
+#
+# one, two and three are superpositions
+def respond_to_pattern(one, two, three):
+    r = filter_down_to(two, one)
+    similarity = silent_simm(r, two)
+    return one + three.multiply(similarity)
+
 
 
 # set invoke method:
@@ -4906,45 +4832,59 @@ function_operators_usage['predict'] = """
             1.0     count   |6> . |7> . |8> . |9> . |10>
             1.0     fib     |8> . |13>
             1.0     primes  |7> . |11> . |13> . |17> . |19> . |23>
-            0.5     fact    |6> . |24> . |120>
-            |count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>
+            |count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23>
 
         -- again, given the sequence 2 . 5 predict the next 3 elements:
         predict[seq,3] (|2> . |5>)
             1.0     count   |6> . |7> . |8>
             1.0     fib     |8> . |13>
             1.0     primes  |7> . |11> . |13>
-            0.5     fact    |6> . |24> . |120>
-            |count: 6 . 7 . 8> + |fib: 8 . 13> + |primes: 7 . 11 . 13> + 0.5|fact: 6 . 24 . 120>
-        
+            |count: 6 . 7 . 8> + |fib: 8 . 13> + |primes: 7 . 11 . 13>
+       
         -- use extract-category to predict the names of the sequences:
         extract-category predict[seq] (|2> . |5> . |7>)
             1.0     count   |8> . |9> . |10>
             1.0     primes  |11> . |13> . |17> . |19> . |23>
-            0.5     fib     |8> . |13>
-            0.25    fact    |6> . |24> . |120>
-            |count> + |primes> + 0.5|fib> + 0.25|fact>
+            |count> + |primes>
 
         -- use extract-value to predict just the sequences, with the names removed:
         extract-value predict[seq] (|2> . |5> . |7>)
             1.0     count   |8> . |9> . |10>
             1.0     primes  |11> . |13> . |17> . |19> . |23>
-            0.5     fib     |8> . |13>
-            0.25    fact    |6> . |24> . |120>
-            |8 . 9 . 10> + |11 . 13 . 17 . 19 . 23> + 0.5|8 . 13> + 0.25|6 . 24 . 120>
-        
+            |8 . 9 . 10> + |11 . 13 . 17 . 19 . 23>
+       
         -- given the sequence 2 . 5 . 7 predict the next most likely value:
         extract-value predict[seq,1] (|2> . |5> . |7>)
             1.0     count   |8>
             1.0     primes  |11>
-            0.5     fib     |8>
-            0.25    fact    |6>
-            1.5|8> + |11> + 0.25|6>
+            |8> + |11>
+
+
+        -- learn some simple sentences:
+        sentence |dog 1> => ssplit[" "] |the dog wants food>
+        sentence |dog 2> => ssplit[" "] |the dog chased the ball>
+        sentence |cat 1> => ssplit[" "] |a cat sat on the mat>
+        
+        -- given a word, predict what word follows:
+        extract-value predict[sentence, 1] |the>
+            1.0     dog 1   |dog>
+            1.0     dog 2   |dog>
+            1.0     dog 2   |ball>
+            1.0     cat 1   |mat>
+            2|dog> + |ball> + |mat>
+
+        extract-value predict[sentence, 1] |a>
+            1.0     cat 1   |cat>
+            |cat>
+
+        extract-value predict[sentence] ssplit[" "] |the dog>
+            1.0     dog 1   |wants> . |food>
+            1.0     dog 2   |chased> . |the> . |ball>
+            |wants . food> + |chased . the . ball>
 
     see also: 
 """
-# def predict_next(context, one, parameters):                     # maybe change invoke order, so context comes first??
-def predict_next(one, context, *params):  # doesn't look easy to change invoke order. Eg, go see: apply_seq_fn() in the sequence class.
+def predict_next(one, context, *params):
     op = params[0]
     if len(params) == 1:
         count = False
@@ -4953,6 +4893,8 @@ def predict_next(one, context, *params):  # doesn't look easy to change invoke o
             count = int(params[1])
         except:
             return ket()
+
+    assert(type(one) == sequence)
 
     # pattern is a superposition
     # sequence is a sequence
@@ -4987,13 +4929,15 @@ def predict_next(one, context, *params):  # doesn't look easy to change invoke o
     # load up our sequences:
     sequences = []
     for elt in context.relevant_kets(op):
-        seq = context.recall(op, elt, True)
+        # seq = context.recall(op, elt, True)
+        seq = elt.apply_op(context, op)
         sequences.append([1, elt.label, seq])
 
     # filter our sequences:
     next_sequences = sequences
     for sp in one:  # assumes one is a sequence
-        next_sequences = find_next_sequences_v2(sp, next_sequences)
+        next_sequences = find_next_sequences(sp, next_sequences)
+        # next_sequences = find_next_sequences_v2(sp, next_sequences)  # for now, we don't want this variant.
 
     # print out our sequences:
     r = superposition()
@@ -5011,14 +4955,15 @@ sp_fn_table['sp2seq'] = 'sp2seq'  # maybe it should be in seq_fn_table?
 # set usage info:
 function_operators_usage['sp2seq'] = """
     description:
-      sp2seq converts superpositions into sequences
+        sp2seq converts superpositions into sequences
       
     examples:
-      sp2seq range(|1>, |5>)
-        |1> . |2> . |3> . |4> . |5>
+        sp2seq range(|1>, |5>)
+            |1> . |2> . |3> . |4> . |5>
+
+    see also:
+        seq2sp
 """
-
-
 # one is a superposition:
 def sp2seq(one):
     seq = sequence([])
@@ -5032,14 +4977,15 @@ seq_fn_table['seq2sp'] = 'seq2sp'
 # set usage info:
 function_operators_usage['seq2sp'] = """
     description:
-      seq2sp flattens sequences into superpositions
+        seq2sp flattens sequences into superpositions
 
     examples:
-      seq2sp (|a> + 2.2|b> . 3|c> . 0.2|d> + |x> . 7|y> + 9|z>)
-        |a> + 2.2|b> + 3|c> + 0.2|d> + |x> + 7|y> + 9|z>
+        seq2sp (|a> + 2.2|b> . 3|c> . 0.2|d> + |x> . 7|y> + 9|z>)
+            |a> + 2.2|b> + 3|c> + 0.2|d> + |x> + 7|y> + 9|z>
+    
+    see also:
+        sp2seq
 """
-
-
 # one is a sequence:
 def seq2sp(one):
     return one.to_sp()
@@ -5059,11 +5005,38 @@ def seq2sp(one):
 # is-greater-than[3] |5> == |5>
 # is-greater-than[7] |6> == |>
 # is-greater-than[13] |age: 14> == |age: 14>
+# set invoke method:
+compound_table['greater-than'] = ['apply_fn', 'greater_than', '']
+# set usage info:
+function_operators_usage['greater-than'] = """
+    description:
+        greater-than[value] ket
+        returns the ket if value > the value in ket
+        otherwise, return |>
+        ie, a value filter
+
+    examples:
+        greater-than[5] |7>
+            |7>
+
+        greater-than[3] |price: 3.50>
+            |price: 3.50>
+
+        greater-than[26] |number: 25>
+            |>
+
+        -- if the ket has no float value, then return |>
+        greater-than[13] |the cat>
+            |>
+
+    see also:
+        greater-equal-than, less-than, less-equal-than, equal, in-range
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+"""
 # assumes one is a ket
 def greater_than(one, t):
     try:
-        value = float(one.label.rsplit(": ", 1)[
-                          -1])  # NB: if one is not a ket, one.label fails, and the exception is tripped. Neat!
+        value = float(one.label.rsplit(": ", 1)[-1])
     except:
         return ket()
     if value > t:
@@ -5071,6 +5044,34 @@ def greater_than(one, t):
     return ket()
 
 
+# set invoke method:
+compound_table['greater-equal-than'] = ['apply_fn', 'greater_equal_than', '']
+# set usage info:
+function_operators_usage['greater-equal-than'] = """
+    description:
+        greater-equal-than[value] ket
+        returns the ket if value >= the value in ket
+        otherwise, return |>
+        ie, a value filter
+
+    examples:
+        greater-equal-than[5] |7>
+            |7>
+
+        greater-equal-than[3.5] |price: 3.50>
+            |price: 3.50>
+
+        greater-equal-than[26] |number: 25>
+            |>
+
+        -- if the ket has no float value, then return |>
+        greater-equal-than[13] |the cat>
+            |>
+
+    see also:
+        greater-than, less-than, less-equal-than, equal, in-range
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+"""
 def greater_equal_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5081,6 +5082,34 @@ def greater_equal_than(one, t):
     return ket()
 
 
+# set invoke method:
+compound_table['less-than'] = ['apply_fn', 'less_than', '']
+# set usage info:
+function_operators_usage['less-than'] = """
+    description:
+        less-than[value] ket
+        returns the ket if value < the value in ket
+        otherwise, return |>
+        ie, a value filter
+
+    examples:
+        less-than[5] |7>
+            |>
+
+        less-than[3] |price: 3.50>
+            |>
+
+        less-than[26] |number: 25>
+            |number: 25>
+
+        -- if the ket has no float value, then return |>
+        less-than[13] |the cat>
+            |>
+
+    see also:
+        greater-than, greater-equal-than, less-equal-than, equal, in-range
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+"""
 def less_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5091,6 +5120,34 @@ def less_than(one, t):
     return ket()
 
 
+# set invoke method:
+compound_table['less-equal-than'] = ['apply_fn', 'less_equal_than', '']
+# set usage info:
+function_operators_usage['less-equal-than'] = """
+    description:
+        less-equal-than[value] ket
+        returns the ket if value <= the value in ket
+        otherwise, return |>
+        ie, a value filter
+
+    examples:
+        less-equal-than[5] |7>
+            |>
+
+        less-equal-than[3.5] |price: 3.50>
+            |price: 3.50>
+
+        less-equal-than[26] |number: 25>
+            |number: 25>
+
+        -- if the ket has no float value, then return |>
+        less-equal-than[13] |the cat>
+            |>
+
+    see also:
+        greater-than, greater-equal-than, less-than, equal, in-range
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+"""
 def less_equal_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5101,6 +5158,34 @@ def less_equal_than(one, t):
     return ket()
 
 
+# set invoke method:
+compound_table['equal'] = ['apply_fn', 'equal', '']
+# set usage info:
+function_operators_usage['equal'] = """
+    description:
+        equal[value] ket
+        returns the ket if value == the value in ket
+        otherwise, return |>
+        ie, a value filter
+
+    examples:
+        equal[5] |7>
+            |>
+
+        equal[3.5] |price: 3.50>
+            |price: 3.50>
+
+        equal[26] |number: 25>
+            |>
+
+        -- if the ket has no float value, then return |>
+        equal[13] |the cat>
+            |>
+
+    see also:
+        greater-than, greater-equal-than, less-than, less-equal-than, in-range
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+"""
 def equal(one, t):  # name clash with equal(SP1,SP2)??
     epsilon = 0.0001  # Need code since equal and float don't work well together.
     try:
@@ -5112,6 +5197,24 @@ def equal(one, t):  # name clash with equal(SP1,SP2)??
     return ket()
 
 
+# set invoke method:
+compound_table['in-range'] = ['apply_fn', 'in_range', '']
+# set usage info:
+function_operators_usage['in-range'] = """
+    description:
+        in-range[value1, value2] ket
+        returns the ket if value1 <= the value in ket <= value2
+        otherwise, return |>
+        ie, a value filter
+
+    examples:
+        in-range[31, 37] range(|1>, |100>)
+            |31> + |32> + |33> + |34> + |35> + |36> + |37>
+        
+    see also:
+        greater-than, greater-equal-than, less-than, less-equal-than, equal
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+"""
 def in_range(one, t1, t2):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5122,19 +5225,33 @@ def in_range(one, t1, t2):
     return ket()
 
 
+
 # set invoke method:
-# compound_table['is-greater-than'] = ".apply_fn(is_greater_than,{0})"
 compound_table['is-greater-than'] = ['apply_fn', 'is_greater_than', '']
 # set usage info:
 function_operators_usage['is-greater-than'] = """
     description:
+        is-greater-than[value] ket
+        returns yes/no if value > the value in ket
       
     examples:
-      is-greater-than[3] |price: 3.50>
-        |yes>
+        is-greater-than[5] |7>
+            |yes>
+    
+        is-greater-than[3] |price: 3.50>
+            |yes>
+    
+        is-greater-than[26] |number: 25>
+            |no>
+            
+        -- if the ket has no float value, then return |>
+        is-greater-than[13] |the cat>
+            |>
+        
+    see also:
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+        greater-than, greater-equal-than, less-than, less-equal-than, equal, in-range
 """
-
-
 def is_greater_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[
@@ -5152,11 +5269,27 @@ compound_table['is-greater-equal-than'] = ['apply_fn', 'is_greater_equal_than', 
 # set usage info:
 function_operators_usage['is-greater-equal-than'] = """
     description:
+        is-greater-equal-than[value] ket
+        returns yes/no if value >= the value in ket
       
     examples:
+        is-greater-equal-than[13] |number: 13>
+            |yes>
+        
+        is-greater-equal-than[21] |age: 23>
+            |yes>
+        
+        is-greater-equal-than[1980] |year: 1977>
+            |no> 
+
+        -- if the ket has no float value, then return |>
+        is-greater-equal-than[13] |the cat>
+            |>
+
+    see also:
+        is-greater-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+        greater-than, greater-equal-than, less-than, less-equal-than, equal, in-range
 """
-
-
 def is_greater_equal_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5168,16 +5301,28 @@ def is_greater_equal_than(one, t):
 
 
 # set invoke method:
-# compound_table['is-less-than'] = ".apply_fn(is_less_than,{0})"
 compound_table['is-less-than'] = ['apply_fn', 'is_less_than', '']
 # set usage info:
 function_operators_usage['is-less-than'] = """
     description:
+        is-less-than[value] ket
+        returns yes/no if value < the value in ket
       
     examples:
+        is-less-than[80] |age: 76>
+            |yes>
+        
+        is-less-than[2000] |year: 2018>
+            |no>
+
+        -- if the ket has no float value, then return |>
+        is-less-than[13] |the cat>
+            |>
+
+    see also:
+        is-greater-than, is-greater-equal-than, is-less-equal-than, is-equal, is-in-range
+        greater-than, greater-equal-than, less-than, less-equal-than, equal, in-range
 """
-
-
 def is_less_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5194,11 +5339,24 @@ compound_table['is-less-equal-than'] = ['apply_fn', 'is_less_equal_than', '']
 # set usage info:
 function_operators_usage['is-less-equal-than'] = """
     description:
+        is-less-equal-than[value] ket
+        returns yes/no if value <= the value in ket
       
     examples:
+        is-less-equal-than[80] |age: 76>
+            |yes>
+        
+        is-less-equal-than[2010] |year: 2010>
+            |yes>
+
+        -- if the ket has no float value, then return |>
+        is-less-equal-than[13] |the cat>
+            |>
+
+    see also:
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal, is-in-range
+        greater-than, greater-equal-than, less-than, less-equal-than, equal, in-range
 """
-
-
 def is_less_equal_than(one, t):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5215,11 +5373,24 @@ compound_table['is-equal'] = ['apply_fn', 'is_equal_op', '']
 # set usage info:
 function_operators_usage['is-equal'] = """
     description:
+        is-equal[value] ket
+        returns yes/no if value == the value in ket
       
     examples:
+        is-equal[80] |age: 76>
+            |no>
+        
+        is-equal[2010] |year: 2010>
+            |yes>
+
+        -- if the ket has no float value, then return |>
+        is-equal[13] |the cat>
+            |>
+
+    see also:
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-in-range
+        greater-than, greater-equal-than, less-than, less-equal-than, equal, in-range
 """
-
-
 def is_equal_op(one, t):  # name clash with equal(SP1,SP2)?? Yup!
     epsilon = 0.0001  # Need code since equal and float don't work well together.
     try:
@@ -5232,16 +5403,26 @@ def is_equal_op(one, t):  # name clash with equal(SP1,SP2)?? Yup!
 
 
 # set invoke method:
-# compound_table['is-in-range'] = ".apply_fn(is_in_range,{0})"
 compound_table['is-in-range'] = ['apply_fn', 'is_in_range', '']
 # set usage info:
 function_operators_usage['is-in-range'] = """
     description:
-      
+        is-in-range[value1, value2] ket
+        returns yes/no if value1 <= the value in ket <= value2
+        
     examples:
+        is-a-child |*> #=> is-in-range[0,17] age |_self>
+        is-a-teenager |*> #=> is-in-range[13,19] age |_self>
+        is-an-adult |*> #=> not is-in-range[0,17] age |_self>
+
+        -- if the ket has no float value, then return |>
+        is-in-range[30, 42] |the cat>
+            |>
+
+    see also:
+        is-greater-than, is-greater-equal-than, is-less-than, is-less-equal-than, is-equal
+        greater-than, greater-equal-than, less-than, less-equal-than, equal, in-range
 """
-
-
 def is_in_range(one, t1, t2):
     try:
         value = float(one.label.rsplit(": ", 1)[-1])
@@ -5252,29 +5433,35 @@ def is_in_range(one, t1, t2):
     return ket('no')
 
 
+
 # set invoke method:
 context_whitelist_table_2['op-zip'] = 'op_zip'
 # set usage info:
 sequence_functions_usage['op-zip'] = """
     description:
-      zip together a sequence of operators and a sequence of objects
-      stops at the end of the shorter of the two sequences
+        zip together a sequence of operators and a sequence of objects
+        stops at the end of the shorter of the two sequences
             
     examples:
-      op1 |*> #=> |op1: > _ |_self>
-      op2 |*> #=> |op2: > _ |_self>
-      op3 |*> #=> |op3: > _ |_self>
-      op4 |*> #=> |op4: > _ |_self>
-      op |seq> => |op: op1> . |op: op2> . |op: op3> . |op: op4>
-      the |seq> => |a> . |b> . |c> . |d> . |e> . |f>
-      op-zip(op |seq>, the |seq>)
-      |op1: a> . |op2: b> . |op3: c> . |op4: d>
+        -- define our for-example operators:
+        op1 |*> #=> |op1: > _ |_self>
+        op2 |*> #=> |op2: > _ |_self>
+        op3 |*> #=> |op3: > _ |_self>
+        op4 |*> #=> |op4: > _ |_self>
+        
+        -- define our sequence of operators:
+        op |seq> => |op: op1> . |op: op2> . |op: op3> . |op: op4>
+        
+        -- define our for-example sequence:
+        the |seq> => |a> . |b> . |c> . |d> . |e> . |f>
+
+        -- see the result:
+        op-zip(op |seq>, the |seq>)
+            |op1: a> . |op2: b> . |op3: c> . |op4: d>
       
     see also:
-      n2w in the big-numbers-to-words example
+        n2w in the big-numbers-to-words example
 """
-
-
 # one, two are sequences
 def op_zip(context, one, two):
     min_len = min(len(one), len(two))
@@ -5291,63 +5478,62 @@ def op_zip(context, one, two):
 
 # set invoke method:
 whitelist_table_3['if'] = 'bko_if'
+whitelist_table_4['if'] = 'bko_if_3'
 # set usage info:
 sequence_functions_usage['if'] = """
     description:
-      a crude approximation of an if function
-      NB: it does not work the way you think it does!
+        a crude approximation to an if function
+        NB: it does not work the way you think it does!
       
-      For example:
-        if(some|condition>, branch|a>, branch|b>)
-      evaluates all sequences: some|condition>, branch|a>, branch|b> before it is even fed to the if function.
-      This is a big problem if you try to use it for recursion.
-      But it is possible if you do an extra couple of steps:
-        process-if if(some|condition>, |a>, |b>)
-        process-if |a> #=> foo1
-        process-if |b> #=> foo2
-      Or:
-        process-if if(some|condition>, |a:> __ |_self> , |b:> __ |_self>)
-        process-if |a: *> #=> foo1 remove-leading-category |_self>
-        process-if |b: *> #=> foo2 remove-leading-category |_self>
+        For example:
+            if(some|condition>, branch|a>, branch|b>)
+        evaluates all sequences: some|condition>, branch|a>, branch|b> before it is even fed to the if function.
+        This is a big problem if you try to use it for recursion.
+        But it is possible if you do an extra couple of steps:
+            process-if if(some|condition>, |a>, |b>)
+            process-if |a> #=> foo1
+            process-if |b> #=> foo2
+        Or:
+            process-if if(some|condition>, |a:> __ |_self> , |b:> __ |_self>)
+            process-if |a: *> #=> foo1 remove-leading-category |_self>
+            process-if |b: *> #=> foo2 remove-leading-category |_self>
         
-      3 parameter version:
-        if(some|condition>, |branch a>, |branch b>, |branch c>)
-      returns |branch a> if some|condition> is 'true' or 'yes'
-      returns |branch b> if some|condition> is 'false' or 'no'
-      returns |branch c> otherwise
+        3 parameter version:
+            if(some|condition>, |branch a>, |branch b>, |branch c>)
+        returns |branch a> if some|condition> is 'true' or 'yes'
+        returns |branch b> if some|condition> is 'false' or 'no'
+        returns |branch c> otherwise
                       
     examples:
-      split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
-      process-if |less than 1000: *> #=> remove-leading-category |_self>
-      process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>
+        split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
+        process-if |less than 1000: *> #=> remove-leading-category |_self>
+        process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>
 
-      split-num |532>
-        |532>
+        split-num |532>
+            |532>
 
-      split-num |12345>
-        |345> . |12>
+        split-num |12345>
+            |345> . |12>
 
-      split-num |12345678901234567890>
-        |890> . |567> . |234> . |901> . |678> . |345> . |12>
+        split-num |12345678901234567890>
+            |890> . |567> . |234> . |901> . |678> . |345> . |12>
         
-      if(|True>, |a>, |b>, |c>)
-        |a>
+        if(|True>, |a>, |b>, |c>)
+            |a>
         
-      if(|False>, |a>, |b>, |c>)
-        |b>
+        if(|False>, |a>, |b>, |c>)
+            |b>
         
-      if(|>, |a>, |b>, |c>)
-        |c>
+        if(|>, |a>, |b>, |c>)
+            |c>
       
-      if(|fish>, |a>, |b>, |c>)
-        |c>
+        if(|fish>, |a>, |b>, |c>)
+            |c>
       
     see also:
-      big-numbers-to-words example
-      wif
+        big-numbers-to-words example
+        wif, remove-leading-category
 """
-
-
 # 13/4/2014:
 # Let's add an if/else statement to BKO.
 # Motivated by recursion works without even trying (though vastly inefficient at the moment).
@@ -5363,10 +5549,6 @@ def bko_if(condition, one, two):
         return one
     else:
         return two
-
-
-# set invoke method:
-whitelist_table_4['if'] = 'bko_if_3'
 
 
 def bko_if_3(condition, one, two, three):
@@ -5400,8 +5582,6 @@ sequence_functions_usage['wif'] = """
     see also:
       if
 """
-
-
 # 14/12/2014:
 # Let's add a weighted if to BKO.
 # eg: wif(0.7|True>,|a>,|b>)
@@ -5474,7 +5654,7 @@ function_operators_usage['to-comma-number'] = """
             |8,825>
 
         to-comma-number |population: 2300000>
-            |population: 2,300,00>
+            |population: 2,300,000>
 
         to-comma-number |3759.27>
             |3,759.27>
@@ -5482,8 +5662,12 @@ function_operators_usage['to-comma-number'] = """
         to-comma-number |km: 22956.53>
             |km: 22,9356.53>
 
+        -- replace is an approximate inverse for to-comma-number:
+        replace[",", ""] to-comma-number |number: 12345678>
+            |number: 12345678>
+
     see also:
-        table, round
+        table, round, replace
 """
 def number_to_comma_number(one):
     cat, value = extract_category_value(one.label)
@@ -5505,17 +5689,15 @@ compound_table['times-by'] = ['apply_fn', 'times_numbers', '']
 # set usage info:
 function_operators_usage['times-by'] = """
     description:
-      times the value in the ket, leaving the coefficient unchanged
+        times the value in the ket, leaving the coefficient unchanged
       
     examples:
-      times-by[5] |6.1>
-        |30.5>
+        times-by[5] |6.1>
+            |30.5>
 
     see also:
-      round, divide-by, int-divide-by, plus, minus, mod, is-mod    
+        round, divide-by, int-divide-by, plus, minus, mod, is-mod    
 """
-
-
 def times_numbers(one, t):
     def multiply(a, b):
         return a * b
@@ -5529,17 +5711,15 @@ compound_table['divide-by'] = ['apply_fn', 'divide_numbers', '']
 # set usage info:
 function_operators_usage['divide-by'] = """
     description:
-      divide the value in the ket, leaving the coefficient unchanged
+        divide the value in the ket, leaving the coefficient unchanged
       
     examples:
-      divide-by[5] |625.5>
-        
+        divide-by[5] |625.5>
+            |125.1>
 
     see also:
-      round, times-by, int-divide-by, plus, minus, mod, is-mod    
+        round, times-by, int-divide-by, plus, minus, mod, is-mod    
 """
-
-
 def divide_numbers(one, t):
     def divide(a, b):
         return a / b
@@ -5553,21 +5733,18 @@ compound_table['int-divide-by'] = ['apply_fn', 'int_divide_numbers', '']
 # set usage info:
 function_operators_usage['int-divide-by'] = """
     description:
-      integer divide the value in the ket, leaving the coefficient unchanged
+        integer divide the value in the ket, leaving the coefficient unchanged
       
     examples:
-      int-divide-by[1000] |123456>
-        |123>        
+        int-divide-by[1000] |123456>
+            |123>        
 
     see also:
-      round, times-by, divide-by, plus, minus, mod, is-mod    
+        round, times-by, divide-by, plus, minus, mod, is-mod    
 """
-
-
 def int_divide_numbers(one, t):  # cool, times_numbers, and plus_numbers both seem to work!
     def int_divide(a, b):
         return a // b
-
     return numbers_fn(int_divide, one, t)
 
 
@@ -5577,21 +5754,18 @@ compound_table['plus'] = ['apply_fn', 'plus_numbers', '']
 # set usage info:
 function_operators_usage['plus'] = """
     description:
-      add to the value in the ket, leaving the coefficient unchanged
+        add to the value in the ket, leaving the coefficient unchanged
       
     examples:
-      plus[5] |3.14159265>
-        |8.14159265>
+        plus[5] |3.14159265>
+            |8.14159265>
 
     see also:
-      round, times-by, divide-by, int-divide-by, minus, mod, is-mod    
+        round, times-by, divide-by, int-divide-by, minus, mod, is-mod    
 """
-
-
 def plus_numbers(one, t):
     def add(a, b):
         return a + b
-
     return numbers_fn(add, one, t)
 
 
@@ -5601,21 +5775,18 @@ compound_table['minus'] = ['apply_fn', 'minus_numbers', '']
 # set usage info:
 function_operators_usage['minus'] = """
     description:
-      subtract from the value in the ket, leaving the coefficient unchanged
+        subtract from the value in the ket, leaving the coefficient unchanged
       
     examples:
-      minus[2] |3.14159265>
-        |1.1415926500000002>
+        minus[2] |3.14159265>
+            |1.1415926500000002>
 
     see also:
-      round, times-by, divide-by, int-divide-by, plus, mod, is-mod    
+        round, times-by, divide-by, int-divide-by, plus, mod, is-mod    
 """
-
-
 def minus_numbers(one, t):
     def sub(a, b):
         return a - b
-
     return numbers_fn(sub, one, t)
 
 
@@ -5625,21 +5796,22 @@ compound_table['mod'] = ['apply_fn', 'mod_numbers', '']
 # set usage info:
 function_operators_usage['mod'] = """
     description:
-      apply the modulus to the value in the ket, leaving the coefficient unchanged
+        apply the modulus to the value in the ket, leaving the coefficient unchanged
+        if the value is not a number, return the ket
       
     examples:
-      mod[1000] |1234567>
-        |567>
+        mod[1000] |1234567>
+            |567>
+
+        mod[13] |the cat>
+            |the cat>
 
     see also:
-      round, times-by, divide-by, int-divide-by, plus, minus, is-mod    
+        round, times-by, divide-by, int-divide-by, plus, minus, is-mod    
 """
-
-
 def mod_numbers(one, t):
     def mod(a, b):
         return a % b
-
     return numbers_fn(mod, one, t)
 
 
@@ -5649,28 +5821,85 @@ compound_table['is-mod'] = ['apply_fn', 'is_mod_numbers', '']
 # set usage info:
 function_operators_usage['is-mod'] = """
     description:
-      answers yes or no, if the given number is mod n
+        answers yes or no, if the given number is mod n
       
     examples:
-      is-mod[3] |96>
-        |yes>
+        is-mod[3] |96>
+            |yes>
         
-      is-mod[17] |51>
-        |yes>
+        is-mod[17] |number: 51>
+            |yes>
         
-      is-mod[5] |51>
-        |no>
-      
+        is-mod[5] |51>
+            |no>
+
+        -- if the ket is not a float value, return |no>
+        is-mod[7] |the cat>
+            |no>
+
+        -- the fizzbuzz exercise:
+        fizzbuzz |*> #=> print if-mod-5 if-mod-3 if-mod-15 |_self>
+
+        if-mod-15 |*> #=> if(is-mod[15] |_self>, |FizzBuzz>, |_self>)
+        if-mod-3 |*> #=> if(is-mod[3] |_self>, |Fizz>, |_self>)
+        if-mod-5 |*> #=> if(is-mod[5] |_self>, |Buzz>, |_self>)
+
+        -- now, find the results:
+        fizzbuzz range(|1>, |20>)
+            1
+            2
+            Fizz
+            4
+            Buzz
+            Fizz
+            7
+            8
+            Fizz
+            Buzz
+            11
+            Fizz
+            13
+            14
+            FizzBuzz
+            16
+            17
+            Fizz
+            19
+            Buzz
+            |1> + |2> + 5|Fizz> + |4> + 3|Buzz> + |7> + |8> + |11> + |13> + |14> + |FizzBuzz> + |16> + |17> + |19>
+        
+        -- or, if you want the sequence version:
+        fizzbuzz sp2seq range(|1>, |20>)
+            1
+            2
+            Fizz
+            4
+            Buzz
+            Fizz
+            7
+            8
+            Fizz
+            Buzz
+            11
+            Fizz
+            13
+            14
+            FizzBuzz
+            16
+            17
+            Fizz
+            19
+            Buzz
+            |1> . |2> . |Fizz> . |4> . |Buzz> . |Fizz> . |7> . |8> . |Fizz> . |Buzz> . |11> . |Fizz> . |13> . |14> . |FizzBuzz> . |16> . |17> . |Fizz> . |19> . |Buzz>
+       
     see also:
       round, times-by, divide-by, int-divide-by, plus, minus, mod    
 """
-
-
 def is_mod_numbers(one, t):
     def mod(a, b):
         return a % b
-
     return equal(numbers_fn(mod, one, t), 0).is_not_empty()  # maybe needs |> option too??
+
 
 
 # set invoke method:
@@ -5679,20 +5908,22 @@ compound_table['learn-map'] = ['apply_naked_fn', 'learn_map', 'context']
 # set usage info:
 function_operators_usage['learn-map'] = """
     description:
-      learn a rectangular map
+        learn a rectangular map
       
     examples:
-      learn-map[20,20]
+        learn-map[20,20]
       
     see also:
-      display-map
+        display-map, walking-ant.swc
 """
-
-
 def learn_map(context, *params):
-    if len(params) != 2:
+    if len(params) < 2:
         return ket()
-    h, w = params
+    if len(params) == 2:
+        h, w = params
+        op = 'value'
+    if len(params) == 3:
+        h, w, op = params
     h = int(h)
     w = int(w)
 
@@ -5712,7 +5943,7 @@ def learn_map(context, *params):
     for j in range(1, w + 1):
         for i in range(1, h + 1):
             elt = ket_elt(j, i)
-            context.learn('value', elt, '0')
+            context.learn(op, elt, '0')
             context.learn("N", elt, ket_elt_bd(j - 1, i, h, w))
             context.learn("NE", elt, ket_elt_bd(j - 1, i + 1, h, w))
             context.learn("E", elt, ket_elt_bd(j, i + 1, h, w))
@@ -5730,21 +5961,21 @@ compound_table['display-map'] = ['apply_naked_fn', 'display_map', 'context']
 # set usage info:
 function_operators_usage['display-map'] = """
     description:
-      display a rectangular map
+        display a rectangular map
       
     examples:
-      learn-map[5,5]
-      display-map[5,5]
-        h: 5
-        w: 5
-        1     .  .  .  .  .
-        2     .  .  .  .  .
-        3     .  .  .  .  .
-        4     .  .  .  .  .
-        5     .  .  .  .  .
+        learn-map[5,5]
+        display-map[5,5]
+            h: 5
+            w: 5
+            1     .  .  .  .  .
+            2     .  .  .  .  .
+            3     .  .  .  .  .
+            4     .  .  .  .  .
+            5     .  .  .  .  .
       
     see also:
-      learn-map
+        learn-map, walking-ant.swc
 """
 
 
@@ -6689,7 +6920,7 @@ function_operators_usage['exp'] = """
             |x> + |0> + |1> + |00> + |01> + |10> + |11>
 
     see also:
-        full-exp, exp-max
+        full-exp, exp-max, sexp
         
     TODO:
         currently it doesn't handle sequences all that well.
@@ -6726,7 +6957,7 @@ function_operators_usage['exp-max'] = """
         cf: exp(A) |Psi> in quantum mechanics
         ie: (1 + op + op^2 + ... + op^n) |x>
         where we go to full depth
-        ie, n is such that op^(n + 1) |x> == |>
+        ie, n is such that len(exp[op, n] |x>) == len(exp[op, n+1] |x>)
 
     examples:
         -- load a binary tree:
@@ -9561,7 +9792,7 @@ sequence_functions_usage['string-replace'] = """
             |Today's date is 2018-07-11.>
 
     see also:
-
+        replace
 """
 def string_replace(one, two, three):
     two = two.to_sp()
@@ -9577,6 +9808,47 @@ def string_replace(one, two, three):
                 r.add_sp(y)
         seq += r
     return seq
+
+
+# set invoke method:
+compound_table['replace'] = ['apply_fn', 'char_replace', '']
+# set usage info:
+function_operators_usage['replace'] = """
+    description:
+        replace[c1, c2] |x>
+        replace the chars in c1 with c2
+
+    examples:
+        -- remove comma's from numbers:
+        replace[", ", ""] |35,572,990>
+            |35572990>
+                    
+        replace[", ", ""] |123, 920, 001, 558>
+            |123920001558>
+                    
+        -- replace punctuation chars with ' '
+        replace[".,!?$-", " "] |some, ... ! $$? noise-text> 
+            |some            noise text>            
+
+    see also:
+        string-replace
+    
+    future:
+        maybe rename to substitute
+"""
+def char_replace(one, *parameters):
+    try:
+        c1, c2 = parameters
+        # text = re.sub(c1, c2, one.label)
+        # text = one.label.replace()
+        text = one.label
+        for c in c1:
+            text = text.replace(c, c2)
+        return ket(text, one.value)
+    except Exception as e:
+        print('reason:', e)
+        return one
+
 
 
 # append-column[n] SP

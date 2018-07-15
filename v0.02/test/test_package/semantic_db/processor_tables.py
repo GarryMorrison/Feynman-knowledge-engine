@@ -572,7 +572,7 @@ sp_fn_table = {
 #  "list-to-words"      : "sp_to_words",
 #  "read-letters"       : "read_letters",
 #  "read-words"         : "read_words",
-  "merge-labels"       : "merge_labels",
+#  "merge-labels"       : "merge_labels",
   "sp-as-list"         : "sp_as_list",
 
 # 6/3/2015:
