@@ -92,8 +92,11 @@ process-if |not found food> #=>
 
 
 -- if reach home operator:
-if-reach-home |*> #=> 
-  process-if sdrop wif(equal( current |cell>, home |cell>), |reached home>, |not reached home>)
+-- if-reach-home |*> #=> 
+--     process-if drop wif(equal( current |cell>, home |cell>), |reached home>, |not reached home>)
+
+if-reach-home |*> #=>
+    process-if if(is-equal( current |cell>, home |cell>), |reached home>, |not reached home>)
 
 process-if |reached home> #=>
     -- drop the food:

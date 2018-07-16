@@ -2892,26 +2892,42 @@ def ssplit(one, split_char=''):
 
 
 # set invoke method:
-fn_table['split'] = 'split_ket'
+sp_fn_table['split'] = 'split_ket'
+compound_table['split'] = ['apply_sp_fn', 'split_ket', '']
 # set usage info:
 function_operators_usage['split'] = """
     description:
-        converts a ket to a superposition, splitting on the ' ' char.
+        split |x> converts a ket to a superposition, splitting on the ' ' char.
+        split[str] |x> converts a ket to a superposition, splitting on str.
 
     examples:
         split |a b c d e>
             |a> + |b> + |c> + |d> + |e>
+        
+        split[""] |abcdef>
+        
+        split["d"] |abcdef>
+            |abc> + |ef>
+        
+        split["g"] split["d"] |abcdefghij>
+            |abc> + |ef> + |hij>
 
     see also:
         ssplit
-        
-    TODO:
-        make it consistent with ssplit?
 """
-def split_ket(one):
+def split_ket(one, s1 = None):  # TODO: improve this code!
+    if s1 == "":
+        r = superposition()
+        for key, value in one.items():
+            for label in list(key):
+                r.add(label, value)
+        return r
+
+    if s1 is None:
+        s1 = " "
     r = superposition()
     for key, value in one.items():
-        for label in key.split():
+        for label in key.split(s1):
             r.add(label, value)
     return r
 
@@ -2952,8 +2968,7 @@ def smerge(one, merge_char=''):
             for x in elt:
                 labels.append(x.label)
     s = merge_char.join(labels)
-    # return ket(s)              # breaks: read (*) #=> |word:> __ smerge remove-prefix["letter: "] |_self>
-    return superposition(s)      # works. Not yet sure how to fix. Not yet sure if we hit it else-where. FIX!
+    return ket(s)
 
 
 # set invoke method:
@@ -4773,29 +4788,31 @@ def superposition_simm(A, B):
 #    B = B[0]
 
 # set invoke method:
-whitelist_table_2['aligned-simm'] = 'aligned_simm'
+whitelist_table_2['simm'] = 'aligned_simm'
 # set usage info:
-sequence_functions_usage['aligned-simm'] = """
+sequence_functions_usage['simm'] = """
     description:
-      the aligned sequences version of our similarity measure
-      for each superposition in our sequences, calculate the similarity measure
-      (ie, 0 for completely distinct, 1 for exactly the same, values in between otherwise)
-      then average them
+        the aligned sequences version of our similarity measure
+        for each superposition in our sequences, calculate the similarity measure
+        (ie, 0 for completely distinct, 1 for exactly the same, values in between otherwise)
+        then average them
             
     examples:
-      aligned-simm(|a>, |b>)
-        |0>
+        simm(|a>, |b>)
+            0|simm>
         
-      aligned-simm(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
-        |0.462>
+        simm(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
+            0.462|simm>        
 
-      aligned-simm(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
-        |0.678>
+        simm(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+            0.678|simm>        
 
+        rename-simm |simm> => |result>
+        push-float rename-simm simm(|a>, split |a b c d>)
+            |result: 0.25>
+            
     see also: 
 """
-
-
 def aligned_simm(one, two):
     # return ket(float_to_int(aligned_simm_value(one, two)))  # not sure which version we want.
     return ket('simm', aligned_simm_value(one, two))
@@ -5908,13 +5925,51 @@ compound_table['learn-map'] = ['apply_naked_fn', 'learn_map', 'context']
 # set usage info:
 function_operators_usage['learn-map'] = """
     description:
-        learn a rectangular map
+        learn-map[h, w]
+        learn-map[h, w, op]
+        learn a rectangular map, of height h, and width w
+        where all cells are initialized to zero: op |grid: x: y> => |0>
+        and we learn all direction operators, N, NE, E, SE, S, SW, W, NW, that don't point outside the map
+        the map is closed boundary, rather than torus shape
       
     examples:
+        -- show what we learn for a small example map:
+        learn-map[2,2]
+        dump
+            ----------------------------------------
+             |context> => |context: global context>
+            
+            value |grid: 1: 1> => |0>
+            E |grid: 1: 1> => |grid: 1: 2>
+            SE |grid: 1: 1> => |grid: 2: 2>
+            S |grid: 1: 1> => |grid: 2: 1>
+            
+            value |grid: 1: 2> => |0>
+            S |grid: 1: 2> => |grid: 2: 2>
+            SW |grid: 1: 2> => |grid: 2: 1>
+            W |grid: 1: 2> => |grid: 1: 1>
+            
+            value |grid: 2: 1> => |0>
+            N |grid: 2: 1> => |grid: 1: 1>
+            NE |grid: 2: 1> => |grid: 1: 2>
+            E |grid: 2: 1> => |grid: 2: 2>
+            
+            value |grid: 2: 2> => |0>
+            N |grid: 2: 2> => |grid: 1: 2>
+            W |grid: 2: 2> => |grid: 2: 1>
+            NW |grid: 2: 2> => |grid: 1: 1>
+            ----------------------------------------
+
+        -- learn a larger map, then find path/steps between grid cells:    
         learn-map[20,20]
-      
+        find-path-between(|grid: 1: 1>, |grid: 4: 6>)
+            |op: E> . |op: E> . |op: SE> . |op: SE> . |op: SE>
+
+        find-steps-between(|grid: 1: 1>, |grid: 4: 6>)
+            |grid: 1: 1> . |grid: 1: 2> . |grid: 1: 3> . |grid: 2: 4> . |grid: 3: 5> . |grid: 4: 6>
+
     see also:
-        display-map, walking-ant.swc
+        display-map, walking-ant.swc, find-path-between, find-steps-between
 """
 def learn_map(context, *params):
     if len(params) < 2:
@@ -5940,8 +5995,8 @@ def learn_map(context, *params):
         #  j = (j - 1)%J + 1
         return ket_elt(j, i)
 
-    for j in range(1, w + 1):
-        for i in range(1, h + 1):
+    for j in range(1, h + 1):
+        for i in range(1, w + 1):
             elt = ket_elt(j, i)
             context.learn(op, elt, '0')
             context.learn("N", elt, ket_elt_bd(j - 1, i, h, w))
@@ -5961,11 +6016,19 @@ compound_table['display-map'] = ['apply_naked_fn', 'display_map', 'context']
 # set usage info:
 function_operators_usage['display-map'] = """
     description:
-        display a rectangular map
+        display-map[h, w]
+        display-map[h, w, op]
+        display-map[h, w, op, empty-char]
+        display a rectangular map, of height h, and width w
+        where each cell is the value of op applied to that cell
+        (default operator is 'value')
+        where empty-char is printed for empty cells
+        (default value of empty-char is ' ')
       
     examples:
-        learn-map[5,5]
-        display-map[5,5]
+        learn-map[5, 5, value]
+        -- display an empty map:
+        display-map[5, 5, value, "."]
             h: 5
             w: 5
             1     .  .  .  .  .
@@ -5973,20 +6036,40 @@ function_operators_usage['display-map'] = """
             3     .  .  .  .  .
             4     .  .  .  .  .
             5     .  .  .  .  .
-      
+
+        -- learn some cell values:
+        value |grid: 3: 1> => |H>
+        value |grid: 3: 2> => |e>
+        value |grid: 3: 3> => |l>
+        value |grid: 3: 4> => |l>
+        value |grid: 3: 5> => |o>
+
+        -- now redraw our map:
+        -- using default operator 'value', and default empty-char ' ':
+        display-map[5, 5]
+            h: 5
+            w: 5
+            1
+            2
+            3     H  e  l  l  o
+            4
+            5
+                                
     see also:
         learn-map, walking-ant.swc
 """
-
-
 def display_map(context, *params):
     if len(params) < 2:
         return ket()
     if len(params) == 2:
         h, w = params
         op = 'value'
+        empty_char = ' '
     if len(params) == 3:
         h, w, op = params
+        empty_char = ' '
+    if len(params) == 4:
+        h, w, op, empty_char = params
     w = int(w)
     h = int(h)
 
@@ -5997,11 +6080,11 @@ def display_map(context, *params):
     s += "h: " + str(h) + "\n"
     s += "w: " + str(w) + "\n"
 
-    for j in range(1, w + 1):
+    for j in range(1, h + 1):
         s += str(j).ljust(4)
-        for i in range(1, h + 1):
+        for i in range(1, w + 1):
             x = ket_elt(j, i)
-            current_cell = context.recall('current', 'cell', True).to_sp()
+            current_cell = context.recall('current', 'cell', True).to_sp() # not super happy with ant specific code here
             if current_cell.label == x.label:
                 value = '###'
             else:
@@ -6012,7 +6095,8 @@ def display_map(context, *params):
                     value = value.label
             if value == "0":
                 # value = "."
-                value = ' '
+                # value = ' '
+                value = empty_char
             s += value.rjust(3)
         s += "\n"
     print(s)
@@ -6024,20 +6108,22 @@ seq_fn_table['merge-value'] = 'merge_value'
 # set usage info:
 function_operators_usage['merge-value'] = """
     description:
-      merges coeff's and label's into a single number
-      works with superpositions, and sequences:
+        merges coeff's and label's into a single number
+        works with superpositions, and sequences:
       
     examples:
-      -- superposition example:
-      merge-value (0|3> + 3|1> + 5|2>)
-        |13>
+        -- superposition example:
+        merge-value (0|3> + 3|1> + 5|2>)
+            |13>
 
-      -- sequence of superpositions example:        
-      merge-value (0|3> + 1|7> . 4|2> + 5|3> + 4|5>)
-        |50>
+        -- sequence of superpositions example:        
+        merge-value (0|3> + 1|7> . 4|2> + 5|3> + 4|5>)
+            |50>
+    
+    note:
+        where is this even used? Can we get rid of it?
+        looks like first version of walking-ant.sw uses it.
 """
-
-
 # one is a sequence
 def merge_value(one):
     r = 0
@@ -6055,22 +6141,20 @@ whitelist_table_2['and'] = 'And'
 # set usage info:
 sequence_functions_usage['and'] = """
     description:
-      simple 'and'
-      NB: it evaluates both sequences before being passed to the 'and' function
-      NB: it (currently?) only uses the first superposition in the given sequences
+        the and function
+        NB: it evaluates both sequences before being passed to the 'and' function
+        NB: it currently doesn't handle sequences all that well
       
     examples:
-      and(|yes>, |yes>)
-        |yes>
+        and(|yes>, |yes>)
+            |yes>
         
-      and(|yes>, |no>)
-        |no>
+        and(|yes>, |no>)
+            |no>
     
     see also:
       if, or, xor
 """
-
-
 def And(one, two):
     if one.to_sp().label.lower() in ['true', 'yes'] and two.to_sp().label.lower() in ['true', 'yes']:
         return ket('yes')
@@ -6082,25 +6166,23 @@ whitelist_table_2['or'] = 'Or'
 # set usage info:
 sequence_functions_usage['or'] = """
     description:
-      simple 'or'
-      NB: it evaluates both sequences before being passed to the 'or' function
-      NB: it (currently?) only uses the first superposition in the given sequences
+        the or function
+        NB: it evaluates both sequences before being passed to the 'or' function
+        NB: it currently doesn't handle sequences all that well
       
     examples:
-      or(|yes>, |yes>)
-        |yes>
+        or(|yes>, |yes>)
+            |yes>
         
-      or(|yes>, |no>)
-        |yes>
+        or(|yes>, |no>)
+            |yes>
         
-      or(|no>, |no>)
-        |no>
+        or(|no>, |no>)
+            |no>
     
     see also:
       if, and, xor
 """
-
-
 def Or(one, two):
     one = one.to_sp()
     two = two.to_sp()
@@ -6118,6 +6200,7 @@ compound_table['common'] = ['apply_sp_fn', 'common', 'context']
 # set usage info:
 function_operators_usage['common'] = """
     description:
+        common[op] SP
         find kets in common, with respect to an operator
       
     examples:
@@ -6154,6 +6237,7 @@ compound_table['union'] = ['apply_sp_fn', 'operator_union', 'context']
 # set usage info:
 function_operators_usage['union'] = """
     description:
+        union[op] SP
         find the unions of kets, with respect to an operator
 
     examples:
@@ -6161,6 +6245,11 @@ function_operators_usage['union'] = """
         friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
         union[friends] split |Fred Sam>
             |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie> + |George> + |Rober> + |Frank> + |Julie>
+
+        -- this is in contrast to a simple addition:
+        -- NB: the coefficients of 2, for repeated friends:
+        friends split |Fred Sam>
+            2|Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + 2|Emma> + 2|Charlie> + |George> + |Rober> + |Frank> + |Julie>
 
     see also:
         common
@@ -6187,24 +6276,27 @@ ket_context_table['int-coeffs-to-word'] = 'int_coeffs_to_word'
 # set usage info:
 function_operators_usage['int-coeffs-to-word'] = """
     description:
-      apply the coefficient to the word,
-      and map the word to plural as required
+        int-coeffs-to-word c|word>
+        apply the coefficient to the word 
+        and map the word to plural as required
       
     examples:
-      plural |*> #=> |_self> _ |s>
-      plural |mouse> => |mice>
-      plural |tooth> => |teeth>
-      int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon> + 3|mouse> + 2|tooth> + 9|cat>)
-        |3 apples> + |2 pears> + |1 orange> + |7 lemons> + |3 mice> + |2 teeth> + |9 cats>
+        -- learn some simple plurals:
+        plural |*> #=> |_self> _ |s>
+        plural |mouse> => |mice>
+        plural |tooth> => |teeth>
+        
+        -- now put it to use:
+        int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon> + 3|mouse> + 2|tooth> + 9|cat>)
+            |3 apples> + |2 pears> + |1 orange> + |7 lemons> + |3 mice> + |2 teeth> + |9 cats>
       
-      list-to-words int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon> + 3|mouse> + 2|tooth> + 9|cat>)
-        |3 apples, 2 pears, 1 orange, 7 lemons, 3 mice, 2 teeth and 9 cats>   
+        -- now apply the list-to-words operator:
+        list-to-words int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon> + 3|mouse> + 2|tooth> + 9|cat>)
+            |3 apples, 2 pears, 1 orange, 7 lemons, 3 mice, 2 teeth and 9 cats>   
 
     see also:
-      list-to-words, words-to-list
+        list-to-words, words-to-list
 """
-
-
 # 2/2/2015:
 # int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon>)
 # |3 apples> + |2 pears> + |1 orange> + |7 lemons>
@@ -6249,17 +6341,16 @@ fn_table['is-prime'] = 'is_prime'
 # set usage info:
 function_operators_usage['is-prime'] = """
     description:
-      returns |yes> or |no> if a prime or not
+        is-prime |x>
+        returns |yes> or |no> if a prime or not
 
     examples:
-      is-prime |379721>
-        |yes>
+        is-prime |379721>
+            |yes>
 
     see also:
-      prime-factors
+        prime-factors
 """
-
-
 # returns |yes> if |x> is a prime, else |no>
 # x is a ket
 def is_prime(x):
@@ -6297,22 +6388,23 @@ fn_table['prime-factors'] = 'factor_number'
 # set usage info:
 function_operators_usage['prime-factors'] = """
     description:
-      returns a list of prime factors
+        returns a list of prime factors
 
     examples:
-      -- without specifying a category:
-      prime-factors |987654321>
-        2|3> + 2|17> + |379721>
+        -- without specifying a category:
+        prime-factors |987654321>
+            2|3> + 2|17> + |379721>
       
-      -- with specifying a category, here 'number: '
-      prime-factors |number: 123456789>
-        2|number: 3> + |number: 3607> + |number: 3803>
+        -- with specifying a category, in this example 'number: '
+        prime-factors |number: 123456789>
+            2|number: 3> + |number: 3607> + |number: 3803>
+        
+         to-comma-number prime-factors |987654321987654321>
+            2|3> + |7> + |11> + |13> + 2|17> + |19> + |52,579> + |379,721>
 
     see also:
       is-prime
 """
-
-
 # x is a ket
 def factor_number(x):
     cat, v = extract_category_value(x.label)
@@ -6337,34 +6429,35 @@ compound_table['inherit'] = ['apply_fn', 'inherit_op', 'context']
 # set usage info:
 function_operators_usage['inherit'] = """
     description:
-      inherit operator from parent data-types
+        inherit operator from parent data-types
 
     examples:
-      -- learn a little about our old cat Trudy:
-      -- and the inheritance structure:
-      inherit |trudy> => |cat>
-      inherit |cat> => |feline>
-      inherit |feline> => |mammal>
-      inherit |mammal> => |animal>
-      has-fur |animal> => |yes>
-      has-teeth |animal> => |yes>
-      has-pointy-ears |feline> => |yes>
+        -- learn a little about our old cat Trudy:
+        -- and the inheritance structure:
+        inherit |trudy> => |cat>
+        inherit |cat> => |feline>
+        inherit |feline> => |mammal>
+        inherit |mammal> => |animal>
+        has-fur |animal> => |yes>
+        has-teeth |animal> => |yes>
+        has-pointy-ears |feline> => |yes>
       
-      -- Trudy has no teeth, which over-rides the animal has-teeth rule:
-      has-teeth |trudy> => |no>
+        -- Trudy has no teeth, which over-rides the animal has-teeth rule:
+        has-teeth |trudy> => |no>
       
-      -- now ask some questions:
-      inherit[has-pointy-ears] |trudy>
-        |yes>
+        -- now ask some questions:
+        inherit[has-pointy-ears] |trudy>
+            |yes>
 
-      inherit[has-fur] |trudy>
-        |yes>
+        inherit[has-fur] |trudy>
+            |yes>
 
-      inherit[has-teeth] |trudy>
-        |no>
+        inherit[has-teeth] |trudy>
+            |no>
+    
+    see also:
+    
 """
-
-
 def inherit_op(one, context, op):  # maybe build this into the working of the new_context() class?
     r = one.apply_op(context, op)
     if len(r) != 0:
@@ -6400,39 +6493,42 @@ compound_table['sort-by'] = ['apply_sp_fn', 'sort_by', 'context']
 # set usage info:
 function_operators_usage['sort-by'] = """
     description:
-      sort the given superposition with respect to the given operator
+        sort-by[op] SP
+        sort the given superposition with respect to the given operator
 
     examples:
-      load pretty-print-table-of-australian-cities.sw
+        load pretty-print-table-of-australian-cities.sw
       
-      -- sort by area:
-      table[city, area, population, annual-rainfall] sort-by[area] "" |city list>
-        +-----------+------+------------+-----------------+
-        | city      | area | population | annual-rainfall |
-        +-----------+------+------------+-----------------+
-        | Darwin    | 112  | 120900     | 1714.7          |
-        | Adelaide  | 1295 | 1158259    | 600.5           |
-        | Hobart    | 1357 | 205556     | 619.5           |
-        | Melbourne | 1566 | 3806092    | 646.9           |
-        | Sydney    | 2058 | 4336374    | 1214.8          |
-        | Perth     | 5386 | 1554769    | 869.4           |
-        | Brisbane  | 5905 | 1857594    | 1146.4          |
-        +-----------+------+------------+-----------------+
+        -- sort by area:
+        table[city, area, population, annual-rainfall] sort-by[area] "" |city list>
+            +-----------+------+------------+-----------------+
+            | city      | area | population | annual-rainfall |
+            +-----------+------+------------+-----------------+
+            | Darwin    | 112  | 120900     | 1714.7          |
+            | Adelaide  | 1295 | 1158259    | 600.5           |
+            | Hobart    | 1357 | 205556     | 619.5           |
+            | Melbourne | 1566 | 3806092    | 646.9           |
+            | Sydney    | 2058 | 4336374    | 1214.8          |
+            | Perth     | 5386 | 1554769    | 869.4           |
+            | Brisbane  | 5905 | 1857594    | 1146.4          |
+            +-----------+------+------------+-----------------+
       
-      -- sort by population:
-      table[city, area, population, annual-rainfall] reverse sort-by[population] "" |city list>
-        +-----------+------+------------+-----------------+
-        | city      | area | population | annual-rainfall |
-        +-----------+------+------------+-----------------+
-        | Sydney    | 2058 | 4336374    | 1214.8          |
-        | Melbourne | 1566 | 3806092    | 646.9           |
-        | Brisbane  | 5905 | 1857594    | 1146.4          |
-        | Perth     | 5386 | 1554769    | 869.4           |
-        | Adelaide  | 1295 | 1158259    | 600.5           |
-        | Hobart    | 1357 | 205556     | 619.5           |
-        | Darwin    | 112  | 120900     | 1714.7          |
-        +-----------+------+------------+-----------------+
+        -- sort by population:
+        table[city, area, population, annual-rainfall] reverse sort-by[population] "" |city list>
+            +-----------+------+------------+-----------------+
+            | city      | area | population | annual-rainfall |
+            +-----------+------+------------+-----------------+
+            | Sydney    | 2058 | 4336374    | 1214.8          |
+            | Melbourne | 1566 | 3806092    | 646.9           |
+            | Brisbane  | 5905 | 1857594    | 1146.4          |
+            | Perth     | 5386 | 1554769    | 869.4           |
+            | Adelaide  | 1295 | 1158259    | 600.5           |
+            | Hobart    | 1357 | 205556     | 619.5           |
+            | Darwin    | 112  | 120900     | 1714.7          |
+            +-----------+------+------------+-----------------+
 
+    see also:
+        reverse, table
 """
 # one is a superposition
 def sort_by(one, context, op):
@@ -6472,6 +6568,7 @@ def read_text(one):
         seq += ket('word: ' + w)
     return seq
 
+
 # set invoke method:
 compound_table['active-buffer'] = ['apply_seq_fn', 'active_buffer', 'context']
 # one is a sequence:
@@ -6510,32 +6607,33 @@ sp_fn_table['list-to-words'] = 'sp_to_words'
 # set usage info:
 function_operators_usage['list-to-words'] = """
     description:
-      convert the given superposition into a comma-separated word list
-      it is the inverse of words-to-list
+        convert the given superposition into a comma-separated word list
+        it is the inverse of words-to-list
 
     examples:
-      list-to-words |x>
-        |x>
+        list-to-words |x>
+            |x>
       
-      list-to-words (|x> + |y>)
-        |x and y>
+        list-to-words (|x> + |y>)
+            |x and y>
 
-      list-to-words (|x> + |y> + |z>)
-        |x, y and z>
+        list-to-words (|x> + |y> + |z>)
+            |x, y and z>
         
-      list-to-words (|a> + |b> + |c> + |d> + |e>)
-        |a, b, c, d and e>
+        list-to-words (|a> + |b> + |c> + |d> + |e>)
+            |a, b, c, d and e>
 
-      friends |Eric> => |Sam> + |Harry> + |Mary> + |Liz>
-      list-to-words friends |Eric>
-        |Sam, Harry, Mary and Liz>
+        friends |Eric> => |Sam> + |Harry> + |Mary> + |Liz>
+        list-to-words friends |Eric>
+            |Sam, Harry, Mary and Liz>
     
-      -- demonstration of inverse property:
-      words-to-list list-to-words (|a> + |b> + |c> + |d> + |e>)
-        |a> + |b> + |c> + |d> + |e>
+        -- demonstration of inverse property:
+        words-to-list list-to-words (|a> + |b> + |c> + |d> + |e>)
+            |a> + |b> + |c> + |d> + |e>
       
     future:
-      maybe also have an 'or' version too: 'x, y or z' 
+        maybe also have an 'or' version too: 'x, y or z'
+        handle sequences better
 
     see also:
       words-to-list
@@ -6559,20 +6657,26 @@ fn_table['words-to-list'] = 'words_to_sp'
 # set usage info:
 function_operators_usage['words-to-list'] = """
     description:
-      splits the given ket on ', ' and ' and '
-      it is the inverse of list-to-words
+        splits the given ket on ', ' and ' and '
+        it is the inverse of list-to-words
 
     examples:
-      words-to-list |a, b, c, d and e>
-        |a> + |b> + |c> + |d> + |e>
+        words-to-list |a, b, c, d and e>
+            |a> + |b> + |c> + |d> + |e>
     
-      -- demonstration of inverse property:
-      list-to-words words-to-list |a, b, c, d and e>
-        |a, b, c, d and e>
+        -- demonstration of inverse property:
+        list-to-words words-to-list |a, b, c, d and e>
+            |a, b, c, d and e>
     
+        -- implemented using split/ssplit:
+        split[" and "] split[", "] |a, b, c, d and e>
+            |a> + |b> + |c> + |d> + |e>
+
+        ssplit[" and "] ssplit[", "] |a, b, c, d and e>
+            |a> . |b> . |c> . |d> . |e>
+
     see also:
-      list-to-words
-      
+      list-to-words, split, ssplit      
 """
 # one is a ket
 def words_to_sp(one):
@@ -6581,7 +6685,7 @@ def words_to_sp(one):
         front = head.split(', ')
         r = superposition()
         for x in front + [tail]:
-            r.add(x)
+            r.add(x, one.value)
         return r
     except Exception as e:
         logger.debug("words-to-list exception reason: " + str(e))
@@ -6719,44 +6823,46 @@ context_whitelist_table_2['find-path-between'] = 'find_path_between'
 # set usage info:
 sequence_functions_usage['find-path-between'] = """
     description:
-      find the path between the given kets
-      potentially quite slow!
+        find-path-between(one, two)
+        find the path between the ket one, and the superposition two
+        currently, potentially quite slow!
       
     examples:
-      load fred-sam-friends.sw
-      find-inverse[friends]
-      find-path-between(|Fred>, |Sam>)
-        |op: friends> . |op: inverse-friends>
+        load fred-sam-friends.sw
+        find-inverse[friends]
+        find-path-between(|Fred>, |Sam>)
+            |op: friends> . |op: inverse-friends>
         
-      find-path-between(|Fred>, |Julie>)
-        |op: friends> . |op: inverse-friends> . |op: friends>
+        find-path-between(|Fred>, |Julie>)
+            |op: friends> . |op: inverse-friends> . |op: friends>
 
         
-      learn-map[10,10]
-      find-path-between(|grid: 1: 1>, |grid: 3: 7>)
-        |op: E> . |op: E> . |op: E> . |op: E> . |op: SE> . |op: SE>
+        learn-map[10,10]
+        find-path-between(|grid: 1: 1>, |grid: 3: 7>)
+            |op: E> . |op: E> . |op: E> . |op: E> . |op: SE> . |op: SE>
 
     
-      load george.sw
-      find (*) #=> find-path-between(|person: George>, |_self>)
-      find |person: Andrew>
-        |op: friends>
+        load george.sw
+        find (*) #=> find-path-between(|person: George>, |_self>)
+        find |person: Andrew>
+            |op: friends>
 
-      find (|person: Sarah> + |person: David> + |person: Frank>)
-        |op: family>
+        find (|person: Sarah> + |person: David> + |person: Frank>)
+            |op: family>
 
-      find (|person: Emily> + |person: Fred>)
-        |op: family-and-friends>
+        find (|person: Emily> + |person: Fred>)
+            |op: family-and-friends>
 
-      find (|person: Frank> + |person: Emily>)
-        |op: siblings>
+        find (|person: Frank> + |person: Emily>)
+            |op: siblings>
 
     future:
-      optimize it!
-      make it work with path-ways between sequences too.
+        optimize it, with Dijkstra's algorithm
+        (since current algorithm is horrible!)
+        make it work with path-ways between sequences too.
 
     see also:
-      finding-a-path-between-early-us-presidents worked example
+        finding-a-path-between-early-us-presidents worked example
 """
 def first_find_path_between(context, one, two):
     max_steps = 10
@@ -6834,21 +6940,23 @@ context_whitelist_table_2['find-steps-between'] = 'find_steps_between'
 # set usage info:
 sequence_functions_usage['find-steps-between'] = """
     description:
-      find the steps between the given kets
-      potentially quite slow!
+        find the steps between the given kets
+        currently potentially quite slow!
 
     examples:
-      load early-us-presidents.sw
-      info off
-      find-inverse[president-number]
-      find-inverse[president-era]
-      find-inverse[full-name]
+        load early-us-presidents.sw
+        find-inverse[president-number, president-era, full-name]
 
-      find-steps-between(|person: George Washington>, |number: 6>)
-        |person: George Washington> . |Washington> . |year: 1797> . |Adams> . |year: 1801> . |Jefferson> . |party: Democratic-Republican> . |year: 1825> . |Q Adams> . |number: 6>
+        find-steps-between(|person: George Washington>, |number: 6>)
+            |person: George Washington> . |Washington> . |year: 1797> . |Adams> . |year: 1801> . |Jefferson> . |party: Democratic-Republican> . |year: 1825> . |Q Adams> . |number: 6>
 
+    future:
+        optimize it, with Dijkstra's algorithm
+        (since current algorithm is horrible!)
+        make it work with path-ways between sequences too.
+        
     see also:
-      find-path-between
+        find-path-between
 """
 def first_find_steps_between(context, one, two):
     op_path = find_path_between(context, one, two)
@@ -6911,7 +7019,7 @@ function_operators_usage['exp'] = """
             |x> + |0> + |00> + |000>
 
         -- find right branch of tree:
-        NB: in this case exp[right, 4] would have sufficed
+        -- NB: in this case exp[right, 4] would have sufficed
         exp[right, 10] |x>
             |x> + |1> + |11> + |111> + |1111>
 
@@ -7044,7 +7152,7 @@ function_operators_usage['full-exp'] = """
             |x> + |0> + 0.5|00> + 0.167|000>            
 
         -- find right branch of tree:
-        NB: in this case full-exp[right, 4] would have sufficed
+        -- NB: in this case full-exp[right, 4] would have sufficed
         full-exp[right, 10] |x>
             |x> + |1> + 0.5|11> + 0.167|111> + 0.042|1111>
 
@@ -7175,6 +7283,7 @@ function_operators_usage['similar-input'] = """
     description:
         similar-input[op] seq
         returns the similarity of seq with all kets that have op defined
+        the back-end to this operator uses simm
 
     examples:
         -- learn the noises of cats and dogs:
@@ -7220,7 +7329,7 @@ function_operators_usage['similar-input'] = """
             ----------
 
     see also:
-        find-topic
+        find-topic, simm
 """
 def similar_input(self, context, op):
     return context.pattern_recognition(self, op)
@@ -7234,6 +7343,7 @@ function_operators_usage['find-topic'] = """
     description:
         find-topic[op] |x>
         find most similar frequency list, defined with respect to op, of |x>
+        the back-end to this operator uses normed-frequency-class
 
     examples:
         -- load some knowledge:
@@ -7282,7 +7392,7 @@ function_operators_usage['find-topic'] = """
             |male>
 
     see also:
-        similar-input
+        similar-input, normed-frequency-class
 """
 # implements: find-topic[op] |x>
 def find_topic(self, context, op):
@@ -7313,6 +7423,9 @@ sequence_functions_usage['mbr'] = """
         
         mbr(|c>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
             9.7|c>
+            
+        mbr(|x>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
+            |>
 
     see also:
         is-mbr, intersection
@@ -7347,6 +7460,9 @@ sequence_functions_usage['is-mbr'] = """
 
         is-mbr(|c>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
             |yes>
+
+        is-mbr(|x>, 0.3|a> + 2|b> + 9.7|c> + 13|d>)
+            |no>
         
         friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
         is-mbr(|Ed>, friends |Fred>)
@@ -7374,7 +7490,6 @@ whitelist_table_2['subset'] = 'subset'
 sequence_functions_usage['subset'] = """
     description:
         subset(one, two) returns the degree of subsetness of 'one' with respect to 'two'
-        NB: I don't understand what this function is trying to do!
 
     examples:
         subset(|b>, |a> + |b> + |c>)
@@ -7411,12 +7526,17 @@ sequence_functions_usage['equal'] = """
         1|True> if one == two
         0|True> if one and two are completely disjoint
         values in between otherwise
-        makes use of aligned-simm
+        makes use of simm
 
     examples:
 
     see also:
-        aligned-simm, is-equal
+        simm, is-equal
+    
+    future:
+        I'm not super happy with the way this is defined.
+        Isn't it redundant, and just a wrapper around simm?
+        Wouldn't it be cleaner for it to be binary, and return |True> or |False> and not mess with coefficients?
 """
 def equality_test(one, two):
     value = aligned_simm_value(one, two)  # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
@@ -7429,19 +7549,22 @@ whitelist_table_2['is-equal'] = 'is_equal'
 sequence_functions_usage['is-equal'] = """
     description:
         is-equal(one, two) returns:
-        |yes> if one == two
-        |no> if one and two are completely disjoint
+        |yes> if simm(one, two) >= 0.5
+        |no> otherwise
         values in between otherwise
-        makes use of aligned-simm 
+        makes use of simm 
 
     examples:
-
+        -- alternate implementation:
+        test-equal (*,*) #=> do-you-know drop-below[0.5] simm(|_self1>, |_self2>)
+    
     see also:
-        aligned-simm, equal
+        simm, equal, if
 """
 def is_equal(one, two):
     value = aligned_simm_value(one, two)
-    if value > 0:
+    # if value > 0:  # change this to value > 0.5 ?
+    if value >= 0.5:
         return ket('yes', value)
     return ket('no')
 
@@ -7467,26 +7590,55 @@ compound_table['smooth'] = ['apply_fn', 'smooth', '']
 function_operators_usage['smooth'] = """
     description:
         smooths peaks into Gaussian's
-        smooth[dx] a|x: 3> => a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
+        smooth[dx] a|x: 3>
+        returns:
+            a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
         usually invoked in form: smooth[dx]^power
         also used to enable similarity between nearby integers
 
     examples:
         smooth[0.5] |age: 30>
             0.25|age: 29.5> + 0.5|age: 30> + 0.25|age: 30.5>
+            
+        -- show what this looks like:
+        bar-chart[40] smooth[0.5] |age: 30> 
+            ----------
+            age: 29.5 : ||||||||||||||||||||
+            age: 30   : ||||||||||||||||||||||||||||||||||||||||
+            age: 30.5 : ||||||||||||||||||||
+            ----------
         
         smooth[1]^5 |age: 40>
             0.001|age: 35> + 0.01|age: 36> + 0.044|age: 37> + 0.117|age: 38> + 0.205|age: 39> + 0.246|age: 40> + 0.205|age: 41> + 0.117|age: 42> + 0.044|age: 43> + 0.01|age: 44> + 0.001|age: 45>
         
+        -- show what this looks like:
+        bar-chart[40] smooth[1]^5 |age: 40> 
+            ----------
+            age: 35 :
+            age: 36 : |
+            age: 37 : |||||||
+            age: 38 : |||||||||||||||||||
+            age: 39 : |||||||||||||||||||||||||||||||||
+            age: 40 : ||||||||||||||||||||||||||||||||||||||||
+            age: 41 : |||||||||||||||||||||||||||||||||
+            age: 42 : |||||||||||||||||||
+            age: 43 : |||||||
+            age: 44 : |
+            age: 45 :
+            ----------
+
         rescale[1] smooth[1]^5 |age: 40>
             0.004|age: 35> + 0.04|age: 36> + 0.179|age: 37> + 0.476|age: 38> + 0.833|age: 39> + |age: 40> + 0.833|age: 41> + 0.476|age: 42> + 0.179|age: 43> + 0.04|age: 44> + 0.004|age: 45>
 
-        age-simm (*,*) #=> aligned-simm(smooth[1]^5 |_self1>, smooth[1]^5 |_self2>)
+        age-simm (*,*) #=> simm(smooth[1]^5 |_self1>, smooth[1]^5 |_self2>)
         age-simm(|age: 36>, |age: 40>)
             0.227|simm>
 
+    TODO:
+        implement a full Gaussian operator: gaussian[sigma, dx] a|x: v>
+
     see also:
-        rescale
+        rescale, simm
 """
 def smooth(one, dx):
     one = one.to_sp()
@@ -7526,6 +7678,7 @@ compound_table['map'] = ['apply_sp_fn', 'map', 'context']
 # set usage info:
 function_operators_usage['map'] = """
     description:
+        map[fn, op] SP
         map a function operator to a literal operator
         eg: map[fn, op] (|x> + |y> + |z>)
         runs:
@@ -7583,9 +7736,9 @@ def map(one, context, *op):
 # 4/5/2015:
 # a new version of map. This one puts results in a temporary store while doing the calculatoin, then copies the result back after.
 # Basically to stop the code eating its own tail. eg, mapping a grid to a grid, you need a temporary grid.
-def copy_map(one, context, op):
+def copy_map(one, context, *op):
     try:
-        fn, op = op.split(',')
+        fn, op = op
     except:
         fn = op
     print("fn:", fn)
@@ -7594,7 +7747,7 @@ def copy_map(one, context, op):
     print("op-tmp:", op_tmp)
 
     for x in one:
-        context.learn(op - tmp, x, x.apply_op(context, fn))  # store results on temporary grid
+        context.learn(op_tmp, x, x.apply_op(context, fn))  # store results on temporary grid
     #  for x in one:
     #    context.learn(op,x,x.apply_op(context,op-tmp))
     #  context.copy_op(op_tmp,op)        # maybe ... still need some thinking time. What about context.mv_op(op_tmp,op)?
@@ -7604,10 +7757,12 @@ def copy_map(one, context, op):
 
 
 # set invoke method:
-compound_table['inverse'] = ['apply_sp_fn', 'active_inverse', 'context']
+# compound_table['inverse'] = ['apply_sp_fn', 'active_inverse', 'context']
+compound_table['inverse'] = ['apply_fn', 'active_inverse', 'context']
 # set usage info:
 function_operators_usage['inverse'] = """
     description:
+        inverse[op] SP
         reverses the direction of a literal operator, even |*> rules
         eg, say we have: op |A> => |B>
         then: inverse[op] |B> returns |A>
@@ -7622,11 +7777,39 @@ function_operators_usage['inverse'] = """
     examples:
         load family.sw
         load family-relations.sw
-        inverse[spouse] |trude>
-            |tom>
+        
+        -- find who is an uncle in this data-set:
+        such-that[is-an-uncle] rel-kets[*]
+            |peter>
+        
+        -- find who Peter is an uncle for:
+        inverse[uncle] |peter>
+            |sally> + |erica>
             
+        -- find who Peter is a brother-in-law for:
         inverse[brother-in-law] |peter>
             |trude>
+
+        -- check this result:
+        brother-in-law |trude>
+            |peter>
+
+        -- find who are grand-parents:
+        such-that[is-a-grand-parent] rel-kets[*]
+            |sara> + |sam> + |ruth> + |mike> + |gina> + |mary> + |mark>
+
+        -- find who they are grand-parents for:
+        inverse[grand-parent] |sara>
+            |sally> + |erica>
+        
+        inverse[grand-parent] |sam>
+            |sally> + |erica>
+        
+        inverse[grand-parent] |gina>
+            |peter> + |tom>
+
+        inverse[grand-parent] |mark>
+            |peter> + |tom>
 
     see also:
         find-inverse
@@ -7636,10 +7819,11 @@ def active_inverse(one, context, op):
     # print(everyone)
     r = superposition()
     for x in everyone:
-        y = x.apply_op(context, op)
+        y = x.apply_op(context, op).to_sp()
         # print('x: %s\ty: %s' % (x, y))
-        if y.to_sp().label == one.label:
-            r.add_sp(x)
+        for candidate in y:
+            if candidate.label == one.label:
+                r.add_sp(x)
     return r
 
 
@@ -7661,7 +7845,7 @@ function_operators_usage['load-file'] = """
 """
 def load_file(one, context):
     name = one.label
-    basename = os.path.basename(name)
+    basename = os.path.basename(name)  # is this secure?
     print('loading: sw-examples/%s' % basename)
     context.load('sw-examples/' + basename)
     return ket('load-file')
@@ -7707,7 +7891,7 @@ def seq_exp(one, context, *ops):
 
 
 # set invoke method:
-compound_table['explain'] = ['apply_seq_fn', 'explain', 'context']
+compound_table['explain'] = ['apply_seq_fn', 'third_explain', 'context']
 # set usage info:
 function_operators_usage['explain'] = """
     description:
@@ -7723,6 +7907,7 @@ function_operators_usage['explain'] = """
 
         -- given this sequence: |a> . |b> . |f> . |a> . |b>
         -- find possible causes:
+        -- note that even though it prints them all out, it only returns the shortest sequence:
         explain[cause] ssplit |abfab>
             e . c
             e . d
@@ -7736,6 +7921,16 @@ function_operators_usage['explain'] = """
             a . b . f . d
             d . f . a . b
             a . b . f . a . b
+            |e> . |c>
+            
+        -- let's verify a couple of these:
+        -- NB: we don't use the ssplit operator to make it clear the input is really a sequence, not a string:
+        sexp[cause] (|e> . |c>)
+            |a> . |b> . |f> . |a> . |b>
+
+        sexp[cause] (|c> . |f> . |d>)
+            |a> . |b> . |f> . |a> . |b>
+
 
         -- given this knowledge:
         cause |p> => |g> . |m> . |r>
@@ -7752,9 +7947,50 @@ function_operators_usage['explain'] = """
             g . m . r . p
             p . g . m . r
             g . m . r . g . m . r
+        
+        
+        -- learn some knowledge about food:
+        -- see breakfast-menu.sw
+        seq |food: waffles> => |word: waffles>
+        seq |country: Belgium> => |word: belgian>
+        seq |food: strawberries> => |word: strawberries>
+        seq |food: berries> => |word: berries>
+        seq |country: France> => |word: french>
+        seq |food: toast> => |word: toast>
+        seq |meal: breakfast> => |word: breakfast>
+        seq |food: egg> => |word: egg>
+        seq |food: eggs> => |word: eggs>
+        seq |food: bacon> => |word: bacon>
+        seq |food: sausage> => |word: sausage>
+        seq |food: sausages> => |word: sausages>
+        seq |number: 2> => |word: two>
+        seq |food: cream> => |word: cream>
+        seq |food: belgian waffles> => |word: belgian> . |word: waffles>
+        seq |food: maple syrup> => |word: maple> . |word: syrup>
+        seq |food: whipped cream> => |word: whipped> . |word: cream>
+        seq |food: hash browns> => |word: hash> . |word: browns>
+        
+        -- define our read operator:
+        apply-word |*> #=> |word:> __ |_self>
+        read |*> #=> apply-word ssplit[" "] replace[",", ""] remove-suffix[1] remove-prefix[1] remove-prefix["text: "] to-lower |_self>
 
+        -- test it out:
+        read |text: "Two eggs, bacon or sausage">
+            |word: two> . |word: eggs> . |word: bacon> . |word: or> . |word: sausage>
+
+        -- now use our explain[seq] operator:
+        explain[seq] read |text: "Two eggs, bacon or sausage">
+            |number: 2> . |food: eggs> . |food: bacon> . |word: or> . |food: sausage>
+        
+        -- now a couple of bigger examples:
+        explain[seq] read |text: "Two eggs, bacon or sausage, toast, and our ever-popular hash browns">
+            |number: 2> . |food: eggs> . |food: bacon> . |word: or> . |food: sausage> . |food: toast> . |word: and> . |word: our> . |word: ever-popular> . |food: hash browns>
+
+        explain[seq] read |text: "Light Belgian waffles covered with strawberries and whipped cream">
+            |word: light> . |food: belgian waffles> . |word: covered> . |word: with> . |food: strawberries> . |word: and> . |food: whipped cream>
+            
     see also:
-        sexp, cause1.sw, cause2.sw
+        sexp, cause1.sw, cause2.sw, breakfast-menu.sw
 """
 def first_explain(one, context, op):
     max_depth = 10  # hard code in a max_depth for now. Maybe later make it infinity.
@@ -7849,11 +8085,96 @@ def explain(one, context, *ops):
         for x in sp:
             if target.startswith(x.label):
                 solutions.append([label, target[len(x.label) + len(merge_char):]])
-    print(solutions)
+    # print(solutions)
 
     for _ in range(len_input + 1):
         solutions = find_next_step(solutions, forward_cause)
-        print(solutions)
+        # print(solutions)
+
+    if len(merge_char) == 0:
+        sorted_solutions = sorted(solutions, key=lambda x: len(x[0]), reverse=False)  # Nope. Doesn't sort correctly.
+    else:
+        sorted_solutions = sorted(solutions, key=lambda x: len(x[0].split(merge_char)), reverse=False)
+
+    for label, _ in sorted_solutions:
+        print(label)
+    # return ket(target)
+
+    return ssplit(ket(sorted_solutions[0][0]), merge_char)
+
+
+def third_explain(one, context, *ops):
+    if len(ops) == 1:
+        op = ops[0]
+        merge_char = ' . '  # currently bugs out if merge_char == ""
+    else:
+        op, merge_char = ops
+
+    max_depth = 10  # hard code in a max_depth for now. Maybe later make it infinity.
+    target = smerge(one, merge_char).label
+    len_input = len(one)
+
+    def single_step(one, context, op):
+        seq = sequence([])
+        for x in one:
+            child = x.apply_op(context, op)
+            if len(child) == 0:
+                child = x
+            seq += child
+        return seq
+
+    forward_cause = {}
+    seen_sequences = {}
+
+    # learn all the cause tree's:
+    for x in context.relevant_kets(op):
+        elt = x
+        len_elt = 1
+        for k in range(max_depth):
+            elt = single_step(elt, context, op)
+            if len(elt) == len_elt and k > 0:
+                break
+            len_elt = len(elt)
+            print('elt: %s' % elt)
+            if x.label not in forward_cause:
+                forward_cause[x.label] = superposition()
+            seq = smerge(elt, merge_char)
+            forward_cause[x.label].add_sp(seq)
+            seen_sequences[seq.label] = True  # later convert to set
+
+    # learn input elements:
+    for x in one:
+        if x.label not in seen_sequences:
+            forward_cause[x.label] = superposition() + x
+
+    # print cause tree:
+    for label, sp in forward_cause.items():
+        print('%s: %s'% (label, sp))
+
+    # find causes:
+    def find_next_step(solutions, forward_cause):
+        new_solutions = []
+        for head_label, target in solutions:
+            if len(target) == 0:
+                new_solutions.append([head_label, target])
+            else:
+                for label, sp in forward_cause.items():
+                    for x in sp:
+                        if target.startswith(x.label):
+                            new_solutions.append([head_label + merge_char + label, target[len(x.label) + len(merge_char):]])
+        return new_solutions
+
+    # filter to valid first step solutions:
+    solutions = []
+    for label, sp in forward_cause.items():
+        for x in sp:
+            if target.startswith(x.label):
+                solutions.append([label, target[len(x.label) + len(merge_char):]])
+    # print(solutions)
+
+    for _ in range(len_input + 1):
+        solutions = find_next_step(solutions, forward_cause)
+        # print(solutions)
 
     if len(merge_char) == 0:
         sorted_solutions = sorted(solutions, key=lambda x: len(x[0]), reverse=False)  # Nope. Doesn't sort correctly.
@@ -9244,7 +9565,7 @@ function_operators_usage['starts-with'] = """
             |person: Fred Smith> + |person: Fred Jones>
 
     see also:
-        relevant-kets
+        rel-kets
 """
 # e is a ket
 def starts_with(e, context):

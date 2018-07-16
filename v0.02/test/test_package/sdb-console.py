@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/7/2018
+# Update: 16/7/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -50,7 +50,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to v0.02!\nLast updated: 15 July, 2018")
+print("Welcome to v0.02!\nLast updated: 16 July, 2018")
 
 # C = ContextList("sw console")
 C = context
@@ -372,7 +372,7 @@ while True:
         sep = "   "
         max_len = 0
         data = []
-        for file in glob.glob(sw_file_dir + "/*.sw"):
+        for file in glob.glob(sw_file_dir + "/*.swc") + glob.glob(sw_file_dir + "/*.sw"):
             base = os.path.basename(file)
             max_len = max(max_len, len(base))
             data.append([base, extract_sw_stats(file)])

@@ -416,6 +416,9 @@ class ket(object):
         else:
             return ket()
 
+    def sdrop(self):
+        return self.drop()
+
     def drop_below(self, t):
         if self.value >= t:
             return ket(self.label, self.value)
@@ -900,6 +903,9 @@ class superposition(object):
                 r.add(key, value)
         return r
 
+    def sdrop(self):
+        return self.drop()
+
     def drop_below(self, t):
         r = superposition()
         for key, value in self.dict.items():
@@ -1146,18 +1152,16 @@ class sequence(object):
             return
         if len(self.data) == 0:
             self.data = [superposition()]
-        if type(seq) in [superposition]:
+        if type(seq) in [ket, superposition]:
             self.data[-1].merge_sp(seq, space)
         if type(seq) in [sequence]:
             head, *tail = seq.data
             self.data[-1].merge_sp(head, space)
             self.data += tail
 
-    def distribute_merge_seq(self, seq,
-                             space=''):  # |a> _ (|x> + |y>) == |ax> + |ay>             # this function feels like an ugly hack! Ditto the above add_seq/sub_seq/merge_seq!
-        if len(
-                seq) == 0:  # |a> _ (|x> . |y>) == |ax> . |ay>             # maybe I should implement sp.distribute_merge_sp(x)??
-            return  # |a> _ (|x> - |y>) == |ax> - |ay>
+    def distribute_merge_seq(self, seq, space=''):  # |a> _ (|x> + |y>) == |ax> + |ay>             # this function feels like an ugly hack! Ditto the above add_seq/sub_seq/merge_seq!
+        if len(seq) == 0:                           # |a> _ (|x> . |y>) == |ax> . |ay>             # maybe I should implement sp.distribute_merge_sp(x)??
+            return                                  # |a> _ (|x> - |y>) == |ax> - |ay>
         # print('distribute: self: %s' % self)
         # print('distribute: seq:  %s' % seq)
         # print('distribute: type(self): %s' % type(self))
@@ -1165,7 +1169,7 @@ class sequence(object):
 
         if len(self.data) == 0:
             self.data = [superposition()]
-        if type(seq) in [superposition]:
+        if type(seq) in [ket, superposition]:
             tail = self.data[-1]
             r = superposition()
             for x in seq:
@@ -2405,7 +2409,7 @@ fraction = number:numerator (ws '/' ws number | -> 1):denominator -> float_int(n
 ws = ' '*
 S1 = ' '+
 op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
-op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.')
+op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.:')
 simple_op = op_start_char:first <op_char*>:rest -> first + rest
 filtered_char = anything:x ?(x not in '[]|><') -> x
 filtered_parameter_string = '"' ( ~'"' filtered_char)*:c '"' -> ''.join(c)
@@ -2617,8 +2621,7 @@ def process_operators(context, ops, seq, self_object=None):
                                 elif symbol == '-':
                                     new_seq.sub_seq(the_seq)
                                 elif symbol == '_':
-                                    new_seq.merge_seq(
-                                        the_seq)  # do we need distributed_merge_seq here too? I suspect yes.
+                                    new_seq.merge_seq(the_seq)  # do we need distributed_merge_seq here too? I suspect yes.
                                 elif symbol == '__':
                                     new_seq.merge_seq(the_seq, ' ')
                                 elif symbol == '.':
