@@ -513,8 +513,8 @@ compound_table = {
 #  "substitute"             : ".apply_fn(edit_substitute,\"{0}\")",
   
 # 9/2/2016:
-  "guess-ket"              : ".apply_fn(guess_ket,context,\"{0}\")",
-  "guess-operator"         : ".apply_naked_fn(guess_operator,context,\"{0}\")",
+#  "guess-ket"              : ".apply_fn(guess_ket,context,\"{0}\")",
+#  "guess-operator"         : ".apply_naked_fn(guess_operator,context,\"{0}\")",
   
 # 20/3/2016:
   "path-op"                : ".apply_fn(path_op,context,\"{0}\")",
@@ -602,7 +602,7 @@ ket_context_table = {
   "show-image"         : "show_image", 
   
 # 9/2/2016:
-  "guess-ket"          : "guess_ket",
+#  "guess-ket"          : "guess_ket",
   
 # 15/9/2016:
   "recall-sequence"    : "recall_sequence",

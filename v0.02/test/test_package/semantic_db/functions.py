@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 15/7/2018
+# Update: 17/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -5478,6 +5478,9 @@ sequence_functions_usage['op-zip'] = """
       
     see also:
         n2w in the big-numbers-to-words example
+        
+    future:
+        a version that works for superpositions
 """
 # one, two are sequences
 def op_zip(context, one, two):
@@ -6456,7 +6459,7 @@ function_operators_usage['inherit'] = """
             |no>
     
     see also:
-    
+        clone
 """
 def inherit_op(one, context, op):  # maybe build this into the working of the new_context() class?
     r = one.apply_op(context, op)
@@ -7856,11 +7859,48 @@ compound_table['sexp'] = ['apply_seq_fn', 'seq_exp', 'context']
 # set usage info:
 function_operators_usage['sexp'] = """
     description:
+        sexp[op] seq
+        the sequence version of exp
+        and the inverse of explain[op]
 
     examples:
+        -- given this knowledge:
+        cause |p> => |g> . |m> . |r>
+        cause |t> => |p> . |p>
+        cause |x> => |p> . |g>
+        cause |z> => |r> . |p>
+
+        -- find possible causes for: |g> . |m> . |r> . |g> . |m> . |r>
+        explain[cause] ssplit[" . "] |g . m . r . g . m . r>
+            t
+            p . p
+            g . m . z
+            x . m . r
+            g . m . r . p
+            p . g . m . r
+            g . m . r . g . m . r
+        
+        -- now use sexp to verify they all work:
+        sexp[cause] |t>
+            |g> . |m> . |r> . |g> . |m> . |r>
+            
+        sexp[cause] (|p> . |p>)
+            |g> . |m> . |r> . |g> . |m> . |r>
+            
+        sexp[cause] (|g> . |m> . |z>)
+            |g> . |m> . |r> . |g> . |m> . |r>
+            
+        sexp[cause] (|x> . |m> . |r>)
+            |g> . |m> . |r> . |g> . |m> . |r>
+            
+        sexp[cause] (|g> . |m> . |r> . |p>)
+            |g> . |m> . |r> . |g> . |m> . |r>
+            
+        sexp[cause] (|p> . |g> . |m> . |r>)
+            |g> . |m> . |r> . |g> . |m> . |r>
 
     see also:
-
+        exp, explain
 """
 def seq_exp(one, context, *ops):
     if len(ops) == 1:
@@ -7897,6 +7937,7 @@ function_operators_usage['explain'] = """
     description:
         given a cause structure, and an input sequence, find the possible cause
         See here for why we would want to do this:
+        Parsimonious Covering Theory with Causal Chaining and Ordering Constraints:
         https://github.com/garrettkatz/copct
 
     examples:
@@ -7988,9 +8029,86 @@ function_operators_usage['explain'] = """
 
         explain[seq] read |text: "Light Belgian waffles covered with strawberries and whipped cream">
             |word: light> . |food: belgian waffles> . |word: covered> . |word: with> . |food: strawberries> . |word: and> . |food: whipped cream>
+        
+        
+        -- learn a different set of knowledge:
+        -- see cause3.sw
+        pattern |node: 1: 1> => |fred>
+        pattern |node: 1: 2> => |freddie>
+        pattern |node: 1: 3> => |smith>
+        pattern |node: 1: 4> => |smithie>
+        pattern |node: 1: 5> => |fred> . |smith>
+        then |node: 1: *> => |person: Fred Smith>
+        
+        pattern |node: 2: 1> => |mazza>
+        then |node: 2: *> => |person: Mary>
+        
+        pattern |node: 3: 1> => |hey>
+        then |node: 3: *> => |greeting: Hey!>
+        
+        pattern |node: 4: 1> => |what's>
+        pattern |node: 4: 2> => |what> . |is>
+        then |node: 4: *> => |question: what is>
+        
+        pattern |node: 5: 1> => |up>
+        then |node: 5: *> => |direction: up>
+        
+        pattern |node: 6: 1> => |having> . |a> . |baby>
+        then |node: 6: *> => |phrase: having a baby>
+        
+        pattern |node: 7: 1> => |in> . |the> . |family> . |way>
+        then |node: 7: *> => |phrase: in the family way>
+        
+        pattern |node: 8: 1> => |up> . |the> . |duff>
+        then |node: 8: *> => |phrase: up the duff>
+        
+        pattern |node: 9: 1> => |with> . |child>
+        then |node: 9: *> => |phrase: with child>
+        
+        pattern |node: 10: 1> => |phrase: having a baby>
+        pattern |node: 10: 2> => |phrase: in the family way>
+        pattern |node: 10: 3> => |phrase: up the duff>
+        pattern |node: 10: 4> => |phrase: with child>
+        then |node: 10: *> => |concept: pregnancy>
+        
+        -- our 'read' operator:
+        read |*> #=> ssplit[" "] replace[",?", ""] to-lower |_self>
+        
+        -- if 'then' is not defined for a ket, then return itself: 
+        then |*> #=> |_self>
+
+        -- now a quick test of our read operator:
+        -- yeah, we don't use apply-word this time.
+        read |Hey Freddie what's up?>
+            |hey> . |freddie> . |what's> . |up>
+
+        -- now 'explain':
+        explain[pattern] read |Hey Freddie what's up?>
+            |node: 3: 1> . |node: 1: 2> . |node: 4: 1> . |node: 5: 1>
+        
+        -- now apply the 'then' operator, that maps nodes to concepts:
+        then explain[pattern] read |Hey Freddie what's up?>
+            |greeting: Hey!> . |person: Fred Smith> . |question: what is> . |direction: up>
+        
+        -- another example:
+        then explain[pattern] read |Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+            |greeting: Hey!> . |person: Mary> . |you> . |phrase: with child> . |phrase: up the duff> . |phrase: in the family way> . |phrase: having a baby>
             
+        -- then another layer of 'then explain[pattern]':
+        then explain[pattern] then explain[pattern] read |Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+            |greeting: Hey!> . |person: Mary> . |you> . |concept: pregnancy> . |concept: pregnancy> . |concept: pregnancy> . |concept: pregnancy>
+            
+        -- further, we could wrap 'then explain[pattern]' into a new operator:
+        explain (*) #=> then explain[pattern] |_self>
+        explain read |Hey Freddie what is up?>
+        explain read |Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+        explain^2 read |Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+
     see also:
-        sexp, cause1.sw, cause2.sw, breakfast-menu.sw
+        sexp, cause1.sw, cause2.sw, cause3.sw, breakfast-menu.sw, active-buffer
+        
+    future:
+        an example with depth > 2.
 """
 def first_explain(one, context, op):
     max_depth = 10  # hard code in a max_depth for now. Maybe later make it infinity.
@@ -8026,7 +8144,7 @@ def first_explain(one, context, op):
     return ket('explain')
 
 
-def explain(one, context, *ops):
+def second_explain(one, context, *ops):
     if len(ops) == 1:
         op = ops[0]
         merge_char = ' . '  # currently bugs out if merge_char == ""
@@ -8135,7 +8253,7 @@ def third_explain(one, context, *ops):
             if len(elt) == len_elt and k > 0:
                 break
             len_elt = len(elt)
-            print('elt: %s' % elt)
+            # print('elt: %s' % elt)
             if x.label not in forward_cause:
                 forward_cause[x.label] = superposition()
             seq = smerge(elt, merge_char)
@@ -8148,8 +8266,8 @@ def third_explain(one, context, *ops):
             forward_cause[x.label] = superposition() + x
 
     # print cause tree:
-    for label, sp in forward_cause.items():
-        print('%s: %s'% (label, sp))
+    # for label, sp in forward_cause.items():
+    #     print('%s: %s'% (label, sp))
 
     # find causes:
     def find_next_step(solutions, forward_cause):
@@ -8628,6 +8746,7 @@ sequence_functions_usage['to-base'] = """
             |1: 678> + |1000: 454> + |1000000: 123>
             
     see also:
+        is-prime, prime-factors
 """
 def decimal_to_base(number, base):
     r = int(category_number_to_number(number.to_sp()).value)
@@ -8784,6 +8903,7 @@ compound_table['merged-matrix'] = ['apply_sp_fn', 'matrix', 'context']
 # set usage info:
 function_operators_usage['merged-matrix'] = """
     description:
+        merged-matrix[opn, ..., op2, op1]
         merge the operators into a single merged matrix
         
     examples:
@@ -8824,7 +8944,8 @@ compound_table['naked-matrix'] = ['apply_sp_fn', 'naked_matrix', 'context']
 # set usage info:
 function_operators_usage['naked-matrix'] = """
     description:
-        display a single merged adjacency matrix
+        naked-matrix[opn, ..., op2, op1]
+        display a single merged adjacency matrix, without the input and output vectors
 
     examples:
         sa: load matrices.sw
@@ -8858,6 +8979,7 @@ compound_table['matrix'] = ['apply_sp_fn', 'multi_matrix', 'context']
 # set usage info:
 function_operators_usage['matrix'] = """
     description:
+        matrix[opn, ..., op2, op1]
         maps operators to adjacency matrices
 
     examples:
@@ -9200,27 +9322,34 @@ sequence_functions_usage['clone'] = """
         clone(|x>, |y>), copies rules from |x> and applies them to |y>
 
     examples:
-        sa: context clone example
-        sa: age |Sarah> => |31>
-        sa: mother |Sarah> => |Jane>
-        sa: father |Sarah> => |Rob>
-        sa: clone(|Sarah>, |Emma>)
-        sa: dump
-        ----------------------------------------
-         |context> => |context: clone example>
-        previous |context> => |context: global context>
+        -- set the context:
+        context clone example
         
+        -- learn some knowledge:
         age |Sarah> => |31>
         mother |Sarah> => |Jane>
         father |Sarah> => |Rob>
         
-        age |Emma> => |31>
-        mother |Emma> => |Jane>
-        father |Emma> => |Rob>
-        ----------------------------------------
+        -- clone |Sarah> to |Emma> (eg, they are twin sisters)
+        clone(|Sarah>, |Emma>)
+        
+        -- show what we now know:
+        dump
+            ----------------------------------------
+             |context> => |context: clone example>
+            previous |context> => |context: global context>
+            
+            age |Sarah> => |31>
+            mother |Sarah> => |Jane>
+            father |Sarah> => |Rob>
+            
+            age |Emma> => |31>
+            mother |Emma> => |Jane>
+            father |Emma> => |Rob>
+            ----------------------------------------
 
     see also:
-
+        inherit
 """
 def clone_ket(context, one, two):
     one = one.to_sp()
@@ -9259,7 +9388,7 @@ function_operators_usage['expand-hierarchy'] = """
             |animal> + |animal: mammal> + |animal: mammal: dog>
        
     see also:
-        extract-category, extract-value, category-depth
+        extract-category, extract-value, category-depth, inherit
 """
 # assumes "one" is a ket.
 def expand_hierarchy(one):
@@ -9289,8 +9418,7 @@ function_operators_usage['category-depth'] = """
             |number: 3>
 
     see also:
-        extract-category, extract-value, expand-hierarchy
-    
+        extract-category, extract-value, expand-hierarchy    
 """
 def category_depth(one):
     if len(one) == 0:
@@ -9330,6 +9458,7 @@ function_operators_usage['push-float'] = """
         pushes the float coefficient to a category
 
     examples:
+        -- 3 times don't know equals don't know:
         push-float 3|>
             |>
         
@@ -9416,10 +9545,11 @@ def pop_float(one):
 #
 # yup. seems to work! And is fast! 4 days estimated for the names.sw data, down to 2 seconds, 753 milliseconds
 # set invoke method:
-compound_table['find-unique'] = ['apply_naked_fn', 'find_unique', 'context']
+compound_table['find-unique'] = ['apply_naked_fn', 'find_unique_multi', 'context']
 # set usage info:
 function_operators_usage['find-unique'] = """
     description:
+        find-unique[op]
         learn the kets that are unique with respect to that operator
         
     examples:
@@ -9448,7 +9578,7 @@ function_operators_usage['find-unique'] = """
             ----------------------------------------
 
     see also:
-        find-inverse
+        find-inverse, common
 """
 def find_unique(context, op):
     sp_dict = {}
@@ -9469,6 +9599,11 @@ def find_unique(context, op):
 
     return ket('find-unique')
 
+def find_unique_multi(context, *ops):
+    for op in ops:
+        find_unique(context, op)
+    return ket('find-unique')
+
 
 
 # set invoke method:
@@ -9476,32 +9611,33 @@ compound_table['find-inverse'] = ['apply_naked_fn', 'find_inverse', 'context']
 # set usage info:
 function_operators_usage['find-inverse'] = """
     description:
+        find-inverse[op1, op2, ... , opn]
         learn the set of inverses for the given operator(s)       
 
     examples:
-        sa: load fred-sam-friends.sw
-        sa: find-inverse[friends]
-        sa: dump
-        ----------------------------------------
-         |context> => |context: friends>
-        previous |context> => |context: global context>
-        
-        friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
-        friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
-        
-        inverse-friends |Jack> => |Fred> + |Sam>
-        inverse-friends |Harry> => |Fred>
-        inverse-friends |Ed> => |Fred>
-        inverse-friends |Mary> => |Fred>
-        inverse-friends |Rob> => |Fred>
-        inverse-friends |Patrick> => |Fred>
-        inverse-friends |Emma> => |Fred> + |Sam>
-        inverse-friends |Charlie> => |Fred> + |Sam>
-        inverse-friends |George> => |Sam>
-        inverse-friends |Rober> => |Sam>
-        inverse-friends |Frank> => |Sam>
-        inverse-friends |Julie> => |Sam>
-        ----------------------------------------
+        load fred-sam-friends.sw
+        find-inverse[friends]
+        dump
+            ----------------------------------------
+             |context> => |context: friends>
+            previous |context> => |context: global context>
+            
+            friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+            friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+            
+            inverse-friends |Jack> => |Fred> + |Sam>
+            inverse-friends |Harry> => |Fred>
+            inverse-friends |Ed> => |Fred>
+            inverse-friends |Mary> => |Fred>
+            inverse-friends |Rob> => |Fred>
+            inverse-friends |Patrick> => |Fred>
+            inverse-friends |Emma> => |Fred> + |Sam>
+            inverse-friends |Charlie> => |Fred> + |Sam>
+            inverse-friends |George> => |Sam>
+            inverse-friends |Rober> => |Sam>
+            inverse-friends |Frank> => |Sam>
+            inverse-friends |Julie> => |Sam>
+            ----------------------------------------
         
     see also:
         find-unique
@@ -9517,6 +9653,7 @@ sp_fn_table['rank'] = 'rank'
 # set usage info:
 function_operators_usage['rank'] = """
     description:
+        rank SP
         apply position in superposition to coefficient
         ie, rank them
 
@@ -9526,8 +9663,18 @@ function_operators_usage['rank'] = """
         
         rank split |a b c d e f>
             |a> + 2|b> + 3|c> + 4|d> + 5|e> + 6|f>
+            
+        -- NB: designed for superpositions, not sequences
+        -- for sequences, you need srank
+        -- eg, this doesn't do what you think it might:
+        rank ssplit |abcdefg>
+            |a> . |b> . |c> . |d> . |e> . |f> . |g>
+
+        -- instead need:
+        srank ssplit |abcdefg>
 
     see also:
+        srank
 """
 # one is a superposition
 def rank(one):
@@ -9535,6 +9682,70 @@ def rank(one):
     for k, (label, value) in enumerate(one.items()):
         r.add(label, k + 1)
     return r
+
+
+# set invoke method:
+seq_fn_table['srank'] = 'srank'
+# set usage info:
+function_operators_usage['srank'] = """
+    description:
+        srank seq
+        apply position in sequence to coefficient
+        ie, rank them
+
+    examples:
+        srank ssplit |abcdefg>
+            |a> . 2|b> . 3|c> . 4|d> . 5|e> . 6|f> . 7|g>
+
+        -- works similarly for sequences of superpositions:
+        srank (|a> + |b> . |c> . |d> + |e> + |f> . |g> . |h> + |i> + |j> + |k>)
+            |a> + |b> . 2|c> . 3|d> + 3|e> + 3|f> . 4|g> . 5|h> + 5|i> + 5|j> + 5|k>
+
+        long-display srank (|a> + |b> . |c> . |d> + |e> + |f> . |g> . |h> + |i> + |j> + |k>)
+            seq |0> => |a> + |b>
+            seq |1> => 2|c>
+            seq |2> => 3|d> + 3|e> + 3|f>
+            seq |3> => 4|g>
+            seq |4> => 5|h> + 5|i> + 5|j> + 5|k>
+            |a> + |b> . 2|c> . 3|d> + 3|e> + 3|f> . 4|g> . 5|h> + 5|i> + 5|j> + 5|k>
+
+
+        -- an approximate implementation using op-zip:
+        -- define our multiply operators:
+        m1 |*> #=> |_self>
+        m2 |*> #=> 2|_self>
+        m3 |*> #=> 3|_self>
+        m4 |*> #=> 4|_self>
+        m5 |*> #=> 5|_self>
+
+        -- define our operator sequence:
+        op |seq> => |op: m1> . |op: m2> . |op: m3> . |op: m4> . |op: m5>
+
+        -- define our version of srank:
+        my-srank (*) #=> op-zip(op |seq>, |_self>)
+
+        -- try it out:
+        -- NB: |f> is ignored, since 'op |seq>' is only length 5
+        my-srank (|a> . |b> . |c> . |d> . |e> . |f>)
+            |a> . 2|b> . 3|c> . 4|d> . 5|e>
+
+        long-display my-srank (|a> + |b> . |c> . |d> + |e> + |f> . |g> . |h> + |i> + |j> + |k>)
+            seq |0> => |a> + |b>
+            seq |1> => 2|c>
+            seq |2> => 3|d> + 3|e> + 3|f>
+            seq |3> => 4|g>
+            seq |4> => 5|h> + 5|i> + 5|j> + 5|k>
+            |a> + |b> . 2|c> . 3|d> + 3|e> + 3|f> . 4|g> . 5|h> + 5|i> + 5|j> + 5|k>
+
+    see also:
+        rank, op-zip
+"""
+# one is a sequence
+def srank(one):
+    seq = sequence([])
+    for k, sp in enumerate(one):
+        seq += sp.multiply(k + 1)
+    return seq
 
 
 # 14/4/2015:
@@ -9546,6 +9757,7 @@ ket_context_table['starts-with'] = 'starts_with'
 # set usage info:
 function_operators_usage['starts-with'] = """
     description:
+        starts-with |prefix>
         returns all relevant kets that start with the given prefix
 
     examples:
@@ -9650,6 +9862,7 @@ compound_table['word-ngrams'] = ['apply_fn', 'word_ngrams', '']
 # set usage info:
 function_operators_usage['word-ngrams'] = """
     description:
+        word-ngrams[k1, k2, ..., kn] ket
         create word ngrams, of specified sizes
         the result is multiplied by the coefficient of the ket
         
@@ -9676,6 +9889,7 @@ compound_table['letter-ngrams'] = ['apply_fn', 'letter_ngrams', '']
 # set usage info:
 function_operators_usage['letter-ngrams'] = """
     description:
+        letter-ngrams[k1, k2, ..., kn] ket
         create letter ngrams, of specified sizes
         the result is multiplied by the coefficient of the ket
 
@@ -9707,6 +9921,7 @@ compound_table['ket-hash'] = ['apply_fn', 'ket_hash', '']
 # set usage info:
 function_operators_usage['ket-hash'] = """
     description:
+        ket-hash[n] ket
         md5 hash the given ket, but only keep n characters
 
     examples:
@@ -9772,6 +9987,7 @@ compound_table['bar-chart'] = ['apply_sp_fn', 'bar_chart', '']
 # set usage info:
 function_operators_usage['bar-chart'] = """
     description:
+        bar-chart[n] SP
         ascii bar chart of the given superposition        
         where n specifies max width of bar-chart
         
@@ -9798,6 +10014,9 @@ function_operators_usage['bar-chart'] = """
 
     see also:
         plot, sorted-bar-chart, coeff-sort, ket-sort
+        
+    future:
+        implement sbar-chart, a version that works for sequences
 """
 def bar_chart(one, width, sorted=False):
     if len(one) == 0:
@@ -9826,10 +10045,14 @@ compound_table['sorted-bar-chart'] = ['apply_sp_fn', 'sorted_bar_chart', '']
 # set usage info:
 function_operators_usage['sorted-bar-chart'] = """
     description:
+        sorted-bar-chart[n] SP
         ascii bar chart of the given superposition, sorted by coefficient
         where n specifies max width of bar-chart        
         note, somewhat redundant, since we can apply coeff-sort, or ket-sort and then use standard bar-chart
-
+        ie: 
+        bar-chart[30] ket-sort SP
+        bar-chart[30] coeff-sort SP
+        
     examples:
         sorted-bar-chart[30] rank split |a b c d e f>
             ----------
@@ -9888,6 +10111,7 @@ compound_table['delete'] = ['apply_fn', 'edit_delete', '']
 # set usage info:
 function_operators_usage['delete'] = """
     description:
+        delete[char, k]
         delete, one of three edit distance operators
         see: https://en.wikipedia.org/wiki/Edit_distance
 
@@ -9919,6 +10143,7 @@ compound_table['insert'] = ['apply_fn', 'edit_insert', '']
 # set usage info:
 function_operators_usage['insert'] = """
     description:
+        insert[char, k]
         insert, one of three edit distance operators
         see: https://en.wikipedia.org/wiki/Edit_distance
 
@@ -9946,6 +10171,7 @@ compound_table['substitute'] = ['apply_fn', 'edit_substitute', '']
 # set usage info:
 function_operators_usage['substitute'] = """
     description:
+        substitute[char1, char2, k]
         substitute, one of three edit distance operators
         see: https://en.wikipedia.org/wiki/Edit_distance
 
@@ -9979,7 +10205,8 @@ seq_fn_table['long-display'] = 'long_display'
 # set usage info:
 function_operators_usage['long-display'] = """
     description:
-        long-display, a slightly easier to read display of sequences
+        long-display seq
+        a slightly easier to read display of sequences
         
     examples:
         long-display ssplit 3.5 |abcd>
@@ -10021,6 +10248,7 @@ sp_fn_table['discrimination'] = 'discrimination'
 # set usage info:
 function_operators_usage['discrimination'] = """
     description:
+        discrimination SP
         discrimination, returns the difference between the largest coeff, and the second largest coeff.
 
     examples:
@@ -10054,6 +10282,7 @@ fn_table['to-coeff'] = 'to_coeff'
 # set usage info:
 function_operators_usage['to-coeff'] = """
     description:
+        to-coeff ket
         replace the ket text with ' '
         ie, only keep the coefficient
 
@@ -10064,6 +10293,7 @@ function_operators_usage['to-coeff'] = """
         to-coeff 26|a: b>
             26| >
 
+        -- since the ket text is now the same, the coefficients add up:
         to-coeff (26|a: b> + 13|x>)
             39| >
 
@@ -10112,6 +10342,31 @@ sequence_functions_usage['string-replace'] = """
         string-replace(|Today's date is ${date}.>, |${date}>, extract-value current-date |> )
             |Today's date is 2018-07-11.>
 
+        -- remove " chars:
+        remove-quotes (*) #=> string-replace(|_self> , |">, |>)
+        
+        remove-quotes |text: "some text">    
+            |text: some text>
+
+        -- replace "  " with " "
+        -- ie, double space with single space:
+        chomp-double-space (*) #=> string-replace(|_self>, |  >, | >)
+
+        -- put it to use:
+        chomp-double-space |some     text>
+            |some   text>
+
+        chomp-double-space^10 |some     text>
+            |some text>
+
+        -- remove punctuation chars:
+        -- :;.,!?$-"'
+        remove-punctuation (*) #=> string-replace(|_self>, split[""] |:;.,!?$-"'>, |>)
+        
+        -- now put it to use:
+        remove-punctuation |some, ... ! $$? noise-text>
+            |some    noisetext>
+            
     see also:
         replace
 """
@@ -10120,15 +10375,17 @@ def string_replace(one, two, three):
     s2 = three.to_sp().label
 
     seq = sequence([])
-    for sp in one:           # one is assumed to be a sequence
+    for sp in one:
         r = superposition()
-        for x in sp:         # x is a ket
-            for elt in two:  # elt is a ket
+        for x in sp:
+            text = x.label
+            for elt in two:
                 s1 = elt.label
-                y = ket(x.label.replace(s1, s2), x.value)
-                r.add_sp(y)
+                text = text.replace(s1, s2)
+            r.add(text, x.value)
         seq += r
     return seq
+
 
 
 # set invoke method:
@@ -10156,6 +10413,7 @@ function_operators_usage['replace'] = """
     
     future:
         maybe rename to substitute
+        how replace " char? For now, see string-replace
 """
 def char_replace(one, *parameters):
     try:
@@ -10216,6 +10474,7 @@ def random_column(one, N):
 # usage:
 # have-in-common (|Fred> + |Sam> + |Jack>)
 # 0.7 |op: friends> + |op: age> + 0.5|op: parents>
+# we need an example for this, before we can implement it!
 #
 def have_in_common(one, context):
     logger.debug("have-in-common one: %s" % str(one))
@@ -10244,6 +10503,7 @@ whitelist_table_2['frequency-class'] = 'frequency_class_ket'
 # set usage info:
 sequence_functions_usage['frequency-class'] = """
     description:
+        frequency-class(ket, SP)
         implement the frequency class equation
         see: https://en.wikipedia.org/wiki/Word_lists_by_frequency#Statistics
 
@@ -10306,8 +10566,8 @@ whitelist_table_2['normed-frequency-class'] = 'normed_frequency_class_ket'
 # set usage info:
 sequence_functions_usage['normed-frequency-class'] = """
     description:
-        implement the normed frequency class equation:
         normed-frequency-class(e, X)
+        implement the normed frequency class equation
         where: e is a ket, X is a superposition, and the result is in [0,1]
         1 for exact match, 0 for not in set, values in between otherwise
         
@@ -10476,27 +10736,64 @@ def general_to_specific(average, specific):
 #
 # could do with some optimization!
 #
+# set invoke method:
+ket_context_table['guess-ket'] = 'guess_ket'
+compound_table['guess-ket'] = ['apply_fn', 'guess_ket', 'context']
+# set usage info:
+function_operators_usage['guess-ket'] = """
+    description:
+        guess-ket |text>
+        return the best matching known ket, using simm and letter-ngrams[1,2,3]
+        
+        guess-ket[n] |text>
+        return the best n matching kets, using simm and letter-ngrams[1,2,3]
+        
+        guess-ket[*] |text>
+        return all matching kets, using simm and letter-ngrams[1,2,3]
+        
+    examples:
+        -- learn some knowledge:
+        age |person: Fred Smith> => |47>
+        mother |person: Fred Jones> => |Mary>
+        age |person: Sam Hughes> => |49>
+        
+        -- now guess some kets:
+        guess-ket |Fred>
+            0.235|person: Fred Jones>
+
+        guess-ket[*] |Fred>
+            0.235|person: Fred Jones> + 0.216|person: Fred Smith> + 0.059|person: Sam Hughes> + 0.056|context>
+
+        guess-ket[*] |Sam>
+            0.157|person: Sam Hughes> + 0.059|person: Fred Smith> + 0.039|person: Fred Jones>
+
+        guess-ket[*] |jones>
+            0.353|person: Fred Jones> + 0.222|context> + 0.176|person: Sam Hughes> + 0.137|person: Fred Smith>
+                
+    see also:
+        guess-operator, rel-kets, starts-with, simm, letter-ngrams
+"""
 # one is a ket
-def guess_ket(one, context, t='1'):
+def guess_ket(one, context, t=1):
     def process_string(s):
         one = ket(s.lower())  # I presume we want s.lower(). Maybe sometimes we don't?
-        return make_ngrams(one, '1,2,3', 'letter')
+        return make_ngrams(one, (1,2,3), 'letter')
 
     try:
         guess = process_string(one.label)
+        # print('guess:', guess)
         r = superposition()
-        for x in context.relevant_kets(
-                "*"):  # what about kets that are only on the right hand side of a learn rule? This misses them. One way is run "create inverse", but is there a better way?
-            #      similarity = silent_simm(guess,process_string(x.label))
-            similarity = fast_simm(guess, process_string(x.label))
+        for x in context.relevant_kets("*"):  # what about kets that are only on the right hand side of a learn rule? This misses them. One way is run "create inverse", but is there a better way?
+            similarity = aligned_simm_value(guess, process_string(x.label))
             if similarity > 0:
-                r.data.append(x.multiply(similarity))  # later swap in r += x.multiply(similarity)
+                r.add_sp(x.multiply(similarity))
         if t == '*':
             return r.coeff_sort()
         else:
             return r.coeff_sort().select_range(1, int(t))
-    except:
-        return ket("", 0)
+    except Exception as e:
+        print('guess-ket reason:', e)
+        return ket()
 
 
 # 9/2/2016:
@@ -10504,30 +10801,56 @@ def guess_ket(one, context, t='1'):
 # guess-operator[friend,3]     -- return the best 3 matching known operators, providing simm > 0
 # guess-operator[mother,*]     -- return all matching known operators, providing simm > 0
 #
-def guess_operator(context, parameters):
+# set invoke method:
+compound_table['guess-operator'] = ['apply_naked_fn', 'guess_operator', 'context']
+# set usage info:
+function_operators_usage['guess-operator'] = """
+    description:
+        guess-operator[age]
+        return the best matching known operator, using simm and letter-ngrams[1,2,3]
+        
+        guess-operator[friend,3]
+        return the best 3 matching known operators, using simm and letter-ngrams[1,2,3]
+        
+        guess-operator[mother,*]
+        return all matching known operators, using simm and letter-ngrams[1,2,3]
+        
+    examples:
+        load bots.sw
+        guess-operator[friend]
+            0.833|op: friends>
+
+        guess-operator[holiday, 3]
+            0.349|op: favourite-holiday-spot> + 0.222|op: hair-colour> + 0.198|op: religion>
+
+    see also:
+        guess-ket, simm, letter-ngrams
+"""
+def guess_operator(context, *parameters):
     try:
-        op, t = parameters.split(',')
+        op, t = parameters
         if t != '*':
             t = int(t)
     except:
-        op = parameters
+        op = parameters[0]
         t = 1
 
     def process_string(s):
         one = ket(s.lower())
-        return make_ngrams(one, '1,2,3', 'letter')
+        return make_ngrams(one, (1,2,3), 'letter')
 
     try:
         guess = process_string(op)
         r = superposition()
         for x in context.supported_operators():
-            similarity = silent_simm(guess, process_string(x.label[4:]))  # need to convert 'op: age' to 'age'
-            r.data.append(x.multiply(similarity))  # later swap in r += x.multiply(similarity)
+            similarity = aligned_simm_value(guess, process_string(x.label[4:]))  # need to convert 'op: age' to 'age'
+            r.add_sp(x.multiply(similarity))
         if t == '*':
             return r.drop().coeff_sort()
         else:
             return r.drop().coeff_sort().select_range(1, t)
-    except:
+    except Exception as e:
+        print('guess-operator reason:', e)
         return ket("", 0)
 
 
@@ -10563,17 +10886,17 @@ def guess_operator(context, parameters):
 #    norm-ket the-sum |sp> == |A> + |B> + |C>
 #
 #
-def learn_ket_normalizations(context, parameters):
+def learn_ket_normalizations(context, *parameters):
     try:
-        op1, op2, t = parameters.split(',')
+        op1, op2, t = parameters
         t = float(t)
     except:
-        return ket("", 0)
+        return ket()
 
     the_kets = context.relevant_kets(op1)
     the_sum = superposition()
     for x in the_kets:
-        the_sum += x.apply_op(context, op1)
+        the_sum.add_sp(x.apply_op(context, op1).to_sp())
     for x in the_sum:
         if x.value <= 0:
             continue
