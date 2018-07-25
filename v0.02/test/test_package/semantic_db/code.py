@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 13/7/2018
+# Update: 25/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -737,8 +737,7 @@ class superposition(object):
 
     def coeff_sort(self):  # Nope. Doesn't seem to work.
         r = superposition()
-        for key, value in sorted(self.dict.items(), key=lambda x: x[1],
-                                 reverse=True):  # 3|a> + 2|b> + |c> or |c> + 2|b> + 3|c>?
+        for key, value in sorted(self.dict.items(), key=lambda x: x[1], reverse=True):  # 3|a> + 2|b> + |c> or |c> + 2|b> + 3|c>?
             r.add(key, value)
         return r
 
@@ -1437,6 +1436,12 @@ class sequence(object):
         seq = sequence([])
         for x in self.data:
             seq.data.append(x.coeff_sort())
+        return seq
+
+    def ket_sort(self):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.ket_sort())
         return seq
 
     def shuffle(self):

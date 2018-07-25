@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 23/7/2018
+# Update: 25/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -234,7 +234,6 @@ function_operators_usage['smerge'] = """
         ssplit
 """
 # one is a sequence
-#
 def smerge(one, merge_char=''):
     if type(one) is not sequence:
         return ket()
@@ -283,7 +282,7 @@ compound_table['to-upper'] = ['apply_sp_fn', 'to_upper', '']
 function_operators_usage['to-upper'] = """
     description:
         to-upper |x>
-        set all characters to upper case, or 
+        set all characters to upper case 
         
         to-upper[i1, i2, ... , in] |x>
         change i'th characters to upper case
@@ -328,7 +327,7 @@ compound_table['to-lower'] = ['apply_sp_fn', 'to_lower', '']
 function_operators_usage['to-lower'] = """
     description:
         to-lower |x>
-        set all characters to lower case, or 
+        set all characters to lower case 
 
         to-lower[i1, i2, ... , in] |x>
         change i'th characters to lower case
@@ -374,9 +373,8 @@ compound_table['remove-prefix'] = ['apply_fn', 'remove_prefix', '']
 # set usage info:
 function_operators_usage['remove-prefix'] = """
     description:
-        remove given prefix from the ket
         remove-prefix["str"] |x>
-        remove prefix "str" from the ket |x>
+        remove prefix "str" from the ket |x>, if it exists
         
         remove-prefix[n] |x>
         remove first n chars from |x>
@@ -441,9 +439,8 @@ compound_table['remove-suffix'] = ['apply_fn', 'remove_suffix', '']
 # set usage info:
 function_operators_usage['remove-suffix'] = """
     description:
-        remove given suffix from the ket
         remove-suffix["str"] |x>
-        remove suffix "str" from the ket |x>
+        remove suffix "str" from the ket |x>, if it exists
         
         remove-suffxi[n] |x>
         remove last n chars from |x>
@@ -593,7 +590,7 @@ compound_table['such-that'] = ['apply_seq_fn', 'seq_such_that', 'context']
 # set usage info:
 function_operators_usage['such-that'] = """
     description:
-        such-that[op] filters the given sequence to elements that return true for "op |element>"
+        such-that[op1, op2, ... , opn] filters the given sequence to elements that return true for "op |element>"
         where the coeff of |true> must be >= 0.5     
         
     examples:
@@ -619,7 +616,10 @@ function_operators_usage['such-that'] = """
             |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday> + |Saturday> + |Sunday>
     
     see also:
-    
+
+    TODO:
+        fix quirk so we don't need literal operator wrappers around function operators.
+        eg: is-prime |*> #=> is-prime |_self>
 """
 def seq_such_that(one, context, *ops):
     def valid_ket(one, context, ops):
@@ -760,7 +760,7 @@ function_operators_usage['table'] = """
       
     TODO:
         implement transpose table. eg, bots.sw would be simpler.
-        implement a sequence version
+        implement a sequence version, probably called stable
 """
 # def pretty_print_table(one,context,params,strict=False,rank=False):
 def pretty_print_table(one, context, *ops):
@@ -1039,9 +1039,11 @@ function_operators_usage['apply-value'] = """
         return the ket if the value is not convertible to float
             
     examples:
+        -- not convertible to float, so return input ket:
         apply-value |price: fish>
             |price: fish>
         
+        -- is convertible to float:
         apply-value |price: 37>
             37|price: 37>
             
@@ -1066,11 +1068,15 @@ function_operators_usage['extract-category'] = """
         extract the category from the given ket
             
     examples:
+        -- if there is no category, then return unchanged:
         extract-category |fish>
             |fish>
         
         extract-category |animal: mammal: dog>
             |animal: mammal>
+        
+        extract-category |a: b: c: d: e: f>
+            |a: b: c: d: e>
         
     see also:
         extract-value    
@@ -1092,11 +1098,15 @@ function_operators_usage['extract-value'] = """
         extract the value, ie remove the category, from the given ket
             
     examples:
+        -- if there is no category, then return unchanged:
         extract-value |fish>
             |fish>
         
         extract-value |animal: mammal: dog>
             |dog>
+        
+        extract-value |a: b: c: d: e: f>
+            |f>
         
     see also:
         extract-category    
@@ -1120,11 +1130,15 @@ function_operators_usage['remove-leading-category'] = """
         remove the leading category
             
     examples:
+        -- if there is no category, then return unchanged:
         remove-leading-category |fish>
             |fish>
         
         remove-leading-category |animal: mammal: dog>
             |mammal: dog>
+            
+        remove-leading-category |a: b: c: d: e: f>
+            |b: c: d: e: f>
         
     see also:
         find-leading-category, extract-category, extract-value    
@@ -1144,11 +1158,15 @@ function_operators_usage['find-leading-category'] = """
         find the leading category
             
     examples:
+        -- if there is no category, then return unchanged:
         find-leading-category |fish>
             |fish>
         
         find-leading-category |animal: mammal: dog>
             |animal>
+            
+        find-leading-category |a: b: c: d: e: f>
+            |a>
         
     see also:
         remove-leading-category, extract-category, extract-value  
@@ -1185,7 +1203,7 @@ function_operators_usage['to-value'] = """
             13|cat1: cat2>
         
     see also:
-        to-category
+        to-category, push-float, pop-float
 """
 # one is a ket
 def to_value(one):
@@ -1226,7 +1244,7 @@ function_operators_usage['to-category'] = """
             |age: 23>
         
     see also:
-        to-value
+        to-value, push-float, pop-float
 """
 # one is a ket
 def to_category(one):
@@ -1256,13 +1274,16 @@ sequence_functions_usage['arithmetic'] = """
         arithmetic(|3>, |^>, |4>)
             |81>
       
+        -- the categories are not the same, so return |>
         arithmetic(|price: 37>, |->, |number: 5.20>)
             |>
         
+        -- one way to make sure the categories are the same:
         number-to-price |number: *> #=> |price:> __ extract-value |_self>
         arithmetic(|price: 37>, |->, number-to-price |number: 5.20>)
             |price: 31.8>
       
+        -- simple Fibonacci and factorial:
         fib |0> => |0>
         fib |1> => |1>
         n-1 |*> #=> arithmetic(|_self>, |->, |1>)
@@ -1386,11 +1407,11 @@ sequence_functions_usage['range'] = """
         range(|number: 3>, |price: 7>)
             |>
         
-        -- reverse-range, from 2018 to 2014:
+        -- reverse-range, with step size 2, from 2018 to 2014:
         range(|year: 2018>, |year: 2014>, - |year: 2>)
             |year: 2018> + |year: 2016> + |year: 2014>
             
-        -- if you need a sequence instead of a superposition, use superposition2sequence:
+        -- if you need a sequence instead of a superposition, use sp2seq:
         sp2seq range(|number: 17>, |number: 23>)
             |number: 17> . |number: 18> . |number: 19> . |number: 20> . |number: 21> . |number: 22> . |number: 23>
         
@@ -1403,6 +1424,14 @@ sequence_functions_usage['range'] = """
         
         srange(|17>, |23>, |2>)
             |17> . |19> . |21> . |23>
+        
+        -- filter down to prime numbers:
+        -- due to a quirk, which we might change later, you need a literal operator wrapper around a function operator:
+        is-prime |*> #=> is-prime |_self>
+        
+        -- now find our primes:
+        such-that[is-prime] range(|2>, |40>)
+            |2> + |3> + |5> + |7> + |11> + |13> + |17> + |19> + |23> + |29> + |31> + |37> 
         
     see also:
         sp2seq
@@ -1538,7 +1567,7 @@ sequence_functions_usage['intersection'] = """
         intersection(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)      
             3|a> + 0.9|b>
 
-        intersection(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+        intersection(|a1> + |a2> . 0.3|b1> + 0.5|b2>, 3|a1> + 0.9|a2> . 0.7|b2>)
             |a1> + 0.9|a2> . 0.5|b2>
         
     see also:
@@ -1571,11 +1600,11 @@ sequence_functions_usage['union'] = """
         union(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
             3.5|a> + 1.2|b> + 5.13|c>
 
-        union(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+        union(|a1> + |a2> . 0.3|b1> + 0.5|b2>, 3|a1> + 0.9|a2> . 0.7|b2>)
             3|a1> + |a2> . 0.3|b1> + 0.7|b2>
 
     see also:
-        intersection, complement 
+        intersection, complement, subset, mbr
 """
 def union(one, two):
     return intersection_fn(max, one, two)
@@ -2161,6 +2190,7 @@ whitelist_table_2['simm'] = 'aligned_simm'
 # set usage info:
 sequence_functions_usage['simm'] = """
     description:
+        simm(seq, seq)
         the aligned sequences version of our similarity measure
         for each superposition in our sequences, calculate the similarity measure
         (ie, 0 for completely distinct, 1 for exactly the same, values in between otherwise)
@@ -2173,7 +2203,7 @@ sequence_functions_usage['simm'] = """
         simm(3|a> + 1.2|b>, 3.5|a> + 0.9|b> + 5.13|c>)
             0.462|simm>        
 
-        simm(|a1> + |a2> . 0.3|b1> + 0.5|b2> , 3|a1> + 0.9|a2> . 0.7|b2>)
+        simm(|a1> + |a2> . 0.3|b1> + 0.5|b2>, 3|a1> + 0.9|a2> . 0.7|b2>)
             0.678|simm>        
 
         rename-simm |simm> => |result>
@@ -2203,8 +2233,10 @@ compound_table['predict'] = ['apply_seq_fn', 'predict_next', 'context']
 # set usage info:
 function_operators_usage['predict'] = """
     description:
+        predict[op] seq
+        predict[op, n] seq
         given an input sequence, predict what is next
-        optionally specify the max sequence length you want returned
+        optionally, specify the max sequence length you want returned
             
     examples:
         -- learn some short simple sequences:
@@ -2221,7 +2253,7 @@ function_operators_usage['predict'] = """
             |count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23>
 
         -- again, given the sequence 2 . 5 predict the next 3 elements:
-        predict[seq,3] (|2> . |5>)
+        predict[seq, 3] (|2> . |5>)
             1.0     count   |6> . |7> . |8>
             1.0     fib     |8> . |13>
             1.0     primes  |7> . |11> . |13>
@@ -2240,7 +2272,7 @@ function_operators_usage['predict'] = """
             |8 . 9 . 10> + |11 . 13 . 17 . 19 . 23>
        
         -- given the sequence 2 . 5 . 7 predict the next most likely value:
-        extract-value predict[seq,1] (|2> . |5> . |7>)
+        extract-value predict[seq, 1] (|2> . |5> . |7>)
             1.0     count   |8>
             1.0     primes  |11>
             |8> + |11>
@@ -2341,6 +2373,7 @@ sp_fn_table['sp2seq'] = 'sp2seq'  # maybe it should be in seq_fn_table?
 # set usage info:
 function_operators_usage['sp2seq'] = """
     description:
+        sp2seq sp
         sp2seq converts superpositions into sequences
       
     examples:
@@ -2363,6 +2396,7 @@ seq_fn_table['seq2sp'] = 'seq2sp'
 # set usage info:
 function_operators_usage['seq2sp'] = """
     description:
+        seq2sp seq
         seq2sp flattens sequences into superpositions
 
     examples:
@@ -2825,6 +2859,7 @@ context_whitelist_table_2['op-zip'] = 'op_zip'
 # set usage info:
 sequence_functions_usage['op-zip'] = """
     description:
+        op-zip(seq, seq)
         zip together a sequence of operators and a sequence of objects
         stops at the end of the shorter of the two sequences
             
@@ -2871,6 +2906,8 @@ whitelist_table_4['if'] = 'bko_if_3'
 # set usage info:
 sequence_functions_usage['if'] = """
     description:
+        if(ket, seq, seq)
+        if(ket, seq, seq, seq)
         a crude approximation to an if function
         NB: it does not work the way you think it does!
       
@@ -2955,6 +2992,7 @@ whitelist_table_3['wif'] = 'weighted_bko_if'
 # set usage info:
 sequence_functions_usage['wif'] = """
     description:
+        wif(ket, sp, sp)
         a weighted if
         works just like standard 'if', but takes into consideration the coefficient of the condition
       
@@ -3016,17 +3054,19 @@ compound_table['round'] = ['apply_fn', 'round_numbers', '']
 # set usage info:
 function_operators_usage['round'] = """
     description:
-      round the value in the ket, leaving the coefficient unchanged
+        round[n] ket
+        round the value in the ket to n places, leaving the coefficient unchanged
       
     examples:
-      round[3] |3.14159265>
-        |3.142>
+        round[3] |3.14159265>
+            |3.142>
 
+        round[4] |number: 12.34567890>
+            |number: 12.3457>
+         
     see also:
-      times-by, divide-by, int-divide-by, plus, minus, mod, is-mod, to-comma-number    
+        times-by, divide-by, int-divide-by, plus, minus, mod, is-mod, to-comma-number    
 """
-
-
 def round_numbers(one, t):  # cool, this one seems to work. Now need to do the rest.
     return numbers_fn(round, one, t)
 
@@ -3036,6 +3076,7 @@ fn_table['to-comma-number'] = 'number_to_comma_number'
 # set usage info:
 function_operators_usage['to-comma-number'] = """
     description:
+        to-comma-number ket
         insert thousands commas into numbers 
 
     examples:
@@ -3078,14 +3119,19 @@ compound_table['times-by'] = ['apply_fn', 'times_numbers', '']
 # set usage info:
 function_operators_usage['times-by'] = """
     description:
-        times the value in the ket, leaving the coefficient unchanged
+        times-by[n] ket
+        times the value in the ket by n, leaving the coefficient unchanged
       
     examples:
         times-by[5] |6.1>
             |30.5>
 
+        times-by[3] 13|number: 3.14159265>
+            13|number: 9.424777950000001>
+        
     see also:
-        round, divide-by, int-divide-by, plus, minus, mod, is-mod    
+        round, divide-by, int-divide-by, plus, minus, mod, is-mod
+        temperature-conversion.sw    
 """
 def times_numbers(one, t):
     def multiply(a, b):
@@ -3100,7 +3146,8 @@ compound_table['divide-by'] = ['apply_fn', 'divide_numbers', '']
 # set usage info:
 function_operators_usage['divide-by'] = """
     description:
-        divide the value in the ket, leaving the coefficient unchanged
+        divide-by[n] ket
+        divide the value in the ket by n, leaving the coefficient unchanged
       
     examples:
         divide-by[5] |625.5>
@@ -3122,14 +3169,16 @@ compound_table['int-divide-by'] = ['apply_fn', 'int_divide_numbers', '']
 # set usage info:
 function_operators_usage['int-divide-by'] = """
     description:
-        integer divide the value in the ket, leaving the coefficient unchanged
+        int-divide-by[n] ket
+        integer divide the value in the ket by n, leaving the coefficient unchanged
       
     examples:
         int-divide-by[1000] |123456>
             |123>        
 
     see also:
-        round, times-by, divide-by, plus, minus, mod, is-mod    
+        round, times-by, divide-by, plus, minus, mod, is-mod
+        big-numbers-to-words.sw    
 """
 def int_divide_numbers(one, t):  # cool, times_numbers, and plus_numbers both seem to work!
     def int_divide(a, b):
@@ -3143,7 +3192,8 @@ compound_table['plus'] = ['apply_fn', 'plus_numbers', '']
 # set usage info:
 function_operators_usage['plus'] = """
     description:
-        add to the value in the ket, leaving the coefficient unchanged
+        plus[n] ket
+        add n to the value in the ket, leaving the coefficient unchanged
       
     examples:
         plus[5] |3.14159265>
@@ -3164,7 +3214,8 @@ compound_table['minus'] = ['apply_fn', 'minus_numbers', '']
 # set usage info:
 function_operators_usage['minus'] = """
     description:
-        subtract from the value in the ket, leaving the coefficient unchanged
+        minus[n] ket
+        subtract n from the value in the ket, leaving the coefficient unchanged
       
     examples:
         minus[2] |3.14159265>
@@ -3180,12 +3231,12 @@ def minus_numbers(one, t):
 
 
 # set invoke method:
-# compound_table['mod'] = ".apply_fn(mod_numbers, {0})"
 compound_table['mod'] = ['apply_fn', 'mod_numbers', '']
 # set usage info:
 function_operators_usage['mod'] = """
     description:
-        apply the modulus to the value in the ket, leaving the coefficient unchanged
+        mod[n] ket
+        apply mod n to the value in the ket, leaving the coefficient unchanged
         if the value is not a number, return the ket
       
     examples:
@@ -3210,6 +3261,7 @@ compound_table['is-mod'] = ['apply_fn', 'is_mod_numbers', '']
 # set usage info:
 function_operators_usage['is-mod'] = """
     description:
+        is-mod[n] ket
         answers yes or no, if the given number is mod n
       
     examples:
@@ -3300,7 +3352,8 @@ function_operators_usage['learn-map'] = """
         learn-map[h, w]
         learn-map[h, w, op]
         learn a rectangular map, of height h, and width w
-        where all cells are initialized to zero: op |grid: x: y> => |0>
+        where all cells are initialized to zero: 
+            op |grid: x: y> => |0>
         and we learn all direction operators, N, NE, E, SE, S, SW, W, NW, that don't point outside the map
         the map is closed boundary, rather than torus shape
       
@@ -3392,10 +3445,8 @@ function_operators_usage['display-map'] = """
         display-map[h, w, op]
         display-map[h, w, op, empty-char]
         display a rectangular map, of height h, and width w
-        where each cell is the value of op applied to that cell
-        (default operator is 'value')
-        where empty-char is printed for empty cells
-        (default value of empty-char is ' ')
+        where each cell is the value of op applied to that cell (default operator is 'value')
+        where empty-char is printed for empty cells (default value of empty-char is ' ')
       
     examples:
         learn-map[5, 5, value]
@@ -3480,8 +3531,9 @@ seq_fn_table['merge-value'] = 'merge_value'
 # set usage info:
 function_operators_usage['merge-value'] = """
     description:
+        merge-value seq
         merges coeff's and label's into a single number
-        works with superpositions, and sequences:
+        works with superpositions, and sequences
       
     examples:
         -- superposition example:
@@ -3513,6 +3565,7 @@ whitelist_table_2['and'] = 'And'
 # set usage info:
 sequence_functions_usage['and'] = """
     description:
+        and(ket, ket)
         the and function
         NB: it evaluates both sequences before being passed to the 'and' function
         NB: it currently doesn't handle sequences all that well
@@ -3538,6 +3591,7 @@ whitelist_table_2['or'] = 'Or'
 # set usage info:
 sequence_functions_usage['or'] = """
     description:
+        or(ket, ket)
         the or function
         NB: it evaluates both sequences before being passed to the 'or' function
         NB: it currently doesn't handle sequences all that well
@@ -3572,7 +3626,7 @@ compound_table['common'] = ['apply_sp_fn', 'common', 'context']
 # set usage info:
 function_operators_usage['common'] = """
     description:
-        common[op] SP
+        common[op] sp
         find kets in common, with respect to an operator
       
     examples:
@@ -3609,7 +3663,7 @@ compound_table['union'] = ['apply_sp_fn', 'operator_union', 'context']
 # set usage info:
 function_operators_usage['union'] = """
     description:
-        union[op] SP
+        union[op] sp
         find the unions of kets, with respect to an operator
 
     examples:
@@ -3648,7 +3702,7 @@ ket_context_table['int-coeffs-to-word'] = 'int_coeffs_to_word'
 # set usage info:
 function_operators_usage['int-coeffs-to-word'] = """
     description:
-        int-coeffs-to-word c|word>
+        int-coeffs-to-word ket
         apply the coefficient to the word 
         and map the word to plural as required
       
@@ -3668,6 +3722,7 @@ function_operators_usage['int-coeffs-to-word'] = """
 
     see also:
         list-to-words, words-to-list
+        plurals.sw
 """
 # 2/2/2015:
 # int-coeffs-to-word (3|apple> + 2|pear> + |orange> + 7|lemon>)
@@ -3713,7 +3768,7 @@ fn_table['is-prime'] = 'is_prime'
 # set usage info:
 function_operators_usage['is-prime'] = """
     description:
-        is-prime |x>
+        is-prime ket
         returns |yes> or |no> if a prime or not
 
     examples:
@@ -3760,6 +3815,7 @@ fn_table['prime-factors'] = 'factor_number'
 # set usage info:
 function_operators_usage['prime-factors'] = """
     description:
+        prime-factors ket
         returns a list of prime factors
 
     examples:
@@ -3801,6 +3857,7 @@ compound_table['inherit'] = ['apply_fn', 'inherit_op', 'context']
 # set usage info:
 function_operators_usage['inherit'] = """
     description:
+        inherit[op] ket
         inherit operator from parent data-types
 
     examples:
@@ -3865,8 +3922,9 @@ compound_table['sort-by'] = ['apply_sp_fn', 'sort_by', 'context']
 # set usage info:
 function_operators_usage['sort-by'] = """
     description:
-        sort-by[op] SP
-        sort the given superposition with respect to the given operator
+        sort-by[op] sp
+        natural sort the given superposition with respect to the given operator
+        chomps any ',' chars, so you can sort by to-comma-numbers.
 
     examples:
         load pretty-print-table-of-australian-cities.sw
@@ -3905,7 +3963,7 @@ function_operators_usage['sort-by'] = """
 # one is a superposition
 def sort_by(one, context, op):
     def extract_ket_details(x):
-        return x.apply_op(context, op).to_sp().label.lower()
+        return x.apply_op(context, op).to_sp().label.lower().replace(',', '')
 
     try:
         working_sp = [[k, extract_ket_details(x)] for k, x in enumerate(one)]
@@ -3925,6 +3983,7 @@ fn_table['read-text'] = 'read_text'
 # set usage info:
 function_operators_usage['read-text'] = """
     description:
+        read-text ket
         'read' a sentence
         Not even sure this thing is useful!
 
@@ -3943,10 +4002,21 @@ def read_text(one):
 
 # set invoke method:
 compound_table['active-buffer'] = ['apply_seq_fn', 'active_buffer', 'context']
+# set usage info:
+function_operators_usage['active-buffer'] = """
+    description:
+        active-buffer[N, t] seq
+        active-buffer[N, t, op] seq
+
+    examples:
+
+    see also:
+        explain
+"""
 # one is a sequence:
 def active_buffer(one, context, *params):
-    #print('one: %s' % str(one))
-    #print('params: %s' % str(params))
+    # print('one: %s' % str(one))
+    # print('params: %s' % str(params))
     try:
         N, t, op = params
         N = int(N)
@@ -3966,8 +4036,8 @@ def active_buffer(one, context, *params):
             y = sequence([])
             y.data = one.data[k:k+n+1]
             r = context.pattern_recognition(y, op).drop_below(t)
-            #print('y: %s' % str(y))
-            #print('r: %s\n' % str(r))
+            # print('y: %s' % str(y))
+            # print('r: %s\n' % str(r))
             if len(r) > 0:
                 sp = union(sp, r)
         seq += sp
@@ -3979,6 +4049,7 @@ sp_fn_table['list-to-words'] = 'sp_to_words'
 # set usage info:
 function_operators_usage['list-to-words'] = """
     description:
+        list-to-words sp
         convert the given superposition into a comma-separated word list
         it is the inverse of words-to-list
 
@@ -4029,6 +4100,7 @@ fn_table['words-to-list'] = 'words_to_sp'
 # set usage info:
 function_operators_usage['words-to-list'] = """
     description:
+        words-to-list ket
         splits the given ket on ', ' and ' and '
         it is the inverse of list-to-words
 
@@ -4195,9 +4267,9 @@ context_whitelist_table_2['find-path-between'] = 'find_path_between'
 # set usage info:
 sequence_functions_usage['find-path-between'] = """
     description:
-        find-path-between(one, two)
-        find the path between the ket one, and the superposition two
-        currently, potentially quite slow!
+        find-path-between(ket, sp)
+        find the path between the ket, and the given superposition
+        currently, potentially quite slow! But this is fixable.
       
     examples:
         load fred-sam-friends.sw
@@ -4229,7 +4301,7 @@ sequence_functions_usage['find-path-between'] = """
             |op: siblings>
 
     future:
-        optimize it, with Dijkstra's algorithm
+        optimize it with Dijkstra's algorithm
         (since current algorithm is horrible!)
         make it work with path-ways between sequences too.
 
@@ -4312,6 +4384,7 @@ context_whitelist_table_2['find-steps-between'] = 'find_steps_between'
 # set usage info:
 sequence_functions_usage['find-steps-between'] = """
     description:
+        find-steps-between(ket, ket)
         find the steps between the given kets
         currently potentially quite slow!
 
@@ -4323,7 +4396,7 @@ sequence_functions_usage['find-steps-between'] = """
             |person: George Washington> . |Washington> . |year: 1797> . |Adams> . |year: 1801> . |Jefferson> . |party: Democratic-Republican> . |year: 1825> . |Q Adams> . |number: 6>
 
     future:
-        optimize it, with Dijkstra's algorithm
+        optimize it with Dijkstra's algorithm
         (since current algorithm is horrible!)
         make it work with path-ways between sequences too.
         
@@ -4590,7 +4663,7 @@ function_operators_usage['rel-kets'] = """
         rel-kets[op1,op2, ..., opn]
         return all relevant kets that have op1, ... , opn specified
         
-        rel-kets[op1, ... , opn] SP
+        rel-kets[op1, ... , opn] sp
         return all relevant kets, in the given superposition, that have op1, ... , opn specified
 
     examples:
@@ -4843,6 +4916,9 @@ sequence_functions_usage['is-mbr'] = """
         is-mbr(|Frank>, friends |Fred>)
             |yes>
 
+        is-mbr(|Jane>, friends |Fred>)
+            |no>
+
     see also:
         mbr
 """
@@ -4861,7 +4937,7 @@ whitelist_table_2['subset'] = 'subset'
 # set usage info:
 sequence_functions_usage['subset'] = """
     description:
-        subset(one, two) returns the degree of subsetness of 'one' with respect to 'two'
+        subset(one, two) returns the degree of subsetness of one with respect to two
         where one and two are superpositions
 
     examples:
@@ -4993,8 +5069,6 @@ sequence_functions_usage['is-exactly-equal'] = """
     see also:
         simm, equal, if
 """
-
-
 def is_exactly_equal(one, two):
     value = aligned_simm_value(one, two)
     # if value > 0:  # change this to value > 0.5 ?
@@ -5024,8 +5098,10 @@ compound_table['smooth'] = ['apply_fn', 'smooth', '']
 # set usage info:
 function_operators_usage['smooth'] = """
     description:
+        smooth[dx] ket
         smooths peaks into Gaussian's
-        smooth[dx] a|x: 3>
+        eg: 
+            smooth[dx] a|x: 3>
         returns:
             a/4 |x: 3 - dx> + a/2 |x: 3> + a/4 |x: 3 + dx>
         usually invoked in form: smooth[dx]^power
@@ -5069,9 +5145,6 @@ function_operators_usage['smooth'] = """
         age-simm(|age: 36>, |age: 40>)
             0.227|simm>
 
-    TODO:
-        implement a full Gaussian operator: gaussian[sigma, dx] a|x: v>
-
     see also:
         rescale, simm, Gaussian
 """
@@ -5097,14 +5170,14 @@ compound_table['Gaussian'] = ['apply_fn', 'Gaussian', '']
 # set usage info:
 function_operators_usage['Gaussian'] = """
     description:
-        Gaussian[sigma] |x>
-        Gaussian[sigma, dx] |x>
+        Gaussian[sigma] ket
+        Gaussian[sigma, dx] ket
         implement a Gaussian smooth
         if dx is not specified, it defaults to 1
         sigma is the width of the Gaussian
         
     the algorithm:
-        exp( - ED(x, y) / (2*sigma^2) )
+        exp( - ED(x, y) / (2 * sigma^2) )
         where ED(x, y) is the Euclidean distance between x, y
         
     examples:
@@ -5125,7 +5198,37 @@ function_operators_usage['Gaussian'] = """
             age: 38 : ||
             age: 39 :
             ----------
-                
+
+        -- age similarity, using Gaussian[0.7]:
+        Gauss-simm-40 |*> #=> round[3] push-float 100 simm(Gaussian[0.7] |_self>, Gaussian[0.7] |age: 40>)
+        table[age, Gauss-simm-40] range(|age: 30>, |age: 50>)
+            +-----+---------------+
+            | age | Gauss-simm-40 |
+            +-----+---------------+
+            | 30  | 0             |
+            | 31  | 0             |
+            | 32  | 0.801         |
+            | 33  | 1.601         |
+            | 34  | 3.823         |
+            | 35  | 6.044         |
+            | 36  | 12.207        |
+            | 37  | 18.37         |
+            | 38  | 35.468        |
+            | 39  | 52.565        |
+            | 40  | 100.0         |
+            | 41  | 52.565        |
+            | 42  | 35.468        |
+            | 43  | 18.37         |
+            | 44  | 12.207        |
+            | 45  | 6.044         |
+            | 46  | 3.823         |
+            | 47  | 1.601         |
+            | 48  | 0.801         |
+            | 49  | 0             |
+            | 50  | 0             |
+            +-----+---------------+
+
+                    
         -- 2D version:
         Gaussian[0.5, 1] |grid: 10: 10>
             0.003|grid: 8: 8> + 0.011|grid: 8: 9> + 0.018|grid: 8: 10> + 0.011|grid: 8: 11> + 0.003|grid: 8: 12> + 0.011|grid: 9: 8> + 0.059|grid: 9: 9> + 0.135|grid: 9: 10> + 0.059|grid: 9: 11> + 0.011|grid: 9: 12> + 0.018|grid: 10: 8> + 0.135|grid: 10: 9> + |grid: 10: 10> + 0.135|grid: 10: 11> + 0.018|grid: 10: 12> + 0.011|grid: 11: 8> + 0.059|grid: 11: 9> + 0.135|grid: 11: 10> + 0.059|grid: 11: 11> + 0.011|grid: 11: 12> + 0.003|grid: 12: 8> + 0.011|grid: 12: 9> + 0.018|grid: 12: 10> + 0.011|grid: 12: 11> + 0.003|grid: 12: 12>
@@ -5225,7 +5328,7 @@ compound_table['map'] = ['apply_sp_fn', 'map', 'context']
 # set usage info:
 function_operators_usage['map'] = """
     description:
-        map[fn, op] SP
+        map[fn, op] sp
         map a function operator to a literal operator
         eg: map[fn, op] (|x> + |y> + |z>)
         runs:
@@ -5309,7 +5412,7 @@ compound_table['inverse'] = ['apply_fn', 'active_inverse', 'context']
 # set usage info:
 function_operators_usage['inverse'] = """
     description:
-        inverse[op] SP
+        inverse[op] sp
         reverses the direction of a literal operator, even |*> rules
         eg, say we have: op |A> => |B>
         then: inverse[op] |B> returns |A>
@@ -5379,7 +5482,9 @@ ket_context_table['load-file'] = 'load_file'
 # set usage info:
 function_operators_usage['load-file'] = """
     description:
+        load-file ket
         load a file from disk
+        where file is in our sw-examples directory 
 
     examples:
         load-file |family.sw>
@@ -5479,6 +5584,7 @@ compound_table['explain'] = ['apply_seq_fn', 'third_explain', 'context']
 # set usage info:
 function_operators_usage['explain'] = """
     description:
+        explain[op] seq
         given a cause structure, and an input sequence, find the possible cause
         See here for why we would want to do this:
         Parsimonious Covering Theory with Causal Chaining and Ordering Constraints:
@@ -5860,7 +5966,7 @@ function_operators_usage['sngrams'] = """
     examples:
 
     see also:
-
+        letter-ngrams, word-ngrams
 """
 def generate_seq_ngrams(one, N):
     for i in range(len(one)- N + 1):
@@ -5889,6 +5995,7 @@ compound_table['train-of-thought'] = ['apply_sp_fn', 'console_train_of_thought',
 # set usage info:
 function_operators_usage['train-of-thought'] = """
     description:
+        train-of-thought[n] sp
         the train-of-thought function
         given a seed ket, randomly walk through operator links to other kets
         works best with a large, well connected network
@@ -5975,6 +6082,7 @@ fn_table['shout'] = 'shout'
 # set usage info:
 function_operators_usage['shout'] = """
     description:
+        shout ket
         mostly just a test function. Print the given kets in upper-case
 
     examples:
@@ -5995,7 +6103,8 @@ fn_table['print'] = 'print_ket'
 # set usage info:
 function_operators_usage['print'] = """
     description:
-        Print the given kets 
+        print ket
+        print the given kets 
 
     examples:
         print |fish soup>
@@ -6151,6 +6260,7 @@ whitelist_table_3['algebra'] = 'algebra'
 # set usage info:
 sequence_functions_usage['algebra'] = """
     description:
+        algebra(sp, ket, sp)
         a minimalistic implementation of algebra over kets
         
     examples:
@@ -6193,6 +6303,7 @@ whitelist_table_3['non-Abelian-algebra'] = 'non_Abelian_algebra'
 # set usage info:
 sequence_functions_usage['non-Abelian-algebra'] = """
     description:
+        non-Abelian-algebra(sp, ket, sp)
         a minimalistic implementation of non Abelian algebra over kets
 
     examples:
@@ -6242,6 +6353,7 @@ sp_fn_table['display-algebra'] = 'display_algebra'
 # set usage info:
 function_operators_usage['display-algebra'] = """
     description:
+        display-algebra sp
         display algebra in slightly tidier form
 
     examples:
@@ -6277,6 +6389,7 @@ whitelist_table_2['to-base'] = 'decimal_to_base'
 # set usage info:
 sequence_functions_usage['to-base'] = """
     description:
+        to-base(ket, ket)
         convert a decimal number to the given base
         
     examples:
@@ -6752,12 +6865,13 @@ fn_table['day-of-the-week'] = 'day_of_the_week'
 # set usage info:
 function_operators_usage['day-of-the-week'] = """
     description:
+        day-of-the-week ket
         convert the date into the day of the week
         date must be in year/month/day format
 
     examples:
-        sa: day-of-the-week |date: 2018/7/10>
-        |day: Tuesday>
+        day-of-the-week |date: 2018/7/10>
+            |day: Tuesday>
 
     see also:
          current-date, current-time
@@ -6785,11 +6899,12 @@ fn_table['current-date'] = 'current_date'
 # set usage info:
 function_operators_usage['current-date'] = """
     description:
+        current-date
         return today's date
 
     examples:
-        sa: current-date
-        |date: 2018-07-10>
+        current-date
+            |date: 2018-07-10>
 
     see also:
         current-time, day-of-the-week
@@ -6806,11 +6921,12 @@ fn_table['current-time'] = 'current_time'
 # set usage info:
 function_operators_usage['current-time'] = """
     description:
+        current-time
         return the current time
 
     examples:
-        sa: current-time
-        |Tue Jul 10 05:06:21 2018>
+        current-time
+            |Tue Jul 10 05:06:21 2018>
 
     see also:
         current-date, day-of-the-week
@@ -6830,7 +6946,8 @@ compound_table['sleep'] = ['apply_seq_fn', 'bko_sleep', '']
 # set usage info:
 function_operators_usage['sleep'] = """
     description:
-        sleep[n] sleeps for n seconds
+        sleep[n] seq 
+        sleeps for n seconds
         n is either an int or a float
         returns the input sequence, so it can be easily chained
 
@@ -6863,6 +6980,7 @@ context_whitelist_table_2['clone'] = 'clone_ket'
 # set usage info:
 sequence_functions_usage['clone'] = """
     description:
+        clone(sp, sp)
         clone(|x>, |y>), copies rules from |x> and applies them to |y>
 
     examples:
@@ -6894,6 +7012,9 @@ sequence_functions_usage['clone'] = """
 
     see also:
         inherit
+        
+    TODO:
+        test it works with superpositions, as claimed
 """
 def clone_ket(context, one, two):
     one = one.to_sp()
@@ -6913,6 +7034,7 @@ fn_table['expand-hierarchy'] = 'expand_hierarchy'
 # set usage info:
 function_operators_usage['expand-hierarchy'] = """
     description:
+        expand-hierarchy ket
         expand the category hierarchy
         
     examples:
@@ -6949,6 +7071,7 @@ fn_table['category-depth'] = 'category_depth'
 # set usage info:
 function_operators_usage['category-depth'] = """
     description:
+        category-depth ket
         return the depth of the categories
 
     examples:
@@ -6978,7 +7101,8 @@ fn_table['ket-length'] = 'ket_length'
 # set usage info:
 function_operators_usage['ket-length'] = """
     description:
-        return the length of the ket
+        ket-length ket
+        return the length of the given ket
 
     examples:
         ket-length |>
@@ -6999,6 +7123,7 @@ fn_table['push-float'] = 'push_float'
 # set usage info:
 function_operators_usage['push-float'] = """
     description:
+        push-float ket
         pushes the float coefficient to a category
 
     examples:
@@ -7017,7 +7142,7 @@ function_operators_usage['push-float'] = """
             |x: y: z: 3.2>
         
     see also:
-        pop-float
+        pop-float, to-value, to-category
 """
 def push_float(one):
     if len(one) == 0:
@@ -7038,7 +7163,8 @@ fn_table['pop-float'] = 'pop_float'
 # set usage info:
 function_operators_usage['pop-float'] = """
     description:
-        pops the trailing float in the ket to the coefficient
+        pop-float ket
+        pops the trailing float in the given ket to the coefficient
         if the starting ket has a coefficient then multiply it by this value
         if the trailing value is not a float, then leave the ket unchanged
 
@@ -7062,7 +7188,7 @@ function_operators_usage['pop-float'] = """
             |x: y>
 
     see also:
-        push-float
+        push-float, to-value, to-category
 """
 def pop_float(one):
     coeff = one.value
@@ -7093,8 +7219,8 @@ compound_table['find-unique'] = ['apply_naked_fn', 'find_unique_multi', 'context
 # set usage info:
 function_operators_usage['find-unique'] = """
     description:
-        find-unique[op]
-        learn the kets that are unique with respect to that operator
+        find-unique[op1, op2, ... , opn]
+        learn the kets that are unique with respect to the given operator(s)
         
     examples:
         -- load our data:
@@ -7197,7 +7323,7 @@ sp_fn_table['rank'] = 'rank'
 # set usage info:
 function_operators_usage['rank'] = """
     description:
-        rank SP
+        rank sp
         apply position in superposition to coefficient
         ie, rank them
 
@@ -7216,6 +7342,7 @@ function_operators_usage['rank'] = """
 
         -- instead need:
         srank ssplit |abcdefg>
+            |a> . 2|b> . 3|c> . 4|d> . 5|e> . 6|f> . 7|g>
 
     see also:
         srank
@@ -7301,7 +7428,7 @@ ket_context_table['starts-with'] = 'starts_with'
 # set usage info:
 function_operators_usage['starts-with'] = """
     description:
-        starts-with |prefix>
+        starts-with ket
         returns all relevant kets that start with the given prefix
 
     examples:
@@ -7321,7 +7448,7 @@ function_operators_usage['starts-with'] = """
             |person: Fred Smith> + |person: Fred Jones>
 
     see also:
-        rel-kets
+        rel-kets, guess-ket
 """
 # e is a ket
 def starts_with(e, context):
@@ -7531,7 +7658,7 @@ compound_table['bar-chart'] = ['apply_sp_fn', 'bar_chart', '']
 # set usage info:
 function_operators_usage['bar-chart'] = """
     description:
-        bar-chart[n] SP
+        bar-chart[n] sp
         ascii bar chart of the given superposition        
         where n specifies max width of bar-chart
         
@@ -7589,13 +7716,13 @@ compound_table['sorted-bar-chart'] = ['apply_sp_fn', 'sorted_bar_chart', '']
 # set usage info:
 function_operators_usage['sorted-bar-chart'] = """
     description:
-        sorted-bar-chart[n] SP
+        sorted-bar-chart[n] sp
         ascii bar chart of the given superposition, sorted by coefficient
         where n specifies max width of bar-chart        
         note, somewhat redundant, since we can apply coeff-sort, or ket-sort and then use standard bar-chart
         ie: 
-        bar-chart[30] ket-sort SP
-        bar-chart[30] coeff-sort SP
+        bar-chart[30] ket-sort sp
+        bar-chart[30] coeff-sort sp
         
     examples:
         sorted-bar-chart[30] rank split |a b c d e f>
@@ -7655,7 +7782,7 @@ compound_table['delete'] = ['apply_fn', 'edit_delete', '']
 # set usage info:
 function_operators_usage['delete'] = """
     description:
-        delete[char, k]
+        delete[char, k] ket
         delete, one of three edit distance operators
         see: https://en.wikipedia.org/wiki/Edit_distance
 
@@ -7687,7 +7814,7 @@ compound_table['insert'] = ['apply_fn', 'edit_insert', '']
 # set usage info:
 function_operators_usage['insert'] = """
     description:
-        insert[char, k]
+        insert[char, k] ket
         insert, one of three edit distance operators
         see: https://en.wikipedia.org/wiki/Edit_distance
 
@@ -7715,7 +7842,7 @@ compound_table['substitute'] = ['apply_fn', 'edit_substitute', '']
 # set usage info:
 function_operators_usage['substitute'] = """
     description:
-        substitute[char1, char2, k]
+        substitute[char1, char2, k] ket
         substitute, one of three edit distance operators
         see: https://en.wikipedia.org/wiki/Edit_distance
 
@@ -7792,11 +7919,12 @@ sp_fn_table['discrimination'] = 'discrimination'
 # set usage info:
 function_operators_usage['discrimination'] = """
     description:
-        discrimination SP
+        discrimination sp
         discrimination, returns the difference between the largest coeff, and the second largest coeff.
 
     examples:
         discrimination (90|x> + 55|y>)
+            35| >
 
     see also:
     
@@ -7831,6 +7959,7 @@ function_operators_usage['to-coeff'] = """
         ie, only keep the coefficient
 
     examples:
+        -- if the ket is the don't know ket, return the don't know ket:
         to-coeff 12|>
             |>
         
@@ -7840,6 +7969,10 @@ function_operators_usage['to-coeff'] = """
         -- since the ket text is now the same, the coefficients add up:
         to-coeff (26|a: b> + 13|x>)
             39| >
+
+        -- another longer example:
+        to-coeff (3|a: b: c> + 5|x: y> + 7|fish> + 2.5|animal: mammal: cat>)
+            17.5| >
 
     see also:
 
@@ -7937,8 +8070,8 @@ compound_table['replace'] = ['apply_fn', 'char_replace', '']
 # set usage info:
 function_operators_usage['replace'] = """
     description:
-        replace[c1, c2] |x>
-        replace the chars in c1 with c2
+        replace[c1, c2] ket
+        replace all the individual chars in c1 with c2
 
     examples:
         -- remove comma's from numbers:
@@ -8047,7 +8180,7 @@ whitelist_table_2['frequency-class'] = 'frequency_class_ket'
 # set usage info:
 sequence_functions_usage['frequency-class'] = """
     description:
-        frequency-class(ket, SP)
+        frequency-class(ket, sp)
         implement the frequency class equation
         see: https://en.wikipedia.org/wiki/Word_lists_by_frequency#Statistics
 
@@ -8138,6 +8271,7 @@ sequence_functions_usage['normed-frequency-class'] = """
         normed-frequency-class(|b>, |a> + |b> + |c> + |d> + |e>)
             |number: 1.0>
 
+        -- all coeffs in X equal:
         -- c is a member of 7.2 |a> + 7.2 |b> + 7.2 |c> + 7.2 |d>
         normed-frequency-class(|c>, 7.2 |a> + 7.2 |b> + 7.2 |c> + 7.2 |d>)
             |number: 1.0>
@@ -8286,13 +8420,13 @@ compound_table['guess-ket'] = ['apply_fn', 'guess_ket', 'context']
 # set usage info:
 function_operators_usage['guess-ket'] = """
     description:
-        guess-ket |text>
+        guess-ket ket
         return the best matching known ket, using simm and letter-ngrams[1,2,3]
         
-        guess-ket[n] |text>
+        guess-ket[n] ket
         return the best n matching kets, using simm and letter-ngrams[1,2,3]
         
-        guess-ket[*] |text>
+        guess-ket[*] ket
         return all matching kets, using simm and letter-ngrams[1,2,3]
         
     examples:
@@ -8353,10 +8487,10 @@ function_operators_usage['guess-operator'] = """
         guess-operator[age]
         return the best matching known operator, using simm and letter-ngrams[1,2,3]
         
-        guess-operator[friend,3]
+        guess-operator[friend, 3]
         return the best 3 matching known operators, using simm and letter-ngrams[1,2,3]
         
-        guess-operator[mother,*]
+        guess-operator[mother, *]
         return all matching known operators, using simm and letter-ngrams[1,2,3]
         
     examples:
