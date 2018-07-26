@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 25/7/2018
+# Update: 26/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -61,7 +61,7 @@ class ket(object):
         self.label = label
         self.value = float(value)
 
-    #    self.value = int(value)     # sometimes useful to restrict to integers. eg, for smaller memory foot-print.
+    #    self.value = int(value)     # sometimes useful to restrict to integers.
 
     def __str__(self):
         return self.display()
@@ -105,8 +105,7 @@ class ket(object):
             return self.label
         else:
             if self.value.is_integer():
-                return "{0:.0f} {1}".format(self.value,
-                                            self.label)  # not consistent style with display() and long_display().FIX.
+                return "{0:.0f} {1}".format(self.value, self.label)  # not consistent style with display() and long_display().FIX.
             return "{0:.2f} {1}".format(self.value, self.label)
 
     def __add__(self, x):
@@ -163,6 +162,9 @@ class ket(object):
     #    r.sub_sp(sp)
     #    return r
 
+    def apply_naked_fn(self, fn, *args):
+        return fn(*args)
+
     def apply_fn(self, fn, *args):
         r = fn(self, *args)
         return superposition(r)
@@ -170,21 +172,13 @@ class ket(object):
     def apply_sp_fn(self, fn, *args):
         return fn(self, *args)
 
-    def apply_naked_fn(self, fn, *args):
-        return fn(*args)
-
     def apply_seq_fn(self, fn, *args):  # need to test this!
         return fn(self, *args)
 
     def apply_op(self, context, op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
-        logger.debug("inside ket apply_op")
-        # r = sequence([])
-        # if op != 'supported-ops':
         r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
-        logger.debug("inside ket apply_op, sp: " + str(r))
         if len(r) == 0:
             r = context.recall(op, self, True)  # see much later in the code for definition of recall.
-        logger.debug("leaving ket apply_op")
         return r
 
     def select_elt(self, k):
@@ -288,7 +282,7 @@ class ket(object):
     def ket_sort(self):
         return ket(self.label, self.value)
 
-    #  def find_max_coeff(self):                                 # where are these used? find-topic??
+    #  def find_max_coeff(self):                                 # where are these used? find-topic?
     #    return self.value
     #
     #  def find_min_coeff(self):
@@ -300,14 +294,6 @@ class ket(object):
     def number_find_min_coeff(self):
         return ket("number: " + str(self.value))
 
-    #  def old_discrimination(self):
-    #    return ket(" ",self.value)
-    #
-    #  def discrimination(self):
-    #    if self.label == "":
-    #      return ket("discrimination",0)
-    #    return ket("discrimination")
-
     # 24/2/2015:
     # implements discrim-drop[t] SP
     # ie: if discrim is > t return |>, else return value.
@@ -318,9 +304,9 @@ class ket(object):
     # sigmoids apply to the values of kets, and leave ket labels alone.
     def apply_sigmoid(self, sigmoid, t1=None, t2=None):
         r = ket(self.label, self.value)
-        if t1 == None:
+        if t1 is None:
             r.value = sigmoid(r.value)
-        elif t2 == None:
+        elif t2 is None:
             r.value = sigmoid(r.value, t1)
         else:
             r.value = sigmoid(r.value, t1, t2)
@@ -332,30 +318,28 @@ class ket(object):
         f = self.apply_op(context, op)  # use apply_op or context.recall() directly?
         print("f:", f.display())  # in light of active=True thing, apply_op() seems the right answer.
         #    return context.pattern_recognition(f,op) # yeah, but what about in pat_rec?
-        return context.pattern_recognition(f, op).delete_ket(
-            self)  # we delete self, ie |x>, from the result, since it is always a 100% match anyway.
+        return context.pattern_recognition(f, op).delete_ket(self)  # we delete self, ie |x>, from the result, since it is always a 100% match anyway.
 
     # 23/2/2015:
     # implements: similar[op1,op2] |x>
-    def similar(self, context, ops):
+    def similar(self, context, *ops):
         try:
-            op1, op2 = ops.split(',')
+            op1, op2 = ops
         except:
-            op1 = ops
-            op2 = ops
+            op1 = ops[0]
+            op2 = ops[0]
         f = self.apply_op(context, op1)
-        return context.pattern_recognition(f, op2).delete_ket(
-            self)  # we delete self, ie |x>, from the result, since it is always a 100% match anyway.
+        return context.pattern_recognition(f, op2).delete_ket(self)  # we delete self, ie |x>, from the result, since it is always a 100% match anyway.
 
     # 23/2/2015:
     # implements: self-similar[op1,op2] |x>
     # ie don't delete |x>
-    def self_similar(self, context, ops):
+    def self_similar(self, context, *ops):
         try:
-            op1, op2 = ops.split(',')
+            op1, op2 = ops
         except:
-            op1 = ops
-            op2 = ops
+            op1 = ops[0]
+            op2 = ops[0]
         f = self.apply_op(context, op1)
         return context.pattern_recognition(f, op2)
 
@@ -367,7 +351,6 @@ class ket(object):
     # 14/1/2016:
     # implements: self-similar-input[op] |x>
     # ie don't delete |x>
-    #  def self_similar_input(self,context,op):                          # NB: the name change
     def similar_input(self, context, op):
         return context.pattern_recognition(self, op)
 
@@ -376,7 +359,7 @@ class ket(object):
         return context.map_to_topic(self, op)
 
     # 2/4/2015: intn-find-topic[op] |a b c>
-    # this goes some way to a search engine.
+    # I don't think this thing is all that useful.
     # currently we don't have a superposition version of this. Not sure it is needed.
     #
     def intn_find_topic(self, context, op):
@@ -444,24 +427,28 @@ class ket(object):
 
     def activate(self, context=None, op=None, self_label=None):
         return ket(self.label, self.value)  # not sure if we need this:
-        # return self                                 # or if this will suffice.
+        # return self                       # or if this will suffice.
+
+    def to_ket(self):
+        return self
 
     def to_sp(self):
         return self
 
 
-# a superposition is a collection of float,string pairs, displayed using ket notation.
+
+# a superposition is a linear combination of kets
+# where kets are string, float pairs
 class superposition(object):
     def __init__(self, first='', value=1):
-        #    self.dict = {}                                      # faster and cheaper than OrderedDict() if you don't need to preserve order
+        #    self.dict = {}                 # faster and cheaper than OrderedDict() if you don't need to preserve order
         self.dict = OrderedDict()
         if first is not '':
-            if type(first) in [
-                str]:  # this is ugly! Mixing and matching string vs superposition? Maybe we should keep a ket class?? Also, ket is quicker to type!
-                self.dict[first] = value  # r1 = superposition('fred')
+            if type(first) in [str]:  # this is ugly! Mixing and matching string vs superposition? Maybe we should keep a ket class?? Also, ket is quicker to type!
+                self.dict[first] = value               # r1 = superposition('fred')
             elif type(first) in [ket, superposition]:  # r2 = superposition('fred',3.2)
-                for key, value in first.items():  # r4 = superposition(ket('fred'))
-                    if key != '':  # r5 = superposition(another-sp)
+                for key, value in first.items():       # r4 = superposition(ket('fred'))
+                    if key != '':                      # r5 = superposition(another-sp)
                         self.dict[key] = value
 
     def old_str(self):
@@ -551,9 +538,8 @@ class superposition(object):
         else:
             return NotImplemented
 
-    def add(self, s,
-            value=1):  # what about adding a superposition? r.add(some-sp). Or r.add_sp(some-sp)? Yeah, and r.add_sp(some-ket)
-        if s == '':  # |x> + 3.72|> == |x>
+    def add(self, s, value=1):  # what about adding a superposition? r.add(some-sp). Or r.add_sp(some-sp)? Yeah, and r.add_sp(some-ket)
+        if s == '':             # |x> + 3.72|> == |x>
             return
         if s in self.dict:
             self.dict[s] += float(value)
@@ -568,8 +554,7 @@ class superposition(object):
         else:
             self.dict[s] = - float(value)
 
-    def add_sp(self,
-               sp):  # handles r.add_sp(some-ket) and r.add_sp(some-sp). Breaks if sp is a stored_rule or a memoizing_rule. How fix?
+    def add_sp(self, sp):  # handles r.add_sp(some-ket) and r.add_sp(some-sp). Breaks if sp is a stored_rule or a memoizing_rule. How fix?
         for key, value in sp.items():
             self.add(key, value)
 
@@ -589,8 +574,7 @@ class superposition(object):
         for key, value in sp.items():
             self.max_add(key, value)
 
-    def seq_add(self,
-                x):  # this probably doesn't work the way you want either. y = sp1.seq_add(sp2) works. sp1.seq_add(sp2) does not.
+    def seq_add(self, x):  # this probably doesn't work the way you want either. y = sp1.seq_add(sp2) works. sp1.seq_add(sp2) does not.
         r = sequence(self) + x
         return r
 
@@ -617,7 +601,7 @@ class superposition(object):
         result = head + ket(tail.label + space + x_head.label, x_head.value * tail.value) + x_tail
         self.dict = result.dict
 
-    #  def clean_add(self,one):                                    # I don't know where this is used. Maybe remove since it duplicates add_sp().
+    #  def clean_add(self,one):           # I don't know where this is used. Maybe remove since it duplicates add_sp().
     #    for key,value in one.items():
     #      self.add(key,value)
 
@@ -634,8 +618,7 @@ class superposition(object):
     def display(self, exact=False):
         if len(self.dict) == 0:
             return '|>'
-        return " + ".join(x.display(exact) for x in
-                          self)  # 1) get ket class to do the display. 2) need something better if we mix + - _ .
+        return " + ".join(x.display(exact) for x in self)  # 1) get ket class to do the display. 2) need something better if we mix + - _ .
 
     def readable_display(self):
         if len(self.dict) == 0:
@@ -663,10 +646,12 @@ class superposition(object):
     def weighted_pick_elt(self):  # quick test in the console, looks to be roughly right.
         if len(self.drop()) == 0:
             return ket()
-        total = sum(x.value for x in self)
+        # total = sum(x.value for x in self)
+        total = sum(x.value for x in self.drop())
         r = random.uniform(0, total)
         upto = 0
-        for x in self:
+        # for x in self:
+        for x in self.drop():
             w = x.value
             if upto + w > r:
                 return x
@@ -677,7 +662,7 @@ class superposition(object):
         if str in self.dict:
             return self.dict[str]
         else:
-            return 0  # maybe return None?
+            return 0
 
     #  def the_value(self):                         # if the dict is longer than 1 elt, this returns a random value
     #    for key,value in self.dict.items():
@@ -735,9 +720,9 @@ class superposition(object):
             r.add(key, value + random.uniform(0, t * max_coeff))
         return r
 
-    def coeff_sort(self):  # Nope. Doesn't seem to work.
+    def coeff_sort(self):
         r = superposition()
-        for key, value in sorted(self.dict.items(), key=lambda x: x[1], reverse=True):  # 3|a> + 2|b> + |c> or |c> + 2|b> + 3|c>?
+        for key, value in sorted(self.dict.items(), key=lambda x: x[1], reverse=True):  # which order? 3|a> + 2|b> + |c> or |c> + 2|b> + 3|c>?
             r.add(key, value)
         return r
 
@@ -771,10 +756,8 @@ class superposition(object):
     # NB: though we still use -1 for the last element, -2 for the second last element, etc.
     def select_elt(self, k):
         if k >= 1 and k <= len(self.dict):
-            label, value = list(self.dict.items())[
-                k - 1]  # is there a better way to do this! Mapping entire sp to list, just to keep 1 element!!
-            return ket(label,
-                       value)  # perhaps, https://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+            label, value = list(self.dict.items())[k - 1]  # is there a better way to do this! Mapping entire sp to list, just to keep 1 element!!
+            return ket(label, value)  # perhaps, https://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
         elif k < 0:  # import itertools
             label, value = list(self.dict.items())[k]  # next(itertools.islice(d.values(), 0, 1))
             return ket(label, value)  # next(itertools.islice(d.values(), 1, 2))
@@ -890,7 +873,7 @@ class superposition(object):
         return r
 
     def delete_ket(self, one):  # do we need a delete_sp() too?
-        label = one.label if type(one) == ket else one
+        label = one.label if type(one) is ket else one
         r = copy.deepcopy(self)
         del r.dict[label]
         return r
@@ -951,26 +934,22 @@ class superposition(object):
     #      r.add(key, value * weights[k] )
     #    return r
 
+    def apply_naked_fn(self, fn, *args):
+        return fn(*args)
 
     def apply_fn(self, fn, *args):
         r = superposition()
         for x in self:
-            r += fn(x, *args)
-        return r
+            r += fn(x, *args)   # should this be: r.add_sp(...)? Also, what happens if fn(...) returns a sequence?
+        return r                # or maybe r.add_seq(...)?
 
     def apply_sp_fn(self, fn, *args):
         return fn(self, *args)
-
-    def apply_naked_fn(self, fn, *args):
-        return fn(*args)
 
     def apply_seq_fn(self, fn, *args):  # need to test this!
         return fn(self, *args)
 
     def apply_op(self, context, op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
-        logger.debug("inside sp apply_op")
-        # r = sequence([])
-        # if op != 'supported-ops':
         r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
         if len(r) == 0:
             r = sequence([])
@@ -981,7 +960,6 @@ class superposition(object):
                 for x in self:
                     rule = context.recall(op, x, True)  # should this be apply_op() instead? Nah, don't think so.
                     r.add_seq(rule)
-        logger.debug("sp apply_op: " + str(r))
         return r
 
     def apply_sigmoid(self, sigmoid, t1=None, t2=None):  # use *args notation. Fix!
@@ -1008,6 +986,10 @@ class superposition(object):
     def activate(self, context=None, op=None, self_label=None):
         return self
 
+    def to_ket(self):  # returns the first ket in the superposition
+        for key, value in self.items():
+            return ket(key, value)
+
     def to_sp(self):
         return self
 
@@ -1023,7 +1005,8 @@ class sequence(object):
         if type(data) in [sequence]:
             self.data = copy.deepcopy(data.data)
         if type(data) in [ket]:
-            self.data = [ket() + data]  # cast ket to superposition
+            # self.data = [ket() + data]  # cast ket to superposition
+            self.data = [superposition(data)]
         if type(data) in [superposition]:
             self.data = [data]
         if type(data) in [str]:
@@ -1061,8 +1044,7 @@ class sequence(object):
         #      r.data.append(seq)
         if type(seq) in [ket]:
             r = copy.deepcopy(self)
-            r.data.append(
-                ket() + seq)  # cast ket to superposition. Sequences of kets seems to bug out all over the place!
+            r.data.append(ket() + seq)  # cast ket to superposition. Sequences of kets seems to bug out all over the place!
             return r
         if type(seq) in [superposition]:
             r = copy.deepcopy(self)  # do we need the deepcopy? How test?
@@ -1075,8 +1057,7 @@ class sequence(object):
         else:
             return NotImplemented
 
-    def tail_add_seq(self,
-                     seq):  # (|a> . |b> + |c>) + (|x> . |y>) == |a> . |b> + |c> + |x> . |y>  I think. I need more thinking time....
+    def tail_add_seq(self, seq):  # (|a> . |b> + |c>) + (|x> . |y>) == |a> . |b> + |c> + |x> . |y>  I think. I need more thinking time....
         if len(seq) == 0:
             return
         if len(self.data) == 0:
@@ -1092,8 +1073,7 @@ class sequence(object):
             self.data[-1].add_sp(head)
             self.data += tail
 
-    def tail_sub_seq(self,
-                     seq):  # (|a> . |b> + |c>) - (|x> . |y>) == |a> . |b> + |c> - |x> . |y>  I think. I need more thinking time....
+    def tail_sub_seq(self, seq):  # (|a> . |b> + |c>) - (|x> . |y>) == |a> . |b> + |c> - |x> . |y>  I think. I need more thinking time....
         if len(seq) == 0:
             return
         if len(self.data) == 0:
@@ -1110,8 +1090,8 @@ class sequence(object):
             return
         if len(self) == 0:
             self.data = [superposition()]  # is this right? should it be self.data = []?
-        my_print('self', str(self))
-        my_print('seq', str(seq))
+        # my_print('self', str(self))
+        # my_print('seq', str(seq))
         if type(seq) in [ket, superposition]:
             len_seq = 1
         else:
@@ -1122,8 +1102,8 @@ class sequence(object):
             two = [seq] + [superposition()] * (max_len - 1)
         if type(seq) in [sequence]:
             two = seq.data + [superposition()] * (max_len - len(seq.data))
-        my_print('one', [str(x) for x in one])
-        my_print('two', [str(x) for x in two])
+        # my_print('one', [str(x) for x in one])
+        # my_print('two', [str(x) for x in two])
         self.data = []
         for k in range(max_len):
             self.data.append(one[k] + two[k])
@@ -1139,14 +1119,13 @@ class sequence(object):
             two = [seq] + [superposition()] * (max_len - 1)
         if type(seq) in [sequence]:
             two = seq.data + [superposition()] * (max_len - len(seq.data))
-        my_print('one', [str(x) for x in one])
-        my_print('two', [str(x) for x in two])
+        # my_print('one', [str(x) for x in one])
+        # my_print('two', [str(x) for x in two])
         self.data = []
         for k in range(max_len):
             self.data.append(one[k] - two[k])
 
-    def merge_seq(self, seq,
-                  space=''):  # (|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
+    def merge_seq(self, seq, space=''):  # (|a> . |b> + |c>) _ (|x> . |y>) == |a> . |b> + |cx> . |y>  I think. I need more thinking time....
         if len(seq) == 0:
             return
         if len(self.data) == 0:
@@ -1207,12 +1186,10 @@ class sequence(object):
 
     def long_display(self):  # print out a sequence class
         for k, x in enumerate(self.data):
-            if type(x) in [
-                superposition] and False:  # switched this branch off for now. I currently prefer not to change the order.
+            if type(x) in [superposition] and False:  # switched this branch off for now. I currently prefer not to change the order.
                 print("seq |%s> => %s" % (k, x.coeff_sort()))
             else:
                 print("seq |%s> => %s" % (k, x))
-        # return self
 
     def display_minimalist(self):
         for x in self.data:
@@ -1224,8 +1201,7 @@ class sequence(object):
     def display(self, exact=False):
         if len(self.data) == 0:
             return '|>'
-        return " . ".join(x.display(exact) for x in
-                          self)  # 1) get ket class to do the display. 2) need something better if we mix + - _ .
+        return " . ".join(x.display(exact) for x in self)  # 1) get ket class to do the display. 2) need something better if we mix + - _ .
 
     def readable_display(self):
         if len(self.data) == 0:
@@ -1235,7 +1211,7 @@ class sequence(object):
     #  def add(self, seq):
     #    self.data.append(copy.deepcopy(seq))
 
-    def similar_index(self, sp):
+    def similar_index(self, sp):  # do we use this anywhere?
         r = superposition()
         for k, elt in enumerate(self.data):
             similarity = simm(elt, sp)
@@ -1243,7 +1219,7 @@ class sequence(object):
                 r.add(str(k), similarity)
         return r.coeff_sort()
 
-    def ngrams(self, p):
+    def ngrams(self, p):  # do we use this anywhere?
         seq = sequence(self.name)
         for i in range(min(len(self.data) + 1, p) - 1):
             seq.data = self.data[0:i + 1]
@@ -1252,20 +1228,20 @@ class sequence(object):
             seq.data = self.data[i:i + p]
             yield seq
 
-    def pure_ngrams(self, p):
+    def pure_ngrams(self, p):  # do we use this anywhere?
         seq = sequence(self.name)
         for i in range(len(self.data) - p + 1):
             seq.data = self.data[i:i + p]
             yield seq
 
-    def encode(self, encode_dict):
+    def encode(self, encode_dict):  # do we use this anywhere?
         seq = sequence(self.name, [])
         for x in self.data:
             sp = full_encoder(encode_dict, x)
             seq.add(sp)
         return seq
 
-    def noise(self, t):
+    def noise(self, t):  # do we use this anywhere?
         seq = sequence(self.name, [])
         for x in self.data:
             try:
@@ -1307,7 +1283,8 @@ class sequence(object):
     def seq2sp(self):  # needs more thinking. Also, only works for sequences of superpositions.
         r = superposition()  # don't even know if useful yet.
         for x in self.data:
-            r += x
+            # r += x
+            r.add_sp(x)
         return r
 
     def multiply(self, t):  # is there a better way than writing all these identical wrappers?
@@ -1491,6 +1468,12 @@ class sequence(object):
     def similar_input(self, context, op):
         return context.pattern_recognition(self, op)
 
+    def to_ket(self):
+        if len(self) == 0:
+            return ket()
+        for sp in self.data:
+            return sp.to_ket()
+
     def to_sp(self):
         if len(self) == 0:
             return ket()
@@ -1507,7 +1490,7 @@ class sequence(object):
 # This stores the rule: "foo |y> + bah |z> + some-action"
 # without processing it at learn time.
 # Then it activates later when we do: op |x>  (where |x> is self_object)
-# However, we don't want it to activate when we do a dump rule (at least I think so)
+# However, we don't want it to activate when we do a dump rule
 # Going to take some work to implement, but let's start with a class:
 # Baring any bugs, I think it is working!
 class stored_rule(object):
@@ -1662,7 +1645,7 @@ class NewContext(object):
         if type(rule) is str:  # rule is assumed to be ket, superposition, or stored rule (maybe fast sp too).
             rule = ket(rule)  # if string, cast to ket
 
-        if type(rule) is list:  # if list, cast to superposition
+        if type(rule) is list:  # if list, cast to superposition  # do we even use this branch?
             r = superposition()
             for x in rule:
                 if type(x) in [int, float]:
@@ -1795,8 +1778,7 @@ class NewContext(object):
                 match = True
 
         if not match:
-            logger.debug("%s (*) not found" % (
-                op))  # tweak later! Probably want to switch this off completely once testing is done.
+            logger.debug("%s (*) not found" % (op))  # tweak later! Probably want to switch this off completely once testing is done.
             rule = ket()
 
         if active:
@@ -1804,12 +1786,11 @@ class NewContext(object):
             #    return rule.multiply(coeff)              # I'm not sure multiply(coeff) makes sense for seq_fn_recall().
             if type(rule) in [memoizing_rule, stored_rule]:
                 try:
-                    # resulting_rule = extract_compound_superposition(self,rule,sp)[0]  # we need to fix ECS so that it can handle superpositions as self-objects. Currently it can only handle strings.
-                    logger.debug('rule: %s' % rule)
-                    logger.debug('seq: %s' % [str(x) for x in seq_list])
-                    # resulting_rule = extract_compound_superposition(self, rule , seq_list[0])[0]
+                    # logger.info('rule: %s' % rule)
+                    # logger.info('seq: %s' % [str(x) for x in seq_list])
                     # resulting_rule = extract_compound_sequence(self, rule.rule , seq_list)
                     resulting_rule = rule.activate(self, op, seq_list)
+                    # logger.info('resulting_rule: %s' % resulting_rule)
                 except Exception as e:
                     resulting_rule = ket()
                     logger.warning("seq_fn_recall: except while processing stored_rule: %s" % e)
@@ -1913,11 +1894,11 @@ class NewContext(object):
     # not sure we want this factored out. But leave as is for now.
     def create_single_learn_rule_inverse(self, op, label):
         # some prelims:
-        if type(op) == ket:
+        if type(op) is ket:
             op = op.label[4:]
         if op.startswith("inverse-"):  # don't take the inverse of an inverse.
             return
-        if type(label) == ket:
+        if type(label) is ket:
             label = label.label
 
         if label not in self.ket_rules_dict:
@@ -1940,7 +1921,7 @@ class NewContext(object):
 
     # create inverse for a single known ket:
     def create_ket_rules_inverse(self, label):
-        if type(label) == ket:
+        if type(label) is ket:
             label = label.label
         if label not in self.ket_rules_dict:
             return
@@ -2003,7 +1984,7 @@ class NewContext(object):
                 #        value = fast_simm(pattern,candidate_pattern)                    # see if this speeds things up!
                 value = aligned_simm_value(pattern, candidate_pattern)
                 if value > t:  # "value >= t" instead?
-                    result.add(label, value)  # "result += ket(label,value)" when swap in fast_superposition
+                    result.add(label, value)
         return result.coeff_sort()
 
     # essentially identical in structure to pattern_recognition.
@@ -2121,13 +2102,7 @@ class NewContext(object):
             result += ket(label, count_label)
         return result.coeff_sort()
 
-    # 20/9/2015:
-    # shift:
-    # load_sw(context,filename)
-    # save_sw(context,filename)
-    # save_sw_multi(context,filename)
-    # from the processor file to the new_context() class. Though they are still there, they are deprecated.
-    #
+
     def save(self, filename, exact_dump=True):  # we need to test this. Looks right.
         try:
             file = open(filename, 'w')
@@ -2147,14 +2122,12 @@ class NewContext(object):
     def multi_save(self, filename, exact_dump=True):  # we need to test this. I think it is working.
         try:
             file = open(filename, 'w')
-            file.write(self.dump_multiverse(
-                exact_dump))  # though here in new_context() dump_multiverse() is identical to dump_universe().
+            file.write(self.dump_multiverse(exact_dump))  # though here in new_context() dump_multiverse() is identical to dump_universe().
             file.close()  # Maybe just set multi_save() as a wrapper around ordinary save, to make it clearer?
         except:
             logger.info("failed to multi save: " + filename)
 
-    def old_load(self,
-                 filename):  # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context")
+    def old_load(self, filename):  # BUG: doesn't set the context properly. Not 100% sure why, yet. I think it is related to C.set("changed context")
         try:  # cool! I implemented new_context().set and seems to work now.
             with open(filename, 'r') as f:
                 for line in f:
@@ -2169,7 +2142,7 @@ class NewContext(object):
         try:
             with open(filename, 'r') as f:
                 text = f.read()
-                logger.info('load text: %s' % text)
+                # logger.info('load text: %s' % text)
                 process_sw_file(self, text)
         except Exception as e:
             logger.info("failed to load: %s\nReason: %s" % (filename, e))
@@ -2454,7 +2427,8 @@ line = <char*>:s -> s
 #line = <~new_line anything>*:s -> "".join(s)
 multiline = '  ' line:first new_line (~new_line multiline)*:rest -> '\\n  ' + first + ''.join(rest)    
 comment = ( '-'+ line | ws new_line)
-object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | full_compound_sequence ):obj -> obj
+#object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | full_compound_sequence ):obj -> obj
+object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | '(*,*,*,*)' | full_compound_sequence ):obj -> obj
 single_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws line:s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
 stored_rule = multi_stored_rule
 multi_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws (ws new_line multiline | line):s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
@@ -2729,6 +2703,8 @@ def compile_compound_sequence(context, compound_sequence, self_object=None):
             if distribute:
                 seq.distribute_merge_seq(the_seq)
         elif symbol == '__':
+            # print('__ seq: %s' % seq)
+            # print('__ the_seq: %s' % the_seq)
             if not distribute:
                 seq.merge_seq(the_seq, ' ')
             if distribute:
@@ -2743,7 +2719,7 @@ def learn_stored_rule(context, op, one, rule_type, s):
     my_print('one', one)
     my_print('rule_type', rule_type)
     my_print('s', s)
-    if one in ['(*)', '(*,*)', '(*,*,*)']:  # seq_fn_learn rule found. Tidy later!
+    if one in ['(*)', '(*,*)', '(*,*,*)', '(*,*,*,*)']:  # seq_fn_learn rule found. Tidy later!
         one = one[1:-1]
         if rule_type == '#=>':
             context.seq_fn_learn(op, one, stored_rule(s))
@@ -2767,11 +2743,10 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
     if op == 'supported-ops':  # don't learn supported-ops lines.
         return
 
-    if one in ['(*)', '(*,*)', '(*,*,*)']:  # seq_fn_learn rule found. Tidy later!
+    if one in ['(*)', '(*,*)', '(*,*,*)', '(*,*,*,*)']:  # seq_fn_learn rule found. Tidy later!
         one = one[1:-1]
         # seq = compile_compound_sequence(context, parsed_seq, one)
-        seq = compile_compound_sequence(context,
-                                        parsed_seq)  # I don't currently know how to handle rules like: foo (*) => |_self>
+        seq = compile_compound_sequence(context, parsed_seq)  # I don't currently know how to handle rules like: foo (*) => |_self>
         my_print('sp seq', str(seq))
         if rule_type == '=>':
             context.seq_fn_learn(op, one, seq)
@@ -2816,8 +2791,7 @@ def recall_rule(context, op, one):
 
 #  return ket(one).apply_op(context, op)
 
-def extract_compound_sequence(context, unparsed_seq,
-                              self_object=None):  # need to make context explicit somewhere ... rather than a global....
+def extract_compound_sequence(context, unparsed_seq, self_object=None):  # need to make context explicit somewhere ... rather than a global....
     parsed_seq = op_grammar(unparsed_seq).full_compound_sequence()
     my_print('parsed_seq', parsed_seq)
     my_print('self_object', self_object)
@@ -2841,19 +2815,16 @@ def process_stored_rule(context, unparsed_rule, self_object=None):
     if self_object is not None and '|__self' in unparsed_rule:
         if type(self_object) is list:
             str_self_object = [str(x) for x in self_object]
-            unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object[
-                0])  # I hate this bit of code!! Please kill it!
+            unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object[0])  # I hate this bit of code!! Please kill it!
             for k, x in enumerate(str_self_object):  # we need a cleaner way to handle |__self> and |__self3> rules!
                 pattern = '|__self%s>' % str(k + 1)
-                unparsed_rule = unparsed_rule.replace(pattern,
-                                                      ' (%s) ' % x)  # I hate this bit of code!! Please kill it!
+                unparsed_rule = unparsed_rule.replace(pattern, ' (%s) ' % x)  # I hate this bit of code!! Please kill it!
         else:
             if type(self_object) is str:
                 str_self_object = '|' + self_object + '>'
             else:
                 str_self_object = str(self_object)
-            unparsed_rule = unparsed_rule.replace('|__self>',
-                                                  ' (%s) ' % str_self_object)  # I hate this bit of code!! Please kill it!
+            unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object)  # I hate this bit of code!! Please kill it!
     # print('self_object: %s' % str(self_object))
     # print('unparsed stored rule: %s' % unparsed_rule)
     seq = sequence([])

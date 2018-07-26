@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/7/2018
+# Update: 26/7/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -50,7 +50,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to version 2 of the Feynman Knowledge Engine!\nLast updated 25 July, 2018")
+print("Welcome to version 2 of the Feynman Knowledge Engine!\nLast updated 26 July, 2018")
 
 # C = ContextList("sw console")
 C = context
@@ -74,6 +74,7 @@ help_string = """
   mfreq                        convert context list to frequency list
   web-load http://file.sw      load a sw file from the web
   load file.sw                 load file.sw
+  line-load file.sw            load file.sw one line at a time, useful for large files, breaks for swc files.
   save file.sw                 save current context to file.sw
   save multi file.sw           save context list to file.sw
   save-as-dot file.dot         save current context in dot format to file.dot
