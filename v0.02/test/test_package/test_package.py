@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 #######################################################################
-# let's test v0.02
+# let's test version 2
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 9/2/2018
-# Update: 22/3/2018
+# Update: 26/7/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v test_package.py
@@ -18,27 +18,14 @@ import sys
 from pprint import pprint
 from semantic_db import *
 
-# context = ContextList('in test the processor')
+# context = ContextList('in test the processor')  # broken due to 'one global context' bug!
 # context.print_universe()
 logger.setLevel(logging.DEBUG)
 
 
-# sys.exit(0)
-
-
-# deprecated:
-# def test_process_single_op_literal_1():
-#  r = deprecated_process_single_op('friends')
-#  assert r == '.apply_op(context,"friends")'
-
-# deprecated:
-# def test_process_single_op_compound_1():
-#  r = deprecated_process_single_op(['common', 'friends'])
-#  assert r == 'fish'
 
 
 def test_sw_file_1():
-    #  x = op_grammar('age |Julie> => |32> \n spelling |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> ').sw_file()
     s = 'age |Julie> => |32> \n spelling |Julie> => |J> . |u> . |l> . |i> . |e> \n\n\n\n friends |Julie> #=> |Fred> + |Sam> + |Robert> '
     process_sw_file(context, s)
     context.print_multiverse()
@@ -123,7 +110,6 @@ def test_context_seq_fn_learn_2():
 
 
 def test_context_seq_fn_learn_3():
-    # context.seq_fn_learn('op-c', '*,*', ket('_self1'))
     context.seq_fn_learn('op-c', '*,*', stored_rule('|_self1>'))
     context.print_universe(True)
     r = context.seq_fn_recall('op-c', ['fish', 'soup'], active=True)
@@ -131,7 +117,6 @@ def test_context_seq_fn_learn_3():
 
 
 def test_context_seq_fn_learn_4():
-    # context.seq_fn_learn('op-c', '*,*', ket('_self'))
     context.seq_fn_learn('op-c', '*,*', stored_rule('|_self>'))
     context.print_universe(True)
     r = context.seq_fn_recall('op-c', ['more', 'soup'], active=True)
@@ -139,7 +124,6 @@ def test_context_seq_fn_learn_4():
 
 
 def test_context_seq_fn_learn_5():
-    # context.seq_fn_learn('op-c', '*', ket('_self'))
     context.seq_fn_learn('op-c', '*', stored_rule('|_self>'))
     context.print_universe(True)
     r = context.seq_fn_recall('op-c', ['soup'], active=True)
@@ -563,8 +547,7 @@ def test_compound_invoke_predict_1():
     s = 'predict[seq] (|2> . |5>)'
     r = extract_compound_sequence(context, s)
     # assert True                       # yup, it works.
-    assert str(
-        r) == '|count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>'
+    assert str(r) == '|count: 6 . 7 . 8 . 9 . 10> + |fib: 8 . 13> + |primes: 7 . 11 . 13 . 17 . 19 . 23> + 0.5|fact: 6 . 24 . 120>'
 
 
 def test_compound_invoke_predict_2():

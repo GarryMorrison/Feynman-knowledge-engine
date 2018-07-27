@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 20/3/2018
+# Update: 27/7/2018
 # Copyright: GPLv3
 #
 # Usage:
@@ -72,6 +72,7 @@ def usage(ops=None):
 
 
 # define our operator usage types:
+# TODO: remove the unusued ones!
 built_in_table_usage = {}
 sigmoid_table_usage = {}
 fn_table_usage = {}
@@ -94,55 +95,81 @@ examples_usage = {}
 # fill out the built_in_table_usage dictionary:
 built_in_table_usage['pick-elt'] = """
     description:
-      randomly pick an element from the given superposition, with equal probability
+        pick-elt sp
+        randomly pick an element from the given superposition, with equal probability
 
     examples:
-      pick-elt split |a b c d e>    
+        pick-elt split |a b c d e>
+        
+    see also:
+        weighted-pick-elt, spick-elt, sweighted-pick-elt    
 """
 
 built_in_table_usage['weighted-pick-elt'] = """
     description:
-      randomly pick an element from the given superposition, weighted by the coefficients
+        weighted-pick-elt sp
+        randomly pick an element from the given superposition, weighted by the coefficients
 
     examples:
-      weighted-pick-elt rank split |a b c d e>
+        weighted-pick-elt rank split |a b c d e>
+    
+    see also:
+        pick-elt, spick-elt, sweighted-pick-elt
 """
 
 built_in_table_usage['normalize'] = """
     description:
-      normalize the coefficients of the given superposition so they sum to t
-      if t is not specified, t defaults to 1
+        normalize sp
+        normalize[t] sp
+        normalize the coefficients of the given superposition so they sum to t
+        if t is not specified, t defaults to 1
 
     examples:
-      normalize split |a b c d e>
-        0.2|a> + 0.2|b> + 0.2|c> + 0.2|d> + 0.2|e>
+        normalize split |a b c d e>
+            0.2|a> + 0.2|b> + 0.2|c> + 0.2|d> + 0.2|e>
 
-      normalize (2|a> + |b>)
-        0.667|a> + 0.333|b>
+        normalize (2|a> + |b>)
+            0.667|a> + 0.333|b>
         
-      normalize[100] (2|a> + |b>)
-        66.667|a> + 33.333|b>
+        normalize[100] (2|a> + |b>)
+            66.667|a> + 33.333|b>
+    
+    see also:
+        rescale, snormalize
 """
 
 built_in_table_usage['sdrop'] = """
     description:
-      sequence version of drop
+        sdrop seq
+        sequence version of drop
 
     examples:
 
     see also:
-      drop
+        drop
 """
 
 # built_in_table['sreverse'] = 'sreverse'
 built_in_table_usage['sreverse'] = """
     description:
-      sequence version of reverse
+        sreverse seq
+        sequence version of reverse
 
     examples:
-
+        sreverse (|a> . |b> . |c>)
+            |c> . |b> . |a>
+        
+        sreverse (|a> + |b> . |c> + |d> . |e>)
+            |e> . |c> + |d> . |a> + |b>
+            
+        long-display sreverse (|a> + |b> . |c> + |d> . |e>)
+            seq |0> => |e>
+            seq |1> => |c> + |d>
+            seq |2> => |a> + |b>
+            |e> . |c> + |d> . |a> + |b>
+        
     see also:
-      reverse
+        reverse
 """
 
 built_in_table_usage['z'] = """
@@ -154,447 +181,548 @@ built_in_table_usage['z'] = """
 # let's build the sigmoid_table_usage dictionary:
 sigmoid_table_usage['clean'] = """
     description:
-      clean the coefficients of the given superpostion
-      if x < 0, return 0
-      else return 1
+        clean ket
+        clean the coefficients of the given superposition
+        if x < 0, return 0
+        else return 1
 
     examples:
-      clean (3|a> + 2.2|b> - 3 |c> + |d>)
-        |a> + |b> + 0|c> + |d>
+        clean (3|a> + 2.2|b> - 3 |c> + |d>)
+            |a> + |b> + 0|c> + |d>
+    
+    see also:
+    
 """
 
 sigmoid_table_usage['threshold-filter'] = """
     description:
-      threshold filter
-      if x < t, return 0
-      else return x
+        threshold-filter[t] ket
+        if x < t, return 0
+        else return x
 
     examples:
-      threshold-filter[2] (3|a> + 2.2|b> - 3 |c> + |d>)
-        3|a> + 2.2|b> + 0|c> + 0|d>
+        threshold-filter[2] (3|a> + 2.2|b> - 3 |c> + |d>)
+            3|a> + 2.2|b> + 0|c> + 0|d>
+    
+    see also:
+        not-threshold-filter
 """
 
 sigmoid_table_usage['not-threshold-filter'] = """
     description:
-      not threshold filter
-      if x <= t, return x
-      else return 0
+        not-threshold-filter[t] ket
+        if x <= t, return x
+        else return 0
 
     examples:
-      not-threshold-filter[2] (3|a> + 2.2|b> - 3 |c> + |d>)
-        0|a> + 0|b> + -3|c> + |d>
+        not-threshold-filter[2] (3|a> + 2.2|b> - 3 |c> + |d>)
+            0|a> + 0|b> + -3|c> + |d>
+    
+    see also:
+        threshold-filter
 """
 
 sigmoid_table_usage['binary-filter'] = """
     description:
-      binary filter
-      if x <= 0.96, return 0
-      else return 1
+        binary-filter ket
+        if x <= 0.96, return 0
+        else return 1
 
     examples:
-      binary-filter (2|a> + 0.9|b> -2|c>)
-        |a> + 0|b> + 0|c>
+        binary-filter (2|a> + 0.9|b> -2|c>)
+            |a> + 0|b> + 0|c>
+            
+    see also:
+        not-binary-filter
 """
 
 sigmoid_table_usage['not-binary-filter'] = """
     description:
-      binary filter
-      if x <= 0.96, return 1
-      else return 0
+        not-binary-filter ket
+        if x <= 0.96, return 1
+        else return 0
 
     examples:
-      not-binary-filter (2|a> + 0.9|b> -2|c>)
-        0|a> + |b> + |c>
+        not-binary-filter (2|a> + 0.9|b> -2|c>)
+            0|a> + |b> + |c>
+        
+    see also:
+        binary-filter
 """
 
 sigmoid_table_usage['pos'] = """
     description:
-      positive filter
-      if x <= 0, return 0
-      else return x
+        pos ket
+        positive filter
+        if x <= 0, return 0
+        else return x
 
     examples:
-      pos (2|a> + 0.9|b> -2|c>)
-        2|a> + 0.9|b> + 0|c>
+        pos (2|a> + 0.9|b> -2|c>)
+            2|a> + 0.9|b> + 0|c>
+    
+    see also:
+        abs
 """
 
 sigmoid_table_usage['abs'] = """
     description:
-      absolute value
+        abs ket
+        absolute value
 
     examples:
-      abs (2|a> + 0.9|b> -3|c>)
-        2|a> + 0.9|b> + 3|c>
+        abs (2|a> + 0.9|b> -3|c>)
+            2|a> + 0.9|b> + 3|c>
+    
+    see also:
+    
 """
 
 sigmoid_table_usage['max-filter'] = """
     description:
-      max filter
-      if x <= t, return x
-      else return t
+        max-filter[t] ket
+        max filter
+        if x <= t, return x
+        else return t
 
     examples:
+    
+    see also:
 
 """
 
 sigmoid_table_usage['NOT'] = """
     description:
-      binary not
-      if x <= 0.04, return 1
-      else return 0
+        NOT ket
+        binary not
+        if x <= 0.04, return 1
+        else return 0
 
     examples:
 
+    see also:
+    
 """
 
 sigmoid_table_usage['xor-filter'] = """
     description:
-      xor
-      if 0.96 <= x <= 1.04, return 1
-      else return 0
+        xor-filter ket
+        xor
+        if 0.96 <= x <= 1.04, return 1
+        else return 0
 
     examples:
 
+    see also:
+    
 """
 
 sigmoid_table_usage['sigmoid-in-range'] = """
     description:
-      the in-range sigmoid
-      if a <= x <= b, return x
-      else return 0
+        sigmoid-in-range[a,b] ket
+        the in-range sigmoid
+        if a <= x <= b, return x
+        else return 0
 
     examples:
+
+    see also:
 
 """
 
 sigmoid_table_usage['invert'] = """
     description:
-      multiplicative invert
-      if x == 0, return 0
-      else return 1/x
+        invert ket
+        multiplicative invert
+        if x == 0, return 0
+        else return 1/x
 
     examples:
-      invert (0|x> + 3|y> - 0.5 |z>)
-        0|x> + 0.333|y> - 2|z>
+        invert (0|x> + 3|y> - 0.5 |z>)
+            0|x> + 0.333|y> - 2|z>
+    
+    see also:
+    
 """
 
 sigmoid_table_usage['set-to'] = """
     description:
-      set all coefficients to t
-      return t
+        set-to[t] ket
+        set all coefficients to t
+        return t
 
     examples:
-      set-to[7] (0|x> + 3|y> - 0.5|z>)
-        7|x> + 7|y> + 7|z>
+        set-to[7] (0|x> + 3|y> - 0.5|z>)
+            7|x> + 7|y> + 7|z>
+
+    see also:
+    
 """
 
 sigmoid_table_usage['subtraction-invert'] = """
     description:
-      additive invert
-      return t - x
+        subtraction-invert[t] ket
+        additive invert
+        return t - x
 
     examples:
-      subtraction-invert[0] (0|x> + 3|y> - 0.5|z>)
-      0|x> + -3|y> + 0.5|z>
+        subtraction-invert[0] (0|x> + 3|y> - 0.5|z>)
+            0|x> + -3|y> + 0.5|z>
+
+    see also:
+    
 """
 
 sigmoid_table_usage['log'] = """
     description:
-      logarithm of x
-      if x <= 0, return 0
-      if t is None, return math.log(x)  (ie, base e)
-      else, return math.log(x, t)       (ie, base t)
+        log ket
+        log[t] ket
+        logarithm of x
+        if x <= 0, return 0
+        if t is None, return math.log(x)  (ie, base e)
+        else, return math.log(x, t)       (ie, base t)
 
     examples:
-      log 2.71828|e>
-        1.0|e>
+        log 2.71828|e>
+            1.0|e>
 
-      log[10] 100000 |x>
-        5|x>
+        log[10] 100000 |x>
+            5|x>
+    
+    see also:
+    
 """
 
 sigmoid_table_usage['log+1'] = """
     description:
-      logarithm of 1 + x
-      if x <= 0, return 0
-      if t is None, return math.log(1 + x)  (ie, base e)
-      else, return math.log(1 + x, t)       (ie, base t)
+        log+1 ket
+        log+1[t] ket
+        logarithm of 1 + x
+        if x <= 0, return 0
+        if t is None, return math.log(1 + x)  (ie, base e)
+        else, return math.log(1 + x, t)       (ie, base t)
 
     examples:
 
+    see also:
+    
 """
 
 sigmoid_table_usage['square'] = """
     description:
-      square the coefficients
+        square ket
+        square the coefficients
+        return x^2
 
     examples:
-      square (0.2|x> + 3|y> - 5|z>)
-        0.04|x> + 9|y> + 25|z>
+        square (0.2|x> + 3|y> - 5|z>)
+            0.04|x> + 9|y> + 25|z>
+    
+    see also:
+        sqrt
 """
 
 sigmoid_table_usage['sqrt'] = """
     description:
-      square root the coefficients
+        sqrt ket
+        square root the coefficients
+        return x^(1/2)
 
     examples:
-      sqrt (9|x> + 25|y> + 49|z>)
-        3|x> + 5|y> + 7|z>
+        sqrt (9|x> + 25|y> + 49|z>)
+            3|x> + 5|y> + 7|z>
 
-      sqrt square (0.2|x> + 3|y> - 5|z>)
-        0.2|x> + 3|y> + 5|z>
+        sqrt square (0.2|x> + 3|y> - 5|z>)
+            0.2|x> + 3|y> + 5|z>
+    
+    see also:
+        square
 """
 
 sigmoid_table_usage['floor'] = """
     description:
-      math.floor
+        floor ket
+        return math.floor(x)
 
     examples:
-      floor (2.3|x> + 7.9|y>)
-        2|x> + 7|y>
+        floor (2.3|x> + 7.9|y>)
+            2|x> + 7|y>
+    
+    see also:
+        ceiling
 """
 
 sigmoid_table_usage['ceiling'] = """
     description:
-      math.ceil
+        ceiling ket
+        return math.ceil(x)
 
     examples:
-      ceiling (2.3|x> + 7.9|y>)
-        3|x> + 8|y>
+        ceiling (2.3|x> + 7.9|y>)
+            3|x> + 8|y>
+    
+    see also:
+        floor
 """
 
 sigmoid_table_usage['increment'] = """
     description:
-      increment the coefficient by one
+        increment ket
+        increment the coefficient by one
+        return x + 1
 
     examples:
-      increment |x>
-        2|x>
+        increment |x>
+            2|x>
 
-      increment^7 0|x>
-        7|x>
+        increment^7 0|x>
+            7|x>
+    
+    see also:
+        decrement
 """
 
 sigmoid_table_usage['decrement'] = """
     description:
-      decrement the coefficient by one
+        decrement ket
+        decrement the coefficient by one
+        return x - 1
 
     examples:
-      decrement |x>
-        0|x>
+        decrement |x>
+            0|x>
 
-      decrement^10 0|x>
-        -10 |x>
+        decrement^10 0|x>
+            -10 |x>
+    
+    see also:
+        increment
 """
+
 
 examples_usage['numbers-to-words'] = """
     description:
-      convert integers into words
+        convert integers into English words
       
     code:
-      ones |0> #=> |>
-      ones |1> => |one>
-      ones |2> => |two>
-      ones |3> => |three>
-      ones |4> => |four>
-      ones |5> => |five>
-      ones |6> => |six>
-      ones |7> => |seven>
-      ones |8> => |eight>
-      ones |9> => |nine>
+        ones |0> #=> |>
+        ones |1> => |one>
+        ones |2> => |two>
+        ones |3> => |three>
+        ones |4> => |four>
+        ones |5> => |five>
+        ones |6> => |six>
+        ones |7> => |seven>
+        ones |8> => |eight>
+        ones |9> => |nine>
 
-      tens |10> => |ten>
-      tens |11> => |eleven>
-      tens |12> => |twelve>
-      tens |13> => |thirteen>
-      tens |14> => |fourteen>
-      tens |15> => |fifteen>
-      tens |16> => |sixteen>
-      tens |17> => |seventeen>
-      tens |18> => |eighteen>
-      tens |19> => |nineteen>
+        tens |10> => |ten>
+        tens |11> => |eleven>
+        tens |12> => |twelve>
+        tens |13> => |thirteen>
+        tens |14> => |fourteen>
+        tens |15> => |fifteen>
+        tens |16> => |sixteen>
+        tens |17> => |seventeen>
+        tens |18> => |eighteen>
+        tens |19> => |nineteen>
 
-      ten |20> => |twenty>
-      ten |30> => |thirty>
-      ten |40> => |forty>
-      ten |50> => |fifty>
-      ten |60> => |sixty>
-      ten |70> => |seventy>
-      ten |80> => |eighty>
-      ten |90> => |ninety>
+        ten |20> => |twenty>
+        ten |30> => |thirty>
+        ten |40> => |forty>
+        ten |50> => |fifty>
+        ten |60> => |sixty>
+        ten |70> => |seventy>
+        ten |80> => |eighty>
+        ten |90> => |ninety>
 
-      tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
-      hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
-      thousands-rule |*> #=> thousands int-divide-by[1000] mod[1000000] |_self>
-      millions-rule |*> #=> millions int-divide-by[1000000] mod[1000000000] |_self>
+        tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
+        hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
+        thousands-rule |*> #=> thousands int-divide-by[1000] mod[1000000] |_self>
+        millions-rule |*> #=> millions int-divide-by[1000000] mod[1000000000] |_self>
 
-      hundreds |0> #=> |>
-      hundreds |*> #=> ones |_self> __ |hundred>
+        hundreds |0> #=> |>
+        hundreds |*> #=> ones |_self> __ |hundred>
 
-      thousands |0> #=> |>
-      thousands |*> #=> hundreds-rule |_self> __ |thousand>
+        thousands |0> #=> |>
+        thousands |*> #=> hundreds-rule |_self> __ |thousand>
 
-      millions |0> #=> |>
-      millions |*> #=> hundreds-rule |_self> __ |million>
+        millions |0> #=> |>
+        millions |*> #=> hundreds-rule |_self> __ |million>
 
-      n2w |0> => |zero>
-      n2w |*> #=> smerge[", "] sdrop (millions-rule |_self> . thousands-rule |_self> . hundreds-rule |_self>)
+        n2w |0> => |zero>
+        n2w |*> #=> smerge[", "] sdrop (millions-rule |_self> . thousands-rule |_self> . hundreds-rule |_self>)
 
     examples:
-      n2w |0>
-        |zero>
+        n2w |0>
+            |zero>
 
-      n2w |3>
-        |three>
+        n2w |3>
+            |three>
 
-      n2w |15>
-        |fifteen>
+        n2w |15>
+            |fifteen>
 
-      n2w |53>
-        |fifty three>
+        n2w |53>
+            |fifty three>
 
-      n2w |735>
-        |seven hundred and thirty five>
+        n2w |735>
+            |seven hundred and thirty five>
 
-      n2w |12000>
-        |twelve thousand>
+        n2w |12000>
+            |twelve thousand>
 
-      n2w |12500>
-        |twelve thousand, five hundred>
+        n2w |12500>
+            |twelve thousand, five hundred>
 
-      n2w |987654321>
-        |nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one>
+        n2w |987654321>
+            |nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one>
 
-      -- or all at once:
-      table[number, n2w] split |0 3 15 53 735 12000 987654321>
-        +-----------+----------------------------------------------------------------------------------------------------------+
-        | number    | n2w                                                                                                      |
-        +-----------+----------------------------------------------------------------------------------------------------------+
-        | 0         | zero                                                                                                     |
-        | 3         | three                                                                                                    |
-        | 15        | fifteen                                                                                                  |
-        | 53        | fifty three                                                                                              |
-        | 735       | seven hundred and thirty five                                                                            |
-        | 12000     | twelve thousand                                                                                          |
-        | 987654321 | nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one |
-        +-----------+----------------------------------------------------------------------------------------------------------+
+        -- or all at once:
+        table[number, n2w] split |0 3 15 53 735 12000 987654321>
+            +-----------+----------------------------------------------------------------------------------------------------------+
+            | number    | n2w                                                                                                      |
+            +-----------+----------------------------------------------------------------------------------------------------------+
+            | 0         | zero                                                                                                     |
+            | 3         | three                                                                                                    |
+            | 15        | fifteen                                                                                                  |
+            | 53        | fifty three                                                                                              |
+            | 735       | seven hundred and thirty five                                                                            |
+            | 12000     | twelve thousand                                                                                          |
+            | 987654321 | nine hundred and eighty seven million, six hundred and fifty four thousand, three hundred and twenty one |
+            +-----------+----------------------------------------------------------------------------------------------------------+
 
     source code:
-      load numbers-to-words.sw
+        load numbers-to-words.sw
+      
+    see also:
+        big-numbers-to-words
 """
 
 examples_usage['big-numbers-to-words'] = """
     description:
-      convert integers into words
+        convert integers into English words
 
     code:
-      ones |1> => |one>
-      ones |2> => |two>
-      ones |3> => |three>
-      ones |4> => |four>
-      ones |5> => |five>
-      ones |6> => |six>
-      ones |7> => |seven>
-      ones |8> => |eight>
-      ones |9> => |nine>
+        ones |1> => |one>
+        ones |2> => |two>
+        ones |3> => |three>
+        ones |4> => |four>
+        ones |5> => |five>
+        ones |6> => |six>
+        ones |7> => |seven>
+        ones |8> => |eight>
+        ones |9> => |nine>
 
-      tens |10> => |ten>
-      tens |11> => |eleven>
-      tens |12> => |twelve>
-      tens |13> => |thirteen>
-      tens |14> => |fourteen>
-      tens |15> => |fifteen>
-      tens |16> => |sixteen>
-      tens |17> => |seventeen>
-      tens |18> => |eighteen>
-      tens |19> => |nineteen>
+        tens |10> => |ten>
+        tens |11> => |eleven>
+        tens |12> => |twelve>
+        tens |13> => |thirteen>
+        tens |14> => |fourteen>
+        tens |15> => |fifteen>
+        tens |16> => |sixteen>
+        tens |17> => |seventeen>
+        tens |18> => |eighteen>
+        tens |19> => |nineteen>
 
-      ten |20> => |twenty>
-      ten |30> => |thirty>
-      ten |40> => |forty>
-      ten |50> => |fifty>
-      ten |60> => |sixty>
-      ten |70> => |seventy>
-      ten |80> => |eighty>
-      ten |90> => |ninety>
+        ten |20> => |twenty>
+        ten |30> => |thirty>
+        ten |40> => |forty>
+        ten |50> => |fifty>
+        ten |60> => |sixty>
+        ten |70> => |seventy>
+        ten |80> => |eighty>
+        ten |90> => |ninety>
 
-      tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
-      hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
+        tens |*> #=> smerge[" "] sdrop ( ten times-by[10] int-divide-by[10] |_self> . ones mod[10] |_self> )
+        hundreds-rule |*> #=> smerge[" and "] (hundreds int-divide-by[100] mod[1000] |_self> . tens mod[100] |_self>)
 
-      hundreds |0> #=> |>
-      hundreds |*> #=> ones |_self> __ |hundred>
+        hundreds |0> #=> |>
+        hundreds |*> #=> ones |_self> __ |hundred>
 
-      thousands |0> #=> |>
-      thousands |*> #=> hundreds-rule |_self> __ |thousand>
+        thousands |0> #=> |>
+        thousands |*> #=> hundreds-rule |_self> __ |thousand>
 
-      millions |0> #=> |>
-      millions |*> #=> hundreds-rule |_self> __ |million>
+        millions |0> #=> |>
+        millions |*> #=> hundreds-rule |_self> __ |million>
 
-      billions |0> #=> |>
-      billions |*> #=> hundreds-rule |_self> __ |billion>
+        billions |0> #=> |>
+        billions |*> #=> hundreds-rule |_self> __ |billion>
 
-      trillions |0> #=> |>
-      trillions |*> #=> hundreds-rule |_self> __ |trillion>
+        trillions |0> #=> |>
+        trillions |*> #=> hundreds-rule |_self> __ |trillion>
 
-      op |seq> => |op: hundreds-rule> . |op: thousands> . |op: millions> . |op: billions> . |op: trillions>
+        op |seq> => |op: hundreds-rule> . |op: thousands> . |op: millions> . |op: billions> . |op: trillions>
 
-      n2w |0> => |zero>
-      n2w |*> #=> smerge[", "] sreverse op-zip(op |seq>, split-num |_self>)
+        n2w |0> => |zero>
+        n2w |*> #=> smerge[", "] sreverse op-zip(op |seq>, split-num |_self>)
 
-      split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
-      process-if |less than 1000: *> #=> remove-leading-category |_self>
-      process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>
+        split-num |*> #=> process-if if(is-less-than[1000] |_self>, |less than 1000:> __ |_self>, |greater than 1000:> __ |_self>)
+        process-if |less than 1000: *> #=> remove-leading-category |_self>
+        process-if |greater than 1000: *> #=> mod[1000] remove-leading-category |_self> . split-num int-divide-by[1000] remove-leading-category |_self>
 
     examples:
-      n2w |123456789012345>
-        |one hundred and twenty three trillion, four hundred and fifty six billion, seven hundred and eighty nine million, twelve thousand, three hundred and forty five>
+        n2w |123456789012345>
+            |one hundred and twenty three trillion, four hundred and fifty six billion, seven hundred and eighty nine million, twelve thousand, three hundred and forty five>
 
     source code:
-      load big-numbers-to-words.sw      
+        load big-numbers-to-words.sw
+      
+    see also:
+        numbers-to-words      
 """
 
 examples_usage['bottles-of-beer'] = """
     description:
-      sing the bottles of beer song
+        sing the bottles of beer song
 
     code:
-      n-1 |*> #=> arithmetic(|_self>, |->, |1>)
+        n-1 |*> #=> arithmetic(|_self>, |->, |1>)
 
-      bottles |0> => |no more bottles>
-      bottles |1> => |1 bottle>
-      bottles |*> #=> |_self> __ |bottles>
+        bottles |0> => |no more bottles>
+        bottles |1> => |1 bottle>
+        bottles |*> #=> |_self> __ |bottles>
 
-      first-line |*> #=> to-upper[1] bottles |_self> __ |of beer on the wall,> __ bottles |_self> __ |of beer.>
+        first-line |*> #=> to-upper[1] bottles |_self> __ |of beer on the wall,> __ bottles |_self> __ |of beer.>
 
-      second-line |*> #=> |Take one down and pass it around,> __ bottles n-1 |_self> __ |of beer on the wall.>
-      second-line |0> #=> |Go to the store and buy some more,> __ bottles max |bottles> __ |of beer on the wall.>
+        second-line |*> #=> |Take one down and pass it around,> __ bottles n-1 |_self> __ |of beer on the wall.>
+        second-line |0> #=> |Go to the store and buy some more,> __ bottles max |bottles> __ |of beer on the wall.>
 
-      row |*> #=> first-line |_self> . second-line |_self> . |>
+        row |*> #=> first-line |_self> . second-line |_self> . |>
 
-      max |bottles> => |10>
-      sing |*> #=> smerge["\\n"] row sp2seq reverse range(|0>, max |bottles>)
+        max |bottles> => |10>
+        -- smerge["\n"] (|b> . |c> . |> . |d>) is currently broken
+        -- sing |*> #=> smerge["\\n"] row sp2seq reverse range(|0>, max |bottles>)
+
+        -- temp fix:
+        -- bah, broken too since:
+        -- print (|a> . |b> . |> . |c>) doesn't print \n for the |> char.
+        sing |*> #=> sdrop tidy print row sp2seq reverse range(|0>, max |bottles>)
 
     examples:
-      max |bottles> => |4>
-      sing
-        |4 bottles of beer on the wall, 4 bottles of beer.
-        Take one down and pass it around, 3 bottles of beer on the wall.
-
-        3 bottles of beer on the wall, 3 bottles of beer.
-        Take one down and pass it around, 2 bottles of beer on the wall.
-
-        2 bottles of beer on the wall, 2 bottles of beer.
-        Take one down and pass it around, 1 bottle of beer on the wall.
-
-        1 bottle of beer on the wall, 1 bottle of beer.
-        Take one down and pass it around, no more bottles of beer on the wall.
-
-        No more bottles of beer on the wall, no more bottles of beer.
-        Go to the store and buy some more, 4 bottles of beer on the wall.
-        >
+        max |bottles> => |4>
+        sing
+            |4 bottles of beer on the wall, 4 bottles of beer.
+            Take one down and pass it around, 3 bottles of beer on the wall.
+    
+            3 bottles of beer on the wall, 3 bottles of beer.
+            Take one down and pass it around, 2 bottles of beer on the wall.
+    
+            2 bottles of beer on the wall, 2 bottles of beer.
+            Take one down and pass it around, 1 bottle of beer on the wall.
+    
+            1 bottle of beer on the wall, 1 bottle of beer.
+            Take one down and pass it around, no more bottles of beer on the wall.
+    
+            No more bottles of beer on the wall, no more bottles of beer.
+            Go to the store and buy some more, 4 bottles of beer on the wall.
+            >
 
     source code:
-      load bottles-of-beer.sw
+        load bottles-of-beer.sw
+    
+    see also:
+    
 """
 
 examples_usage['eat-from-can'] = """

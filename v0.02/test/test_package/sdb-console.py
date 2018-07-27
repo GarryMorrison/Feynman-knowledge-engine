@@ -50,7 +50,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to version 2 of the Feynman Knowledge Engine!\nLast updated 26 July, 2018")
+print("Welcome to version 2 of the Feynman Knowledge Engine!\nLast updated 27 July, 2018")
 
 # C = ContextList("sw console")
 C = context

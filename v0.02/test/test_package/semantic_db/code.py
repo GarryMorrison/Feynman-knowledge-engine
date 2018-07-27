@@ -1760,7 +1760,7 @@ class NewContext(object):
             return ket()
 
         if type(seq_list) is str:
-            ket_label = seq_list
+            ket_label = seq_list  # should this be: ket_label = '*'? Would that break dump?
         elif type(seq_list) is list:
             if len(seq_list) == 1:
                 ket_label = '*'

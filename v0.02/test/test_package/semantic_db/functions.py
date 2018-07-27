@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 25/7/2018
+# Update: 27/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -232,6 +232,11 @@ function_operators_usage['smerge'] = """
     
     see also:
         ssplit
+        
+    TODO:
+        fix this, so it works again:
+        (not sure what broke it)
+        smerge["\n"] (|b> . |c> . |> . |d>)
 """
 # one is a sequence
 def smerge(one, merge_char=''):
@@ -5364,6 +5369,14 @@ function_operators_usage['map'] = """
         map[left-op, left] child^4 |x>
         map[right-op, right] child^4 |x>
         ...
+
+        -- approximate implementation using multi-line stored rules:
+        -- makes use of the linearity of |*> rules
+        map-fn-to-op |*> #=>
+            op |__self> => fn |__self>
+        
+        -- then invoke it:
+        map-fn-to-op (|x> + |y> + |z>)
 
     see also:
         tree.sw, copy-map
