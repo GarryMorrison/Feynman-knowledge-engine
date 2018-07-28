@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 26/7/2018
+# Update: 28/7/2018
 # Copyright: GPLv3
 #
 # Usage: ./sdb-console.py [--debug]
@@ -50,7 +50,7 @@ if not os.path.exists(sw_file_dir):
 
 dot_file_dir = 'graph-examples'
 
-print("Welcome to version 2 of the Feynman Knowledge Engine!\nLast updated 27 July, 2018")
+print("Welcome to version 2 of the Feynman Knowledge Engine!\nLast updated 28 July, 2018")
 
 # C = ContextList("sw console")
 C = context

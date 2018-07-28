@@ -15,3 +15,4 @@ row |*> #=> first-line |_self> . second-line |_self> . |>
 
 max |bottles> => |10>
 sing |*> #=> smerge["\n"] row sp2seq reverse range(|0>, max |bottles>)
+sing2 |*> #=> sdrop tidy print row sp2seq reverse range(|0>, max |bottles>)

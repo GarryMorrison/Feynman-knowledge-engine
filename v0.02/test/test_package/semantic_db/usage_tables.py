@@ -92,6 +92,9 @@ context_whitelist_table_4_usage = {}
 
 examples_usage = {}
 
+sigmoid_table = {}
+compound_table = {}
+
 # fill out the built_in_table_usage dictionary:
 built_in_table_usage['pick-elt'] = """
     description:
@@ -178,7 +181,12 @@ built_in_table_usage['z'] = """
     examples:
 """
 
+
+
 # let's build the sigmoid_table_usage dictionary:
+# set invoke method:
+sigmoid_table['clean'] = 'clean'
+# set usage info:
 sigmoid_table_usage['clean'] = """
     description:
         clean ket
@@ -194,6 +202,9 @@ sigmoid_table_usage['clean'] = """
     
 """
 
+# set invoke method:
+compound_table['threshold-filter'] = ['apply_sigmoid', 'threshold_filter', '']
+# set usage info:
 sigmoid_table_usage['threshold-filter'] = """
     description:
         threshold-filter[t] ket
@@ -208,6 +219,9 @@ sigmoid_table_usage['threshold-filter'] = """
         not-threshold-filter
 """
 
+# set invoke method:
+compound_table['not-threshold-filter'] = ['apply_sigmoid', 'not_threshold_filter', '']
+# set usage info:
 sigmoid_table_usage['not-threshold-filter'] = """
     description:
         not-threshold-filter[t] ket
@@ -216,12 +230,15 @@ sigmoid_table_usage['not-threshold-filter'] = """
 
     examples:
         not-threshold-filter[2] (3|a> + 2.2|b> - 3 |c> + |d>)
-            0|a> + 0|b> + -3|c> + |d>
+            0|a> + 0|b> - 3|c> + |d>
     
     see also:
         threshold-filter
 """
 
+# set invoke method:
+sigmoid_table['binary-filter'] = 'binary_filter'
+# set usage info:
 sigmoid_table_usage['binary-filter'] = """
     description:
         binary-filter ket
@@ -236,6 +253,9 @@ sigmoid_table_usage['binary-filter'] = """
         not-binary-filter
 """
 
+# set invoke method:
+sigmoid_table['not-binary-filter'] = 'not_binary_filter'
+# set usage info:
 sigmoid_table_usage['not-binary-filter'] = """
     description:
         not-binary-filter ket
@@ -250,6 +270,9 @@ sigmoid_table_usage['not-binary-filter'] = """
         binary-filter
 """
 
+# set invoke method:
+sigmoid_table['pos'] = 'pos'
+# set usage info:
 sigmoid_table_usage['pos'] = """
     description:
         pos ket
@@ -265,6 +288,9 @@ sigmoid_table_usage['pos'] = """
         abs
 """
 
+# set invoke method:
+sigmoid_table['abs'] = 'sigmoid_abs'
+# set usage info:
 sigmoid_table_usage['abs'] = """
     description:
         abs ket
@@ -278,19 +304,26 @@ sigmoid_table_usage['abs'] = """
     
 """
 
+# set invoke method:
+compound_table['max-filter'] = ['apply_sigmoid', 'max_filter', '']
+# set usage info:
 sigmoid_table_usage['max-filter'] = """
     description:
         max-filter[t] ket
-        max filter
         if x <= t, return x
         else return t
 
     examples:
-    
+        max-filter[3] (|a> + 2|b> + 3|c> + 4|d> + 5|e>)
+            |a> + 2|b> + 3|c> + 3|d> + 3|e>
+            
     see also:
 
 """
 
+# set invoke method:
+sigmoid_table['NOT'] = 'NOT'
+# set usage info:
 sigmoid_table_usage['NOT'] = """
     description:
         NOT ket
@@ -299,11 +332,16 @@ sigmoid_table_usage['NOT'] = """
         else return 0
 
     examples:
+        NOT (-1|a> + |b> + 2|c>)
+            |a> + 0|b> + 0|c>
 
     see also:
     
 """
 
+# set invoke method:
+sigmoid_table['xor-filter'] = 'xor_filter'
+# set usage info:
 sigmoid_table_usage['xor-filter'] = """
     description:
         xor-filter ket
@@ -312,11 +350,16 @@ sigmoid_table_usage['xor-filter'] = """
         else return 0
 
     examples:
-
+        xor-filter (0|a> + 0.98|b> + |c> + 1.02|d> + 2|e>)
+            0|a> + |b> + |c> + |d> + 0|e>
+        
     see also:
     
 """
 
+# set invoke method:
+compound_table['sigmoid-in-range'] = ['apply_sigmoid', 'sigmoid_in_range', '']
+# set usage info:
 sigmoid_table_usage['sigmoid-in-range'] = """
     description:
         sigmoid-in-range[a,b] ket
@@ -325,11 +368,16 @@ sigmoid_table_usage['sigmoid-in-range'] = """
         else return 0
 
     examples:
+        sigmoid-in-range[2,4] (|a> + 2|b> + 3|c> + 4|d> + 5|e>)
+            0|a> + 2|b> + 3|c> + 4|d> + 0|e>
 
     see also:
 
 """
 
+# set invoke method:
+sigmoid_table['invert'] = 'invert'
+# set usage info:
 sigmoid_table_usage['invert'] = """
     description:
         invert ket
@@ -345,6 +393,9 @@ sigmoid_table_usage['invert'] = """
     
 """
 
+# set invoke method:
+compound_table['set-to'] = ['apply_sigmoid', 'set_to', '']
+# set usage info:
 sigmoid_table_usage['set-to'] = """
     description:
         set-to[t] ket
@@ -359,6 +410,9 @@ sigmoid_table_usage['set-to'] = """
     
 """
 
+# set invoke method:
+compound_table['subtraction-invert'] = ['apply_sigmoid', 'subtraction_invert', '']
+# set usage info:
 sigmoid_table_usage['subtraction-invert'] = """
     description:
         subtraction-invert[t] ket
@@ -367,12 +421,19 @@ sigmoid_table_usage['subtraction-invert'] = """
 
     examples:
         subtraction-invert[0] (0|x> + 3|y> - 0.5|z>)
-            0|x> + -3|y> + 0.5|z>
+            0|x> - 3|y> + 0.5|z>
+
+        subtraction-invert[2] (0|x> + 3|y> - 0.5|z>)
+            2|x> - |y> + 2.5|z>
 
     see also:
     
 """
 
+# set invoke method:
+sigmoid_table['log'] = 'log'
+compound_table['log'] = ['apply_sigmoid', 'log', '']
+# set usage info:
 sigmoid_table_usage['log'] = """
     description:
         log ket
@@ -393,6 +454,10 @@ sigmoid_table_usage['log'] = """
     
 """
 
+# set invoke method:
+sigmoid_table['log+1'] = 'log_1'
+compound_table['log+1'] = ['apply_sigmoid', 'log_1', '']
+# set usage info:
 sigmoid_table_usage['log+1'] = """
     description:
         log+1 ket
@@ -403,11 +468,16 @@ sigmoid_table_usage['log+1'] = """
         else, return math.log(1 + x, t)       (ie, base t)
 
     examples:
-
+        log+1 0|a>
+            0|a>
+        
     see also:
     
 """
 
+# set invoke method:
+sigmoid_table['square'] = 'square'
+# set usage info:
 sigmoid_table_usage['square'] = """
     description:
         square ket
@@ -422,6 +492,9 @@ sigmoid_table_usage['square'] = """
         sqrt
 """
 
+# set invoke method:
+sigmoid_table['sqrt'] = 'sqrt'
+# set usage info:
 sigmoid_table_usage['sqrt'] = """
     description:
         sqrt ket
@@ -436,9 +509,12 @@ sigmoid_table_usage['sqrt'] = """
             0.2|x> + 3|y> + 5|z>
     
     see also:
-        square
+        square, abs
 """
 
+# set invoke method:
+sigmoid_table['floor'] = 'floor'
+# set usage info:
 sigmoid_table_usage['floor'] = """
     description:
         floor ket
@@ -452,6 +528,9 @@ sigmoid_table_usage['floor'] = """
         ceiling
 """
 
+# set invoke method:
+sigmoid_table['ceiling'] = 'ceiling'
+# set usage info:
 sigmoid_table_usage['ceiling'] = """
     description:
         ceiling ket
@@ -465,6 +544,9 @@ sigmoid_table_usage['ceiling'] = """
         floor
 """
 
+# set invoke method:
+sigmoid_table['increment'] = 'increment'
+# set usage info:
 sigmoid_table_usage['increment'] = """
     description:
         increment ket
@@ -482,6 +564,9 @@ sigmoid_table_usage['increment'] = """
         decrement
 """
 
+# set invoke method:
+sigmoid_table['decrement'] = 'decrement'
+# set usage info:
 sigmoid_table_usage['decrement'] = """
     description:
         decrement ket
@@ -493,13 +578,16 @@ sigmoid_table_usage['decrement'] = """
             0|x>
 
         decrement^10 0|x>
-            -10 |x>
+            - 10|x>
     
     see also:
         increment
 """
 
 
+
+
+# some worked examples:
 examples_usage['numbers-to-words'] = """
     description:
         convert integers into English words
@@ -691,13 +779,10 @@ examples_usage['bottles-of-beer'] = """
         row |*> #=> first-line |_self> . second-line |_self> . |>
 
         max |bottles> => |10>
-        -- smerge["\n"] (|b> . |c> . |> . |d>) is currently broken
-        -- sing |*> #=> smerge["\\n"] row sp2seq reverse range(|0>, max |bottles>)
+        sing |*> #=> smerge["\n"] row sp2seq reverse range(|0>, max |bottles>)
 
-        -- temp fix:
-        -- bah, broken too since:
-        -- print (|a> . |b> . |> . |c>) doesn't print \n for the |> char.
-        sing |*> #=> sdrop tidy print row sp2seq reverse range(|0>, max |bottles>)
+        -- alternate version:
+        sing2 |*> #=> sdrop tidy print row sp2seq reverse range(|0>, max |bottles>)
 
     examples:
         max |bottles> => |4>

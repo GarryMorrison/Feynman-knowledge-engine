@@ -229,17 +229,22 @@ function_operators_usage['smerge'] = """
         -- ie, this is a sequence of two superpositions
         smerge[", "] (|a> + |b> + |c> . |d> + |e>)
             |a, b, c, d, e>
-    
+
+        smerge["\n"] (|b> . |c> . |> . |d>)
+            |b
+            c
+            
+            d>
+       
     see also:
         ssplit
         
-    TODO:
-        fix this, so it works again:
-        (not sure what broke it)
-        smerge["\n"] (|b> . |c> . |> . |d>)
 """
 # one is a sequence
 def smerge(one, merge_char=''):
+    # print('merge_char: %s' % merge_char)
+    if merge_char == '\\n':  # not sure why it doesn't work without this. It used to work fine.
+        merge_char = '\n'
     if type(one) is not sequence:
         return ket()
     labels = []
@@ -6128,7 +6133,7 @@ function_operators_usage['print'] = """
         shout, to-upper, to-lower 
 """
 def print_ket(one):
-    string = (one if type(one) == str else one.to_sp().label)
+    string = (one if type(one) == str else one.to_ket().label)
     print(string)
     return ket(string)
 

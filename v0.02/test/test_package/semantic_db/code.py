@@ -938,6 +938,8 @@ class superposition(object):
         return fn(*args)
 
     def apply_fn(self, fn, *args):
+        if len(self) == 0:
+            return superposition() + ket().apply_fn(fn, *args)  # need to verify this doesn't break anything
         r = superposition()
         for x in self:
             r += fn(x, *args)   # should this be: r.add_sp(...)? Also, what happens if fn(...) returns a sequence?
@@ -1296,8 +1298,10 @@ class sequence(object):
     def apply_fn(self, *args):
         if len(self) == 0:
             return sequence([]) + ket().apply_fn(*args)
+        # print('apply_fn seq: %s' % self)
         seq = sequence([])
         for x in self.data:
+            # print('apply_fn x: %s' % x)
             y = x.apply_fn(*args)
             if type(y) in [ket, superposition]:
                 seq += y
@@ -2346,7 +2350,7 @@ from string import ascii_letters
 from semantic_db.processor_tables import *
 from semantic_db.functions import *
 from semantic_db.sigmoids import *
-
+from semantic_db.usage_tables import *
 
 def valid_op(op):  # do we still need this now we have a better parser?
     if not op[0].isalpha() and not op[0] == '!':

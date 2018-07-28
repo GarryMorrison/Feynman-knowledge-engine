@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 27/7/2018
-# Update: 27/7/2018
+# Update: 28/7/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v comprehensive-tests.py
@@ -142,6 +142,16 @@ def test_full_compound_sequence_brackets():
     print(x)
     #assert x == [('+', [['op8', ('op7', 3), 'op4', [[('+', [[[('+', [[[('+', ['op3']), ('+', ['op2']), ('.', ['op1'])]]])]]])]], 'op'], 'fish'])]
     assert x == [('+', [['op8', ('op7', 3), 'op4', [('+', [[('+', [[('+', ['op3']), ('+', ['op2']), ('.', ['op1'])]])]])], 'op'], 'fish'])]
+
+
+# these next two are currently incompletely implemented in the compiler:
+def test_full_compound_sequence_union_input_seq_1():
+    x = op_grammar('union(|a>, |b>) (|x> . |y>) ').full_compound_sequence()
+    assert x == [('+', [[['f_op', 'union', [('+', [[], 'a'])], [('+', [[], 'b'])]]], [('+', [[], 'x']), ('.', [[], 'y'])]])]
+
+def test_full_compound_sequence_union_input_op_seq_2():
+    x = op_grammar('union(|a>, |b>) op1 op2 (|x> . |y>) ').full_compound_sequence()
+    assert x == [('+', [[['f_op', 'union', [('+', [[], 'a'])], [('+', [[], 'b'])]], 'op1', 'op2'], [('+', [[], 'x']), ('.', [[], 'y'])]])]
 
 
 
@@ -672,3 +682,97 @@ def test_context_seq_fn_learn_6():
     assert str(r) == '3|fish> + 5|soup>'
 
 
+# test seq_learn:
+
+# learn seq rules:
+# spell |fred> .=> |f>
+# spell |fred> .=> |r>
+# spell |fred> .=> |e>
+# spell |fred> .=> |d>
+def test_seq_learn_1():
+    context.seq_learn('spell', 'fred', 'f')
+    context.seq_learn('spell', 'fred', 'r')
+    context.seq_learn('spell', 'fred', 'e')
+    context.seq_learn('spell', 'fred', 'd')
+    r = context.recall('spell', 'fred')
+    assert str(r) == '|f> . |r> . |e> . |d>'
+
+def test_seq_learn_2():
+    context.seq_learn('pattern', 'a', ket('a',2) + ket('b', 0.3))
+    context.seq_learn('pattern', 'a', ket('x', 5.5) + ket('y', -7) + ket('z'))
+    r = context.recall('pattern', 'a')
+    assert str(r) == '2|a> + 0.3|b> . 5.5|x> - 7|y> + |z>'
+
+def test_seq_learn_3():
+    s = """
+pattern |b> .=> 0.4|a> + 0.9|b>
+pattern |b> .=> |x>  + 2|y> - |z>
+"""
+    r = process_sw_file(context, s)
+    r = context.recall('pattern', 'b')
+    assert str(r) == '0.4|a> + 0.9|b> . |x> + 2|y> - |z>'
+
+def test_indirect_seq_learn_1():
+    s = """
+indirect |foo> => |c>
+pattern indirect |foo> .=> 3|a>
+pattern indirect |foo> .=> 2|b> - 7|c>
+pattern indirect |foo> .=> |x> + |y> + |z>
+"""
+    r = process_sw_file(context, s)
+    r = context.recall('pattern', 'c')
+    assert str(r) == '3|a> . 2|b> - 7|c> . |x> + |y> + |z>'
+
+
+
+# test extract_compound_sequence and |>:
+# for some reason it chomps the leading |>
+# not a super urgent bug, but would be nice to fix!
+def test_extract_compound_sequence_empty_learn_1():
+    s = '|>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|>'
+
+def test_extract_compound_sequence_empty_learn_2():
+    s = '|> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|> . |>'
+
+def test_extract_compound_sequence_empty_learn_3():
+    s = '|> . |> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|> . |> . |>'
+
+def test_extract_compound_sequence_empty_learn_4():
+    s = '|a> . |b> . |c>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|a> . |b> . |c>'
+
+def test_extract_compound_sequence_empty_learn_5():
+    s = '|> . |a> . |b> . |a> . |> . |> . |b> . |> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|> . |a> . |b> . |a> . |> . |> . |b> . |> . |>'
+
+
+def test_extract_compound_sequence_empty_learn_6():
+    s = '|> . |> . |a> . |b> . |a> . |> . |> . |b> . |> . |>'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|> . |> . |a> . |b> . |a> . |> . |> . |b> . |> . |>'
+
+
+
+def test_multi_value_stored_rules_1():
+    s = """
+
+foo (*,*) #=>
+    the |result> => 3|__self1> + 5|__self2>
+
+"""
+    r = process_sw_file(context, s)
+    context.print_universe()
+    s = 'foo(|a>, |b>)'
+    r1 = process_input_line(context, s, ket())
+    s = 'foo(|a>.|b>, |x> + 7|y> )'
+    r2 = process_input_line(context, s, ket())
+    assert str(r1) == '3|a> + 5|b>'
+    assert str(r2) == '3|a> . 3|b> + 5|x> + 35|y>'  # yeah, addition of sp to seq is kind of weird.

@@ -95,7 +95,7 @@ built_in_table = {
 # table of sigmoids:
 sigmoid_table_usage = {}
 sigmoid_table = {
-  "clean"              : "clean",
+#  "clean"              : "clean",
 # "threshold-filter"   : "threshold_filter",   # we can't handle paramters with our ops yet.
   "binary-filter"      : "binary_filter",
   "not-binary-filter"  : "not_binary_filter",
@@ -278,7 +278,7 @@ compound_table = {
   "sselect"            : ".sselect_range({0})",
   
   "delete-elt"         : ".delete_elt({0})",
-  "threshold-filter"   : ['apply_sigmoid', 'threshold_filter', ''],                           # ".apply_sigmoid(threshold_filter,{0})",
+#  "threshold-filter"   : ['apply_sigmoid', 'threshold_filter', ''],                           # ".apply_sigmoid(threshold_filter,{0})",
   "not-threshold-filter" : ['apply_sigmoid', 'not_threshold_filter', ''],                     # ".apply_sigmoid(not_threshold_filter,{0})",
  
 #  "mult"              : ".apply_sigmoid(mult,{0})",  # this is now moved to ket/sp since it is common enough.
