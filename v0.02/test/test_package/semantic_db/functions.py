@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 27/7/2018
+# Update: 30/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -32,6 +32,46 @@ import hashlib
 import zlib
 import itertools
 
+
+# define our dictionaries:
+
+# operators are of form: foo S, or foo[op1, ... , opn] S
+# where S is either a ket, superposition or sequence
+# operators of form: op ket:
+fn_table = {}
+
+# operators of form: op ket, but require context too:
+ket_context_table = {}
+
+# operators of form: op sp:
+sp_fn_table = {}
+
+# operators of form: op sp, but require context too:
+sp_context_table = {}
+
+# operators of form: op seq:
+seq_fn_table = {}
+
+# operators that require parameters:
+# ie, foo[op1, ... , opn] S:
+compound_table = {}
+
+
+# sequence functions are of form: fn(seq, seq, ... , seq)
+# functions of form: fn(seq, seq):
+whitelist_table_2 = {}
+
+# functions of form: fn(seq, seq, seq):
+whitelist_table_3 = {}
+
+# functions of form: fn(seq, seq, seq, seq):
+whitelist_table_4 = {}
+
+# functions of form: fn(context, seq, seq):
+context_whitelist_table_2 = {}
+
+# functions of form: fn(context, seq, seq, seq):
+context_whitelist_table_3 = {}
 
 
 # define our usage dictionaries:
@@ -4358,18 +4398,20 @@ def first_find_path_between(context, one, two):
 
     return ket('path not found')
 
-def is_subset(A, B):              # test if one is a subset of two
-    A = A.apply_sigmoid(clean)      # ignore coeffs for now
-    B = B.apply_sigmoid(clean)
-    r = intersection(A, B)
-    if len(r.to_sp()) == len(A.to_sp()):
-        return True
-    return False
+
 
 def find_path_between(context, one, two):
     max_steps = 10                      # put a hard limit on the max number of operator steps
     one = one.to_sp()
     two = two.to_sp()
+
+    def is_subset(A, B):  # test if one is a subset of two
+        A = A.to_sp().apply_sigmoid(clean)  # ignore coeffs for now
+        B = B.to_sp().apply_sigmoid(clean)
+        r = intersection(A, B)
+        if len(r) == len(A):
+            return True
+        return False
 
     path_ways = [[sequence([]), one]]
     for _ in range(max_steps):
@@ -4417,6 +4459,15 @@ def first_find_steps_between(context, one, two):
     op_path = find_path_between(context, one, two)
     if type(op_path) is ket and op_path.label == 'path not found':
         return ket('steps not found')
+
+    def is_subset(A, B):  # test if one is a subset of two
+        A = A.to_sp().apply_sigmoid(clean)  # ignore coeffs for now
+        B = B.to_sp().apply_sigmoid(clean)
+        r = intersection(A, B)
+        if len(r) == len(A):
+            return True
+        return False
+
     path_ways = [one]
     for op in op_path:
         new_path_ways = []
@@ -4437,6 +4488,15 @@ def find_steps_between(context, one, two):
     op_path = find_path_between(context, one, two)
     if type(op_path) is ket and op_path.label == 'path not found':
         return ket('steps not found')
+
+    def is_subset(A, B):  # test if one is a subset of two
+        A = A.to_sp().apply_sigmoid(clean)  # ignore coeffs for now
+        B = B.to_sp().apply_sigmoid(clean)
+        r = intersection(A, B)
+        if len(r) == len(A):
+            return True
+        return False
+
     path_ways = [one]
     for op in op_path:
         new_path_ways = []
@@ -4784,7 +4844,7 @@ function_operators_usage['similar-input'] = """
             ----------
 
     see also:
-        find-topic, simm
+        find-topic, simm, map
 """
 def similar_input(self, context, op):
     return context.pattern_recognition(self, op)
@@ -8548,6 +8608,7 @@ def guess_operator(context, *parameters):
     except Exception as e:
         print('guess-operator reason:', e)
         return ket("", 0)
+
 
 
 

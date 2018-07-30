@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 27/7/2018
-# Update: 28/7/2018
+# Update: 30/7/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v comprehensive-tests.py
@@ -776,3 +776,23 @@ foo (*,*) #=>
     r2 = process_input_line(context, s, ket())
     assert str(r1) == '3|a> + 5|b>'
     assert str(r2) == '3|a> . 3|b> + 5|x> + 35|y>'  # yeah, addition of sp to seq is kind of weird.
+
+
+def test_multi_line_stored_rule_1():
+    s = """
+
+multi |*> #=>
+    multi-op1 |a> => |b>
+    multi-op2 |b> => |c>
+    multi-op3 |c> => |d>    
+
+"""
+    r = process_sw_file(context, s)
+    r = context.recall('multi', 'x', active=True)
+    context.print_universe()
+    r1 = context.recall('multi-op1', 'a')
+    r2 = context.recall('multi-op2', 'b')
+    r3 = context.recall('multi-op3', 'c')
+    assert str(r1) == '|b>'
+    assert str(r2) == '|c>'
+    assert str(r3) == '|d>'

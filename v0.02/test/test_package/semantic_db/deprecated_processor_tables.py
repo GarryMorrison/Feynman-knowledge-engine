@@ -305,9 +305,9 @@ compound_table = {
 
      
 # newly added 12/5/2014:
-  "exp"                : ".apply_sp_fn(exp,context,\"{0}\")",
+#  "exp"                : ".apply_sp_fn(exp,context,\"{0}\")",
 # newly added 17/4/2015:
-  "full-exp"           : ".apply_sp_fn(full_exp,context,\"{0}\")",
+#  "full-exp"           : ".apply_sp_fn(full_exp,context,\"{0}\")",
   
 # newly added 19/5/2014
 # rel-kets tweaked 13/2/2015:
@@ -344,7 +344,7 @@ compound_table = {
 #  "train-of-thought"   : ".apply_sp_fn(console_train_of_thought,context,\"{0}\")",
   
 # added 4/8/2014:
-  "exp-max"            : ".apply_sp_fn(exp_max,context,\"{0}\")",
+#  "exp-max"            : ".apply_sp_fn(exp_max,context,\"{0}\")",
   
 # added 7/8/2014:
 #  "sp-propagate"       : ".apply_sp_fn(sp_propagate,context,\"{0}\")",
@@ -502,9 +502,9 @@ compound_table = {
 #  "word-ngrams"            : ".apply_fn(make_ngrams,\"{0}\",\"word\")",
   
 # 15/12/2015:
-  "log"                    : ".apply_sigmoid(log,{0})",
+#  "log"                    : ".apply_sigmoid(log,{0})",
 # 17/5/2016:
-  "log+1"                  : ".apply_sigmoid(log_1,{0})",
+#  "log+1"                  : ".apply_sigmoid(log_1,{0})",
   
   
 # 17/12/2015:

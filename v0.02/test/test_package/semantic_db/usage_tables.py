@@ -1,18 +1,18 @@
 #######################################################################
 # the semantic-db usage tables
-# ie, our only current documentation
+# contains documentation for our built in operators, our sigmoids, and our worked examples
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 27/7/2018
+# Update: 30/7/2018
 # Copyright: GPLv3
 #
 # Usage:
 #
 #######################################################################
 
-from semantic_db.functions import function_operators_usage, sequence_functions_usage
+from semantic_db.functions import function_operators_usage, sequence_functions_usage, compound_table
 
 
 # define our usage report function:
@@ -28,7 +28,7 @@ def usage(ops=None):
         for key in sorted(sigmoid_table_usage):
             s += '    ' + key + '\n'
 
-        s += '\n  function operators:\n'
+        s += '\n  operators:\n'
         for key in sorted(function_operators_usage):
             s += '    ' + key + '\n'
 
@@ -54,7 +54,7 @@ def usage(ops=None):
                 s += sigmoid_table_usage[op] + '\n'
 
             if op in function_operators_usage:
-                s += 'function operator:\n'
+                s += 'operator:\n'
                 s += '  ' + op + ':\n'
                 s += function_operators_usage[op] + '\n'
 
@@ -71,35 +71,35 @@ def usage(ops=None):
     print(s, end='')
 
 
-# define our operator usage types:
-# TODO: remove the unusued ones!
+# define our required dictionaries:
+# operators built in to our ket/superposition/sequence classes that don't require parameters:
+# eg: pick-elt sp
+# see code.py
+built_in_table = {}
+
+# sigmoids that don't require parameters:
+# by definition, sigmoids only change the coeff of kets, not the structure of the superposition/sequence
+# eg: clean sp
+# see sigmoids.py
+sigmoid_table = {}
+
+# related usage tables:
 built_in_table_usage = {}
 sigmoid_table_usage = {}
-fn_table_usage = {}
-fn_table2_usage = {}
-compound_table_usage = {}
-sp_fn_table_usage = {}
-ket_context_table_usage = {}
-sp_context_table_usage = {}
-whitelist_table_1_usage = {}
-whitelist_table_2_usage = {}
-whitelist_table_3_usage = {}
-whitelist_table_4_usage = {}
-context_whitelist_table_1_usage = {}
-context_whitelist_table_2_usage = {}
-context_whitelist_table_3_usage = {}
-context_whitelist_table_4_usage = {}
-
 examples_usage = {}
 
-sigmoid_table = {}
-compound_table = {}
 
-# fill out the built_in_table_usage dictionary:
+# populate our usage tables:
+# set invoke method:
+built_in_table['pick-elt'] = 'pick_elt'
+built_in_table['pick-an-element-from'] = 'pick_elt'
+# set usage info:
 built_in_table_usage['pick-elt'] = """
     description:
         pick-elt sp
         randomly pick an element from the given superposition, with equal probability
+    
+    alias: pick-an-element-from
 
     examples:
         pick-elt split |a b c d e>
@@ -107,7 +107,12 @@ built_in_table_usage['pick-elt'] = """
     see also:
         weighted-pick-elt, spick-elt, sweighted-pick-elt    
 """
+built_in_table_usage['pick-an-element-from'] = built_in_table_usage['pick-elt']
 
+
+# set invoke method:
+built_in_table['weighted-pick-elt'] = 'weighted_pick_elt'
+# set usage info:
 built_in_table_usage['weighted-pick-elt'] = """
     description:
         weighted-pick-elt sp
@@ -120,6 +125,54 @@ built_in_table_usage['weighted-pick-elt'] = """
         pick-elt, spick-elt, sweighted-pick-elt
 """
 
+# set invoke method:
+built_in_table['spick-elt'] = 'spick_elt'
+# set usage info:
+built_in_table_usage['spick-elt'] = """
+    description:
+        spick-elt seq
+        randomly pick a superposition from the given sequence, with equal probability
+
+    examples:
+        spick-elt (|a> + |b> + |c> . |d> . |e> + |f> . |g> + |h> + |i> + |j>)
+            |e> + |f>
+
+    see also:
+        weighted-pick-elt, pick-elt, sweighted-pick-elt    
+"""
+
+# set invoke method:
+compound_table['pick'] = ['pick', '', '']
+# set usage info:
+built_in_table_usage['pick'] = """
+    description:
+        pick[n] sp
+        pick n kets from the given sp, with no duplication
+        currently the order is not preserved, in future we may change this
+        if n == 0, return |>
+
+    examples:
+        -- n is zero, so return don't know ket
+        pick[0] range(|1>, |10>)
+            |>
+        
+        pick[3] split |a b c d e f g h>
+            |c> + |a> + |e>
+
+        pick[10] range(|1>, |4096>)
+            |1203> + |700> + |3564> + |198> + |3902> + |1609> + |3085> + |1368> + |104> + |854>
+
+        ket-sort pick[10] range(|1>, |4096>)
+            |688> + |708> + |1499> + |1569> + |1893> + |2988> + |3133> + |3144> + |3420> + |3644> 
+
+    see also:
+        pick-elt, spick-elt, weighted-pick-elt, ket-sort
+"""
+
+# set invoke method:
+built_in_table['normalize'] = 'normalize'
+compound_table['normalize'] = ['normalize', '', '']
+# set usage info:
 built_in_table_usage['normalize'] = """
     description:
         normalize sp
@@ -138,25 +191,161 @@ built_in_table_usage['normalize'] = """
             66.667|a> + 33.333|b>
     
     see also:
-        rescale, snormalize
+        rescale, snormalize, soft-max
 """
 
+# set invoke method:
+built_in_table['rescale'] = 'rescale'
+compound_table['rescale'] = ['rescale', '', '']
+# set usage info:
+built_in_table_usage['rescale'] = """
+    description:
+        rescale sp
+        rescale[t] sp
+        rescale the coefficients of the given superposition so the coeff of the max element is t
+        if t is not specified, t defaults to 1
+
+    examples:
+        rescale rank split |a b c d e f>
+            0.167|a> + 0.333|b> + 0.5|c> + 0.667|d> + 0.833|e> + |f>
+
+        rescale[100] rank split |a b c d e f>
+            16.667|a> + 33.333|b> + 50|c> + 66.667|d> + 83.333|e> + 100|f>
+
+    see also:
+        srescale, normalize, snormalize, softmax
+"""
+
+# set invoke method:
+built_in_table['softmax'] = 'softmax'
+# set usage info:
+built_in_table_usage['softmax'] = """
+    description:
+        softmax sp
+        implement the softmax function
+        
+    algorithm:
+        see: https://en.wikipedia.org/wiki/Softmax_function
+
+    examples:
+        -- let's consider a Gaussian:
+        Gaussian[0.7] |age: 40>
+            0.017|age: 36> + 0.047|age: 37> + 0.13|age: 38> + 0.36|age: 39> + |age: 40> + 0.36|age: 41> + 0.13|age: 42> + 0.047|age: 43> + 0.017|age: 44>
+            
+        bar-chart[50] Gaussian[0.7] |age: 40>
+            ----------
+            age: 36 :
+            age: 37 : ||
+            age: 38 : ||||||
+            age: 39 : ||||||||||||||||||
+            age: 40 : ||||||||||||||||||||||||||||||||||||||||||||||||||
+            age: 41 : ||||||||||||||||||
+            age: 42 : ||||||
+            age: 43 : ||
+            age: 44 :
+            ----------
+        
+        -- now softmax it:
+        softmax Gaussian[0.7] |age: 40>
+            0.085|age: 36> + 0.087|age: 37> + 0.095|age: 38> + 0.12|age: 39> + 0.227|age: 40> + 0.12|age: 41> + 0.095|age: 42> + 0.087|age: 43> + 0.085|age: 44>
+
+        bar-chart[50] softmax Gaussian[0.7] |age: 40>
+            ----------
+            age: 36 : ||||||||||||||||||
+            age: 37 : |||||||||||||||||||
+            age: 38 : ||||||||||||||||||||
+            age: 39 : ||||||||||||||||||||||||||
+            age: 40 : ||||||||||||||||||||||||||||||||||||||||||||||||||
+            age: 41 : ||||||||||||||||||||||||||
+            age: 42 : ||||||||||||||||||||
+            age: 43 : |||||||||||||||||||
+            age: 44 : ||||||||||||||||||
+            ----------
+
+        softmax (|a> + 2|b> + 3|c> + 4|d> + 5|e> + 6|f>)
+            0.004|a> + 0.012|b> + 0.032|c> + 0.086|d> + 0.233|e> + 0.634|f>
+
+    see also:
+        rescale, srescale, normalize, snormalize 
+"""
+
+
+# set invoke method:
+built_in_table['sdrop'] = 'sdrop'
+# set usage info:
 built_in_table_usage['sdrop'] = """
     description:
         sdrop seq
         sequence version of drop
+        ie, drop all kets with coeff <= 0, and |>, from the given sequence
 
     examples:
+        sdrop (|a> . 0|b> . -2|c> . 7.1|d>)
+            |a> . 7.1|d>
+        
+        sdrop (|a> . |> . |b> . |> . |> . |c> . |>)
+            |a> . |b> . |c>
 
     see also:
         drop
 """
 
-# built_in_table['sreverse'] = 'sreverse'
+# set invoke method:
+built_in_table['drop'] = 'drop'
+# set usage info:
+built_in_table_usage['drop'] = """
+    description:
+        drop sp
+        ie, drop all kets with coeff <= 0 from the given superposition
+
+    examples:
+        drop (|a> + 0|b> - 2|c> + 7.1|d>)
+            |a> + 7.1|d>
+            
+    see also:
+        drop-below, drop-above, sdrop
+"""
+
+# set invoke method:
+compound_table['drop-below'] = ['drop_below', '', '']
+# set usage info:
+built_in_table_usage['drop-below'] = """
+    description:
+        drop-below[t] sp
+        ie, drop all kets with coeff < t from the given superposition
+
+    examples:
+        drop-below[2] (- |a> + 0|b> + |c> + 2|d> + 3|e> + 4|f>) 
+            2|d> + 3|e> + 4|f>
+
+    see also:
+        drop, drop-above, sdrop
+"""
+
+# set invoke method:
+compound_table['drop-above'] = ['drop_above', '', '']
+# set usage info:
+built_in_table_usage['drop-above'] = """
+    description:
+        drop-above[t] sp
+        ie, drop all kets with coeff > t from the given superposition
+
+    examples:
+        drop-above[2] (- |a> + 0|b> + |c> + 2|d> + 3|e> + 4|f>) 
+            - |a> + 0|b> + |c> + 2|d>
+
+    see also:
+        drop, drop-above, sdrop
+"""
+
+
+# set invoke method:
+built_in_table['sreverse'] = 'sreverse'
+# set usage info:
 built_in_table_usage['sreverse'] = """
     description:
         sreverse seq
-        sequence version of reverse
+        reverse the given sequence, leaving the order of the kets in the superpositions unchanged
 
     examples:
         sreverse (|a> . |b> . |c>)
@@ -165,22 +354,363 @@ built_in_table_usage['sreverse'] = """
         sreverse (|a> + |b> . |c> + |d> . |e>)
             |e> . |c> + |d> . |a> + |b>
             
+        -- reverse the order of the sequence of superpositions:
         long-display sreverse (|a> + |b> . |c> + |d> . |e>)
             seq |0> => |e>
             seq |1> => |c> + |d>
             seq |2> => |a> + |b>
             |e> . |c> + |d> . |a> + |b>
         
+        -- reverse both the superpositions and the sequence:
+        long-display sreverse reverse (|a> + |b> . |c> + |d> . |e>)
+            seq |0> => |e>
+            seq |1> => |d> + |c>
+            seq |2> => |b> + |a>
+            |e> . |d> + |c> . |b> + |a>
+        
     see also:
         reverse
 """
 
-built_in_table_usage['z'] = """
+# set invoke method:
+built_in_table['reverse'] = 'reverse'
+# set usage info:
+built_in_table_usage['reverse'] = """
     description:
+        reverse sp
+        reverse the given superposition
 
     examples:
+        reverse (|a> + |b> + |c>)
+            |c> + |b> + |a>
+
+        reverse (|a> + |b> . |c> + |d> . |e>)
+            |b> + |a> . |d> + |c> . |e>
+
+        -- reverse the order of the superpositions, but leave the sequence unchanged:
+        long-display reverse (|a> + |b> . |c> + |d> . |e>)
+            seq |0> => |b> + |a>
+            seq |1> => |d> + |c>
+            seq |2> => |e>
+            |b> + |a> . |d> + |c> . |e>
+      
+        -- reverse both the superpositions and the sequence:
+        long-display sreverse reverse (|a> + |b> . |c> + |d> . |e>)
+            seq |0> => |e>
+            seq |1> => |d> + |c>
+            seq |2> => |b> + |a>
+            |e> . |d> + |c> . |b> + |a>
+
+    see also:
+        sreverse
 """
 
+# set invoke method:
+built_in_table['coeff-sort'] = 'coeff_sort'
+# set usage info:
+built_in_table_usage['coeff-sort'] = """
+    description:
+        coeff-sort sp
+        sort the given superposition by its coefficients
+
+    examples:
+        coeff-sort (6|f> + 5|e> + |a> + 2|b> + 4|d> + 3|c>)
+            6|f> + 5|e> + 4|d> + 3|c> + 2|b> + |a>
+        
+        reverse coeff-sort (6|f> + 5|e> + |a> + 2|b> + 4|d> + 3|c>)
+            |a> + 2|b> + 3|c> + 4|d> + 5|e> + 6|f>
+
+    see also:
+        ket-sort, shuffle, reverse
+"""
+
+# set invoke method:
+built_in_table['ket-sort'] = 'ket_sort'
+# set usage info:
+built_in_table_usage['ket-sort'] = """
+    description:
+        ket-sort sp
+        natural sort the given superposition by its ket labels
+
+    examples:
+        the-list-of |cities> => |Brisbane> + |Perth> + |Darwin> + |Hobart> + |Sydney> + |Melbourne> + |Adelaide>
+        ket-sort the-list-of |cities>
+            |Adelaide> + |Brisbane> + |Darwin> + |Hobart> + |Melbourne> + |Perth> + |Sydney>
+
+    see also:
+        coeff-sort, shuffle, reverse
+"""
+
+# set invoke method:
+built_in_table['shuffle'] = 'shuffle'
+# set usage info:
+built_in_table_usage['shuffle'] = """
+    description:
+        shuffle sp
+        shuffle the given superposition
+
+    examples:
+        shuffle rank split |a b c d e f>
+            3|c> + 5|e> + 4|d> + 2|b> + 6|f> + |a>
+
+    see also:
+        ket-sort, coeff-sort
+"""
+
+# set invoke method:
+compound_table['absolute-noise'] = ['absolute_noise', '', '']
+# set usage info:
+built_in_table_usage['absolute-noise'] = """
+    description:
+        absolute-noise[t] sp
+        add noise to each ket in the superposition in range [0, t]
+
+    examples:
+        absolute-noise[100] split |a b c d e f>
+            68.97|a> + 99.854|b> + 28.219|c> + 76.727|d> + 53.644|e> + 12.271|f>
+
+        bar-chart[50] absolute-noise[100] split |a b c d e f>
+            ----------
+            a : ||||||||||||||||||||||
+            b : ||||||||||||||||||||||||||||||||||||||||||||||
+            c : ||||||||||||||||
+            d : ||||||||||||||||||||||||||||||||||||||||||||||||||
+            e : |||||||||||||||||||||||||||||||||||||||||||||||||
+            f : ||||||||||||||||||||||||||||||||||||
+            ----------
+        
+    see also:
+        relative-noise
+"""
+
+# set invoke method:
+compound_table['relative-noise'] = ['relative_noise', '', '']
+# set usage info:
+built_in_table_usage['relative-noise'] = """
+    description:
+        relative-noise[t] sp
+        add noise to each ket in the superposition in range [0, t*max_coeff]
+
+    examples:
+        relative-noise[100] split |a b c d e f>
+            87.604|a> + 28.21|b> + 7.666|c> + 45.833|d> + 52.395|e> + 58.717|f>
+
+        bar-chart[50] relative-noise[100] split |a b c d e f>
+            ----------
+            a : |||||||
+            b : ||||||||||||||||||||||
+            c : ||||||||||||||||
+            d : ||||||||||||||||||||||
+            e : |||||||||||||||||||||||||||||||||||
+            f : ||||||||||||||||||||||||||||||||||||||||||||||||||
+            ----------
+
+    see also:
+        absolute-noise
+"""
+
+
+# set invoke method:
+compound_table['select'] = ['select_range', '', '']
+# set usage info:
+built_in_table_usage['select'] = """
+    description:
+        select[k1, k2] sp
+        select the k1'th to the k2'th elements from the given superposition
+        indices start from 1, not 0
+
+    examples:
+        select[2,2] split |a b c d e f g h>
+            |b>
+        
+        select[4,7] split |a b c d e f g h>
+            |d> + |e> + |f> + |g>
+            
+    see also:
+        sselect
+"""
+
+# set invoke method:
+compound_table['sselect'] = ['sselect_range', '', '']
+# set usage info:
+built_in_table_usage['sselect'] = """
+    description:
+        sselect[k1, k2] seq
+        select the k1'th to the k2'th elements from the given sequence
+        indices start from 1, not 0
+
+    examples:
+        sselect[2,2] ssplit |abcdefgh>
+            |b>
+
+        sselect[2,3] (|a> + |b> . |c> + |d> . |e> . |f> + |g> + |h> . |i> + |j>)
+            |c> + |d> . |e>
+
+        sselect[4,7] ssplit[" "] |a b c d e f g h>
+            |d> . |e> . |f> . |g>   
+
+    see also:
+        sselect
+"""
+
+# set invoke method:
+compound_table['top'] = ['top', '', '']
+# set usage info:
+built_in_table_usage['top'] = """
+    description:
+        top[k] sp
+        return the top k elements from the given sp
+        indices start from 1, not 0
+        if several elements all have the same coeff, then return all of them
+
+    examples:
+        top[3] rank split |a b c d e f g h>
+            6|f> + 7|g> + 8|h>
+
+    see also:
+        select, sselect
+"""
+
+# set invoke method:
+built_in_table['do-you-know'] = 'is_not_empty'
+# set usage info:
+built_in_table_usage['do-you-know'] = """
+    description:
+        do-you-know seq
+        if seq is one of these: 
+            don't know ket |>
+            empty superposition
+            empty sequence
+        return |no>
+        else, return |yes>
+
+    examples:
+        do-you-know |>
+            |no>
+        
+        do-you-know |x>
+            |yes>
+        
+        age |Fred> => |27>
+        do-you-know age |Fred>
+            |yes>
+        
+        do-you-know age |Sam>
+            |no>
+            
+    see also:
+
+"""
+
+# set invoke method:
+built_in_table['how-many'] = 'number_count'
+# set usage info:
+built_in_table_usage['how-many'] = """
+    description:
+        how-many sp
+        returns the number of kets in a superposition
+
+    examples:
+        how-many |>
+            |number: 0>
+                    
+        how-many split |a b c d e f g>
+            |number: 7>
+        
+        -- learn some knowledge:
+        friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+        friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+
+        -- ask how many friends:
+        how-many friends |Fred>
+            |number: 8>
+        
+        how-many friends |Sam>
+            |number: 7>
+
+    see also:
+        show-many, measure-currency
+"""
+
+# set invoke method:
+built_in_table['show-many'] = 'snumber_count'
+# set usage info:
+built_in_table_usage['show-many'] = """
+    description:
+        show-many sp
+        returns the number of superpositions in a sequence
+
+    examples:
+        show-many |>
+            |number: 0>
+
+        show-many ssplit[" "] |a b c d e f g>
+            |number: 7>
+
+        show-many (|a> . |b> + |c> + |d> . |e> + |f>)
+            |number: 3>
+
+    see also:
+        how-many, measure-currency
+"""
+
+# set invoke method:
+built_in_table['measure-currency'] = 'number_count_sum'
+# set usage info:
+built_in_table_usage['measure-currency'] = """
+    description:
+        measure-currency sp
+        returns the sum of the coeffs in the given superposition
+        in other words, the amount of currency used by that superposition
+        
+        eg, for a currency preserving operator, op, we have:
+            measure-currency sp == measure-currency op sp
+        for any superposition sp
+
+    examples:
+        measure-currency |>
+            |number: 0>
+
+        measure-currency split |a b c d e f g>
+            |number: 7>
+
+        measure-currency normalize split |a b c d e f g>
+            |number: 1.0>
+
+        measure-currency normalize[10] split |a b c d e f g>
+            |number: 10>
+                    
+        measure-currency (0|a> + 2|b> + 3|c> + 5|d> + 7|e> + 11|f>)
+            |number: 28>
+
+    see also:
+        how-many, show-many, normalize, rescale, smeasure-currency
+"""
+
+# set invoke method:
+built_in_table['smeasure-currency'] = 'snumber_count_sum'
+# set usage info:
+built_in_table_usage['smeasure-currency'] = """
+    description:
+        smeasure-currency seq
+        returns the sum of all the coeffs in the given sequence
+        in other words, the amount of currency used by that sequence
+        probably less useful than measure-currency
+
+        eg, for a currency preserving operator, op, we have:
+            measure-currency seq == measure-currency op seq
+        for any sequence seq
+
+    examples:
+        smeasure-currency |>
+            |number: 0>
+
+        smeasure-currency ssplit[" "] |a b c d e f g>
+            |number: 7>        
+
+    see also:
+        how-many, show-many, normalize, rescale, measure-currency
+"""
 
 
 # let's build the sigmoid_table_usage dictionary:
@@ -199,7 +729,7 @@ sigmoid_table_usage['clean'] = """
             |a> + |b> + 0|c> + |d>
     
     see also:
-    
+        set-to
 """
 
 # set invoke method:
@@ -782,6 +1312,7 @@ examples_usage['bottles-of-beer'] = """
         sing |*> #=> smerge["\n"] row sp2seq reverse range(|0>, max |bottles>)
 
         -- alternate version:
+        -- NB: tidy is purposely not defined, so 'sdrop tidy seq' returns |> for all sequences seq
         sing2 |*> #=> sdrop tidy print row sp2seq reverse range(|0>, max |bottles>)
 
     examples:
@@ -812,659 +1343,657 @@ examples_usage['bottles-of-beer'] = """
 
 examples_usage['eat-from-can'] = """
     description:
-      use consume-reaction to open and then eat from a can
+        use consume-reaction to open and then eat from a can
       
     code:
-      current |state> => words-to-list |closed can and hungry>
-      learn-state (*) #=> learn(|op: current>, |state>, |_self>)
-      use |can opener> #=> learn-state consume-reaction(current |state>, |can opener> + |closed can>, |can opener> + |open can>)
-      eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
+        current |state> => words-to-list |closed can and hungry>
+        learn-state (*) #=> learn(|op: current>, |state>, |_self>)
+        use |can opener> #=> learn-state consume-reaction(current |state>, |can opener> + |closed can>, |can opener> + |open can>)
+        eat-from |can> #=> learn-state consume-reaction(current |state>, |open can> + |hungry>, |empty can> + |not hungry>)
 
     examples:
-      -- start without a can-opener:
-      current |state>
-        |closed can> + |hungry>
+        -- start without a can-opener:
+        current |state>
+            |closed can> + |hungry>
 
-      -- trying to use a can opener doesn't change our state, since we don't have one:
-      use |can opener>
-        |closed can> + |hungry>
+        -- trying to use a can opener doesn't change our state, since we don't have one:
+        use |can opener>
+            |closed can> + |hungry>
         
-      -- let's add a can opener:
-      current |state> +=> |can opener>
+        -- let's add a can opener:
+        current |state> +=> |can opener>
       
-      -- now we can open our can:
-      use |can opener>
-        |can opener> + |hungry> + |open can>
+        -- now we can open our can:
+        use |can opener>
+            |can opener> + |hungry> + |open can>
 
-      -- now we can eat from the open can:
-      eat-from |can>
-        |can opener> + |empty can> + |not hungry>
+        -- now we can eat from the open can:
+        eat-from |can>
+            |can opener> + |empty can> + |not hungry>
 
     source code:
-      load eat-from-can.sw
+        load eat-from-can.sw
 """
 
 examples_usage['greetings'] = """
     description:
-      random greet a list of people      
+        random greet a list of people      
 
     code:
-      hello |*> #=> |Hello,> __ |_self> _ |!>
-      hey |*> #=> |Hey Ho!> __ |_self> _ |.>
-      wat-up |*> #=> |Wat up my homie!> __ |_self> __ |right?>
-      greetings |*> #=> |Greetings fine Sir. I belive they call you> __ |_self> _ |.>
-      howdy |*> #=> |Howdy partner!>
-      good-morning |*> #=> |Good morning> __ |_self> _ |.>
-      gday |*> #=> |G'day> __ |_self> _ |.>
+        hello |*> #=> |Hello,> __ |_self> _ |!>
+        hey |*> #=> |Hey Ho!> __ |_self> _ |.>
+        wat-up |*> #=> |Wat up my homie!> __ |_self> __ |right?>
+        greetings |*> #=> |Greetings fine Sir. I belive they call you> __ |_self> _ |.>
+        howdy |*> #=> |Howdy partner!>
+        good-morning |*> #=> |Good morning> __ |_self> _ |.>
+        gday |*> #=> |G'day> __ |_self> _ |.>
 
-      list-of |greetings> => |op: hello> + |op: hey> + |op: wat-up> + |op: greetings> + |op: howdy> + |op: good-morning> + |op: gday>
-      greet (*) #=> apply(pick-elt list-of |greetings>, list-to-words |_self>)
+        list-of |greetings> => |op: hello> + |op: hey> + |op: wat-up> + |op: greetings> + |op: howdy> + |op: good-morning> + |op: gday>
+        greet (*) #=> apply(pick-elt list-of |greetings>, list-to-words |_self>)
 
-      friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Robert> + |Frank> + |Julie>
-      friends |Emma> => |Liz> + |Bob>
+        friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Robert> + |Frank> + |Julie>
+        friends |Emma> => |Liz> + |Bob>
 
    examples:
-     greet (|Sam> + |Jack>)
-       |G'day Sam and Jack.>
+        greet (|Sam> + |Jack>)
+            |G'day Sam and Jack.>
 
-     greet friends |Sam>
-       |Hey Ho! Charlie, George, Emma, Jack, Robert, Frank and Julie.>
+        greet friends |Sam>
+            |Hey Ho! Charlie, George, Emma, Jack, Robert, Frank and Julie.>
 
-     greet friends |Emma>
-       |Wat up my homie! Liz and Bob right?>
+        greet friends |Emma>
+            |Wat up my homie! Liz and Bob right?>
 
     source code:
-      load greetings.sw
+        load greetings.sw
 """
 
 examples_usage['fission-uranium'] = """
     description:
-      another example of consume-reaction()
-      this time a toy example of fissioning uranium 235
+        another example of consume-reaction()
+        this time a toy example of fissioning uranium 235
 
     code:
-      fission-channel-1 |U: 235> => |Ba: 141> + |Kr: 92> + 3|n>
-      fission-channel-2 |U: 235> => |Xe: 140> + |Sr: 94> + 2|n>
-      fission-channel-3 |U: 235> => |La: 143> + |Br: 90> + 3|n>
-      fission-channel-4 |U: 235> => |Cs: 137> + |Rb: 96> + 3|n>
-      fission-channel-5 |U: 235> => |I: 131> + |Y: 89> + 16|n>
+        -- would also be nice to have |MeV> in these rules too:
+        fission-channel-1 |U: 235> => |Ba: 141> + |Kr: 92> + 3|n>
+        fission-channel-2 |U: 235> => |Xe: 140> + |Sr: 94> + 2|n>
+        fission-channel-3 |U: 235> => |La: 143> + |Br: 90> + 3|n>
+        fission-channel-4 |U: 235> => |Cs: 137> + |Rb: 96> + 3|n>
+        fission-channel-5 |U: 235> => |I: 131> + |Y: 89> + 16|n>
 
-      -- a more realistic example would have probabilities, as coefficients, for each of the channels.
-      list-of-fission-channels |U: 235> => |op: fission-channel-1> + |op: fission-channel-2> + |op: fission-channel-3> + |op: fission-channel-4> + |op: fission-channel-5>
+        -- a more realistic example would have probabilities, as coefficients, for each of the channels.
+        list-of-fission-channels |U: 235> => |op: fission-channel-1> + |op: fission-channel-2> + |op: fission-channel-3> + |op: fission-channel-4> + |op: fission-channel-5>
 
-      fission |*> #=> apply(weighted-pick-elt list-of-fission-channels |_self>, |_self>)
+        fission |*> #=> apply(weighted-pick-elt list-of-fission-channels |_self>, |_self>)
 
-      fission-uranium-235 (*) #=> consume-reaction(|_self>,|n> + |U: 235>,fission |U: 235>)
+        fission-uranium-235 (*) #=> consume-reaction(|_self>, |n> + |U: 235>, fission |U: 235>)
 
     examples:
-      fission |U: 235>
-        |Xe: 140> + |Sr: 94> + 2|n>
+        fission |U: 235>
+            |Xe: 140> + |Sr: 94> + 2|n>
 
-      fission |U: 235>
-        |La: 143> + |Br: 90> + 3|n>
+        fission |U: 235>
+            |La: 143> + |Br: 90> + 3|n>
 
-      fission |U: 235>
-        |I: 131> + |Y: 89> + 16|n>
+        fission |U: 235>
+            |I: 131> + |Y: 89> + 16|n>
 
-      fission-uranium-235 (|n> + 10|U: 235>)
-        9|U: 235> + |Cs: 137> + |Rb: 96> + 3|n>
+        fission-uranium-235 (|n> + 10|U: 235>)
+            9|U: 235> + |Cs: 137> + |Rb: 96> + 3|n>
 
-      fission-uranium-235^50 (|n> + 100|U: 235>)
-        50|U: 235> + 12|Ba: 141> + 12|Kr: 92> + 237|n> + 11|I: 131> + 11|Y: 89> + 7|Xe: 140> + 7|Sr: 94> + 12|La: 143> + 12|Br: 90> + 8|Cs: 137> + 8|Rb: 96>
+        fission-uranium-235^50 (|n> + 100|U: 235>)
+            50|U: 235> + 12|Ba: 141> + 12|Kr: 92> + 237|n> + 11|I: 131> + 11|Y: 89> + 7|Xe: 140> + 7|Sr: 94> + 12|La: 143> + 12|Br: 90> + 8|Cs: 137> + 8|Rb: 96>
 
     source code:
-      load fission-uranium.sw
+        load fission-uranium.sw
 """
 
 examples_usage['simple-adjective-sentence'] = """
     description:
-      proof of concept of writing sentences
-      in this case a simple adjective sentence
-      obviously, the plan is to scale this up massively
-      also, the plan is to eventually auto-learn adjectives from reading text
-      but that is a ways off!!
+        proof of concept of writing sentences
+        in this case a simple adjective sentence
+        obviously, the plan is to scale this up massively
+        also, the plan is to eventually auto-learn adjectives from reading text
+        but that is a ways off!!
 
     code:
-      current |person> => |old man>
-      learn-person |*> #=> learn(|op: current>, |person>, |_self>)
+        current |person> => |old man>
+        learn-person |*> #=> learn(|op: current>, |person>, |_self>)
 
-      adjectives |old man> => 10|crotchety> + 8|grumpy> + 5|friendly> + |kindly> + 0.2|sleepy>
-      comma |old man> => |,>
+        adjectives |old man> => 10|crotchety> + 8|grumpy> + 5|friendly> + |kindly> + 0.2|sleepy>
+        comma |old man> => |,>
       
-      adjectives |old woman> => 2|kindly> + |sleepy> + |pleasant> + |strange>
-      comma |old woman> => |,>
+        adjectives |old woman> => 2|kindly> + |sleepy> + |pleasant> + |strange>
+        comma |old woman> => |,>
       
-      adjectives |teenager> => |enthusiastic> + |energetic>
-      comma |teenager> #=> |>
+        adjectives |teenager> => |enthusiastic> + |energetic>
+        comma |teenager> #=> |>
 
-      pick-adjective (*) #=> clean weighted-pick-elt adjectives |_self>
-      how-many-adjectives |*> #=> clean weighted-pick-elt (8|0> + 2|1> + 0.5|2> + 0.2|3>)
+        pick-adjective (*) #=> clean weighted-pick-elt adjectives |_self>
+        how-many-adjectives |*> #=> clean weighted-pick-elt (8|0> + 2|1> + 0.5|2> + 0.2|3>)
 
 
-      insert-adjective |*> #=> |>
-      insert-adjective |1> #=> ( pick-adjective _ comma ) current |person>
-      insert-adjective |2> #=> ( pick-adjective . pick-adjective _ comma ) current |person>
-      insert-adjective |3> #=> ( pick-adjective . pick-adjective . pick-adjective _ comma ) current |person>
+        insert-adjective |*> #=> |>
+        insert-adjective |1> #=> ( pick-adjective _ comma ) current |person>
+        insert-adjective |2> #=> ( pick-adjective . pick-adjective _ comma ) current |person>
+        insert-adjective |3> #=> ( pick-adjective . pick-adjective . pick-adjective _ comma ) current |person>
 
-      adjective-list |*> #=> smerge[", "] insert-adjective how-many-adjectives learn-person |_self>
+        adjective-list |*> #=> smerge[", "] insert-adjective how-many-adjectives learn-person |_self>
 
-      the-sentence |*> #=> smerge[" "] sdrop (|The> . adjective-list |_self> . |_self> _ |.>)
-      sentence |*> #=> the-sentence pick-elt (|old man> + |old woman> + |teenager>)
+        the-sentence |*> #=> smerge[" "] sdrop (|The> . adjective-list |_self> . |_self> _ |.>)
+        sentence |*> #=> the-sentence pick-elt (|old man> + |old woman> + |teenager>)
 
     examples:
-      sentence
-        |The kindly, old man.>
+        sentence
+            |The kindly, old man.>
 
-      sentence
-        |The old woman.>
+        sentence
+            |The old woman.>
 
-      sentence
-        |The teenager.>
+        sentence
+            |The teenager.>
 
-      sentence
-        |The strange, kindly, old woman.>
+        sentence
+            |The strange, kindly, old woman.>
 
-      sentence
-        |The energetic teenager.>
+        sentence
+            |The energetic teenager.>
 
     source code:
-      load the-old-man.sw
+        load the-old-man.sw
 """
 
 examples_usage['random-sentence'] = """
     description:
-      learn some sentence fragments, and then produce a valid sentence
-      motivated by this: http://write-up.semantic-db.org/221-generating-random-grammatically-correct-sentences.html
+        learn some sentence fragments, and then produce a valid sentence
+        motivated by this: http://write-up.semantic-db.org/221-generating-random-grammatically-correct-sentences.html
 
-      in gm notation:
-        A = {the.woman.saw}
-        B = {through.the.telescope}
-        C = {{}, young}
-        D = {girl, boy}
-        E = {{}, old, other}
-        F = {man, woman, lady}
-        G = E.F
-        H = {the}
-        I = H.C.D
-        J = H.E.F
-        K = {{},I,J}
-
-        L = A.K.B
-
-        M = {I,J}
-        N = {saw}
-        O = M.N.K.B
-
-        P = {through.the}
-        Q = {telescope, binoculars, night.vision.goggles}
-
-        R = M.N.K.P.Q
+        in gm notation:
+            A = {the.woman.saw}
+            B = {through.the.telescope}
+            C = {{}, young}
+            D = {girl, boy}
+            E = {{}, old, other}
+            F = {man, woman, lady}
+            G = E.F
+            H = {the}
+            I = H.C.D
+            J = H.E.F
+            K = {{},I,J}
+    
+            L = A.K.B
+    
+            M = {I,J}
+            N = {saw}
+            O = M.N.K.B
+    
+            P = {through.the}
+            Q = {telescope, binoculars, night.vision.goggles}
+    
+            R = M.N.K.P.Q
 
     code:
-      frag |A> => |the woman saw>
-      frag |B> => |through the telescope>
-      frag |C> #=> spick-elt (|> . |young>)
-      frag |D> #=> spick-elt (|girl> . |boy>)
-      frag |E> #=> spick-elt (|> . |old> . |other>)
-      frag |F> #=> spick-elt (|man> . |woman> . |lady>)
-      frag |G> #=> frag (|E> . |F>)
-      frag |H> => |the>
-      frag |I> #=> frag (|H> . |C> . |D>)
-      frag |J> #=> frag (|H> . |E> . |F>)
-      frag |K> #=> frag spick-elt (|> . |I> . |J>)
-      frag |L> #=> frag (|A> . |K> . |B>)
-      frag |M> #=> frag spick-elt (|I> . |J>)
-      frag |N> => |saw>
-      frag |O> #=> frag (|M> . |N> . |K> . |B>)
-      frag |P> => |through the>
-      frag |Q> #=> spick-elt (|telescope> . |binoculars> . |night vision goggles>)
-      frag |R> #=> frag (|M> . |N> . |K> . |P> . |Q>)
+        frag |A> => |the woman saw>
+        frag |B> => |through the telescope>
+        frag |C> #=> spick-elt (|> . |young>)
+        frag |D> #=> spick-elt (|girl> . |boy>)
+        frag |E> #=> spick-elt (|> . |old> . |other>)
+        frag |F> #=> spick-elt (|man> . |woman> . |lady>)
+        frag |G> #=> frag (|E> . |F>)
+        frag |H> => |the>
+        frag |I> #=> frag (|H> . |C> . |D>)
+        frag |J> #=> frag (|H> . |E> . |F>)
+        frag |K> #=> frag spick-elt (|> . |I> . |J>)
+        frag |L> #=> frag (|A> . |K> . |B>)
+        frag |M> #=> frag spick-elt (|I> . |J>)
+        frag |N> => |saw>
+        frag |O> #=> frag (|M> . |N> . |K> . |B>)
+        frag |P> => |through the>
+        frag |Q> #=> spick-elt (|telescope> . |binoculars> . |night vision goggles>)
+        frag |R> #=> frag (|M> . |N> . |K> . |P> . |Q>)
 
-      sentence |*> #=> to-upper[1] smerge[" "] sdrop frag |R> _ |.>
+        sentence |*> #=> to-upper[1] smerge[" "] sdrop frag |R> _ |.>
 
     examples:
-      sentence
-        |The other lady saw the old woman through the telescope.>
+        sentence
+            |The other lady saw the old woman through the telescope.>
 
-      sentence
-        |The young boy saw the young girl through the binoculars.>
+        sentence
+            |The young boy saw the young girl through the binoculars.>
 
-      sentence
-        |The old woman saw the other man through the telescope.>
+        sentence
+            |The old woman saw the other man through the telescope.>
 
-      sentence
-        |The young boy saw the young girl through the night vision goggles.>
+        sentence
+            |The young boy saw the young girl through the night vision goggles.>
 
     future:
-      scale it up, and maybe write a gm-to-code converter?
+        scale it up, and maybe write a gm-to-code converter?
 
     source code:
-      load the-woman-saw.sw
+        load the-woman-saw.sw
 """
 
 examples_usage['active-logic'] = """
     description:
-      proof of concept using simple if-then machines
-      in this case, concerning wet grass, the sprinkler and rain
+        proof of concept using simple if-then machines
+        in this case, concerning wet grass, the sprinkler and rain
 
     code:
-      -- learn the meaning of not:
-      not |no> => |yes>
-      not |yes> => |no>
-      not |don't know> => |don't know>
+        -- learn the meaning of not:
+        not |no> => |yes>
+        not |yes> => |no>
+        not |don't know> => |don't know>
 
-      -- define our if-then machines:
-      pattern |node 1: 1> => |grass is wet> + |not rained last night>
-      then |node 1: 1> => 2.0|sprinkler was on> + -1.0|rained last night> + -1.0|not grass is wet>
+        -- define our if-then machines:
+        pattern |node 1: 1> => |grass is wet> + |not rained last night>
+        then |node 1: 1> => 2.0|sprinkler was on> + -1.0|rained last night> + -1.0|not grass is wet>
 
-      pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
-      then |node 2: 1> => 2.0|rained last night> + -1.0|sprinkler was on> + -1.0|not grass is wet>
+        pattern |node 2: 1> => |grass is wet> + |not sprinkler was on>
+        then |node 2: 1> => 2.0|rained last night> + -1.0|sprinkler was on> + -1.0|not grass is wet>
 
-      pattern |node 3: 1> => |sprinkler was on>
-      then |node 3: 1> => |grass is wet> + -1.0|not sprinkler was on>
+        pattern |node 3: 1> => |sprinkler was on>
+        then |node 3: 1> => |grass is wet> + -1.0|not sprinkler was on>
 
-      pattern |node 3: 2> => |rained last night>
-      then |node 3: 2> => |grass is wet> + -1.0|not rained last night>
+        pattern |node 3: 2> => |rained last night>
+        then |node 3: 2> => |grass is wet> + -1.0|not rained last night>
 
-      pattern |node 4: 1> => |not rained last night> + |not sprinkler was on>
-      then |node 4: 1> => 2.0|not grass is wet> + -1.0|rained last night> + -1.0|sprinkler was on>
-
-
-      -- learn state of activation:
-      active |rained last night> => |don't know>
-      active |not rained last night> #=> not active |rained last night>
-      active |sprinkler was on> => |don't know>
-      active |not sprinkler was on> #=> not active |sprinkler was on>
-      active |grass is wet> => |don't know>
-      active |not grass is wet> #=> not active |grass is wet>
+        pattern |node 4: 1> => |not rained last night> + |not sprinkler was on>
+        then |node 4: 1> => 2.0|not grass is wet> + -1.0|rained last night> + -1.0|sprinkler was on>
 
 
-      -- activation states we want to unlearn:
-      the-unlearn |list> => |rained last night> + |sprinkler was on> + |grass is wet>
+        -- learn state of activation:
+        active |rained last night> => |don't know>
+        active |not rained last night> #=> not active |rained last night>
+        active |sprinkler was on> => |don't know>
+        active |not sprinkler was on> #=> not active |sprinkler was on>
+        active |grass is wet> => |don't know>
+        active |not grass is wet> #=> not active |grass is wet>
 
 
-      -- unlearn operators:
-      unlearn |*> #=> learn(|op: active>, |_self>, |don't know>)
-      unlearn-everything |*> #=> unlearn the-unlearn |list>
+        -- activation states we want to unlearn:
+        the-unlearn |list> => |rained last night> + |sprinkler was on> + |grass is wet>
 
 
-      -- our 'active' operators:
-      make-active |*> #=> learn(|op: active>, remove-prefix["not "] |_self>, not has-prefix["not "] |_self>)
-      currently-active |*> #=> such-that[active] rel-kets[active] |>
-      read-sentence |*> #=> make-active words-to-list |_self>
+        -- unlearn operators:
+        unlearn |*> #=> learn(|op: active>, |_self>, |don't know>)
+        unlearn-everything |*> #=> unlearn the-unlearn |list>
 
 
-      -- define our conclude operators:
-      conclude |*> #=> drop then similar-input[pattern] such-that[active] rel-kets[active] |>
-      inverse-conclude |*> #=> pattern similar-input[then] such-that[active] rel-kets[active] |>
+        -- our 'active' operators:
+        make-active |*> #=> learn(|op: active>, remove-prefix["not "] |_self>, not has-prefix["not "] |_self>)
+        currently-active |*> #=> such-that[active] rel-kets[active] |>
+        read-sentence |*> #=> make-active words-to-list |_self>
 
 
-      -- define short-cuts for our tables:
-      t |*> #=> table[state, unlearn-everything, read-sentence, currently-active, conclude, inverse-conclude] the-list-of |states>
-      t2 |*> #=> table[state, unlearn-everything, read-sentence, currently-active, conclude] the-list-of |states>
+        -- define our conclude operators:
+        conclude |*> #=> drop then similar-input[pattern] such-that[active] rel-kets[active] |>
+        inverse-conclude |*> #=> pattern similar-input[then] such-that[active] rel-kets[active] |>
 
 
-      -- learn the list of states we want in our tables:
-      the-list-of |states> => |grass is wet>
-      the-list-of |states> +=> |sprinkler was on>
-      the-list-of |states> +=> |rained last night>
-      the-list-of |states> +=> |sprinkler was on and rained last night>
-      the-list-of |states> +=> |grass is wet and not rained last night>
-      the-list-of |states> +=> |grass is wet and not sprinkler was on>
-      the-list-of |states> +=> |not rained last night>
-      the-list-of |states> +=> |not sprinkler was on>
-      the-list-of |states> +=> |not rained last night and not sprinkler was on>
-      the-list-of |states> +=> |not grass is wet>
+        -- define short-cuts for our tables:
+        t |*> #=> table[state, unlearn-everything, read-sentence, currently-active, conclude, inverse-conclude] the-list-of |states>
+        t2 |*> #=> table[state, unlearn-everything, read-sentence, currently-active, conclude] the-list-of |states>
+
+
+        -- learn the list of states we want in our tables:
+        the-list-of |states> => |grass is wet>
+        the-list-of |states> +=> |sprinkler was on>
+        the-list-of |states> +=> |rained last night>
+        the-list-of |states> +=> |sprinkler was on and rained last night>
+        the-list-of |states> +=> |grass is wet and not rained last night>
+        the-list-of |states> +=> |grass is wet and not sprinkler was on>
+        the-list-of |states> +=> |not rained last night>
+        the-list-of |states> +=> |not sprinkler was on>
+        the-list-of |states> +=> |not rained last night and not sprinkler was on>
+        the-list-of |states> +=> |not grass is wet>
 
     examples:
-      unlearn-everything
-        3|don't know>
+        unlearn-everything
+            3|don't know>
 
-      read-sentence |grass is wet and not rained last night>
-        |yes> + |no>
+        read-sentence |grass is wet and not rained last night>
+            |yes> + |no>
 
-      currently-active
-        |not rained last night> + |grass is wet>
+        currently-active
+            |not rained last night> + |grass is wet>
 
-      conclude
-        |sprinkler was on>
+        conclude
+            |sprinkler was on>
 
 
-      t2
-        +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
-        | state                                          | unlearn-everything | read-sentence | currently-active                            | conclude                                      |
-        +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
-        | grass is wet                                   | 3 don't know       | yes           | grass is wet                                | 0.50 sprinkler was on, 0.50 rained last night |
-        | sprinkler was on                               | 3 don't know       | yes           | sprinkler was on                            | grass is wet                                  |
-        | rained last night                              | 3 don't know       | yes           | rained last night                           | grass is wet                                  |
-        | sprinkler was on and rained last night         | 3 don't know       | 2 yes         | rained last night, sprinkler was on         | grass is wet                                  |
-        | grass is wet and not rained last night         | 3 don't know       | yes, no       | not rained last night, grass is wet         | sprinkler was on                              |
-        | grass is wet and not sprinkler was on          | 3 don't know       | yes, no       | not sprinkler was on, grass is wet          | rained last night                             |
-        | not rained last night                          | 3 don't know       | no            | not rained last night                       | 0.50 sprinkler was on, 0.50 not grass is wet  |
-        | not sprinkler was on                           | 3 don't know       | no            | not sprinkler was on                        | 0.50 rained last night, 0.50 not grass is wet |
-        | not rained last night and not sprinkler was on | 3 don't know       | 2 no          | not rained last night, not sprinkler was on | not grass is wet                              |
-        | not grass is wet                               | 3 don't know       | no            | not grass is wet                            |                                               |
-        +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+        t2
+            +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+            | state                                          | unlearn-everything | read-sentence | currently-active                            | conclude                                      |
+            +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
+            | grass is wet                                   | 3 don't know       | yes           | grass is wet                                | 0.50 sprinkler was on, 0.50 rained last night |
+            | sprinkler was on                               | 3 don't know       | yes           | sprinkler was on                            | grass is wet                                  |
+            | rained last night                              | 3 don't know       | yes           | rained last night                           | grass is wet                                  |
+            | sprinkler was on and rained last night         | 3 don't know       | 2 yes         | rained last night, sprinkler was on         | grass is wet                                  |
+            | grass is wet and not rained last night         | 3 don't know       | yes, no       | not rained last night, grass is wet         | sprinkler was on                              |
+            | grass is wet and not sprinkler was on          | 3 don't know       | yes, no       | not sprinkler was on, grass is wet          | rained last night                             |
+            | not rained last night                          | 3 don't know       | no            | not rained last night                       | 0.50 sprinkler was on, 0.50 not grass is wet  |
+            | not sprinkler was on                           | 3 don't know       | no            | not sprinkler was on                        | 0.50 rained last night, 0.50 not grass is wet |
+            | not rained last night and not sprinkler was on | 3 don't know       | 2 no          | not rained last night, not sprinkler was on | not grass is wet                              |
+            | not grass is wet                               | 3 don't know       | no            | not grass is wet                            |                                               |
+            +------------------------------------------------+--------------------+---------------+---------------------------------------------+-----------------------------------------------+
 
     source code:
-      load improved-active-logic.sw
+        load improved-active-logic.sw
 """
 
 examples_usage['temperature-conversions'] = """
     description:
-      converting between Fahrenheit, Celsius and Kelvin
+        converting between Fahrenheit, Celsius and Kelvin
 
     code:
-      to-Kelvin |K: *> #=> |_self>
-      to-Celsius |K: *> #=> |C:> __ round[2] minus[273.15] extract-value |_self>
-      to-Fahrenheit |K: *> #=> |F:> __ round[2] minus[459.67] times-by[9/5] extract-value |_self>
+        to-Kelvin |K: *> #=> |_self>
+        to-Celsius |K: *> #=> |C:> __ round[2] minus[273.15] extract-value |_self>
+        to-Fahrenheit |K: *> #=> |F:> __ round[2] minus[459.67] times-by[9/5] extract-value |_self>
 
-      to-Kelvin |C: *> #=> |K:> __ round[2] plus[273.15] extract-value |_self>
-      to-Celsius |C: *> #=> |_self>
-      to-Fahrenheit |C: *> #=> |F:> __ round[2] plus[32] times-by[9/5] extract-value |_self>
+        to-Kelvin |C: *> #=> |K:> __ round[2] plus[273.15] extract-value |_self>
+        to-Celsius |C: *> #=> |_self>
+        to-Fahrenheit |C: *> #=> |F:> __ round[2] plus[32] times-by[9/5] extract-value |_self>
 
-      to-Kelvin |F: *> #=> |K:> __ round[2] times-by[5/9] plus[459.67] extract-value |_self>
-      to-Celsius |F: *> #=> |C:> __ round[2] times-by[5/9] minus[32] extract-value |_self>
-      to-Fahrenheit |F: *> #=> |_self>
+        to-Kelvin |F: *> #=> |K:> __ round[2] times-by[5/9] plus[459.67] extract-value |_self>
+        to-Celsius |F: *> #=> |C:> __ round[2] times-by[5/9] minus[32] extract-value |_self>
+        to-Fahrenheit |F: *> #=> |_self>
 
-      to-K |*> #=> to-Kelvin |_self>
-      to-C |*> #=> to-Celsius |_self>
-      to-F |*> #=> to-Fahrenheit |_self>
+        to-K |*> #=> to-Kelvin |_self>
+        to-C |*> #=> to-Celsius |_self>
+        to-F |*> #=> to-Fahrenheit |_self>
 
     examples:
-      to-F |C: 42>
-        |F: 107.6>
+        to-F |C: 42>
+            |F: 107.6>
 
-      to-C |F: 50>
-        |C: 10>
+        to-C |F: 50>
+            |C: 10>
 
-      to-K |C: 0>
-        |K: 273.15>
+        to-K |C: 0>
+            |K: 273.15>
 
-      to-F |C: 100>
-        |F: 212>
+        to-F |C: 100>
+            |F: 212>
 
     source code:
-      load temperature-conversion.sw
+        load temperature-conversion.sw
       
     see also:
-      load distance-conversion.sw
+        load distance-conversion.sw
 """
 
 examples_usage['Fibonacci-and-factorial'] = """
     description:
-      simple recursive Fibonacci and factorial
-      NB: we use !=> instead of #=>
-      ie, memoizing rules instead of plain stored-rules.
-      otherwise this code gets very slow, very fast.
+        simple recursive Fibonacci and factorial
+        NB: we use !=> instead of #=>
+        ie, memoizing rules instead of plain stored-rules.
+        otherwise this code gets very slow, very fast.
 
     code:
-      fib |0> => |0>
-      fib |1> => |1>
-      fib |*> !=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
-      fib-ratio |*> !=> arithmetic( fib |_self> , |/>, fib minus[1] |_self> )
+        fib |0> => |0>
+        fib |1> => |1>
+        fib |*> !=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+        fib-ratio |*> !=> arithmetic( fib |_self> , |/>, fib minus[1] |_self> )
 
-      fact |0> => |1>
-      fact |*> !=> arithmetic(|_self>, |*>, fact minus[1] |_self>)
+        fact |0> => |1>
+        fact |*> !=> arithmetic(|_self>, |*>, fact minus[1] |_self>)
 
     examples:
-      table[number, fib, fib-ratio, fact] range(|1>, |30>)
-        +--------+--------+--------------------+-----------------------------------+
-        | number | fib    | fib-ratio          | fact                              |
-        +--------+--------+--------------------+-----------------------------------+
-        | 1      | 1      |                    | 1                                 |
-        | 2      | 1      | 1.0                | 2                                 |
-        | 3      | 2      | 2.0                | 6                                 |
-        | 4      | 3      | 1.5                | 24                                |
-        | 5      | 5      | 1.6666666666666667 | 120                               |
-        | 6      | 8      | 1.6                | 720                               |
-        | 7      | 13     | 1.625              | 5040                              |
-        | 8      | 21     | 1.6153846153846154 | 40320                             |
-        | 9      | 34     | 1.619047619047619  | 362880                            |
-        | 10     | 55     | 1.6176470588235294 | 3628800                           |
-        | 11     | 89     | 1.6181818181818182 | 39916800                          |
-        | 12     | 144    | 1.6179775280898876 | 479001600                         |
-        | 13     | 233    | 1.6180555555555556 | 6227020800                        |
-        | 14     | 377    | 1.6180257510729614 | 87178291200                       |
-        | 15     | 610    | 1.6180371352785146 | 1307674368000                     |
-        | 16     | 987    | 1.618032786885246  | 20922789888000                    |
-        | 17     | 1597   | 1.618034447821682  | 355687428096000                   |
-        | 18     | 2584   | 1.6180338134001253 | 6402373705728000                  |
-        | 19     | 4181   | 1.618034055727554  | 121645100408832000                |
-        | 20     | 6765   | 1.6180339631667064 | 2432902008176640000               |
-        | 21     | 10946  | 1.6180339985218033 | 51090942171709440000              |
-        | 22     | 17711  | 1.618033985017358  | 1124000727777607680000            |
-        | 23     | 28657  | 1.6180339901755971 | 25852016738884976640000           |
-        | 24     | 46368  | 1.618033988205325  | 620448401733239439360000          |
-        | 25     | 75025  | 1.618033988957902  | 15511210043330985984000000        |
-        | 26     | 121393 | 1.6180339886704431 | 403291461126605635584000000       |
-        | 27     | 196418 | 1.6180339887802426 | 10888869450418352160768000000     |
-        | 28     | 317811 | 1.618033988738303  | 304888344611713860501504000000    |
-        | 29     | 514229 | 1.6180339887543225 | 8841761993739701954543616000000   |
-        | 30     | 832040 | 1.6180339887482036 | 265252859812191058636308480000000 |
-        +--------+--------+--------------------+-----------------------------------+
+        table[number, fib, fib-ratio, fact] range(|1>, |30>)
+            +--------+--------+--------------------+-----------------------------------+
+            | number | fib    | fib-ratio          | fact                              |
+            +--------+--------+--------------------+-----------------------------------+
+            | 1      | 1      |                    | 1                                 |
+            | 2      | 1      | 1.0                | 2                                 |
+            | 3      | 2      | 2.0                | 6                                 |
+            | 4      | 3      | 1.5                | 24                                |
+            | 5      | 5      | 1.6666666666666667 | 120                               |
+            | 6      | 8      | 1.6                | 720                               |
+            | 7      | 13     | 1.625              | 5040                              |
+            | 8      | 21     | 1.6153846153846154 | 40320                             |
+            | 9      | 34     | 1.619047619047619  | 362880                            |
+            | 10     | 55     | 1.6176470588235294 | 3628800                           |
+            | 11     | 89     | 1.6181818181818182 | 39916800                          |
+            | 12     | 144    | 1.6179775280898876 | 479001600                         |
+            | 13     | 233    | 1.6180555555555556 | 6227020800                        |
+            | 14     | 377    | 1.6180257510729614 | 87178291200                       |
+            | 15     | 610    | 1.6180371352785146 | 1307674368000                     |
+            | 16     | 987    | 1.618032786885246  | 20922789888000                    |
+            | 17     | 1597   | 1.618034447821682  | 355687428096000                   |
+            | 18     | 2584   | 1.6180338134001253 | 6402373705728000                  |
+            | 19     | 4181   | 1.618034055727554  | 121645100408832000                |
+            | 20     | 6765   | 1.6180339631667064 | 2432902008176640000               |
+            | 21     | 10946  | 1.6180339985218033 | 51090942171709440000              |
+            | 22     | 17711  | 1.618033985017358  | 1124000727777607680000            |
+            | 23     | 28657  | 1.6180339901755971 | 25852016738884976640000           |
+            | 24     | 46368  | 1.618033988205325  | 620448401733239439360000          |
+            | 25     | 75025  | 1.618033988957902  | 15511210043330985984000000        |
+            | 26     | 121393 | 1.6180339886704431 | 403291461126605635584000000       |
+            | 27     | 196418 | 1.6180339887802426 | 10888869450418352160768000000     |
+            | 28     | 317811 | 1.618033988738303  | 304888344611713860501504000000    |
+            | 29     | 514229 | 1.6180339887543225 | 8841761993739701954543616000000   |
+            | 30     | 832040 | 1.6180339887482036 | 265252859812191058636308480000000 |
+            +--------+--------+--------------------+-----------------------------------+
 """
 
 examples_usage['walking-a-grid'] = """
     description:
-      a fun little insect with minimal intelligence.
-      with current settings it heads mostly in a south direction (but this is easy to change)
-      when it thinks it has hit the edge of the map, it changes its heading by turning right
-      the numbers are how many time-steps the insect has been on that location
-      ### is the current location of our insect
+        a fun little insect with minimal intelligence.
+        with current settings it heads mostly in a south direction (but this is easy to change)
+        when it thinks it has hit the edge of the map, it changes its heading by turning right
+        the numbers are how many time-steps the insect has been on that location
+        ### is the current location of our insect
 
     code:
-      -- learn map:
-      |null> => learn-map[30,30]
+        -- learn map:
+        |null> => learn-map[30,30]
 
-      -- learn current location:
-      current |cell> => |grid: 1: 22>
+        -- learn current location:
+        current |cell> => |grid: 1: 22>
 
-      -- define turn-right operator:
-      turn-right |op: S> => |op: W>
-      turn-right |op: SW> => |op: NW>
-      turn-right |op: W> => |op: N>
-      turn-right |op: NW> => |op: NE>
-      turn-right |op: N> => |op: E>
-      turn-right |op: NE> => |op: SE>
-      turn-right |op: E> => |op: S>
-      turn-right |op: SE> => |op: SW>
+        -- define turn-right operator:
+        turn-right |op: S> => |op: W>
+        turn-right |op: SW> => |op: NW>
+        turn-right |op: W> => |op: N>
+        turn-right |op: NW> => |op: NE>
+        turn-right |op: N> => |op: E>
+        turn-right |op: NE> => |op: SE>
+        turn-right |op: E> => |op: S>
+        turn-right |op: SE> => |op: SW>
 
-      -- define walk direction:
-      heading |ops> => 0.25|op: SW> + |op: S> + 0.25|op: SE>
-      -- heading |ops> => |op: S>
-      next |*> #=> set-to[1] apply(weighted-pick-elt heading |ops>, |_self>)
+        -- define walk direction:
+        heading |ops> => 0.25|op: SW> + |op: S> + 0.25|op: SE>
+        -- heading |ops> => |op: S>
+        next |*> #=> set-to[1] apply(weighted-pick-elt heading |ops>, |_self>)
 
-      -- define turn-heading-right operator:
-      turn-heading-right |*> #=> learn(|op: heading>, |ops>, turn-right heading |ops>)
+        -- define turn-heading-right operator:
+        turn-heading-right |*> #=> learn(|op: heading>, |ops>, turn-right heading |ops>)
 
-      -- define step operator:
-      step |*> #=> process-if if(do-you-know next |_self>, |valid step:> __ |_self>, |not valid step:> __ |_self>)
-      process-if |valid step: *> #=> next remove-leading-category |_self>
-      process-if |not valid step: *> #=> sselect[1,1] (remove-leading-category |_self> . turn-heading-right |>)
-      -- process-if |not valid step: *> #=> sdrop (remove-leading-category |_self> . set-to[0] turn-heading-right |>)
+        -- define step operator:
+        step |*> #=> process-if if(do-you-know next |_self>, |valid step:> __ |_self>, |not valid step:> __ |_self>)
+        process-if |valid step: *> #=> next remove-leading-category |_self>
+        process-if |not valid step: *> #=> sselect[1,1] (remove-leading-category |_self> . turn-heading-right |>)
+        -- process-if |not valid step: *> #=> sdrop (remove-leading-category |_self> . set-to[0] turn-heading-right |>)
 
-      -- update-map operators (increment current spot, take a step, and display map):
-      inc |*> #=> learn(|op: value>, current |cell>, plus[1] value current |cell>)
-      n |*> #=> learn(|op: current>, |cell>, step current |cell>)
-      d |*> #=> display-map[30,30]
-
-
-      -- single map update:
-      line |*> #=> inc |_self> . n |_self> . d |_self>
-
-      -- set max steps:
-      max |steps> => |30>
-
-      -- walk max steps:
-      walk |*> #=> sdrop set-to[0] line sp2seq range(|1>, max |steps>)
-
-    examples:
-      -- load the code:
-      load walk-grid-v2.sw
-
-      -- switch off info printing. 
-      -- this is important if you want a clean display of the maps
-      info off
-
-      -- walk the map:
-      walk
-      walk
-      walk
-        h: 30
-        w: 30
-        1     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        2     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        3     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
-        4     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        5     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        6     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        7     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        8     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        9     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        10    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        11    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        12    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        13    2  1  1  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        14    .  1  .  1  1  1  .  1  1  1  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        15    .  .  1  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
-        16    .  1  .  .  .  .  .  .  .  .  .  1  1  1  1  1  1###  .  .  .  .  1  .  .  .  .  .  .  .
-        17    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        18    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        19    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        20    2  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        21    1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        22    1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        23    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
-        24    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
-        25    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
-        26    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
-        27    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        28    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
-        29    .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  1  .  .  .  .  1  .  .  .  .  .  .  .  .
-        30    .  .  2  1  2  1  1  1  1  1  1  1  2  .  1  .  .  1  1  1  2  3  .  .  .  .  .  .  .  .
+        -- update-map operators (increment current spot, take a step, and display map):
+        inc |*> #=> learn(|op: value>, current |cell>, plus[1] value current |cell>)
+        n |*> #=> learn(|op: current>, |cell>, step current |cell>)
+        d |*> #=> display-map[30,30]
 
 
-      walk^5
-        h: 30
-        w: 30
-        1     .  .  .  .  .  .  3  2  2  3  .  .  .  .  .  .  .  .  2  1  1  2  1  1  .  3  1  1  1  2
-        2     .  .  .  .  .  .  .  .  .  1  1  1  1  .  .  .  .  .  1  2  1  2  .  .  1  .  .  .  .  1
-        3     .  .  .  .  .  .  .  .  .  .  1  .  .  1  1  1  1  1  .  1  .  1  1  1  1  .  1  .  .  1
-        4     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  1  .  .  .  1  .  1  1  .
-        5     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  1  2
-        6     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
-        7     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
-        8     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        9     .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        10    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        11    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        12    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        13    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .  .
-        14    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .  .
-        15    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
-        16    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .  .
-        17    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
-        18    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        19    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
-        20    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
-        21    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
-        22    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .  .
-        23    .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  .  1  .  .  .  .  .
-        24    .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  .  1  .  .  .  .  .
-        25    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .
-        26    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .
-        27    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
-        28    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .
-        29    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .
-        30    .  .  .  .  .###  1  1  2  1  1  2  .  .  .  .  .  .  .  .  .  .  2  1  1  2  .  .  .  .
+        -- single map update:
+        line |*> #=> inc |_self> . n |_self> . d |_self>
+
+        -- set max steps:
+        max |steps> => |30>
+
+        -- walk max steps:
+        walk |*> #=> sdrop set-to[0] line sp2seq range(|1>, max |steps>)
+
+        examples:
+        -- load the code:
+        load walk-grid-v2.sw
+
+        -- switch off info printing. 
+        -- this is important if you want a clean display of the maps
+        info off
+
+        -- walk the map:
+        walk
+        walk
+        walk
+            h: 30
+            w: 30
+            1     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            2     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            3     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+            4     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            5     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            6     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            7     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            8     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            9     .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            10    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            11    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            12    .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            13    2  1  1  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            14    .  1  .  1  1  1  .  1  1  1  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            15    .  .  1  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .
+            16    .  1  .  .  .  .  .  .  .  .  .  1  1  1  1  1  1###  .  .  .  .  1  .  .  .  .  .  .  .
+            17    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            18    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            19    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            20    2  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            21    1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            22    1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            23    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+            24    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+            25    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+            26    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .
+            27    .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            28    .  .  1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .
+            29    .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  1  .  .  .  .  1  .  .  .  .  .  .  .  .
+            30    .  .  2  1  2  1  1  1  1  1  1  1  2  .  1  .  .  1  1  1  2  3  .  .  .  .  .  .  .  .
+
+
+        walk^5
+            h: 30
+            w: 30
+            1     .  .  .  .  .  .  3  2  2  3  .  .  .  .  .  .  .  .  2  1  1  2  1  1  .  3  1  1  1  2
+            2     .  .  .  .  .  .  .  .  .  1  1  1  1  .  .  .  .  .  1  2  1  2  .  .  1  .  .  .  .  1
+            3     .  .  .  .  .  .  .  .  .  .  1  .  .  1  1  1  1  1  .  1  .  1  1  1  1  .  1  .  .  1
+            4     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  1  .  .  .  1  .  1  1  .
+            5     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  1  2
+            6     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
+            7     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
+            8     .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            9     .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            10    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            11    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            12    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            13    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .  .
+            14    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .  .
+            15    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .  .
+            16    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .  .
+            17    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+            18    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            19    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+            20    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .  .  .
+            21    .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+            22    .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .  .
+            23    .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  .  1  .  .  .  .  .
+            24    .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  .  1  .  .  .  .  .
+            25    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .
+            26    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  .  1  .  .  .  .  .
+            27    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .  .
+            28    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  1  .  .  1  .  .  .  .  .
+            29    .  .  .  .  .  .  .  .  .  .  .  1  .  .  .  .  .  .  .  .  .  .  1  .  1  .  .  .  .  .
+            30    .  .  .  .  .###  1  1  2  1  1  2  .  .  .  .  .  .  .  .  .  .  2  1  1  2  .  .  .  .
 
     source code:
-      load walk-grid-v2.sw
+        load walk-grid-v2.sw
 """
 
 
 examples_usage['finding-a-path-between-early-us-presidents'] = """
     description:
-      a fun little application of find-path-between applied to early US presidents
+        a fun little application of find-path-between applied to early US presidents
 
     code:
-      see find-path-between usage information
+        see find-path-between usage information
       
     examples:      
-      -- load the knowledge:
-      load early-us-presidents.sw
+        -- load the knowledge:
+        load early-us-presidents.sw
       
-      -- switch off info statements:
-      info off
+        -- switch off info statements:
+        info off
       
-      -- learn some relevant inverses:
-      find-inverse[president-number]
-      find-inverse[president-era]
-      find-inverse[party]
-      find-inverse[full-name]
+        -- learn some relevant inverses:
+        find-inverse[president-number, president-era, party, full-name]
 
-      -- find the operator path between George Washington and John Adams:
-      find-path-between(|person: George Washington>, |person: John Adams>)
-        |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: full-name>
+        -- find the operator path between George Washington and John Adams:
+        find-path-between(|person: George Washington>, |person: John Adams>)
+            |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: full-name>
     
-      -- now let's step through this operator sequence:
-      inverse-full-name |person: George Washington>
-        |Washington>
+        -- now let's step through this operator sequence:
+        inverse-full-name |person: George Washington>
+            |Washington>
               
-      president-era inverse-full-name |person: George Washington>
-        |year: 1789> + |year: 1790> + |year: 1791> + |year: 1792> + |year: 1793> + |year: 1794> + |year: 1795> + |year: 1796> + |year: 1797>
+        president-era inverse-full-name |person: George Washington>
+            |year: 1789> + |year: 1790> + |year: 1791> + |year: 1792> + |year: 1793> + |year: 1794> + |year: 1795> + |year: 1796> + |year: 1797>
       
-      inverse-president-era president-era inverse-full-name |person: George Washington>
-        9|Washington> + |Adams>
+        inverse-president-era president-era inverse-full-name |person: George Washington>
+            9|Washington> + |Adams>
               
-      full-name inverse-president-era president-era inverse-full-name |person: George Washington>
-        9|person: George Washington> + |person: John Adams>      
+        full-name inverse-president-era president-era inverse-full-name |person: George Washington>
+            9|person: George Washington> + |person: John Adams>      
 
       
       
-      -- next example, find the operator path between George Washington and James Monroe:
-      find-path-between(|person: George Washington>, |person: James Monroe>)
-        |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: president-era> . |op: inverse-president-era> . |op: party> . |op: inverse-party> . |op: full-name>
+        -- next example, find the operator path between George Washington and James Monroe:
+        find-path-between(|person: George Washington>, |person: James Monroe>)
+            |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: president-era> . |op: inverse-president-era> . |op: party> . |op: inverse-party> . |op: full-name>
 
-      -- now let's step through this operator sequence:
-      inverse-full-name |person: George Washington>
-        |Washington>
+        -- now let's step through this operator sequence:
+        inverse-full-name |person: George Washington>
+            |Washington>
 
-      president-era inverse-full-name |person: George Washington>
-        |year: 1789> + |year: 1790> + |year: 1791> + |year: 1792> + |year: 1793> + |year: 1794> + |year: 1795> + |year: 1796> + |year: 1797>
+        president-era inverse-full-name |person: George Washington>
+            |year: 1789> + |year: 1790> + |year: 1791> + |year: 1792> + |year: 1793> + |year: 1794> + |year: 1795> + |year: 1796> + |year: 1797>
 
-      inverse-president-era president-era inverse-full-name |person: George Washington>
-        9|Washington> + |Adams>
+        inverse-president-era president-era inverse-full-name |person: George Washington>
+            9|Washington> + |Adams>
 
-      president-era inverse-president-era president-era inverse-full-name |person: George Washington>
-        9|year: 1789> + 9|year: 1790> + 9|year: 1791> + 9|year: 1792> + 9|year: 1793> + 9|year: 1794> + 9|year: 1795> + 9|year: 1796> + 10|year: 1797> + |year: 1798> + |year: 1799> + |year: 1800> + |year: 1801>
+        president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+            9|year: 1789> + 9|year: 1790> + 9|year: 1791> + 9|year: 1792> + 9|year: 1793> + 9|year: 1794> + 9|year: 1795> + 9|year: 1796> + 10|year: 1797> + |year: 1798> + |year: 1799> + |year: 1800> + |year: 1801>
 
-      inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
-        82|Washington> + 14|Adams> + |Jefferson>
+        inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+            82|Washington> + 14|Adams> + |Jefferson>
 
-      party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
-        82|party: Independent> + 14|party: Federalist> + |party: Democratic-Republican>
+        party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+            82|party: Independent> + 14|party: Federalist> + |party: Democratic-Republican>
 
-      inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
-        82|Washington> + 14|Adams> + |Jefferson> + |Madison> + |Monroe> + |Q Adams>
+        inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+            82|Washington> + 14|Adams> + |Jefferson> + |Madison> + |Monroe> + |Q Adams>
 
-      full-name inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
-        82|person: George Washington> + 14|person: John Adams> + |person: Thomas Jefferson> + |person: James Madison> + |person: James Monroe> + |person: John Quincy Adams>
+        full-name inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+            82|person: George Washington> + 14|person: John Adams> + |person: Thomas Jefferson> + |person: James Madison> + |person: James Monroe> + |person: John Quincy Adams>
 
 
-      -- next example, find the operator path between George Washington and number 6:
-      find-path-between(|person: George Washington>, |number: 6>)
-        |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: president-era> . |op: inverse-president-era> . |op: party> . |op: inverse-party> . |op: president-number>
+        -- next example, find the operator path between George Washington and number 6:
+        find-path-between(|person: George Washington>, |number: 6>)
+            |op: inverse-full-name> . |op: president-era> . |op: inverse-president-era> . |op: president-era> . |op: inverse-president-era> . |op: party> . |op: inverse-party> . |op: president-number>
 
-      -- this is almost identical to the example above, so we only need to change the last step 'president-number':
-      president-number inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
-        82|number: 1> + 14|number: 2> + |number: 3> + |number: 4> + |number: 5> + |number: 6>
+        -- this is almost identical to the example above, so we only need to change the last step 'president-number':
+        president-number inverse-party party inverse-president-era president-era inverse-president-era president-era inverse-full-name |person: George Washington>
+            82|number: 1> + 14|number: 2> + |number: 3> + |number: 4> + |number: 5> + |number: 6>
 
 
     source code:
-      load early-us-presidents.sw
+        load early-us-presidents.sw
     
     see also:
-      find-path-between
+        find-path-between
 """

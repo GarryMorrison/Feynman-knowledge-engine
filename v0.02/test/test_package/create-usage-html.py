@@ -57,7 +57,7 @@ def load_usage_info():
         usage[key] = sigmoid_table_usage[key]
 
     for key in function_operators_usage:
-        op_type[key] = 'function operator'
+        op_type[key] = 'operator'
         location[key] = 'function-operators'
         usage[key] = function_operators_usage[key]
 
@@ -110,7 +110,7 @@ def create_index_html_page(location, sw_files, dot_files):
 <head><title>Semantic DB usage information</title></head>
 <body>
 <h3>Semantic DB usage information</h3>
-Welcome to the Semantic DB usage page. Below are brief descriptions and examples for our operators.
+Welcome to the Semantic DB usage page. Below are brief descriptions and examples for our operators and sequence functions.
 """
     footer = """
 <hr>
@@ -132,7 +132,7 @@ email: garry -at- semantic-db.org
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
     s += '</dl>\n'
 
-    s += '<dl>\n  <dt><b>function operators:</b></dt>\n'
+    s += '<dl>\n  <dt><b>operators:</b></dt>\n'
     for key in sorted(function_operators_usage):
         s += '    <dd><a href="%s/%s.html">%s</a></dd>\n' % (location[key], key, key)
     s += '</dl>\n'

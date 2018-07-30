@@ -220,6 +220,12 @@ class ket(object):
     def weighted_pick_elt(self):
         return ket(self.label, self.value)
 
+    def pick(self, n):
+        if n == 0:
+            return ket()
+        return ket(self.label, self.value)
+
+
     #  def find_index(self,one):
     #    label = one.label if type(one) == ket else one
     #    if self.label == label:
@@ -757,10 +763,10 @@ class superposition(object):
     def select_elt(self, k):
         if k >= 1 and k <= len(self.dict):
             label, value = list(self.dict.items())[k - 1]  # is there a better way to do this! Mapping entire sp to list, just to keep 1 element!!
-            return ket(label, value)  # perhaps, https://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
-        elif k < 0:  # import itertools
-            label, value = list(self.dict.items())[k]  # next(itertools.islice(d.values(), 0, 1))
-            return ket(label, value)  # next(itertools.islice(d.values(), 1, 2))
+            return ket(label, value)                       # perhaps, https://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+        elif k < 0:                                        # import itertools
+            label, value = list(self.dict.items())[k]      # next(itertools.islice(d.values(), 0, 1))
+            return ket(label, value)                       # next(itertools.islice(d.values(), 1, 2))
         else:
             return ket("", 0)
 
@@ -798,7 +804,7 @@ class superposition(object):
         return r
 
     def find_index(self, one):
-        label = one.label if type(one) == ket else one
+        label = one.label if type(one) is ket else one
         for k, (key, value) in enumerate(self.dict.items()):
             if key == label:
                 return k + 1
@@ -1375,6 +1381,18 @@ class sequence(object):
             seq.data.append(x.drop())
         return seq
 
+    def drop_below(self, t):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.drop_below(t))
+        return seq
+
+    def drop_above(self, t):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.drop_above(t))
+        return seq
+
     def sdrop(self):
         seq = sequence([])
         for sp in self.data:
@@ -1401,6 +1419,12 @@ class sequence(object):
             seq.data.append(x.weighted_pick_elt())
         return seq
 
+    def pick(self, n):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.pick(n))
+        return seq
+
     def normalize(self, t=1):
         seq = sequence([])
         for x in self.data:
@@ -1411,6 +1435,24 @@ class sequence(object):
         seq = sequence([])
         for x in self.data:
             seq.data.append(x.rescale(t))
+        return seq
+
+    def softmax(self, t=1):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.softmax())
+        return seq
+
+    def absolute_noise(self, t):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.absolute_noise(t))
+        return seq
+
+    def relative_noise(self, t):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.relative_noise(t))
         return seq
 
     def coeff_sort(self):
@@ -1440,6 +1482,12 @@ class sequence(object):
         seq.data = self.data[a:b]
         return seq
 
+    def top(self, k):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.top(k))
+        return seq
+
     def reverse(self):
         seq = sequence([])
         for x in self.data:
@@ -1465,6 +1513,19 @@ class sequence(object):
         for x in self.data:
             seq.data.append(x.number_count())
         return seq
+
+    def number_count_sum(self):
+        seq = sequence([])
+        for x in self.data:
+            seq.data.append(x.number_count_sum())
+        return seq
+
+    def snumber_count_sum(self):
+        result = 0
+        for x in self.data:
+            result += x.count_sum()
+        return ket('number: ' + str(result))  # float_to_int() ?
+
 
     def activate(self, context=None, op=None, self_label=None):
         return self
@@ -2347,7 +2408,7 @@ class ContextList(object):
 
 from parsley import makeGrammar
 from string import ascii_letters
-from semantic_db.processor_tables import *
+# from semantic_db.processor_tables import *
 from semantic_db.functions import *
 from semantic_db.sigmoids import *
 from semantic_db.usage_tables import *
@@ -2642,7 +2703,7 @@ def process_operators(context, ops, seq, self_object=None):
         elif op in ket_context_table:
             our_fn = globals()[ket_context_table[op]]
             seq = seq.apply_fn(our_fn, context)
-        elif op in sp_context_table:
+        elif op in sp_context_table:                  # I don't think this is used anywhere at the moment.
             our_fn = globals()[sp_context_table[op]]
             seq = seq.apply_sp_fn(our_fn, context)
         else:  # literal op found. Also means literal ops have lower priority than all other operator types. Be aware!
