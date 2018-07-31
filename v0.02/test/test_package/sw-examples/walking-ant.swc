@@ -44,6 +44,13 @@ heading |ops> => pick-elt list-of |directions>
 -- start by not carrying any food:
 carry |food> => 0| >
 
+-- start with scent trail off:
+lay |scent> => |no>
+
+-- start with random walk type:
+type |walk> => |op: random-walk>
+
+
 
 -- place some food:
 food |grid: 2: 2> => 3| >
@@ -77,6 +84,7 @@ drop-the |food> #=>
     carry |food> => 0| >
 
 
+-- if there is food at the current cell, and not already carrying food, then |found food>:
 if-find-food |*> #=>
     process-if if( and(is-greater-than[0] push-float food current |cell>, is-equal[0] push-float carry |food>), |found food>, |not found food> )
 
@@ -92,14 +100,12 @@ process-if |not found food> #=>
 
 
 -- if reach home operator:
--- if-reach-home |*> #=> 
---     process-if drop wif(equal( current |cell>, home |cell>), |reached home>, |not reached home>)
-
+-- ie, if current cell is home cell then |reached home>:
 if-reach-home |*> #=>
     process-if if(is-equal( current |cell>, home |cell>), |reached home>, |not reached home>)
 
 process-if |reached home> #=>
-    -- drop the food:
+    -- drop and store any food you are carrying:
     stored-food current |cell> +=> carry |food>
     carry |food> => 0| >
     lay |scent> => |no>
@@ -108,10 +114,6 @@ process-if |reached home> #=>
 
 process-if |not reached home> #=>
     |>
-
-
--- start with scent trail off:
-lay |scent> => |no>
 
 
 record-scent |*> #=>
@@ -137,9 +139,6 @@ random-if-zero (*) #=>
     if(do-you-know sdrop |_self>, |_self>, pick-elt list-of |directions>)
 
 
-
--- start with random walk type:
-type |walk> => |op: random-walk>
 
 switch-on-random |*> #=>
     type |walk> => |op: random-walk>

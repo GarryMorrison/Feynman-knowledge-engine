@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 27/7/2018
-# Update: 30/7/2018
+# Update: 31/7/2018
 # Copyright: GPLv3
 #
 # Usage: py.test -v comprehensive-tests.py
@@ -145,6 +145,7 @@ def test_full_compound_sequence_brackets():
 
 
 # these next two are currently incompletely implemented in the compiler:
+# fixed!
 def test_full_compound_sequence_union_input_seq_1():
     x = op_grammar('union(|a>, |b>) (|x> . |y>) ').full_compound_sequence()
     assert x == [('+', [[['f_op', 'union', [('+', [[], 'a'])], [('+', [[], 'b'])]]], [('+', [[], 'x']), ('.', [[], 'y'])]])]
@@ -458,28 +459,28 @@ def test_learn_star_ket_1():
 def test_learn_star_rule_1():
     x = op_grammar(' star1 (*) #=> supported-ops |_self> ').stored_rule()
     context.print_universe()
-    y = context.seq_fn_recall('star1', ['Sam'])
+    y = context.seq_fn_recall('star1', ['', 'Sam'])
     assert str(y) == 'supported-ops |_self> '
 
 
 def test_learn_star_rule_2():
     x = op_grammar(' star2 (*,*) #=> supported-ops |_self1> + age |_self2> ').stored_rule()
     context.print_universe()
-    y = context.seq_fn_recall('star2', ['Sam', 'Fred'])
+    y = context.seq_fn_recall('star2', ['', 'Sam', 'Fred'])
     assert str(y) == 'supported-ops |_self1> + age |_self2> '
 
 
 def test_learn_star_rule_active_1():
     x = op_grammar(' star1 (*) #=> supported-ops |_self> ').stored_rule()
     context.print_universe()
-    y = context.seq_fn_recall('star1', ['Sam'], active=True)
+    y = context.seq_fn_recall('star1', ['', 'Sam'], active=True)
     assert str(y) == '|op: friends>'
 
 
 def test_learn_star_rule_active_2():
     x = op_grammar(' star2 (*,*) #=> supported-ops |_self1> + age |_self2> ').stored_rule()
     context.print_universe()
-    y = context.seq_fn_recall('star2', ['Sam', 'Fred'], active=True)
+    y = context.seq_fn_recall('star2', ['', 'Sam', 'Fred'], active=True)
     assert str(y) == '|op: friends> + |37>'
 
 
@@ -602,7 +603,7 @@ def test_extract_compound_sequence_1():
 
 def test_extract_compound_sequence_1():
     s = '5|_self1> + 7|_self2>'
-    seq = extract_compound_sequence(context, s, ['fish', 'soup'])
+    seq = extract_compound_sequence(context, s, ['', 'fish', 'soup'])
     assert str(seq) == '5|fish> + 7|soup>'
 
 
@@ -643,42 +644,42 @@ def test_learn_indirectly_2():
 def test_context_seq_fn_learn_1():
     context.seq_fn_learn('op-a', '*', 'value a')
     context.print_universe()
-    r = context.seq_fn_recall('op-a', ['fish'])
+    r = context.seq_fn_recall('op-a', ['', 'fish'])
     assert str(r) == '|value a>'
 
 
 def test_context_seq_fn_learn_2():
     context.seq_fn_learn('op-b', '*,*', 'value b')
     context.print_universe(True)
-    r = context.seq_fn_recall('op-b', ['fish', 'soup'])
+    r = context.seq_fn_recall('op-b', ['', 'fish', 'soup'])
     assert str(r) == '|value b>'
 
 
 def test_context_seq_fn_learn_3():
     context.seq_fn_learn('op-c', '*,*', stored_rule('|_self1>'))
     context.print_universe(True)
-    r = context.seq_fn_recall('op-c', ['fish', 'soup'], active=True)
+    r = context.seq_fn_recall('op-c', ['', 'fish', 'soup'], active=True)
     assert str(r) == '|fish>'
 
 
 def test_context_seq_fn_learn_4():
     context.seq_fn_learn('op-d', '*,*', stored_rule('|_self>'))
     context.print_universe(True)
-    r = context.seq_fn_recall('op-d', ['more', 'soup'], active=True)
+    r = context.seq_fn_recall('op-d', ['', 'more', 'soup'], active=True)
     assert str(r) == '|more>'
 
 
 def test_context_seq_fn_learn_5():
     context.seq_fn_learn('op-e', '*', stored_rule('|_self>'))
     context.print_universe(True)
-    r = context.seq_fn_recall('op-e', ['soup'], active=True)
+    r = context.seq_fn_recall('op-e', ['', 'soup'], active=True)
     assert str(r) == '|soup>'
 
 
 def test_context_seq_fn_learn_6():
     context.seq_fn_learn('op-f', '*,*', stored_rule('3|_self1> + 5|_self2>'))
     context.print_universe(True)
-    r = context.seq_fn_recall('op-f', ['fish', 'soup'], active=True)
+    r = context.seq_fn_recall('op-f', ['', 'fish', 'soup'], active=True)
     assert str(r) == '3|fish> + 5|soup>'
 
 
@@ -760,6 +761,11 @@ def test_extract_compound_sequence_empty_learn_6():
     assert str(r) == '|> . |> . |a> . |b> . |a> . |> . |> . |b> . |> . |>'
 
 
+def test_extract_compound_sequence_input_seq():
+    s = 'test-input-seq(|a>, |b>) (|x> . |y>)'
+    r = extract_compound_sequence(context, s)
+    assert str(r) == '|x> . |y>'
+
 
 def test_multi_value_stored_rules_1():
     s = """
@@ -796,3 +802,122 @@ multi |*> #=>
     assert str(r1) == '|b>'
     assert str(r2) == '|c>'
     assert str(r3) == '|d>'
+
+
+def test_seq_fn_input_seq_1():
+    s = """
+foo-input-seq (*,*) #=> 2|_self0> + 3|_self1> + 5|_self2>
+"""
+    r = process_sw_file(context, s)
+    context.print_universe()
+    s = 'foo-input-seq(|a>, |b>) (|x> . |y>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '2|x> . 2|y> + 3|a> + 5|b>'
+
+def test_seq_fn_input_seq_2():
+    s = """
+
+bah-input-seq (*,*) #=>
+    the |result> => 2|__self0> + 3|__self1> + 5|__self2>
+    
+
+"""
+    r = process_sw_file(context, s)
+    s = 'bah-input-seq(|a>, |b>) (|x> . |y>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '2|x> . 2|y> + 3|a> + 5|b>'
+
+
+
+# a bunch of test self insert cases:
+def test_self_insert_1():
+    s = """
+foo1 |*> #=> 13|_self>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo1 (|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '13|x> + 13|y> + 13|z>'
+
+# |*> rules do not process |_selfk> rules:
+# so the result is not a bug
+def test_self_insert_2():
+    s = """
+foo2 |*> #=> 13|_self0> + 17|_self1>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo2 (|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '39|_self0> + 51|_self1>'
+
+def test_self_insert_3():
+    s = """
+foo3 (*) #=> 19|_self>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo3 (|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '19|x> + 19|y> + 19|z>'
+
+def test_self_insert_4():
+    s = """
+foo4 (*) #=> 23|_self1>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo4 (|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '23|x> + 23|y> + 23|z>'
+
+def test_self_insert_5():
+    s = """
+foo5 (*) #=> 29|_self0>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo5 (|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == ''
+
+def test_self_insert_6():
+    s = """
+foo6 (*) #=> 29|_self0> + 31|_self1>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo6 (|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '31|x> + 31|y> + 31|z>'
+
+def test_self_insert_7():
+    s = """
+foo7 (*) #=> 37|_self0> + 41|_self1>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo7(|x> + |y> + |z>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '41|x> + 41|y> + 41|z>'
+
+def test_self_insert_8():
+    s = """
+foo8 (*) #=> 43|_self0> + 47|_self1>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo8(|x> + |y> + |z>) (|a> + |b>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '43|a> + 43|b> + 47|x> + 47|y> + 47|z>'
+
+def test_self_insert_9():
+    s = """
+foo9 (*,*) #=> 53|_self0> + 59|_self1> + 61|_self2>
+
+"""
+    r = process_sw_file(context, s)
+    s = 'foo9(|x>, |y>) (|a> + |b>)'
+    r = process_input_line(context, s, ket())
+    assert str(r) == '53|a> + 53|b> + 59|x> + 61|y>'

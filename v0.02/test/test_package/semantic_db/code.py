@@ -4,7 +4,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2018
-# Update: 26/7/2018
+# Update: 31/7/2018
 # Copyright: GPLv3
 #
 # Usage: 
@@ -176,7 +176,7 @@ class ket(object):
         return fn(self, *args)
 
     def apply_op(self, context, op):  # TODO? Maybe later, make it work with function operators too, rather than just literal operators?
-        r = context.seq_fn_recall(op, [self], True)  # this is broken! Not sure why, yet. I think I fixed it.
+        r = context.seq_fn_recall(op, [ket(), self], True)  # this is broken! Not sure why, yet. I think I fixed it.
         if len(r) == 0:
             r = context.recall(op, self, True)  # see much later in the code for definition of recall.
         return r
@@ -958,7 +958,7 @@ class superposition(object):
         return fn(self, *args)
 
     def apply_op(self, context, op):  # bugs out when rule is a sequence, which is now most of the time, once parser is finished.
-        r = context.seq_fn_recall(op, [self], True)  # op (*) has higher precedence than op |*>
+        r = context.seq_fn_recall(op, [ket(), self], True)  # op (*) has higher precedence than op |*>
         if len(r) == 0:
             r = sequence([])
             if len(self) == 0:
@@ -1340,7 +1340,7 @@ class sequence(object):
         # logger.debug('op: %s' % op)
         # seq = sequence([])
         # if op != 'supported-ops':
-        seq = context.seq_fn_recall(op, [self], active=True)
+        seq = context.seq_fn_recall(op, [ket(), self], active=True)
         if len(seq) == 0:
             if len(self) == 0:
                 seq = sequence([]) + ket().apply_op(context, op)  # do we want this?
@@ -1827,13 +1827,13 @@ class NewContext(object):
         if type(seq_list) is str:
             ket_label = seq_list  # should this be: ket_label = '*'? Would that break dump?
         elif type(seq_list) is list:
-            if len(seq_list) == 1:
+            if len(seq_list) == 2:  # first element in seq_list is input-seq
                 ket_label = '*'
-            elif len(seq_list) == 2:
-                ket_label = '*,*'
             elif len(seq_list) == 3:
-                ket_label = '*,*,*'
+                ket_label = '*,*'
             elif len(seq_list) == 4:
+                ket_label = '*,*,*'
+            elif len(seq_list) == 5:
                 ket_label = '*,*,*,*'
 
         match = False  # If/when I implement op(*,*) et al, I need a tidy way to handle stored rules and |_self1> vs |_self2> etc! No idea how to do that currently.
@@ -2554,14 +2554,12 @@ def process_operators(context, ops, seq, self_object=None):
                 else:
                     # python_code = compound_table[the_op].format(parameters) # probably risk of injection attack here. Also, this is the place to change compound function invoke method.
                     # seq = eval('seq' + python_code)
-                    method_name, str_fn_name, use_context = compound_table[
-                        the_op]  # heh, so we succesfully removed eval, but at what cost! Doing this for every invoke will hurt!
+                    method_name, str_fn_name, use_context = compound_table[the_op]  # heh, so we succesfully removed eval, but at what cost! Doing this for every invoke will hurt!
                     full_params = parameters  # can we preprocess and produce a compiled_compound_table?
                     if use_context is 'context':  #
                         full_params = [context] + full_params
                     if str_fn_name is not '':
-                        fn_name = globals()[
-                            str_fn_name]  # Is this use of globals a security risk too? Quite possibly :(
+                        fn_name = globals()[str_fn_name]  # Is this use of globals a security risk too? Quite possibly :(
                         full_params = [fn_name] + full_params
                     # print('method_name: %s' % str(method_name))
                     # print('use_context: %s' % use_context)
@@ -2576,6 +2574,7 @@ def process_operators(context, ops, seq, self_object=None):
                 null, fnk, *data = op
                 my_print('fnk', fnk)
                 my_print('data', data)
+                # print('f_op seq: %s' % seq)
 
                 # python_code = ''
                 our_fn = ''
@@ -2586,11 +2585,11 @@ def process_operators(context, ops, seq, self_object=None):
                     if fnk in whitelist_table_1:
                         # python_code = "%s(*seq_list)" % whitelist_table_1[fnk]
                         our_fn = globals()[whitelist_table_1[fnk]]
-                    else:  # is this branch still correct? How test?
+                    elif False:  # is this branch still correct? How test?
                         # the_seq = compile_compound_sequence(context, data[0], self_object)
                         the_seq = seq_list[0]
                         seq = process_operators(context, [fnk], the_seq, self_object)
-                if len(data) == 2:  # 2-parameter function:
+                elif len(data) == 2:  # 2-parameter function:  # should this be elif len(data) ... ?
                     if fnk in whitelist_table_2:  # still not sure if I want whitelist_table and context_whitelist_table separate, or pass context to everything.
                         # python_code = "%s(*seq_list)" % whitelist_table_2[fnk]
                         our_fn = globals()[whitelist_table_2[fnk]]
@@ -2612,9 +2611,9 @@ def process_operators(context, ops, seq, self_object=None):
                         our_fn = globals()[whitelist_table_4[fnk]]
                 if our_fn is not '':
                     # print('our_fn: %s' % str(our_fn))
-                    seq = our_fn(*seq_list)
+                    seq = our_fn(seq, *seq_list)
                 else:
-                    seq = context.seq_fn_recall(fnk, seq_list, True)
+                    seq = context.seq_fn_recall(fnk, [seq] + seq_list, active=True)
                 # seq_list = [compile_compound_sequence(context, x, self_object) for x in data]
                 # my_print('str_seq_list', [str(x) for x in seq_list])
                 # if len(python_code) > 0:
@@ -2738,7 +2737,7 @@ def compile_compound_sequence(context, compound_sequence, self_object=None):
                 except:
                     position = 1
                 try:
-                    the_seq = sequence(self_object[position - 1])
+                    the_seq = sequence(self_object[position])
                 except Exception as e:
                     my_print('self object exception', e)
                     the_seq = sequence(superposition(object))
@@ -2818,7 +2817,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
             return
 
     if type(one) is str:
-        seq = compile_compound_sequence(context, parsed_seq, [one])
+        seq = compile_compound_sequence(context, parsed_seq, [ket(), one])
         my_print('seq', str(seq))
 
         if op == '' and one == 'context' and rule_type == '=>':
@@ -2840,7 +2839,7 @@ def learn_standard_rule(context, op, one, rule_type, parsed_seq):
         seq = sequence([])
         for sp in indirect_object:
             for one in sp:
-                seq = compile_compound_sequence(context, parsed_seq, [one])
+                seq = compile_compound_sequence(context, parsed_seq, [ket(), one])
                 if rule_type == '=>':
                     context.learn(op, one, seq)
                 elif rule_type == '+=>':
@@ -2880,9 +2879,9 @@ def process_stored_rule(context, unparsed_rule, self_object=None):
     if self_object is not None and '|__self' in unparsed_rule:
         if type(self_object) is list:
             str_self_object = [str(x) for x in self_object]
-            unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object[0])  # I hate this bit of code!! Please kill it!
+            unparsed_rule = unparsed_rule.replace('|__self>', ' (%s) ' % str_self_object[1])  # I hate this bit of code!! Please kill it!
             for k, x in enumerate(str_self_object):  # we need a cleaner way to handle |__self> and |__self3> rules!
-                pattern = '|__self%s>' % str(k + 1)
+                pattern = '|__self%s>' % str(k)
                 unparsed_rule = unparsed_rule.replace(pattern, ' (%s) ' % x)  # I hate this bit of code!! Please kill it!
         else:
             if type(self_object) is str:

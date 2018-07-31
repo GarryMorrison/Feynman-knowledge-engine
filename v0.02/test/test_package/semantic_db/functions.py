@@ -6,7 +6,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 2014
-# Update: 30/7/2018
+# Update: 31/7/2018
 # Copyright: GPLv3
 #
 # A collection of functions that apply to kets, superpositions and sequences.
@@ -57,20 +57,23 @@ seq_fn_table = {}
 compound_table = {}
 
 
-# sequence functions are of form: fn(seq, seq, ... , seq)
-# functions of form: fn(seq, seq):
+# sequence functions are of form: fn(input-seq, seq, seq, ... , seq) or fn(input-seq, context, seq, ... , seq)
+# functions of form: fn(input-seq, seq):
+whitelist_table_1 = {}
+
+# functions of form: fn(input-seq, seq, seq):
 whitelist_table_2 = {}
 
-# functions of form: fn(seq, seq, seq):
+# functions of form: fn(input-seq, seq, seq, seq):
 whitelist_table_3 = {}
 
-# functions of form: fn(seq, seq, seq, seq):
+# functions of form: fn(input-seq, seq, seq, seq, seq):
 whitelist_table_4 = {}
 
-# functions of form: fn(context, seq, seq):
+# functions of form: fn(input-seq, context, seq, seq):
 context_whitelist_table_2 = {}
 
-# functions of form: fn(context, seq, seq, seq):
+# functions of form: fn(input-seq, context, seq, seq, seq):
 context_whitelist_table_3 = {}
 
 
@@ -156,8 +159,6 @@ function_operators_usage['display-time'] = """
     see also:
     
 """
-
-
 def pretty_display_time(seconds):
     s = display_time(float(seconds.label))
     return ket(s)
@@ -554,7 +555,7 @@ sequence_functions_usage['learn'] = """
     see also:
         add-learn, apply
 """
-def learn_sp(context, one, two, three):
+def learn_sp(input_seq, context, one, two, three):
     for op in one.to_sp():
         if op.label.startswith('op: '):
             str_op = op.label[4:]
@@ -578,7 +579,7 @@ sequence_functions_usage['add-learn'] = """
     see also:
         learn, apply
 """
-def add_learn_sp(context, one, two, three):
+def add_learn_sp(input_seq, context, one, two, three):
     for op in one.to_sp():
         if op.label.startswith('op: '):
             str_op = op.label[4:]
@@ -620,7 +621,7 @@ sequence_functions_usage['apply'] = """
     see also:
         learn, add-learn
 """
-def apply_sp(context, one, two):
+def apply_sp(input_seq, context, one, two):
     seq = sequence([])
     for sp in one:
         r = superposition()
@@ -640,7 +641,8 @@ compound_table['such-that'] = ['apply_seq_fn', 'seq_such_that', 'context']
 # set usage info:
 function_operators_usage['such-that'] = """
     description:
-        such-that[op1, op2, ... , opn] filters the given sequence to elements that return true for "op |element>"
+        such-that[op1, op2, ... , opn] seq 
+        filters the given sequence to elements that return true for "op |element>"
         where the coeff of |true> must be >= 0.5     
         
     examples:
@@ -994,7 +996,7 @@ sequence_functions_usage['consume-reaction'] = """
         catalytic-reaction, eat-from-can, fission-uranium
 """
 # one, two and three are superpositions
-def process_reaction(one, two, three):
+def process_reaction(input_seq, one, two, three):
     one = one.to_sp()
     two = two.to_sp()
     three = three.to_sp()
@@ -1044,7 +1046,7 @@ sequence_functions_usage['catalytic-reaction'] = """
 # You write down what you know, and any possibly relevant equations.
 # Then try to figure out a pathway to the desired result.
 #
-def process_catalytic_reaction(one, two, three):
+def process_catalytic_reaction(input_seq, one, two, three):
     one = one.to_sp()
     two = two.to_sp()
     three = three.to_sp()
@@ -1373,7 +1375,7 @@ sequence_functions_usage['arithmetic'] = """
 # x, y superposition bug here too!
 # fixed, I hope.
 #
-def arithmetic(x, operator, y):
+def arithmetic(input_seq, x, operator, y):
     x = x.to_sp()
     operator = operator.to_sp()
     y = y.to_sp()
@@ -1486,7 +1488,7 @@ sequence_functions_usage['range'] = """
     see also:
         sp2seq
 """
-def show_range(start, finish, step=ket("1")):
+def show_range(input_seq, start, finish, step=ket("1")):
     start = start.to_sp() # we don't know how to handle range for sequences, so for now, cast them all to superpositions
     finish = finish.to_sp()
     step = step.to_sp()  # if step is a superposition, cast it to a ket
@@ -1600,8 +1602,8 @@ def normalize_seq_len(one, two):
 # say if we want |word: frog> and |image: frog> to both trigger the |concept: frog>
 
 # set invoke method:
-whitelist_table_2['intersection'] = 'intersection'
-whitelist_table_3['intersection'] = 'tri_intersection'
+whitelist_table_2['intersection'] = 'intersection_input'
+whitelist_table_3['intersection'] = 'tri_intersection_input'
 # set usage info:
 sequence_functions_usage['intersection'] = """
     description:
@@ -1630,11 +1632,18 @@ def intersection(one, two):
 def tri_intersection(one, two, three):
     return intersection(intersection(one, two), three)
 
+def intersection_input(input_seq, one, two):
+    return intersection_fn(min, one, two).drop()
+
+# the triple intersection:
+def tri_intersection_input(input_seq, one, two, three):
+    return intersection(intersection(one, two), three)
+
 
 # now the union:
 # set invoke method:
-whitelist_table_2['union'] = 'union'
-whitelist_table_3['union'] = 'tri_union'
+whitelist_table_2['union'] = 'union_input'
+whitelist_table_3['union'] = 'tri_union_input'
 # set usage info:
 sequence_functions_usage['union'] = """
     description:
@@ -1659,16 +1668,23 @@ sequence_functions_usage['union'] = """
 def union(one, two):
     return intersection_fn(max, one, two)
 
+# the triple union:
+def tri_union(one, two, three):
+    return union(union(one, two), three)
+
+def union_input(input_seq, one, two):
+    return intersection_fn(max, one, two)
+
+# the triple union:
+def tri_union_input(input_seq, one, two, three):
+    return union(union(one, two), three)
+
 
 # potentially we could write a wrapper that maps associative pair functions into triple, quad etc fns.
 # eg: assoc_wrapper(fn,pieces)
 # where pieces is the list of parameters to feed to "fn"
 #
 
-
-# the triple union:
-def tri_union(one, two, three):
-    return union(union(one, two), three)
 
 
 # the complement variable function:
@@ -1683,7 +1699,7 @@ def comp_fn(x, y):
 
 # now for complement:
 # set invoke method:
-whitelist_table_2['complement'] = 'complement'
+whitelist_table_2['complement'] = 'complement_input'
 # set usage info:
 sequence_functions_usage['complement'] = """
     description:
@@ -1696,6 +1712,9 @@ sequence_functions_usage['complement'] = """
         intersection, union,  
 """
 def complement(one, two):
+    return intersection_fn(comp_fn, one, two)
+
+def complement_input(input_seq, one, two):
     return intersection_fn(comp_fn, one, two)
 
 
@@ -1728,7 +1747,7 @@ def mult_fn(x, y):
 
 
 # set invoke method:
-whitelist_table_2['multiply'] = 'multiply'
+whitelist_table_2['multiply'] = 'multiply_input'
 # set usage info:
 sequence_functions_usage['multiply'] = """
     description:
@@ -1746,13 +1765,16 @@ sequence_functions_usage['multiply'] = """
 def multiply(one, two):
     return intersection_fn(mult_fn, one, two)
 
+def multiply_input(input_seq, one, two):
+    return intersection_fn(mult_fn, one, two)
+
 
 def sum_fn(x, y):
     return x + y
 
 
 # set invoke method:
-whitelist_table_2['addition'] = 'addition'
+whitelist_table_2['addition'] = 'addition_input'
 # set usage info:
 sequence_functions_usage['addition'] = """
     description:
@@ -1768,6 +1790,9 @@ sequence_functions_usage['addition'] = """
         intersection, union, complement, multiply 
 """
 def addition(one, two):
+    return intersection_fn(sum_fn, one, two)
+
+def addition_input(input_seq, one, two):
     return intersection_fn(sum_fn, one, two)
 
 
@@ -1831,7 +1856,7 @@ def first_Euclidean_distance(one, two):
 
     return ket("number: " + float_to_int(math.sqrt(intersection_fn(squared_difference, one, two).count_sum())))
 
-def Euclidean_distance(one, two):
+def Euclidean_distance(input_seq, one, two):
     one = one.to_sp().label.split(': ')[::-1]
     two = two.to_sp().label.split(': ')[::-1]
     if len(one) != len(two):
@@ -2262,7 +2287,7 @@ sequence_functions_usage['simm'] = """
             
     see also: 
 """
-def aligned_simm(one, two):
+def aligned_simm(input_seq, one, two):
     # return ket(float_to_int(aligned_simm_value(one, two)))  # not sure which version we want.
     return ket('simm', aligned_simm_value(one, two))
 
@@ -2734,7 +2759,6 @@ def is_greater_than(one, t):
 
 
 # set invoke method:
-# compound_table['is-greater-equal-than'] = ".apply_fn(is_greater_equal_than,{0})"
 compound_table['is-greater-equal-than'] = ['apply_fn', 'is_greater_equal_than', '']
 # set usage info:
 function_operators_usage['is-greater-equal-than'] = """
@@ -2937,7 +2961,7 @@ sequence_functions_usage['op-zip'] = """
         a version that works for superpositions
 """
 # one, two are sequences
-def op_zip(context, one, two):
+def op_zip(input_seq, context, one, two):
     min_len = min(len(one), len(two))
     seq = sequence([])
     for k in range(min_len):
@@ -3017,7 +3041,7 @@ sequence_functions_usage['if'] = """
 #
 # bko_if(|True>,|a>,|b>)  -- returns |a>
 # bko_if(|False>,|c>,|d>) -- returns |d>
-def bko_if(condition, one, two):
+def bko_if(input_seq, condition, one, two):
     #  print('condition: %s' % condition)
     #  print('one: %s' % one)
     #  print('two: %s' % two)
@@ -3027,7 +3051,7 @@ def bko_if(condition, one, two):
         return two
 
 
-def bko_if_3(condition, one, two, three):
+def bko_if_3(input_seq, condition, one, two, three):
     condition = condition.to_sp().label.lower()
     if condition in ["true", "yes"]:
         return one
@@ -3069,7 +3093,7 @@ sequence_functions_usage['wif'] = """
 # assumes the coeff of True/False is in [0,1] otherwise we get negative coeffs.
 # though we can filter those using drop().
 #
-def weighted_bko_if(condition, one, two):
+def weighted_bko_if(input_seq, condition, one, two):
     condition = condition.to_sp()
     one = one.to_sp()
     two = two.to_sp()
@@ -3630,7 +3654,7 @@ sequence_functions_usage['and'] = """
     see also:
       if, or, xor
 """
-def And(one, two):
+def And(input_seq, one, two):
     if one.to_sp().label.lower() in ['true', 'yes'] and two.to_sp().label.lower() in ['true', 'yes']:
         return ket('yes')
     return ket('no')
@@ -3659,7 +3683,7 @@ sequence_functions_usage['or'] = """
     see also:
       if, and, xor
 """
-def Or(one, two):
+def Or(input_seq, one, two):
     one = one.to_sp()
     two = two.to_sp()
     if one.label.lower() in ['true', 'yes'] and two.label.lower() in ['true', 'yes']:
@@ -4057,8 +4081,51 @@ function_operators_usage['active-buffer'] = """
     description:
         active-buffer[N, t] seq
         active-buffer[N, t, op] seq
+        an early version of 'actively' reading a sentence, and use back-ground knowledge to work out what is said
+        not super impressive, and in many cases 'explain' does a better job.
 
     examples:
+        -- learn a simple face:
+        |body part: face> => 2|eye> + |nose> + 2|ear> + 2|lip> + |hair>
+    
+        active-buffer[7,0] (2|eye> + |nose>)
+            0.375|body part: face>
+            
+        active-buffer[7,0] (2|eye> + |nose> + 2|ear> + 2|lip> + |hair>)
+            |body part: face>
+
+        
+        -- reset the console:
+        reset
+        load internet-acronyms.sw
+        apply-word |*> #=> |word:> __ |_self>
+        remove-punctuation (*) #=> string-replace(|_self>, split[""] |:;.,!?$-"'>, |>)
+        read |*> #=> apply-word ssplit[" "] to-lower remove-punctuation remove-prefix["text: "] |_self>
+        active-buffer[7,0] read |text: fwiw I think it is all fud imho, lol. thx.>
+            |phrase: For What It's Worth> . |> . |> . |> . |> . |> . |phrase: Fear, Uncertainty, Doubt> . |phrase: In My Humble Opinion> . |phrase: Laughing Out Loud> . |phrase: Thanks>
+
+        reset
+        load breakfast-menu.sw
+        apply-word |*> #=> |word:> __ |_self>
+        remove-punctuation (*) #=> string-replace(|_self>, split[""] |:;.,!?$-"'>, |>)
+        read |*> #=> apply-word ssplit[" "] to-lower remove-punctuation remove-prefix["text: "] |_self>
+        active-buffer[7,0] read description |food: Homestyle Breakfast>
+            |number: 2> . |food: eggs> . |food: bacon> . |> . |food: sausage> . |food: toast> . |> . |> . |> . |food: hash browns> . |>
+
+        reset
+        apply-word |*> #=> |word:> __ |_self>
+        remove-punctuation (*) #=> string-replace(|_self>, split[""] |:;.,!?$-"'>, |>)
+        read |*> #=> apply-word ssplit[" "] to-lower remove-punctuation remove-prefix["text: "] |_self>
+        load active-buffer-example.sw
+
+        active-buffer[7,0] read |text: Hey Freddie what's up?>
+            |greeting: Hey!> . 0.25|person: Fred Smith> . |> . |direction: up> + 0.333|phrase: up the duff>
+            
+        active-buffer[7,0] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+            |greeting: Hey!> . |person: Mary> . |> . |phrase: with child> . |> . |direction: up> + |phrase: up the duff> + 0.25|phrase: in the family way> . |> . |> . |phrase: in the family way> + 0.333|phrase: up the duff> . |> . |> . |> . |phrase: having a baby> . |> . |>
+
+        active-buffer[7,0] active-buffer[7,0] read |text: Hey Mazza, you with child, up the duff, in the family way, having a baby?>
+            |> . |> . |> . 0.25|concept: pregnancy> . |> . 0.361|concept: pregnancy> . |> . |> . 0.5|concept: pregnancy> . |> . |> . |> . 0.25|concept: pregnancy> . |> . |>
 
     see also:
         explain
@@ -4400,7 +4467,7 @@ def first_find_path_between(context, one, two):
 
 
 
-def find_path_between(context, one, two):
+def find_path_between(input_seq, context, one, two):
     max_steps = 10                      # put a hard limit on the max number of operator steps
     one = one.to_sp()
     two = two.to_sp()
@@ -4484,8 +4551,8 @@ def first_find_steps_between(context, one, two):
         #     print('steps: %s' % str(steps))
     return ket('steps not found')
 
-def find_steps_between(context, one, two):
-    op_path = find_path_between(context, one, two)
+def find_steps_between(input_seq, context, one, two):
+    op_path = find_path_between(input_seq, context, one, two)
     if type(op_path) is ket and op_path.label == 'path not found':
         return ket('steps not found')
 
@@ -4945,7 +5012,7 @@ sequence_functions_usage['mbr'] = """
     see also:
         is-mbr, intersection
 """
-def mbr(e, two):
+def mbr(input_seq, e, two):
     e_label = e.to_sp().label
     value = two.to_sp().find_value(e_label)
     if value == 0:
@@ -4992,7 +5059,7 @@ sequence_functions_usage['is-mbr'] = """
     see also:
         mbr
 """
-def is_mbr(e, two):
+def is_mbr(input_seq, e, two):
     return mbr(e, two).is_not_empty()
 
 
@@ -5023,7 +5090,7 @@ sequence_functions_usage['subset'] = """
     see also:
         is-subset, mbr, is-mbr
 """
-def subset(one, two):
+def subset(input_seq, one, two):
     one = one.to_sp()
     two = two.to_sp()
 
@@ -5054,8 +5121,8 @@ sequence_functions_usage['is-subset'] = """
     see also:
         subset, mbr, is-mbr
 """
-def is_subset(one, two):
-    result = subset(one, two)
+def is_subset(input_seq, one, two):
+    result = subset(input_seq, one, two)
     if result.value >= 0.95:
         return ket('yes')
     return ket('no')
@@ -5090,7 +5157,7 @@ sequence_functions_usage['equal'] = """
         Isn't it redundant, and just a wrapper around simm?
         Wouldn't it be cleaner for it to be binary, and return |True> or |False> and not mess with coefficients?
 """
-def equality_test(one, two):
+def equality_test(input_seq, one, two):
     value = aligned_simm_value(one, two)  # NB: equal(0|x>,0|x>) returns 0|True>. Not currently sure if we want this, or need to tweak.
     return ket("True", value)
 
@@ -5113,7 +5180,7 @@ sequence_functions_usage['is-equal'] = """
     see also:
         simm, equal, if
 """
-def is_equal(one, two):
+def is_equal(input_seq, one, two):
     value = aligned_simm_value(one, two)
     # if value > 0:  # change this to value > 0.5 ?
     if value >= 0.5:
@@ -5139,7 +5206,7 @@ sequence_functions_usage['is-exactly-equal'] = """
     see also:
         simm, equal, if
 """
-def is_exactly_equal(one, two):
+def is_exactly_equal(input_seq, one, two):
     value = aligned_simm_value(one, two)
     # if value > 0:  # change this to value > 0.5 ?
     if value >= 0.95:
@@ -6354,7 +6421,7 @@ sequence_functions_usage['algebra'] = """
     see also:
         non-Abelian-algebra, arithmetic, display-algebra
 """
-def algebra(one, operator, two, Abelian=True):
+def algebra(input_seq, one, operator, two, Abelian=True):
     op_label = operator if type(operator) == str else operator.to_sp().label
     null, op = extract_category_value(op_label)
     one = one.to_sp()  # cast objects to superpositions for now, since we don't know how to handle sequences!
@@ -6400,8 +6467,8 @@ sequence_functions_usage['non-Abelian-algebra'] = """
     see also:
         algebra, arithmetic
 """
-def non_Abelian_algebra(one, operator, two):
-    return algebra(one, operator, two, False)
+def non_Abelian_algebra(input_seq, one, operator, two):
+    return algebra(input_seq, one, operator, two, Abelian=False)
 
 
 # simple complex number mult:
@@ -6483,7 +6550,7 @@ sequence_functions_usage['to-base'] = """
     see also:
         is-prime, prime-factors
 """
-def decimal_to_base(number, base):
+def decimal_to_base(input_seq, number, base):
     r = int(category_number_to_number(number.to_sp()).value)
     b = int(category_number_to_number(base.to_sp()).value)
     #  print("r:",r)
@@ -6639,18 +6706,28 @@ compound_table['merged-matrix'] = ['apply_sp_fn', 'matrix', 'context']
 function_operators_usage['merged-matrix'] = """
     description:
         merged-matrix[opn, ..., op2, op1]
+        merged-matrix[opn, ..., op2, op1] sp
         merge the operators into a single merged matrix
         
     examples:
-        sa: load matrices.sw
-        sa: merged-matrix[M2,M1]
-        [ z1 ] = [  0   42  6   6  36  24  6   ] [ x1 ]
-        [ z2 ]   [  9   32  14  2  24  32  8   ] [ x2 ]
-        [ z3 ]   [  12  73  23  7  58  60  15  ] [ x3 ]
-        [ z4 ]   [  0   63  9   9  54  36  9   ] [ x4 ]
-        [ z5 ]   [  3   41  9   5  34  28  7   ] [ x5 ]
-                                                 [ x6 ]
-                                                 [ x7 ]
+        load matrices.sw
+        merged-matrix[M2,M1]
+            [ z1 ] = [  0   42  6   6  36  24  6   ] [ x1 ]
+            [ z2 ]   [  9   32  14  2  24  32  8   ] [ x2 ]
+            [ z3 ]   [  12  73  23  7  58  60  15  ] [ x3 ]
+            [ z4 ]   [  0   63  9   9  54  36  9   ] [ x4 ]
+            [ z5 ]   [  3   41  9   5  34  28  7   ] [ x5 ]
+                                                     [ x6 ]
+                                                     [ x7 ]
+
+        -- specify the input kets of interest, here |x1>, |x2>, |x3>:
+        merged-matrix[M2, M1] split |x1 x2 x3>
+            [ z1 ] = [  0   42  6   ] [ x1 ]
+            [ z2 ]   [  9   32  14  ] [ x2 ]
+            [ z3 ]   [  12  73  23  ] [ x3 ]
+            [ z4 ]   [  0   63  9   ]
+            [ z5 ]   [  3   41  9   ]
+
 
     see also:
         matrix, naked-matrix
@@ -6680,16 +6757,26 @@ compound_table['naked-matrix'] = ['apply_sp_fn', 'naked_matrix', 'context']
 function_operators_usage['naked-matrix'] = """
     description:
         naked-matrix[opn, ..., op2, op1]
+        naked-matrix[opn, ..., op2, op1] sp
         display a single merged adjacency matrix, without the input and output vectors
 
     examples:
-        sa: load matrices.sw
-        sa: naked-matrix[M2,M1]
-        [  0   42  6   6  36  24  6   ]
-        [  9   32  14  2  24  32  8   ]
-        [  12  73  23  7  58  60  15  ]
-        [  0   63  9   9  54  36  9   ]
-        [  3   41  9   5  34  28  7   ]
+        load matrices.sw
+        naked-matrix[M2,M1]
+            [  0   42  6   6  36  24  6   ]
+            [  9   32  14  2  24  32  8   ]
+            [  12  73  23  7  58  60  15  ]
+            [  0   63  9   9  54  36  9   ]
+            [  3   41  9   5  34  28  7   ]
+
+        -- specify the input kets of interest, here |x1>, |x2>, |x3>:
+        naked-matrix[M2,M1] split |x1 x2 x3>
+            [  0   42  6   ]
+            [  9   32  14  ]
+            [  12  73  23  ]
+            [  0   63  9   ]
+            [  3   41  9   ]
+
 
     see also:
         matrix, merged-matrix
@@ -6715,6 +6802,7 @@ compound_table['matrix'] = ['apply_sp_fn', 'multi_matrix', 'context']
 function_operators_usage['matrix'] = """
     description:
         matrix[opn, ..., op2, op1]
+        matrix[opn, ..., op2, op1] sp
         maps operators to adjacency matrices
 
     examples:
@@ -6733,44 +6821,44 @@ function_operators_usage['matrix'] = """
 
     
         -- display corresponding matrices:
-        sa: matrix[M1]
-        [ y1 ] = [  0  7  1  1  6  4  1  ] [ x1 ]
-        [ y2 ]   [  3  6  4  0  4  8  2  ] [ x2 ]
-                                           [ x3 ]
-                                           [ x4 ]
-                                           [ x5 ]
-                                           [ x6 ]
-                                           [ x7 ]
+        matrix[M1]
+            [ y1 ] = [  0  7  1  1  6  4  1  ] [ x1 ]
+            [ y2 ]   [  3  6  4  0  4  8  2  ] [ x2 ]
+                                               [ x3 ]
+                                               [ x4 ]
+                                               [ x5 ]
+                                               [ x6 ]
+                                               [ x7 ]
         
-        sa: matrix[M2]
-        [ z1 ] = [  6  0  ] [ y1 ]
-        [ z2 ]   [  2  3  ] [ y2 ]
-        [ z3 ]   [  7  4  ]
-        [ z4 ]   [  9  0  ]
-        [ z5 ]   [  5  1  ]
+        matrix[M2]
+            [ z1 ] = [  6  0  ] [ y1 ]
+            [ z2 ]   [  2  3  ] [ y2 ]
+            [ z3 ]   [  7  4  ]
+            [ z4 ]   [  9  0  ]
+            [ z5 ]   [  5  1  ]
         
-        sa: matrix[M2, M1]
-        [ z1 ] = [  6  0  ] [  0  7  1  1  6  4  1  ] [ x1 ]
-        [ z2 ]   [  2  3  ] [  3  6  4  0  4  8  2  ] [ x2 ]
-        [ z3 ]   [  7  4  ]                           [ x3 ]
-        [ z4 ]   [  9  0  ]                           [ x4 ]
-        [ z5 ]   [  5  1  ]                           [ x5 ]
-                                                      [ x6 ]
-                                                      [ x7 ]
+        matrix[M2, M1]
+            [ z1 ] = [  6  0  ] [  0  7  1  1  6  4  1  ] [ x1 ]
+            [ z2 ]   [  2  3  ] [  3  6  4  0  4  8  2  ] [ x2 ]
+            [ z3 ]   [  7  4  ]                           [ x3 ]
+            [ z4 ]   [  9  0  ]                           [ x4 ]
+            [ z5 ]   [  5  1  ]                           [ x5 ]
+                                                          [ x6 ]
+                                                          [ x7 ]
         
-        sa: matrix[M1, M2]
-        [  ] = [            ] [  6  0  ] [ y1 ]
-                              [  2  3  ] [ y2 ]
-                              [  7  4  ]
-                              [  9  0  ]
-                              [  5  1  ]
+        matrix[M1, M2]
+            [  ] = [            ] [  6  0  ] [ y1 ]
+                                  [  2  3  ] [ y2 ]
+                                  [  7  4  ]
+                                  [  9  0  ]
+                                  [  5  1  ]
 
         -- only display matrix for desired inputs:
-        sa: matrix[M1] split |x1 x3 x5 x7>
-        [ y1 ] = [  0  1  6  1  ] [ x1 ]
-        [ y2 ]   [  3  4  4  2  ] [ x3 ]
-                                  [ x5 ]
-                                  [ x7 ]
+        matrix[M1] split |x1 x3 x5 x7>
+            [ y1 ] = [  0  1  6  1  ] [ x1 ]
+            [ y2 ]   [  3  4  4  2  ] [ x3 ]
+                                      [ x5 ]
+                                      [ x7 ]
 
     see also:
         merged-matrix, naked-matrix
@@ -7094,7 +7182,7 @@ sequence_functions_usage['clone'] = """
     TODO:
         test it works with superpositions, as claimed
 """
-def clone_ket(context, one, two):
+def clone_ket(input_seq, context, one, two):
     one = one.to_sp()
     two = two.to_sp()
     for elt in one:
@@ -8125,7 +8213,7 @@ sequence_functions_usage['string-replace'] = """
     see also:
         replace
 """
-def string_replace(one, two, three):
+def string_replace(input_seq, one, two, three):
     two = two.to_sp()
     s2 = three.to_sp().label
 
@@ -8279,7 +8367,7 @@ sequence_functions_usage['frequency-class'] = """
     see also:
         normed-frequency-class, map-to-topic
 """
-def frequency_class_ket(e, X):
+def frequency_class_ket(input_seq, e, X):
     value = frequency_class_value(e, X)
     return ket('number: ' + str(value))
 
@@ -8409,7 +8497,7 @@ sequence_functions_usage['normed-frequency-class'] = """
     see also:
         frequency-class, map-to-topic
 """
-def normed_frequency_class_ket(e, X):
+def normed_frequency_class_ket(input_seq, e, X):
     value = normed_frequency_class_value(e, X)
     return ket('number: ' + str(value))
 
@@ -8817,3 +8905,30 @@ def vsa_mult(one, two):
             #      new_pieces.sort()
             r += ket(": ".join(new_pieces))
     return r
+
+
+# set invoke method:
+whitelist_table_2['test-input-seq'] = 'input_seq_test'
+# set usage info:
+sequence_functions_usage['test-input-seq'] = """
+    description:
+        test-input-seq(input-seq, seq, seq)
+        our first and only sequence function that makes use of input-seq
+        all it does is print out the given sequences, and return input-seq
+        just a place-holder until we find a real application of input-seq feature
+    
+    examples:
+        test-input-seq(|a>, |b>) (|x> . |y>)
+            input_seq: |x> . |y>
+            one: |a>
+            two: |b>
+            |x> . |y>
+        
+    see also:
+
+"""
+def input_seq_test(input_seq, one, two):
+    print('input_seq: %s' % input_seq)
+    print('one: %s' % one)
+    print('two: %s' % two)
+    return input_seq

@@ -5,7 +5,7 @@
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
 # Date: 22/2/2018
-# Update: 30/7/2018
+# Update: 31/7/2018
 # Copyright: GPLv3
 #
 # Usage:
@@ -1831,7 +1831,7 @@ examples_usage['walking-a-grid'] = """
         -- walk max steps:
         walk |*> #=> sdrop set-to[0] line sp2seq range(|1>, max |steps>)
 
-        examples:
+    examples:
         -- load the code:
         load walk-grid-v2.sw
 
@@ -1913,6 +1913,417 @@ examples_usage['walking-a-grid'] = """
 
     source code:
         load walk-grid-v2.sw
+"""
+
+examples_usage['walking-ant'] = """
+    description:
+        a walking ant with minimal intelligence
+        it is a much more complex version of 'walking-a-grid' and currently the most complex swc code yet written
+        
+        learn and randomly walk a grid
+        keep a record of the pathway home
+        if find food return home, leaving a scent trail
+        once home, follow scent trail back to food (approximately)
+        if find food again, return home, adding to the scent trail
+        when reach home, store the food, switch off scent trail, and start randomly walking again
+
+        ### is the current location of our ant
+
+    code:
+        -- learn map:
+        |null> => learn-map[30, 30] |>
+        
+        -- learn current location:
+        current |cell> => |grid: 10: 22>
+        
+        -- learn home location:
+        home |cell> => current |cell>
+        
+        -- start with no food at home:
+        stored-food home |cell> => 0| >
+        
+        -- learn path home:
+        store-direction (*) #=>
+            path |home> +=> |__self>
+        
+        -- find return path
+        return-path |home> #=>
+            invert-direction expand path |home>
+        
+        -- NB: |_self> works here, so don't need the slower |__self>
+        invert-direction |*> #=>
+            if(is-less-than[0] push-float |_self>, - |_self>, reverse-dir |_self> )
+        
+        
+        -- learn the list of directions:
+        list-of |directions> => |op: N> + |op: NE> + |op: E> + |op: SE> + |op: S> + |op: SW> + |op: W> + |op: NW>
+        
+        -- choose a heading when leaving the nest:
+        heading |ops> => pick-elt list-of |directions>
+        
+        -- start by not carrying any food:
+        carry |food> => 0| >
+        
+        -- start with scent trail off:
+        lay |scent> => |no>
+        
+        -- start with random walk type:
+        type |walk> => |op: random-walk>
+        
+        
+        
+        -- place some food:
+        food |grid: 2: 2> => 3| >
+        food |grid: 2: 3> => 3| >
+        food |grid: 2: 4> => 3| >
+        food |grid: 2: 5> => 3| >
+        food |grid: 3: 5> => 3| >
+        food |grid: 4: 5> => 3| >
+        food |grid: 5: 6> => 3| >
+        food |grid: 6: 6> => 3| >
+        food |grid: 29: 29> => 20| >
+        food |grid: 28: 3> => 20| >
+        
+        
+        -- show food and stored-food operators:
+        show-food |*> #=>
+            display-map[30, 30, food] |>
+        
+        show-stored-food |*> #=>
+            display-map[30, 30, stored-food] |>
+        
+        
+        -- carry-the and drop-the food operators:
+        -- currently assumes food current |cell> is greater than 0.
+        carry-the |food> #=>
+            food current |cell> => decrement food current |cell>
+            carry |food> => increment carry |food>
+        
+        drop-the |food> #=>
+            stored-food current |cell> +=> carry |food>
+            carry |food> => 0| >
+        
+        
+        -- if there is food at the current cell, and not already carrying food, then |found food>:
+        if-find-food |*> #=>
+            process-if if( and(is-greater-than[0] push-float food current |cell>, is-equal[0] push-float carry |food>), |found food>, |not found food> )
+        
+        process-if |found food> #=>
+            -- carry the food:
+            food current |cell> => decrement food current |cell>
+            carry |food> => increment carry |food>
+            lay |scent> => |yes>
+            type |walk> => |op: return-home>
+        
+        process-if |not found food> #=>
+            |>
+        
+        
+        -- if reach home operator:
+        -- ie, if current cell is home cell then |reached home>:
+        if-reach-home |*> #=>
+            process-if if(is-equal( current |cell>, home |cell>), |reached home>, |not reached home>)
+        
+        process-if |reached home> #=>
+            -- drop and store any food you are carrying:
+            stored-food current |cell> +=> carry |food>
+            carry |food> => 0| >
+            lay |scent> => |no>
+            type |walk> => |op: random-walk>
+            path |home> => |home>
+        
+        process-if |not reached home> #=>
+            |>
+        
+        
+        record-scent |*> #=>
+            process-if if(lay |scent>, |yes to scent>, |no to scent>)
+        
+        process-if |yes to scent> #=>
+            value current |cell> => plus[1] value current |cell>
+        
+        process-if |no to scent> #=>
+            |>
+        
+        
+        if-find-scent-change-heading |*> #=>
+            process-if if(is-greater-than[0] value |_self>, |found scent> , |not found scent>)
+        
+        process-if |found scent> #=>
+            heading |ops> => random-if-zero reverse-dir return-path |home>
+        
+        process-if |not found scent> #=>
+            |>
+        
+        random-if-zero (*) #=>
+            if(do-you-know sdrop |_self>, |_self>, pick-elt list-of |directions>)
+        
+        
+        
+        switch-on-random |*> #=>
+            type |walk> => |op: random-walk>
+        
+        switch-on-return |*> #=>
+            type |walk> => |op: return-home>
+        
+        
+        take-a-step |*> #=>
+            current |direction> => apply( type |walk>, current |cell>)
+            path |home> +=> current |direction>
+            current |cell> => apply( current |direction>, current |cell>)
+            if-find-food |>
+            if-reach-home |>
+        
+        
+        
+        -- random-walk input is a grid location:
+        -- random-walk has to return a direction:
+        random-walk |*> #=>
+            if-find-scent-change-heading |__self>
+        
+            -- blur heading:
+            heading |ops> => normalize ( 0.1 turn-left^2 + 0.25 turn-left + 15 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
+        
+            -- try a direction:
+            try |direction> => clean weighted-pick-elt heading |ops>
+        
+            -- if valid direction, step, else turn right:
+            process-if if(do-you-know apply( try |direction>, |__self>), |valid step>, |not valid step>)
+        
+        process-if |valid step> #=>
+            try |direction>
+        
+        process-if |not valid step> #=>
+            -- turn heading right:
+            heading |ops> => pick-elt ( turn-right + turn-right^2 ) heading |ops>
+            |op: id>
+        
+        
+        -- define turn-heading-right operator:
+        turn-heading-right |*> #=>
+            heading |ops> => pick-elt ( turn-right + turn-right^2 ) heading |ops>
+        
+        -- define blur-heading operator:
+        blur-heading |*> #=>
+            heading |ops> => ( 0.1 turn-left^2 + 0.25 turn-left + 10 + 0.25 turn-right + 0.1 turn-right^2 ) heading |ops>
+        
+        
+        -- return-home input is a grid location (which we ignore, instead making use of return-path |home>):
+        -- return-home returns a direction one step closer to home:
+        return-home |*> #=>
+            clean weighted-pick-elt return-path |home>
+        
+        
+        -- define identity direction operator:
+        id |*> #=> |_self>
+        
+        -- define turn-right operators:
+        turn-right |op: S> => |op: SW>
+        turn-right |op: SW> => |op: W>
+        turn-right |op: W> => |op: NW>
+        turn-right |op: NW> => |op: N>
+        turn-right |op: N> => |op: NE>
+        turn-right |op: NE> => |op: E>
+        turn-right |op: E> => |op: SE>
+        turn-right |op: SE> => |op: S>
+        
+        -- define turn-left operators:
+        turn-left |op: S> => |op: SE>
+        turn-left |op: SW> => |op: S>
+        turn-left |op: W> => |op: SW>
+        turn-left |op: NW> => |op: W>
+        turn-left |op: N> => |op: NW>
+        turn-left |op: NE> => |op: N>
+        turn-left |op: E> => |op: NE>
+        turn-left |op: SE> => |op: E>
+        
+        -- define reverse operators:
+        reverse-dir |op: S> => |op: N>
+        reverse-dir |op: SW> => |op: NE>
+        reverse-dir |op: W> => |op: E>
+        reverse-dir |op: NW> => |op: SE>
+        reverse-dir |op: N> => |op: S>
+        reverse-dir |op: NE> => |op: SW>
+        reverse-dir |op: E> => |op: W>
+        reverse-dir |op: SE> => |op: NW>
+        
+        -- define expand operators:
+        expand |op: S> => - |op: N>
+        expand |op: SW> => - |op: N> - |op: E>
+        expand |op: W> => - |op: E>
+        expand |op: NW> => |op: N> - |op: E>
+        expand |op: N> => |op: N>
+        expand |op: NE> => |op: N> + |op: E>
+        expand |op: E> => |op: E>
+        expand |op: SE> => - |op: N> + |op: E>
+        
+        
+        
+        d |*> #=>
+            display-map[30,30]
+        
+        -- single map update:
+        update |*> #=>
+            record-scent |>
+            take-a-step |>
+            d |>
+            |>
+        
+        -- set max steps:
+        max |steps> => |20>
+        
+        -- walk max steps:
+        walk |*> #=>
+            update range(|1>, max |steps>)
+
+
+    examples:
+        -- load the code:
+        load walking-ant.swc
+        
+        -- show the starting locations of food:
+        show-food
+            h: 30
+            w: 30
+            1
+            2        3  3  3  3
+            3                 3
+            4                 3
+            5                    3
+            6                    3
+            7
+            8
+            9
+            10                                                                 ###
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21
+            22
+            23
+            24
+            25
+            26
+            27
+            28         20
+            29                                                                                       20
+            30
+        
+        -- walk a lot:
+        walk^100
+            h: 30
+            w: 30
+            1
+            2        1  2  1  1  1  1  1  1
+            3           1  1  4  3  2  1  2  2  1  1  1
+            4                 3  2  3  3  3  3  2  2  1
+            5                 2  3  2  2  2  3  1  3  3  2  1
+            6                    2  1  2  2  3  1  2  3  4  3  2
+            7                    1        1  3  3  3  2  3  3  4  3  2  1  1
+            8                    1                 1  2  3  4  4  5  3  1  1
+            9                    1  1  1  1  1              1  1  4  6  6  6  4  3
+            10                               1  1  1  1  1  1  1  1  2  3  5  6
+            11                                                 1  1  1  1  1  1  3
+            12                                           1  1  1                 2
+            13                                        1  1              1  1  2  2
+            14                                        1                 1     1
+            15                                        1        1  1  2  2  1  1
+            16                                     1  1        1     1
+            17                                     1           1     1
+            18                                  1  1     1  1  1     1
+            19                            1  1  1     2  2  1  1  1  1
+            20                         1  1           2
+            21  ###                    1        1  1  2
+            22                         1        1     1
+            23                         1     1  1     1
+            24                         1  1  1     1  1
+            25                   1  1  1  2  1  1  1
+            26             1  1  2  2  2  2
+            27          1  2  1  2  1
+            28          3  2  1  1
+            29
+            30
+
+        -- show remaining food:
+            h: 30
+            w: 30
+            1
+            2        2  2  3  3
+            3
+            4                 1
+            5                    2
+            6                    2
+            7
+            8
+            9
+            10
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21  ###
+            22
+            23
+            24
+            25
+            26
+            27
+            28         17
+            29                                                                                       20
+            30
+        
+        -- show stored food:
+            h: 30
+            w: 30
+            1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+            10                                                                  12
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21  ###
+            22
+            23
+            24
+            25
+            26
+            27
+            28
+            29
+            30
+        
+    source code:
+        load walking-ant.swc
+    
+    see also:
+        walking-a-grid
 """
 
 
