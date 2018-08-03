@@ -1,0 +1,13 @@
+|context> => |context: quantum mechanics experiment>
+
+run-single-experiment |*> #=>
+    is-alive? |Schrodinger's cat> !=> normalize weighted-pick-elt (0.5 |yes> + 0.5|no>)
+    the |result> +=> is-alive? |Schrodinger's cat>
+
+|iterations> => |100>
+
+run-experiment |*> #=>
+    run-single-experiment range(|1>, "" |iterations>)
+    bar-chart[100] the |result>
+
+

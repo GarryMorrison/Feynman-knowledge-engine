@@ -1,0 +1,119 @@
+Welcome to the Semantic DB usage page.
+
+The intent of this project is to represent everything in terms of operators, kets and sequence functions.
+where: 
+kets are string, float pairs written as: 2.713|some ket>
+superpositions are linear combinations of kets, 
+sequences are an ordered list of superpositions.
+
+Kets have a ready interpretation as the activity level of a node in a network, 
+where the ket label is the name of that node, and the coefficient is the activity of that node.
+Superpositions as the activity level of several nodes in a network, all occurring at the same time.
+Sequences as a time ordered sequence of node activity in a network.
+Operators as a map from one set of node activity to another set of node activity.
+
+If we define S as any of ket, superposition, sequence, then they can be combined using the following infix operators:
+addition:
+    S1 + S2
+subtraction:
+    S1 - S2
+sequence append:
+    S1 . S2
+ket-label merge:
+    S1 _ S2
+ket-label merge, using " " char:
+    S1 __ S2
+
+And our operators take the form:
+    op S
+or
+    op[p1, ... , pn] S
+where p1 ... pn are parameters.
+
+And our sequence functions take the form:
+    fn(S, ... , S)
+
+Both operators and sequence functions have return type S, which allows them to be arbitrarily composed, separated by the " " char.
+eg:
+    op3 fn(S,S) op2[p] op1 |x>
+
+
+
+Let's move on to some examples.
+First some kets:
+    |Fred>, |number: 41>, |age: 37>, |animal: mammal: cat: Trudy>, |grandmother>, |Monday>, 0.7|hungry>, 0.9|tired>
+
+As it is frequently useful to merge ket labels we have the '_' and '__' operators:
+For example:
+    |fish> _ |soup> == |fishsoup>
+and:
+    |fish> __ |soup> == |fish soup>
+
+
+Then since superpositions are linear combinations of kets we can add or subtract them:
+a list of friends:
+    |Rob> + |Eric> + |Jane> + |Emma> + |Liz> + |Max>
+
+a list of weekdays:
+    |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday>
+
+We can represent a person's mood 'quite hungry, very tired and happy' as:
+    0.7|hungry> + 0.9|tired> + |happy>
+
+
+Sequences are time ordered list of superpositions, separated by ' . '.
+For example, the spelling of Fred is represented by this sequence of kets:
+    |F> . |r> . |e> . |d>
+
+Or given 3 superpositions, where:
+    sp1 == |a> + 2.1|b> - 0.01|c>
+    sp2 == 3|d> + 5.3|e>
+    sp3 == |x> + |y> + |z>
+we can construct a sequence sp1 . sp2 . sp3:
+    |a> + 2.1|b> - 0.01|c> . 3|d> + 5.3|e> . |x> + |y> + |z>
+
+
+And a quick example of an operator:
+-- learn some knowledge:
+    friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+    friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+
+-- ask common friends of Fred and Sam:
+    sa: common[friends] (|Fred> + |Sam>)
+    |Jack> + |Emma> + |Charlie>
+
+
+
+By convention, we represent categories using ': ' as a separator.
+eg:
+    |plant: tree: oak tree>
+    |animal: mammal: cat: Trudy>
+
+And we have operators such as 'extract-category' and 'extract-value' to work with these:
+    extract-category |plant: tree: oak tree>
+        |plant: tree>
+
+    extract-value |plant: tree: oak tree>
+        |oak tree>
+
+
+The identity element for superpositions is the don't know ket: |>, which has the property for any superposition 'sp':
+    sp + |> == |> + sp == sp
+Any time an operator is applied, but has yet to be defined, or the operator doesn't make sense in that context, the don't know ket is returned.
+And we have a corresponding operator called 'do-you-know' that returns |no> for |> and |yes> otherwise.
+eg:
+    sa: do-you-know |>
+    |no>
+
+    sa: do-you-know |x>
+    |yes>
+
+
+Any ket with coefficient 0 is considered to be a network node with no activity. 
+And as such we can arbitrarily add them to a superposition and it doesn't change the 'meaning' of that superposition:
+    meaning(sp1 + 0 sp2) == meaning(sp1)
+And we have a corresponding operator called 'drop' that removes all kets from the superposition with coefficient <= 0.
+eg:
+    drop (|a> + 0|b> - 2|c> + 7.1|d>)
+        |a> + 7.1|d>
+

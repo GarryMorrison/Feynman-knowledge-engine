@@ -1,0 +1,9 @@
+op |*> #=> |op:> __ |_self>
+op1 |*> #=> |op1:> __ |_self>
+op2 |*> #=> |op2:> __ |_self>
+op3 |*> #=> |op3:> __ |_self>
+op4 |*> #=> |op4:> __ |_self>
+op5 |*> #=> |op5:> __ |_self>
+op6 |*> #=> |op6:> __ |_self>
+op7 |*> #=> |op7:> __ |_self>
+op8 |*> #=> |op8:> __ |_self>

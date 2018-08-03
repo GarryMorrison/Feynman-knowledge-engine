@@ -1,0 +1,86 @@
+#######################################################################
+# the semantic-db parsley grammar
+#
+# Author: Garry Morrison
+# email: garry -at- semantic-db.org
+# Date: 1/8/2018
+# Update: 1/8/2018
+# Copyright: GPLv3
+#
+# the full parsley grammar, as used in code.py
+#
+#######################################################################
+
+our_grammar = """
+# number copied from here:
+# http://parsley.readthedocs.org/en/latest/tutorial2.html
+number = ('-' | -> ''):sign (intPart:ds (floatPart(sign ds)
+                                        | -> int(sign + ds)))
+digit = :x ?(x in '0123456789') -> x
+digits = <digit*>
+digit1_9 = :x ?(x in '123456789') -> x
+intPart = (digit1_9:first digits:rest -> first + rest) | digit
+floatPart :sign :ds = <('.' digits exponent?) | exponent>:tail
+                     -> float(sign + ds + tail)
+exponent = ('e' | 'E') ('+' | '-')? digits
+
+
+# my parsley code:
+
+valid_ket_chars = :x ?(x not in '<|>')
+naked_ket = '|' <valid_ket_chars*>:x '>' -> x
+coeff_ket = (number | -> 1):value ws naked_ket:label -> (label, value)
+signed_ket = ('-' | -> ''):sign ws (number | -> 1):value ws naked_ket:label -> (label, float(sign + str(value)))
+
+op_symbol = ('+' | '-' | '__' | '.' | '_')
+symbol_ket = ws op_symbol:symbol ws coeff_ket:k -> (symbol, k)
+literal_sequence = ws signed_ket:left ws symbol_ket*:right ws -> ket_calculate(left, right)
+
+
+positive_int = <digit+>:n -> int(n)
+fraction = number:numerator (ws '/' ws number | -> 1):denominator -> float_int(numerator/denominator)
+#S0 = ' '*
+ws = ' '*
+S1 = ' '+
+op_start_char = anything:x ?(x.isalpha() or x == '!') -> x
+op_char = anything:x ?(x.isalpha() or x.isdigit() or x in '-+!?.:')
+simple_op = op_start_char:first <op_char*>:rest -> first + rest
+filtered_char = anything:x ?(x not in '[]|><') -> x
+filtered_parameter_string = '"' ( ~'"' filtered_char)*:c '"' -> ''.join(c)
+parameters = (fraction | simple_op | filtered_parameter_string | '\"\"' | '*'):p -> p
+
+compound_op = simple_op:the_op '[' parameters:first (',' ws parameters)*:rest ']' -> ['c_op', the_op] + [first] + rest
+function_op = simple_op:the_op '(' ws full_compound_sequence:first (',' ws full_compound_sequence)*:rest ws ')' -> ['f_op', the_op] + [first] + rest
+general_op = (bracket_ops | compound_op | function_op | simple_op | number | '\"\"' ):the_op -> the_op
+powered_op = general_op:the_op '^' positive_int:power -> (the_op, power)
+
+op = (powered_op | general_op):the_op -> the_op
+op_sequence = (ws op:first (S1 op)*:rest ws -> [first] + rest)
+              | ws -> []
+symbol_op_sequence = ws op_symbol:symbol ws op_sequence:seq -> (symbol, seq)
+bracket_ops = '(' ws (op_symbol | -> '+'):symbol op_sequence:first ws symbol_op_sequence*:rest ws ')' -> [(symbol, first)] + rest
+
+bracket_sequence = '(' ws full_compound_sequence:seq ws ')' -> seq
+single_compound_sequence = op_sequence:ops (naked_ket | bracket_sequence | -> ''):first -> [ops, first]
+
+symbol_single_compound_sequence = ~'+=>' ~'.=>' ws op_symbol:symbol ws single_compound_sequence:seq -> (symbol, seq)
+full_compound_sequence = ws (op_symbol | -> '+'):symbol single_compound_sequence:first ws symbol_single_compound_sequence*:rest ws -> [(symbol, first)] + rest
+
+compiled_compound_sequence = full_compound_sequence:seq -> compile_compound_sequence(context, seq)
+
+new_line = ('\r\n' | '\r' | '\n')
+char = ~new_line anything
+line = <char*>:s -> s
+multiline = '  ' line:first new_line (~new_line multiline)*:rest -> '\\n  ' + first + ''.join(rest)
+comment = ( '-'+ line | ws new_line)
+object = (naked_ket | '(*)' | '(*,*)' | '(*,*,*)' | '(*,*,*,*)' | full_compound_sequence ):obj -> obj
+single_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws line:s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
+stored_rule = multi_stored_rule
+multi_stored_rule = ws (simple_op | -> ''):prefix_op ws object:obj ws ('#=>' | '!=>'):rule_type ws (ws new_line multiline | line):s -> learn_stored_rule(context, prefix_op, obj, rule_type, s)
+learn_rule =  ws (simple_op | -> ''):prefix_op ws object:obj ws ('=>' | '+=>' | '.=>'):rule_type ws full_compound_sequence:parsed_seq -> learn_standard_rule(context, prefix_op, obj, rule_type, parsed_seq)
+recall_rule = ws (simple_op | "\'\'" ):prefix_op ws object:obj -> recall_rule(context, prefix_op, obj)
+
+sw_file = (comment | learn_rule | multi_stored_rule )*
+process_rule_line = (learn_rule | stored_rule | compiled_compound_sequence | new_line | comment)
+stored_rule_line = (learn_rule | stored_rule | full_compound_sequence ):seq -> seq
+"""
