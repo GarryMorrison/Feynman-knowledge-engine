@@ -1,0 +1,863 @@
+Welcome to the Semantic DB usage page.
+
+The intention of this project is a language and notation to describe networks.
+We start by describing a single node in a network as a float/string pair.
+The string representing the label for that node, and the float as the degree of activity of that node.
+For example we might have nodes such as 'Fred', 'grandmother', 'hungry', 'tired', 'age: 37'.
+And we might have activity levels of 0 for off, 0.2 for 'a little', 0.7 for 'quite', 0.9 for 'very'.
+Less often we have activity levels with negative values. The best interpretation for them is inhibition.
+
+So, how do we represent these float/string pairs? Well, let us introduce kets:
+    f|s>
+where 'f' is an arbitrary float (the code is written in python, so 'f' is any valid python float).
+where 's' is an almost arbitrary string, with the exception 's' must not contain these characters: '<' '|' '>'
+Now we have kets, we base our entire project around them!
+
+Some example kets are:
+    |Fred>, |grandmother>, 0.2|hungry>, 0.7|tired>, |age: 37>, |number: 37>
+
+Notes:
+    1) if 'f' is not specified then it has a default value of 1
+    2) by convention, we can specify categories using ': ' as a separator. eg, the 'age' and 'number' categories.
+    3) categories can be considered a weak form of a type system. eg, |letter: f>, |word: fish>, have type 'letter' and 'word' respectively.
+
+OK. We can now represent single nodes in a network using kets. That doesn't make much of a network!
+We need more nodes, and we need links between nodes. So our next ingredient we call superpositions.
+A superposition represents the activity level of several nodes in a network all at the same time.
+So, how do we represent these? Simply we add kets, that is, we take linear combinations of kets.
+For example, the short phrase: 'a little hungry, quite tired and happy' is represented by this superposition:
+    0.2|hungry> + 0.7|tired> + |happy>
+which just means the 'hungry' node is a little bit on, the 'tired' node is quite on, and 'happy' node is fully on.
+
+The add and subtract symbols are to be taken literally, so we have:
+    |a> + 2|b> + 0.1|a> + 3|b> + |a> - |b>
+evaluates to:
+    2.1|a> + 4|b>
+
+The addition is Abelian, that is, ket addition commutes, though in practice it is often useful to preserve order in superpositions:
+    2|a> + 3|b> + 5|c>
+is the same superposition as:
+    5|c> + 2|a> + 3|b>
+
+We have an identity element |> which we call the don't know ket. It has the standard identity element property:
+    |> + sp == sp + |> == sp
+for any superposition sp.
+
+And since a node with activity level 0 is off, we can arbitrarly add and subtract kets with coefficient 0 and not change the meaning of the given superposition.
+For some function 'meaning' we have:
+    meaning(sp + 0|a> + 0|b> + 0|c>) == meaning(sp)
+
+
+Our next building block is sequences. They represent node activity as a function of time.
+ie, a time ordered list of superpositions. In our notation we separate the superpositions in a sequence with ' . '.
+For example, say we have these three superpositions:
+    sp1 == |a> + 2.1|b> - 0.01|c>
+    sp2 == 3|d> + 5.3|e>
+    sp3 == |x> + |y> + |z>
+And we want to represent a sequence, 
+where at time step 1 the network is in state sp1
+where at time step 2 the network is in state sp2
+and at time step 3 the network is in state sp3.
+
+Then the corresponding sequence is: sp1 . sp2 . sp3, or expanded out:
+    |a> + 2.1|b> - 0.01|c> . 3|d> + 5.3|e> . |x> + |y> + |z>
+Yes, this is somewhat hard to read! It gets easier with practice.
+
+
+So something of a recap. If we consider S to be any of type ket, superposition or sequence, we can combine them using these infix operators:
+addition:
+    S1 + S2
+subtraction:
+    S1 - S2
+sequence append:
+    S1 . S2
+ket-label merge:
+    S1 _ S2
+ket-label merge, using separator " "
+    S1 __ S2
+
+We have already seen the first 3 of these, so we only need to provide an example for the last two.
+"_" appends ket labels into a single ket, and "__" appends labels into a single ket, separated by a space.
+For instance this mixture of both:
+    |Good morning> __ |Fred> _ |.>
+evaluates to:
+    |Good morning Fred.>
+
+
+Our network notation is nearly complete. We have individual nodes ie, kets, collections of nodes ie, superpositions, and sequences of collections of nodes ie, sequences.
+Next we introduce operators and sequence functions. Operators map from one network state to another, while sequence functions map multiple sequences to a single sequence.
+Again, if we define S as any of ket, superposition or sequence, our operators take the form:
+    op S
+or
+    op[p1, ... , pn] S
+where p1 ... pn are parameters.
+
+And our sequence functions take the form:
+    fn(S, ... , S) S
+
+The power of this notation is that both operators and sequence functions return type S, allowing them to be arbitrarily composed, separated by the " " char.
+For example, consider this 'operator sequence':
+    op3 fn(S,S) op2[p] op1 |x>
+Which evaluates to 'op1' applied to '|x>', then 'op2[p]' applied to that, 'fn(S,S)' applied to that, and finally 'op3' applied to that.
+This structure sharing similarity with pipes and program composition on the command line.
+
+
+
+Let's first consider operators, and then later a look at sequence functions.
+Operators have essentially 3 types of application: with respect to kets, with respect to superpositions and with respect to sequences.
+
+Type 1 operators are with respect to kets, and are fully linear.
+
+If we apply 'op' to a ket we have:
+    op f|some ket>
+
+If we apply 'op' to a superposition then it applies to each ket in turn.
+Say we have a 3 element superposition: sp1 == f1|a> + f2|b> + f3|c>, where fk are floats.
+Then 'op sp1' is:
+    op (f1|a> + f2|b> + f3|c>)
+which evaluates to:
+    op f1|a> + op f2|b> + op f3|c>
+
+If we apply 'op' to a sequence then it applies to each superposition in turn, which then applies to each ket.
+Say we have a 2 element sequence: seq1 == sp1 . sp2, where sp1 == f1|a> + f2|b> and sp2 == f3|x> + f4|y> + f5|z>
+Then 'op seq1' is:
+    op (f1|a> + f2|b> . f3|x> + f4|y> + f5|z>)
+which evaluates to:
+    op (f1|a> + f2|b>) . op (f3|x> + f4|y> + f5|z>)
+which evaluates to:
+    op f1|a> + op f2|b> . op f3|x> + op f4|y> +  op f5|z>
+which as promised is fully linear.
+
+
+A common example is the extract-value operator. Given a ket with label of form: 'category1: category2: category3: value' it returns 'value', and leaves the float coefficient unchanged.
+
+Applied to a ket:
+    extract-value 3.7|animal: mammal: dog>
+evaluates to:
+    3.7|dog>
+
+Applied to a superposition:
+    extract-value (2|animal: mammal: cat> + 3.1|animal: dog> + |food: soup>)
+evaluates to:
+    2|cat> + 3.1|dog> + |soup>
+
+Applied to a sequence:
+    extract-value (|letter: f> . |letter: i> . |letter: s> . |letter: h>)
+evaluates to:
+    |f> . |i> . |s> . |h>
+
+
+
+If our type 1 operator has the further property of only changing coefficients, but not ket labels or the structure of a sequence, we call them sigmoids.
+We have a number of these built in to our code. Here are a couple:
+
+The 'clean' sigmoid: if the coefficient is <= 0 then return 0, else return 1:
+    clean (-2|a> - |b> + 0|c> + |d> + 2|e> + 3|f>)
+evalutes to:
+    0|a> + 0|b> + 0|c> + |d> + |e> + |f>
+
+The 'set-to[t]' sigmoid, sets all coefficients to t, even negative coefficients:
+    set-to[7] (-2|a> - |b> + 0|c> + |d> + 2|e> + 3|f>)
+evaluates to:
+    7|a> + 7|b> + 7|c> + 7|d> + 7|e> + 7|f>
+
+
+
+Type 2 operators are with respect to superpositions, and so are only partially linear.
+
+If we apply 'op' to a ket we have:
+    op f|some ket>
+
+If we apply 'op' to a superposition we have:
+    op some-sp
+
+If we have a sequence: seq1 == sp1 . sp2 . sp3 . sp4 . sp5, for some superpositions spk, then:
+    op seq1
+evaluates to:
+    op (sp1 . sp2 . sp3 . sp4 . sp5)
+which evaluates to:
+    op sp1 . op sp2 . op sp3 . op sp4 . op sp5
+
+
+A common example is the normalize[t] operator. It normalizes the sum of the coefficients in a superposition to be t.
+But the full sequence is 'invisible' to the operator, it only sees the individual superpositions.
+
+So applied to a single ket:
+    normalize[100] 3.1|x>
+evaluates to:
+    100|x>
+
+Applied to a superposition:
+    normalize[100] (2|a> + |b>)
+evaluates to:
+    0.667|a> + 0.333|b>
+
+Applied to a sequence:
+    normalize[100] (|a> + 2|b> . |u> + |v> . |x> + |y> + |z>)
+evaluates to:
+    33.333|a> + 66.667|b> . 50|u> + 50|v> . 33.333|x> + 33.333|y> + 33.333|z>
+
+
+
+Finally, type 3 operators are with respect to sequences. So the operator sees the entire sequence, and in general has no linearity properties.
+A common example is the smerge/smerge[s] operator. It merges all the given ket labels into a single ket, separated by the optional string 's'.
+
+For example:
+    smerge (|F> . |r> . |e> . |d>)
+evaluates to:    
+    |Fred>
+
+And:
+    smerge[", "] (|a> + |b> + |c> . |d> + |e>)
+evaluates to:    
+    |a, b, c, d, e>
+
+            
+
+Our next building block is sequence functions. Recall they are of form:
+    fn(S, S, ..., S) S
+and return type S.
+
+The canonical examples are union and intersection, where union takes ket-wise maximum of coefficients, and intersection takes ket-wise minimum of coefficients.
+Keeping in mind that if a ket is not in a superposition then that is equivalent to it having coefficient 0.
+
+    union(|a> + |b>, |x> + |y> + |z>)
+evaluates to:
+    |a> + |b> + |x> + |y> + |z>
+
+And:
+    intersection(|a> + |b> + |c> + |d>, |b> + |d>)
+evaluates to:
+    |b> + |d>
+
+Union and intersection are more general than these examples show, and further apply to cases where the coefficients are other than {0,1}, and for sequences too, not just superpositions. I will not provide any such examples here as they do not add anything to the discussion.
+
+
+
+So to recap, we now have kets, superpositions, sequences, operators of type {1,2,3}, sigmoids, and sequence functions.
+But up to this point we have only considered built in operators and sequence functions. It is desirable to be able to define custom operators and functions.
+For this, we require 'learn rules'. Let's motivate our first type of learn rule by the triple: 'Fred', 'age', '37'.
+Where 'Fred' and '37' are nodes in our network, so of course they must be kets, and 'age' is the link, or operator, between those two nodes.
+We notate our triples as:
+    age |Fred> => |37>
+Likewise, the triple: 'Fred', 'spell', '|F> . |r> . |e> . |d>' takes the form:
+    spell |Fred> => |F> . |r> . |e> . |d>
+
+After which, our system now understands two more operators of type 1: 'age' applied to 'Fred' and 'spell' applied to 'Fred'.
+If we ask 'age |Fred>' we will get the answer |37>.
+If we ask 'spell |Fred>' we will get the answer |F> . |r> . |e> . |d>
+That is, we have learnt two units of 'knowledge'.
+
+Let's learn some more ages:
+    age |Sam> => |40>
+    age |Jane> => |42>
+    age |Rob> => |33>
+
+And since operators defined by this type of learn rule are of type 1, they are fully linear. Which means we can ask all at once:
+    age (|Fred> + |Sam> + |Jane> + |Rob>)
+which evaluates to:
+    age |Fred> + age |Sam> + age |Jane> + age |Rob>
+which evaluates to:
+    |37> + |40> + |42> + |33>
+
+
+But what if we ask the 'age' of 'Liz', or the 'spelling' of 'Liz'?
+Well, we don't know that currently, so we return the don't know ket |>.
+This is a general rule. Any time an operator is not defined, or does not make sense in that context, we return the don't know ket.
+But it is important to recall that the don't know ket |> is also the identity operator for superpositions.
+
+So if we were to ask:
+    age (|Fred> + |Liz> + |Sam>)
+this evaluates to:
+    age |Fred> + age |Liz> + age |Sam>
+which evaluates to:
+    |37> + |> + |40>
+which evaluates to:
+    |37> + |40>
+That is, the system usually ignores questions it can't answer. If you instead want an explicit 'don't know' instead of a silent fail, we can do that too. See the stored rule section below.
+
+However, we do have a 'do-you-know' operator. It returns |no> if applied to the don't know ket, |yes> otherwise.
+So in our console:
+    sa: do-you-know |>
+    |no>
+
+    sa: do-you-know |x>
+    |yes>
+
+    sa: do-you-know age |Fred>
+    |yes>
+
+    sa: do-you-know age |Liz>
+    |no>
+
+    sa: do-you-know age |Sam>
+    |yes>
+
+What is this console? It is where we type in, or load from file, learn rules and then ask questions.
+The console prompt is 'sa: ', so when you see that in following worked examples it means we are in the console.
+
+
+What if we want to learn the friends of 'Fred' and 'Sam'? Say they have a few each, which in triple notation would require several lines:
+    'Fred' 'friends' 'Jack'
+    'Fred' 'friends' 'Harry'
+    'Fred' 'friends' 'Ed'
+    'Fred' 'friends' 'Mary'
+    'Fred' 'friends' 'Rob'
+    'Fred' 'friends' 'Patrick'
+    'Fred' 'friends' 'Emma'
+    'Fred' 'friends' 'Charlie'
+
+    'Sam' 'friends' 'Charlie'
+    'Sam' 'friends' 'George'
+    'Sam' 'friends' 'Emma'
+    'Sam' 'friends' 'Jack'
+    'Sam' 'friends' 'Rober'
+    'Sam' 'friends' 'Frank'
+    'Sam' 'friends' 'Julie'
+
+We too can write this in long form, using a new symbol the 'add-learn-rule' '+=>':
+    friends |Fred> +=> |Jack>
+    friends |Fred> +=> |Harry>
+    friends |Fred> +=> |Ed>
+    friends |Fred> +=> |Mary>
+    friends |Fred> +=> |Rob>
+    friends |Fred> +=> |Patrick>
+    friends |Fred> +=> |Emma>
+    friends |Fred> +=> |Charlie>
+
+    friends |Sam> +=> |Charlie>
+    friends |Sam> +=> |George>
+    friends |Sam> +=> |Emma>
+    friends |Sam> +=> |Jack>
+    friends |Sam> +=> |Rober>
+    friends |Sam> +=> |Frank>
+    friends |Sam> +=> |Julie>
+
+Since '+=>' is a wrapper for superposition addition, we can compress these 15 rules into 2:
+    friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+    friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
+
+
+Now given this knowledge of Fred and Sam's friends we can ask some questions:
+    -- how many friends does 'Fred' have:
+    sa: how-many friends |Fred>
+    |number: 8>
+
+    -- how many friends does 'Sam' have:
+    sa: how-many friends |Sam>
+    |number: 7>
+
+    -- who are the common friends for 'Fred' and 'Sam'?
+    sa: common[friends] (|Fred> + |Sam>)
+    |Jack> + |Emma> + |Charlie>
+
+    -- find friends unique to 'Fred' and 'Sam':
+    sa: find-unique[friends]
+
+    -- which friends are unique to 'Fred':
+    sa: unique-friends |Fred>
+    |Harry> + |Ed> + |Mary> + |Rob> + |Patrick>
+
+    -- how many friends are unique to 'Fred':
+    sa: how-many unique-friends |Fred>
+    |number: 5>
+
+    -- which friends are unique to 'Sam':
+    sa: unique-friends |Sam>
+    |George> + |Rober> + |Frank> + |Julie>
+
+    -- how many friends are unique to 'Sam':
+    sa: how-many unique-friends |Sam>
+    |number: 4>
+
+
+We also have a wrapper around sequence append, the 'sequence-learn-rule' '.=>'. So for example we can learn the spelling of 'Fred' the long way:
+    spell |Fred> .=> |F>
+    spell |Fred> .=> |r>
+    spell |Fred> .=> |e>
+    spell |Fred> .=> |d>
+
+which is fully equivalent to learning all at once in a single rule:
+    spell |Fred> => |F> . |r> . |e> . |d>
+
+Whether you use '+=>' or '.=>' versus '=>' is usually a matter of taste, and the specific application.
+
+
+
+Let's get a little abstract for a moment and describe a thing called 'label descent'.
+The idea is, given a ket with defined categories, such as |category1: category2: ... : value> then if a learn rule operator is not defined go up the category hierarchy and ask if that operator is defined for it.
+
+Say we invoke:
+    'op |a: b: c>'
+
+if 'op |a: b: c>' is defined, then return it
+else if 'op |a: b: *>' is defined then return it
+else if 'op |a: *>' is defined then return it
+else if 'op |*>' is defined then return it
+else return |>
+
+
+Here is a toy example. Learn this knowledge:
+    op0 |*> => |op0 applied to *>
+    op1 |animal: *> => |op1 applied to animal>
+    op2 |animal: mammal: *> => |op2 applied to animal: mammal>
+    op3 |animal: mammal: cat: *> => |op3 applied to animal: mammal: cat>
+    op4 |animal: mammal: cat: Trudy> => |op4 applied to animal: mammal: cat: Trudy>
+
+Here is the corresponding dialog in the console:
+    sa: op4 |animal: mammal: cat: Trudy>
+    |op4 applied to animal: mammal: cat: Trudy>
+
+    sa: op3 |animal: mammal: cat: Trudy>
+    |op3 applied to animal: mammal: cat>
+
+    sa: op2 |animal: mammal: cat: Trudy>
+    |op2 applied to animal: mammal>
+
+    sa: op1 |animal: mammal: cat: Trudy>
+    |op1 applied to animal>
+
+    sa: op0 |animal: mammal: cat: Trudy>
+    |op0 applied to *>
+
+    sa: op |animal: mammal: cat: Trudy>
+    |>
+
+And we can see as we apply operators to |animal: mammal: cat: Trudy> the answers are returned by operators defined higher and higher in the category hierarchy.
+In practice we usually only see rules defined for small hierarchies such as |*> and |category: *>.
+
+
+
+Now we know what |*> means, we introduce yet another rule type. Recall so far we have seen standard rules '=>', add-learn rules '+=>' and seq-learn rules '.=>'.
+Here is the stored rule represented using '#=>':
+    op |some ket> #=> some-object
+The idea is that 'some-object' is not evaluated at the time it is typed into the console or loaded from file, in contrast to '=>' rules.
+Instead it is evaluated at invoke time, when we ask the question 'op |some ket>'.
+
+The canonical example is plurals, where the general rule is to append 's' to the word:
+    plural |*> #=> |_self> _ |s>
+
+We over-write this general rule by specific rules:
+    plural |mouse> => |mice>
+    plural |tooth> => |teeth>
+    plural |foot> => |feet>
+    plural |radius> => |radii>
+    ...
+
+So when we ask what is the plural of mouse 'plural |mouse>' we get |mice>. But when we ask what is the plural of rabbit 'plural |rabbit>' the general rule is invoked.
+    plural |rabbit>
+evaluates to:
+    |rabbit> _ |s>
+which evaluates to:
+    |rabbits>
+
+And it is important to keep in mind that rules defined with respect to |*> and |category: *> are still type 1 and hence fully linear.
+We will introduce a method to define non-linear rules later, that apply to sequences rather than with respect to kets.
+
+By the way, I snuck in a new feature in there without describing it first. I'm refering to |_self> in the general case plural rule:
+    plural |*> #=> |_self> _ |s>
+This substitues in the ket 'plural' was applied to into the |_self> slot. Without this feature |*> linear functions would be impossible.
+
+
+Now we have |*> rules, stored rules, and |_self> kets, let's revisit the age example. Recall this knowledge:
+    age |Fred> => |37>
+    age |Sam> => |40>
+    age |Jane> => |42>
+    age |Rob> => |33>
+
+And recall, if we ask 'age |Liz>' we get |>. But what if we want an explicit |don't know>?
+Lets define a new operator to do that for us:
+    age2 |*> #=> if(do-you-know age |_self>, age |_self>, |don't know>)
+where 'if(S1, S2, S3)' is a sequence function that returns S2 if S1 is |yes> or |true> and S3 otherwise.
+
+So now we can ask:
+    age2 |Fred>
+which evaluates to:
+    if(do-you-know age |Fred>, age |Fred>, |don't know>)
+which evaluates to:
+    if(do-you-know |37>, |37>, |don't know>)
+which evaluates to:
+    if(|yes>, |37>, |don't know>)
+which evaluates to:
+    |37>
+Similarly for 'Sam', 'Jane' and 'Rob'.
+
+Meanwhile:
+    age2 |Liz>
+evaluates to:
+    if(do-you-know age |Liz>, age |Liz>, |don't know>)
+which evaluates to:
+    if(do-you-know |>, |>, |don't know>)
+which evaluates to:
+    if(|no>, |>, |don't know>)
+which evaluates to:
+    |don't know>
+
+And it is of course linear so:
+    age2 (|Fred> + |Liz> + |Sam> + |Jane>)
+evaluates to:
+    age2 |Fred> + age2 |Liz> + age2 |Sam> + age2 |Jane>
+which evaluates to:
+    |37> + |don't know> + |40> + |42>
+
+And there we have it. Instead of 'age |Liz>' failing silently we have an obvious |don't know> in our result.
+
+
+
+The final learn rule type is the memoizing rule '!=>' which is something of a cross between a stored rule and a standard rule.
+    op |some ket> !=> some-object
+Again, like stored rules 'some-object' is not evaluated at type in time, or file load time. 
+It is evaluated at invoke time, with the twist that the result is then stored like a regular '=>' rule.
+
+The canonical example is Fibonacci:
+    fib |0> => |0>
+    fib |1> => |1>
+    fib |*> !=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+
+We have the two stop recursion rules: 'fib |0>' returns |0> and 'fib |1>' returns |1>.
+
+It is the third line that is of interest. Let's consider:
+    fib |2>
+which evaluates to:
+    arithmetic( fib minus[1] |2>, |+>, fib minus[2] |2>)
+which evaluates to:
+    arithmetic( fib |1>, |+>, fib |0>)
+which evaluates to:
+    arithmetic( |1>, |+>, |0>)
+which evaluates to:
+    |1>
+
+OK. So far this is identical to what would happen if we had used: 
+    fib |*> #=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+
+But if we look in the console we see 'fib |2>' has now been defined:
+sa: dump
+----------------------------------------
+ |context> => |context: sw console>
+
+fib |0> => |0>
+
+fib |1> => |1>
+
+fib |*> !=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+
+fib |2> => |1>
+----------------------------------------
+
+So the next time we ask what is 'fib |2>' we answer directly |1> instead of again calculating it from the arithmetic rule.
+In the case of Fibonacci this is a big speed up for larger n over using stored rules '#=>', at the cost of a little memory.
+
+To extend this example, here is what we know after asking the value of 'fib |10>':
+sa: fib |10>
+|55>
+
+sa: dump
+
+----------------------------------------
+ |context> => |context: sw console>
+
+fib |0> => |0>
+
+fib |1> => |1>
+
+fib |*> !=> arithmetic( fib minus[1] |_self>, |+>, fib minus[2] |_self>)
+
+fib |2> => |1>
+
+fib |3> => |2>
+
+fib |4> => |3>
+
+fib |5> => |5>
+
+fib |6> => |8>
+
+fib |7> => |13>
+
+fib |8> => |21>
+
+fib |9> => |34>
+
+fib |10> => |55>
+----------------------------------------
+
+
+Another fun memoizing rule example is Schrodinger's poor cat. We represent that as:
+    is-alive? |Schrodinger's cat> !=> normalize weighted-pick-elt (0.5|yes> + 0.5|no>)
+Given this knowledge we can ask if the cat is alive or dead, but once we do so the superposition collapses into a single value. Either |yes> or |no> with probabilty 50/50.
+If we had used stored rules, we could ask over and over again, each time getting a different random answer.
+
+So, is the poor cat alive or dead? Let's ask the console:
+    -- set up our quantum experiment:
+    sa: is-alive? |Schrodinger's cat> !=> normalize weighted-pick-elt (0.5|yes> + 0.5|no>)
+
+    -- ask the question:
+    sa: is-alive? |Schrodinger's cat>
+    |no>
+
+    -- see the resulting knowledge:
+    sa: dump
+    ----------------------------------------
+     |context> => |context: sw console>
+
+    is-alive? |Schrodinger's cat> => |no>
+    ----------------------------------------
+
+
+
+Time for a recap before moving on. Our learn rules currently have the form:
+    op ket learn-rule-type CS
+where:
+    op is a 'literal operator' of type 1
+    ket is of form: |a>, |a: b: c>, |*>, |a: *>, etc
+    sp is a linear combination of kets: |a> + 2|b> - |c> + 0.7|d>, and so on
+    learn-rule-type is one of: '=>' '+=>' '.=>' '#=>' '!=>'
+    CS is a compound sequence which can be a ket, superposition, sequence, operator sequence, sequence function, or any of the above combined using '+' '-' '.' '_' '__'
+
+
+We next introduce a learn rule that allows us to learn several at the same time:
+    op sp learn-rule-type CS
+which evaluates out to:
+    for x in sp:
+        op x learn-rule-type CS
+
+
+The canonical example is the shop openning and closing times.
+First learn week days versus the weekend:
+    the |week days> => |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday>
+    the |weekend> => |Saturday> + |Sunday>
+
+Now learn the open/closing times:
+    open the |week days> => |9am>
+    close the |week days> => |6pm>
+
+    open the |weekend> => |11am>
+    close the |weekend> => |5pm>
+
+
+Let's unpack the first line, the rest follow similarly:
+    open the |week days> => |9am>
+evaluates to:
+    open (|Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday>) => |9am>
+which evaluates to:
+    open |Monday> => |9am>
+    open |Tuesday> => |9am>
+    open |Wednesday> => |9am>
+    open |Thursday> => |9am>
+    open |Friday> => |9am>
+
+
+Indeed, if we ask the console everything we now know:
+sa: dump
+----------------------------------------
+ |context> => |context: sw console>
+
+the |week days> => |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday>
+
+the |weekend> => |Saturday> + |Sunday>
+
+open |Monday> => |9am>
+close |Monday> => |6pm>
+
+open |Tuesday> => |9am>
+close |Tuesday> => |6pm>
+
+open |Wednesday> => |9am>
+close |Wednesday> => |6pm>
+
+open |Thursday> => |9am>
+close |Thursday> => |6pm>
+
+open |Friday> => |9am>
+close |Friday> => |6pm>
+
+open |Saturday> => |11am>
+close |Saturday> => |5pm>
+
+open |Sunday> => |11am>
+close |Sunday> => |5pm>
+----------------------------------------
+
+
+Another example is if Fred's friends are all 37 years old. We can simply do:
+    friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+    age friends |Fred> => |37>
+
+And then ask the console:
+sa: dump
+----------------------------------------
+ |context> => |context: sw console>
+
+friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
+
+age |Jack> => |37>
+
+age |Harry> => |37>
+
+age |Ed> => |37>
+
+age |Mary> => |37>
+
+age |Rob> => |37>
+
+age |Patrick> => |37>
+
+age |Emma> => |37>
+
+age |Charlie> => |37>
+----------------------------------------
+
+
+
+
+Turns out there are many things you can't actually do if you only have linear functions in the form of 
+    op |*> #=> some-CS
+
+So our next ingredient is for learning custom sequence functions. Recall they have form:
+    fn(CS1, CS2, ..., CSn) S
+
+If we define fn-type as one of:
+    (*), (*,*), (*,*,*), (*,*,*,*)
+
+Then we define a custom sequence function with this notation:
+    fn fn-type #=> some-CS
+
+For example this 4-parameter sequence function:
+    fn (*,*,*,*) #=> 2|_self1> + 3|_self2> + 5|_self3> + 7|_self4>
+
+Sine we only have '*" on the left hand side, our input parameters are unlabeled. We use |_selfk> to substitute in the respective k'th input parameter. And |_self> is an alias for |_self1>
+
+So for instance:
+    fn(|a>, |b>, |c> ,|d>)
+returns:
+    2|a> + 3|b> + 5|c> + 7|d>
+
+
+There is a wrinkle. I said they have form:
+    fn(CS1, CS2, ..., CSn) S
+what happened to the 'S'? Well, we call that the input-sequence, and it has it own self ket |_self0>.
+
+
+Let's provide an example in the form of a one-parameter function:
+    fn (*) #=> 17|_self0> + 19|_self1>
+
+If we specify both CS1 and S:
+    fn(|a>) |x>
+evaluates to:
+    17|x> + 19|a>
+
+If we specify just CS1, and S is implicitly |>:
+    fn(|a>)
+evaluates to:
+    17|> + 19|a>
+which evaluates to:
+    19|a>
+
+If we specify just S, and CS1 is implicitly |>:
+    fn() |x>
+evaluates to:
+    17|x> + 19|>
+which evaluates to:
+    17|x>
+
+
+Finally, let's compare the linearity of |*> rules versus (*) rules. Consider:
+    op1 |*> #=> how-many |_self>
+    op2 (*) #=> how-many |_self>
+And recall the 'how-many' operator returns the number of kets in a superposition.
+
+So:
+    op1 (|x> + |y> + |z>)
+evaluates to:
+    how-many |x> + how-many |y> + how-many |z>
+which evaluates to:
+    |number: 1> + |number: 1> + |number: 1>
+which evaluates to:
+    3|number: 1>
+
+In contrast:
+    op2 (|x> + |y> + |z>)
+evaluates to:
+    how-many (|x> + |y> + |z>)
+which evaluates to:
+    |number: 3>
+
+There we have it. Linearity versus non-linearity.
+
+
+
+
+Up to this point all of our learn rules have been one liners. It is desirable to have longer 'functions' than this. And hence multi-line stored rules:
+    op ket|fn-type #=>
+        learn-rule
+        learn-rule
+        ...
+        learn-rule
+
+For example the linear operator foo:
+    foo |*> #=>
+        op1 |x> => |bah>
+        op2 |y> => |foo>
+        op3 |z> => |foo2>
+
+At invoke time it executes the given learn rules:
+    op1 |x> => |bah>
+    op2 |y> => |foo>
+    op3 |z> => |foo2>
+
+Or a 4-parameter sequence function:
+    learn-ages (*,*,*,*) #=>
+        age |Fred> => |__self1>
+        age |Sam> => |__self2>
+        age |Rob> => |__self3>
+        age |Liz> => |__self4>
+
+where we have a new set of self kets |__selfk>, which work the same as standard |_selfk> kets but apply to multi-line stored rules.
+
+So if we invoke:
+    learn-ages(|22>, |25>, |26>, |29>)
+this evaluates to:
+    age |Fred> => |22>
+    age |Sam> => |25>
+    age |Rob> => |26>
+    age |Liz> => |29>
+
+And to help with chaining of operators or sequence functions, a multi-line stored rule returns the value of its last learn rule.
+So for example 'learn-ages(|22>, |25>, |26>, |29>)' returns the value of:
+    age |Liz> => |29>
+which returns the value:
+    |29>
+
+
+
+In brief and in summary, if we define these building blocks:
+    op is an operator
+    ket is of form: |a>, |a: b: c>, |*>, |a: *>, |>, etc
+    sp is a linear combination of kets: |a> + 2|b> - |c> + 0.7|d>, and so on
+    seq is a sequence of superpositions: |a> . |b> . |x> + |y> + |z>
+    learn-rule-type is one of: '=>' '+=>' '.=>' '#=>' '!=>'
+    fn-type is one of: (*), (*,*), (*,*,*), (*,*,*,*)
+    single line self kets: |_self>, |_self0>, |_self1>, |_self2>, |_self3>, |_self4>
+    multi-line self kets: |__self>, |__self0>, |__self1>, |__self2>, |__self3>, |__self4>
+    operator sequence is a sequence of operators or sequence functions applied to a sequence: op3 fn(S,S) op2[p] op1 (|x> . |y> + |z>)
+    CS is a compound sequence which can be a ket, superposition, sequence, operator sequence, sequence function, or any of the above combined using '+' '-' '.' '_' '__'
+
+Then we have the following set of valid learn rules:
+    op ket|fn-type learn-rule-type CS
+
+    op sp learn-rule-type CS
+
+    op ket|fn-type #=>
+        learn-rule
+        learn-rule
+        ...
+        learn-rule
+
+
+
+So that is it, our tour of mumble lang!
+The full parsley grammar is here:
+https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/version%202/full-parsley-grammar.txt
+
+Below are brief descriptions and examples for our operators, sigmoids, and sequence functions:
+http://semantic-db.org/documentation/usage/index.html
