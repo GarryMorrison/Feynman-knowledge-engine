@@ -13,16 +13,24 @@ where 'f' is an arbitrary float (the code is written in python, so 'f' is any va
 where 's' is an almost arbitrary string, with the exception 's' must not contain these characters: '<' '|' '>'
 Now we have kets, we base our entire project around them!
 
-Some example kets are:
-    |Fred>, |grandmother>, 0.2|hungry>, 0.7|tired>, |age: 37>, |number: 37>
-
 Notes:
     1) if 'f' is not specified then it has a default value of 1
-    2) by convention, we can specify categories using ': ' as a separator. eg, the 'age' and 'number' categories.
+    2) by convention, we specify categories using ': ' as a separator. eg, the 'age' and 'number' categories.
     3) categories can be considered a weak form of a type system. eg, |letter: f>, |word: fish>, have type 'letter' and 'word' respectively.
 
+Here are some example kets:
+    |Fred>
+    |grandmother>
+    0.2|hungry>
+    0.7|tired>
+    |age: 37>
+    |number: 101>
+    |letter: z>
+    |word: soup>
+    |animal: mammal: cat: Trudy>
+
 OK. We can now represent single nodes in a network using kets. That doesn't make much of a network!
-We need more nodes, and we need links between nodes. So our next ingredient we call superpositions.
+We need multiple nodes, and we need links between nodes. So our next ingredient we call superpositions.
 A superposition represents the activity level of several nodes in a network all at the same time.
 So, how do we represent these? Simply we add kets, that is, we take linear combinations of kets.
 For example, the short phrase: 'a little hungry, quite tired and happy' is represented by this superposition:
@@ -236,33 +244,44 @@ Union and intersection are more general than these examples show, and further ap
 
 So to recap, we now have kets, superpositions, sequences, operators of type {1,2,3}, sigmoids, and sequence functions.
 But up to this point we have only considered built in operators and sequence functions. It is desirable to be able to define custom operators and functions.
-For this, we require 'learn rules'. Let's motivate our first type of learn rule by the triple: 'Fred', 'age', '37'.
+For this, we require 'learn rules'. Let's motivate our first type of learn rule by the triple: 
+    'Fred' 'age' '37'.
 Where 'Fred' and '37' are nodes in our network, so of course they must be kets, and 'age' is the link, or operator, between those two nodes.
 We notate our triples as:
     age |Fred> => |37>
-Likewise, the triple: 'Fred', 'spell', '|F> . |r> . |e> . |d>' takes the form:
+
+Likewise, the triple: 
+    'Fred' 'spell' '|F> . |r> . |e> . |d>'
+takes the form:
     spell |Fred> => |F> . |r> . |e> . |d>
 
-After which, our system now understands two more operators of type 1: 'age' applied to 'Fred' and 'spell' applied to 'Fred'.
-If we ask 'age |Fred>' we will get the answer |37>.
-If we ask 'spell |Fred>' we will get the answer |F> . |r> . |e> . |d>
-That is, we have learnt two units of 'knowledge'.
+Operators defined in this way are of type 1, and hence fully linear. We will demonstrate the linearity shortly.
+our system now understands 'age' applied to 'Fred' and 'spell' applied to 'Fred'. In particular:
+If we ask 
+    age |Fred>
+we will get the answer 
+    |37>.
+If we ask
+    spell |Fred>
+we will get the answer
+    |F> . |r> . |e> . |d>
+So we can say, We have learnt two units of 'knowledge'.
 
 Let's learn some more ages:
     age |Sam> => |40>
     age |Jane> => |42>
     age |Rob> => |33>
 
-And since operators defined by this type of learn rule are of type 1, they are fully linear. Which means we can ask all at once:
+Here is a demonstration of their linearity:
     age (|Fred> + |Sam> + |Jane> + |Rob>)
-which evaluates to:
+evaluates to:
     age |Fred> + age |Sam> + age |Jane> + age |Rob>
 which evaluates to:
     |37> + |40> + |42> + |33>
 
 
-But what if we ask the 'age' of 'Liz', or the 'spelling' of 'Liz'?
-Well, we don't know that currently, so we return the don't know ket |>.
+But what if we ask the 'age' of 'Liz', or the 'spelling' of 'Liz' or some other question we have no knowledge of?
+Well, we don't know that currently, so we return what we call the don't know ket |>.
 This is a general rule. Any time an operator is not defined, or does not make sense in that context, we return the don't know ket.
 But it is important to recall that the don't know ket |> is also the identity operator for superpositions.
 
@@ -274,10 +293,11 @@ which evaluates to:
     |37> + |> + |40>
 which evaluates to:
     |37> + |40>
-That is, the system usually ignores questions it can't answer. If you instead want an explicit 'don't know' instead of a silent fail, we can do that too. See the stored rule section below.
+That is, the system usually ignores questions it can't answer. If you want an explicit 'don't know' instead of a silent fail, we can do that too. See the stored rule section below.
 
-However, we do have a 'do-you-know' operator. It returns |no> if applied to the don't know ket, |yes> otherwise.
-So in our console:
+It is often useful to know if the system knows the answer to a question or not. For this we introduce the 'do-you-know' operator.
+It returns |no> if applied to the don't know ket, |yes> otherwise.
+A demonstration in our console:
     sa: do-you-know |>
     |no>
 
@@ -297,7 +317,7 @@ What is this console? It is where we type in, or load from file, learn rules and
 The console prompt is 'sa: ', so when you see that in following worked examples it means we are in the console.
 
 
-What if we want to learn the friends of 'Fred' and 'Sam'? Say they have a few each, which in triple notation would require several lines:
+What if we now want to learn the friends of 'Fred' and 'Sam'? Say they have a few each, which in triple notation would require several lines:
     'Fred' 'friends' 'Jack'
     'Fred' 'friends' 'Harry'
     'Fred' 'friends' 'Ed'
@@ -315,7 +335,7 @@ What if we want to learn the friends of 'Fred' and 'Sam'? Say they have a few ea
     'Sam' 'friends' 'Frank'
     'Sam' 'friends' 'Julie'
 
-We too can write this in long form, using a new symbol the 'add-learn-rule' '+=>':
+In our notation we would write this, using a new symbol, the 'add-learn-rule' '+=>':
     friends |Fred> +=> |Jack>
     friends |Fred> +=> |Harry>
     friends |Fred> +=> |Ed>
@@ -333,12 +353,12 @@ We too can write this in long form, using a new symbol the 'add-learn-rule' '+=>
     friends |Sam> +=> |Frank>
     friends |Sam> +=> |Julie>
 
-Since '+=>' is a wrapper for superposition addition, we can compress these 15 rules into 2:
+But since '+=>' is a wrapper for superposition addition, it is useful to compress these 15 rules into 2:
     friends |Fred> => |Jack> + |Harry> + |Ed> + |Mary> + |Rob> + |Patrick> + |Emma> + |Charlie>
     friends |Sam> => |Charlie> + |George> + |Emma> + |Jack> + |Rober> + |Frank> + |Julie>
 
 
-Now given this knowledge of Fred and Sam's friends we can ask some questions:
+Given our knowledge, we can start to ask our system some elementary questions:
     -- how many friends does 'Fred' have:
     sa: how-many friends |Fred>
     |number: 8>
@@ -370,14 +390,49 @@ Now given this knowledge of Fred and Sam's friends we can ask some questions:
     sa: how-many unique-friends |Sam>
     |number: 4>
 
+    -- what is the 'friends' adjacency matrix:
+    sa: matrix[friends]
+    [ Charlie ] = [  1  1  ] [ Fred ]
+    [ Ed      ]   [  1  0  ] [ Sam  ]
+    [ Emma    ]   [  1  1  ]
+    [ Frank   ]   [  0  1  ]
+    [ George  ]   [  0  1  ]
+    [ Harry   ]   [  1  0  ]
+    [ Jack    ]   [  1  1  ]
+    [ Julie   ]   [  0  1  ]
+    [ Mary    ]   [  1  0  ]
+    [ Patrick ]   [  1  0  ]
+    [ Rob     ]   [  1  0  ]
+    [ Rober   ]   [  0  1  ]
 
-We also have a wrapper around sequence append, the 'sequence-learn-rule' '.=>'. So for example we can learn the spelling of 'Fred' the long way:
+    -- what is the 'unique-friends' adjacency matrix:
+    sa: matrix[unique-friends]
+    [ Ed      ] = [  1  0  ] [ Fred ]
+    [ Frank   ]   [  0  1  ] [ Sam  ]
+    [ George  ]   [  0  1  ]
+    [ Harry   ]   [  1  0  ]
+    [ Julie   ]   [  0  1  ]
+    [ Mary    ]   [  1  0  ]
+    [ Patrick ]   [  1  0  ]
+    [ Rob     ]   [  1  0  ]
+    [ Rober   ]   [  0  1  ]
+
+
+    -- what is the 'age' adjacency matrix:
+    sa: matrix[age]
+    [ 33 ] = [  0  0  1  0  ] [ Fred ]
+    [ 37 ]   [  1  0  0  0  ] [ Jane ]
+    [ 40 ]   [  0  0  0  1  ] [ Rob  ]
+    [ 42 ]   [  0  1  0  0  ] [ Sam  ]
+
+
+We also have a wrapper around sequence append, the 'sequence-learn-rule' '.=>'. So we can learn the spelling of 'Fred' the long way:
     spell |Fred> .=> |F>
     spell |Fred> .=> |r>
     spell |Fred> .=> |e>
     spell |Fred> .=> |d>
 
-which is fully equivalent to learning all at once in a single rule:
+or more compactly in a single rule, which is fully equivalent to the longer '.=>' version:
     spell |Fred> => |F> . |r> . |e> . |d>
 
 Whether you use '+=>' or '.=>' versus '=>' is usually a matter of taste, and the specific application.
@@ -385,9 +440,9 @@ Whether you use '+=>' or '.=>' versus '=>' is usually a matter of taste, and the
 
 
 Let's get a little abstract for a moment and describe a thing called 'label descent'.
-The idea is, given a ket with defined categories, such as |category1: category2: ... : value> then if a learn rule operator is not defined go up the category hierarchy and ask if that operator is defined for it.
+The idea is, given a ket with defined categories, such as |category1: category2: ... : value> then if a learn rule operator is not defined we go up the category hierarchy and ask if that operator is defined for it.
 
-Say we invoke:
+Here is a specific example, say we invoke:
     'op |a: b: c>'
 
 if 'op |a: b: c>' is defined, then return it
@@ -397,7 +452,7 @@ else if 'op |*>' is defined then return it
 else return |>
 
 
-Here is a toy example. Learn this knowledge:
+Let's demonstrate a toy example. Learn this knowledge:
     op0 |*> => |op0 applied to *>
     op1 |animal: *> => |op1 applied to animal>
     op2 |animal: mammal: *> => |op2 applied to animal: mammal>
@@ -425,38 +480,53 @@ Here is the corresponding dialog in the console:
 
 And we can see as we apply operators to |animal: mammal: cat: Trudy> the answers are returned by operators defined higher and higher in the category hierarchy.
 In practice we usually only see rules defined for small hierarchies such as |*> and |category: *>.
+|*> learn rules are general rules that act like linear functions, and can be over-written by specific rules.
+|category: *> learn rules act like linear functions that apply to kets of the specified type. |animal: *> for example applies to all kets of type animal.
+And it is important to keep in mind that rules defined with respect to |*> and |category: *> are still type 1 and hence fully linear.
+We will introduce a method to define non-linear rules of type 3 later, that apply to sequences rather than with respect to kets.
 
 
 
-Now we know what |*> means, we introduce yet another rule type. Recall so far we have seen standard rules '=>', add-learn rules '+=>' and seq-learn rules '.=>'.
-Here is the stored rule represented using '#=>':
+Now we roughly know what |*> means, we introduce yet another rule type. Recall so far we have seen standard rules '=>', add-learn rules '+=>' and seq-learn rules '.=>'.
+The next type is the stored rule, represented using '#=>':
     op |some ket> #=> some-object
-The idea is that 'some-object' is not evaluated at the time it is typed into the console or loaded from file, in contrast to '=>' rules.
+The idea is that 'some-object' is not evaluated at the time it is typed into the console, or loaded from file, in contrast to '=>' rules.
 Instead it is evaluated at invoke time, when we ask the question 'op |some ket>'.
 
 The canonical example is plurals, where the general rule is to append 's' to the word:
     plural |*> #=> |_self> _ |s>
 
-We over-write this general rule by specific rules:
+But we need to over-write that with exceptions, or specific rules:
     plural |mouse> => |mice>
     plural |tooth> => |teeth>
     plural |foot> => |feet>
     plural |radius> => |radii>
     ...
 
-So when we ask what is the plural of mouse 'plural |mouse>' we get |mice>. But when we ask what is the plural of rabbit 'plural |rabbit>' the general rule is invoked.
+So when we ask what is the plural of mouse 'plural |mouse>' we get |mice>. But thanks to label descent, when we ask what is the plural of rabbit 'plural |rabbit>' the general rule is invoked.
     plural |rabbit>
 evaluates to:
     |rabbit> _ |s>
 which evaluates to:
     |rabbits>
 
-And it is important to keep in mind that rules defined with respect to |*> and |category: *> are still type 1 and hence fully linear.
-We will introduce a method to define non-linear rules later, that apply to sequences rather than with respect to kets.
+And if it is not clear from the example, the ket 'plural' was applied to is substituted into the |_self> slot. 
+We call these things self kets, which we introduce more of later. The point is, without this feature |*> linear functions would be impossible.
 
-By the way, I snuck in a new feature in there without describing it first. I'm refering to |_self> in the general case plural rule:
-    plural |*> #=> |_self> _ |s>
-This substitues in the ket 'plural' was applied to into the |_self> slot. Without this feature |*> linear functions would be impossible.
+Here are some toy self ket examples, 'multiply-by' operators:
+    mult-by-2 |*> #=> 2|_self>
+    mult-by-3 |*> #=> 3|_self>
+    mult-by-5 |*> #=> 5|_self>
+Demonstrated in our console:
+    sa: mult-by-2 |x>
+    2|x>
+
+    sa: mult-by-2 7|fish>
+    14|fish>
+
+    sa: mult-by-5 25|rabbits>
+    125|rabbits>
+
 
 
 Now we have |*> rules, stored rules, and |_self> kets, let's revisit the age example. Recall this knowledge:
@@ -465,9 +535,10 @@ Now we have |*> rules, stored rules, and |_self> kets, let's revisit the age exa
     age |Jane> => |42>
     age |Rob> => |33>
 
-And recall, if we ask 'age |Liz>' we get |>. But what if we want an explicit |don't know>?
+And recall, if we ask 'age |Liz>' we get the don't know ket |>. But what if we want an explicit |don't know>?
 Lets define a new operator to do that for us:
     age2 |*> #=> if(do-you-know age |_self>, age |_self>, |don't know>)
+
 where 'if(S1, S2, S3)' is a sequence function that returns S2 if S1 is |yes> or |true> and S3 otherwise.
 
 So now we can ask:
@@ -480,7 +551,7 @@ which evaluates to:
     if(|yes>, |37>, |don't know>)
 which evaluates to:
     |37>
-Similarly for 'Sam', 'Jane' and 'Rob'.
+Similarly for 'Sam', 'Jane' and 'Rob' where 'age2' returns the same value as the 'age' operator.
 
 Meanwhile:
     age2 |Liz>
@@ -493,7 +564,7 @@ which evaluates to:
 which evaluates to:
     |don't know>
 
-And it is of course linear so:
+And 'age2' is linear so:
     age2 (|Fred> + |Liz> + |Sam> + |Jane>)
 evaluates to:
     age2 |Fred> + age2 |Liz> + age2 |Sam> + age2 |Jane>
@@ -501,6 +572,57 @@ which evaluates to:
     |37> + |don't know> + |40> + |42>
 
 And there we have it. Instead of 'age |Liz>' failing silently we have an obvious |don't know> in our result.
+This is general enough, and we can implement wrappers for any operators of interest:
+    op-v2 |*> #=> if( do-you-know op |_self>, op |_self>, |don't know> )
+
+Whether we should need wrappers of this form at all, and always return |don't know> instead of the more confusing |> is a valid question.
+It would certainly be easy enough to map |don't know> back to |> if we were to swap from the default behaviour, using these learn rules:
+    make-implicit |don't know> #=> |>
+    make-implicit |*> #=> |_self>
+
+
+So for example:
+    make-implicit age2 |Liz>
+evaluates to:
+    make-implicit |don't know>
+which evaluates to:
+    |>
+
+Likewise:
+    make-implicit age2 (|Fred> + |Liz> + |Sam> + |Jane>)
+evaluates to:
+    make-implicit (|37> + |don't know> + |40> + |42>)
+which evaluates to:
+    make-implicit |37> + make-implicit |don't know> + make-implicit |40> + make-implicit |42>
+which evaluates to:
+    |37> + |> + |40> + |42>
+which evaluates to:
+    |37> + |40> + |42>
+
+This discussion is somewhat redundant in the context of sequences, where |> is no longer the identity element.
+So we simply have:
+    age (|Fred> . |Liz> . |Sam> . |Jane>)
+evaluates to:
+    age |Fred> . age |Liz> . age |Sam> . age |Jane>
+which evaluates to:
+    |37> . |> . |40> . |42>
+
+Then we can map back and forth using:
+    make-explicit |> #=> |don't know>
+    make-explicit |*> #=> |_self>
+
+    make-implicit |don't know> #=> |>
+    make-implicit |*> #=> |_self>
+
+where we now have:
+    sa: make-explicit age (|Fred> . |Liz> . |Sam> . |Jane>)
+    |37> . |don't know> . |40> . |42>
+
+    sa: make-implicit make-explicit age (|Fred> . |Liz> . |Sam> . |Jane>)
+    |37> . |> . |40> . |42>
+
+FINISH! age3 |*> #=> make-explicit age |_self>
+
 
 
 
@@ -602,6 +724,7 @@ So, is the poor cat alive or dead? Let's ask the console:
 
     is-alive? |Schrodinger's cat> => |no>
     ----------------------------------------
+
 
 
 
@@ -725,7 +848,7 @@ Then we define a custom sequence function with this notation:
 For example this 4-parameter sequence function:
     fn (*,*,*,*) #=> 2|_self1> + 3|_self2> + 5|_self3> + 7|_self4>
 
-Sine we only have '*" on the left hand side, our input parameters are unlabeled. We use |_selfk> to substitute in the respective k'th input parameter. And |_self> is an alias for |_self1>
+Since we only have '*' on the left hand side, our input parameters are unlabeled. We use |_selfk> to substitute in the respective k'th input parameter. And |_self> is an alias for |_self1>
 
 So for instance:
     fn(|a>, |b>, |c> ,|d>)
@@ -812,7 +935,7 @@ Or a 4-parameter sequence function:
         age |Rob> => |__self3>
         age |Liz> => |__self4>
 
-where we have a new set of self kets |__selfk>, which work the same as standard |_selfk> kets but apply to multi-line stored rules.
+where we have a new set of self kets |__selfk>, which work the same as standard |_selfk> kets but are only valid in the context of multi-line stored rules.
 
 So if we invoke:
     learn-ages(|22>, |25>, |26>, |29>)
