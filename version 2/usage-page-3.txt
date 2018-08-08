@@ -123,7 +123,7 @@ This single line expands to:
 
 
 
-Operators have essentially 3 types of application: with respect to kets, with respect to superpositions and with respect to sequences.
+Operators have 3 types of application: with respect to kets, with respect to superpositions and with respect to sequences.
 
 Type 1 operators are with respect to kets and are fully linear.
 
@@ -307,7 +307,7 @@ takes the form:
     spell |Fred> => |F> . |r> . |e> . |d>
 
 Operators defined in this way are of type 1, and hence fully linear. We will demonstrate the linearity shortly.
-our system now understands 'age' applied to 'Fred' and 'spell' applied to 'Fred'. In particular:
+our system now knows 'age' applied to 'Fred' and 'spell' applied to 'Fred'. In particular:
 If we ask 
     age |Fred>
 we will get the answer 
@@ -345,6 +345,7 @@ which evaluates to:
 which evaluates to:
     |37> + |40>
 That is, the system usually silently ignores questions it can't answer. If you want an explicit 'don't know' instead of a silent fail, we can do that too. See the stored rule section below.
+
 
 It is often useful to know if the system knows the answer to a question or not. For this we introduce the 'do-you-know' operator.
 It returns |no> if applied to the don't know ket, |yes> otherwise.
@@ -544,7 +545,7 @@ The next type is the stored rule, represented using '#=>':
     op |some ket> #=> some-object
 The idea is that 'some-object' is not evaluated at the time it is typed into the console, or loaded from file, in contrast to '=>' rules.
 Instead it is evaluated at invoke time, when we ask the question 'op |some ket>'.
-And '#=>' is also a visual memnomic. Consider the '#' as some kind of block, preventing the invocation of the '=>' part.
+And '#=>' is also a visual memnomic. Consider the '#' as some kind of temporary block, preventing the invocation of the '=>' part.
 
 
 The canonical example is plurals, where the general rule is to append 's' to the word:
@@ -557,6 +558,7 @@ But we need to over-write that with exceptions, or specific rules:
     plural |radius> => |radii>
     plural |vertex> => |vertices>
     plural |stimulus> => |stimuli>
+    plural |matrix> => |matrices>
     ...
 
 So when we ask what is the plural of mouse 'plural |mouse>' we get |mice>. But thanks to label descent, when we ask what is the plural of rabbit 'plural |rabbit>' the general rule is invoked.
@@ -569,7 +571,7 @@ which evaluates to:
 And if it is not clear from the example, the ket 'plural' was applied to is substituted into the |_self> slot. 
 We call these things self kets, which we introduce more of later. The point is, without this feature |*> linear functions would be impossible.
 
-Here are some toy self ket examples, 'multiply-by' operators:
+Here are some toy self ket examples, 'multiply-by' operators (in fact more specifically, sigmoids since they only change coefficients):
     mult-by-2 |*> #=> 2|_self>
     mult-by-3 |*> #=> 3|_self>
     mult-by-5 |*> #=> 5|_self>
@@ -740,7 +742,7 @@ Another fun memoizing rule example is Schrodinger's poor cat. We represent that 
     is-alive? |Schrodinger's cat> !=> normalize weighted-pick-elt (0.5|yes> + 0.5|no>)
 
 Given this knowledge we can ask if the cat is alive or dead, but once we do so the superposition collapses into a single value. Either |yes> or |no> with probabilty 50/50.
-If we had used stored rules, we could ask over and over again, each time getting a different random answer.
+If we had used stored rules, we could ask over and over again, each time getting a random answer.
 
 So, is the poor cat alive or dead? Let's ask the console:
     -- set up our quantum experiment:
@@ -783,7 +785,7 @@ First learn week days versus the weekend:
     the |week days> => |Monday> + |Tuesday> + |Wednesday> + |Thursday> + |Friday>
     the |weekend> => |Saturday> + |Sunday>
 
-Now learn the open/closing times:
+Now learn the full set of open/closing times:
     open the |week days> => |9am>
     close the |week days> => |6pm>
 
@@ -864,9 +866,53 @@ And then ask the console:
     ----------------------------------------
 
 
+We have an alternate application for this style of learn rule, learning indirectly.
+Let's say we are in a conversation, and we learn:
+    |her> => |Jane>
+
+Then we learn:
+    'the age of her is 26'
+    'the mother of her is Liz'
+    'the father of her is Patrick'
+
+which are these learn rules:
+    age "" |her> => |26>
+    mother "" |her> => |Liz>
+    father "" |her> => |Patrick>
+
+Then the meaning of 'her' is updated to:
+    |her> => |Emma>
+
+Then we learn:
+    'the age of her is 29'
+    'the mother of her is Ruth'
+    'the father of her is Robert'
+
+which are these learn rules:
+    age "" |her> => |29>
+    mother "" |her> => |Ruth>
+    father "" |her> => |Robert>
+
+Now see what we know:
+    sa: dump
+    ----------------------------------------
+     |context> => |context: global context>
+
+     |her> => |Emma>
+
+    age |Jane> => |26>
+    mother |Jane> => |Liz>
+    father |Jane> => |Patrick>
+
+    age |Emma> => |29>
+    mother |Emma> => |Ruth>
+    father |Emma> => |Robert>
+    ----------------------------------------
 
 
-Turns out there are many things you can't actually do if you only have linear functions in the form of 
+
+
+There are many things you can't actually do if you only have linear functions in the form of 
     op |*> #=> some-CS
 
 So our next ingredient is for learning custom sequence functions. Recall they have form:
@@ -878,9 +924,10 @@ If we define fn-type as one of:
 Then we define a custom sequence function with this notation:
     fn fn-type #=> some-CS
 
-Again, we have a visual memnomic here. |*> is visually an object applied to nodes |some node>, while (*) is applied to a collection of objects treated as one unit.
+Again, we have a visual memnomic here. |*> is visually an object applied to kets/nodes, while (*) is applied to a collection of objects treated as one unit.
 
-For example this 4-parameter sequence function:
+
+Here is a toy 4-parameter sequence function:
     fn (*,*,*,*) #=> 2|_self1> + 3|_self2> + 5|_self3> + 7|_self4>
 
 Since we only have '*' on the left hand side, our input parameters are unlabeled. We use |_selfk> to substitute in the respective k'th input parameter. And |_self> is an alias for |_self1>
@@ -942,7 +989,7 @@ evaluates to:
 which evaluates to:
     |number: 3>
 
-There we have it. Linearity versus non-linearity. And with a little imagination it makes sense that |*> is with respect to kets, and (*) is with respect to sequences.
+There we have it. Linearity versus non-linearity. And with a little visual imagination it makes sense that |*> is with respect to kets, and (*) is with respect to sequences.
 
 
 
@@ -982,7 +1029,7 @@ this evaluates to:
     age |Rob> => |26>
     age |Liz> => |29>
 
-And to help with chaining of operators or sequence functions, a multi-line stored rule returns the value of its last learn rule.
+To help with chaining of operators or sequence functions, a multi-line stored rule returns the value of its last learn rule.
 So for example 'learn-ages(|22>, |25>, |26>, |29>)' returns the value of:
     age |Liz> => |29>
 which returns the value:
@@ -1014,10 +1061,27 @@ Then we have the following set of valid learn rules:
         learn-rule
 
 
+Finally, let's finish with a worked example: active logic using if-then machines.
+
+
 
 So that is it, our tour of mumble lang!
 The full parsley grammar is here:
 https://github.com/GarryMorrison/Feynman-knowledge-engine/blob/master/version%202/full-parsley-grammar.txt
+
+The code is here:
+https://github.com/GarryMorrison/Feynman-knowledge-engine/tree/master/version%202
+
+Installation instructions:
+$ git clone git://github.com/python-parsley/parsley.git
+$ cd parsley/
+$ sudo python3 setup.py install
+
+$ cd ..
+$ git clone git://github.com/GarryMorrison/Feynman-knowledge-engine.git
+$ cd 'Feynman-knowledge-engine/version 2'
+$ python3 sdb-console.py
+
 
 Below are brief descriptions and examples for our operators, sigmoids, and sequence functions:
 http://semantic-db.org/documentation/usage/index.html
