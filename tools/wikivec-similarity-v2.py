@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #######################################################################
-# displary wikivec similarity, version 2
+# display wikivec similarity, version 2
 #
 # Author: Garry Morrison
 # email: garry -at- semantic-db.org
@@ -74,8 +74,11 @@ def print_set_dict(sw_dict):
         print('wikivec |%s> => ' % key, end='')
         print(' + '.join( '|%X>' % x for x in value ))
 
-sw_dict = load_clean_sw_into_set_dict(source, op)
+
+# quick test of loading from source file:
+# sw_dict = load_clean_sw_into_set_dict(source, op)
 # print_set_dict(sw_dict)
+# sys.exit(0)
 
 
 # let's use: |A intersection B| / |A union B|
