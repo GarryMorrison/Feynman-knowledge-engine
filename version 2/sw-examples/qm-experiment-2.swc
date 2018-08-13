@@ -11,5 +11,5 @@ run-single-experiment |*> #=>
 run-experiment |*> #=>
     run-single-experiment range(|1>, "" |iterations>)
     bar-chart[100] ket-sort the |result>
-
+    simm(normalize the |superposition>, normalize the |result>)
 

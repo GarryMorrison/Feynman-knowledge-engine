@@ -1,0 +1,19 @@
+|context> => |context: quantum mechanics experiment 3>
+
+the |superposition> => |a> + 0.2|b> + 0.5|c> + 8.1|d> + 0.01|e>
+
+run-single-experiment |*> #=>
+    measure |system> !=> normalize weighted-pick-elt the |superposition>
+    the |result> +=> measure |system>
+
+run-10-experiments |*> #=>
+    run-single-experiment range(|1>, |10>)
+    the |simm result> .=> simm(normalize the |superposition>, normalize the |result>) |>
+
+|iterations> => |500>
+
+run-experiment |*> #=>
+    run-10-experiments range(|1>, int-divide-by[10] "" |iterations>)
+    bar-chart[100] ket-sort the |result>
+    long-display the |simm result>
+    simm(normalize the |superposition>, normalize the |result>)
